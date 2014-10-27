@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Rooms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Room>
+		<Door_Positions>
+			<N>1</N>
+			<E>0</E>
+			<S>0</S>
+			<W>0</W>
+		</Door_Positions>
+		<Name>-dino</Name>
+	</Room>
+	<Room>
+		<Door_Positions>
+			<N>0</N>
+			<E>0</E>
+			<S>1</S>
+			<W>0</W>
+		</Door_Positions>
+		<Name>Sau</Name>
+	</Room>
+</Rooms>

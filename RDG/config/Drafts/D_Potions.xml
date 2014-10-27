@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Potions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Potion>
+       <Name>Instant Cure</Name>
+	   <Class>weak</Class>
+	   <Class_Multiplier>1</Class_Multiplier>
+       <Description>fills x HP immediatly</Description>
+       <Target>self</Target>
+       <Effect>hp</Effect>
+	   <Mode>+</Mode>
+	   <x>50</x>
+	   <n>1</n>
+	   <Image_Big>/dummy/</Image_Big>
+	   <Image_Small>/dummy/</Image_Small>
+    </Potion>
+	<Potion>
+       <Name>Regeneration</Name>
+	   <Class>weak</Class>
+	   <Class_Multiplier>1</Class_Multiplier>
+       <Description>regenerates x HP over n rounds</Description>
+       <Target>self</Target>
+       <Effect>hp</Effect>
+	   <Mode>+</Mode>
+	   <x>10</x>
+	   <n>5</n>
+	   <Image_Big>/dummy/</Image_Big>
+	   <Image_Small>/dummy/</Image_Small>
+    </Potion>
+</Potions>

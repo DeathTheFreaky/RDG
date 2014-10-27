@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Potions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Potion>
+		<Name>Instant Cure</Name>
+		<Class>weak</Class>
+		<Class_Multiplier>1</Class_Multiplier>
+		<Description>fills x HP immediatly</Description>
+		<Target>self</Target>
+		<Effect>hp</Effect>
+		<Mode>+</Mode>
+		<x>50</x>
+		<n>1</n>
+		<Image_Big>potions/instant_cure_big.png</Image_Big>
+		<Image_Small>potions/instant_cure_small.png</Image_Small>
+	</Potion>
+	<Potion>
+		<Name>Regeneration</Name>
+		<Class>weak</Class>
+		<Class_Multiplier>1</Class_Multiplier>
+		<Description>regenerates x HP over n rounds</Description>
+		<Target>self</Target>
+		<Effect>hp</Effect>
+		<Mode>+</Mode>
+		<x>10</x>
+		<n>5</n>
+		<Image_Big>potions/regeneration_big.png</Image_Big>
+		<Image_Small>potions/regeneration_small.png</Image_Small>
+	</Potion>
+	<Potion>
+		<Name>Antidote</Name>
+		<Class>strong</Class>
+		<Class_Multiplier>1</Class_Multiplier>
+		<Description>reverses poison effect</Description>
+		<Target>self</Target>
+		<Effect>poison</Effect>
+		<Mode>x</Mode>
+		<x>1</x>
+		<n>1</n>
+		<Image_Big>potions/antidote_big.png</Image_Big>
+		<Image_Small>potions/antidote_small.png</Image_Small>
+	</Potion>
+	<Potion>
+		<Name>Strength</Name>
+		<Class>medium</Class>
+		<Class_Multiplier>1</Class_Multiplier>
+		<Description>increases strength by x for n rounds</Description>
+		<Target>self</Target>
+		<Effect>strength</Effect>
+		<Mode>&gt;</Mode>
+		<x>10</x>
+		<n>5</n>
+		<Image_Big>potions/strength_big.png</Image_Big>
+		<Image_Small>potions/strength_small.png</Image_Small>
+	</Potion>
+	<Potion>
+		<Name>Speed</Name>
+		<Class>medium</Class>
+		<Class_Multiplier>1</Class_Multiplier>
+		<Description>increases speed by x for n rounds</Description>
+		<Target>self</Target>
+		<Effect>speed</Effect>
+		<Mode>&gt;</Mode>
+		<x>10</x>
+		<n>5</n>
+		<Image_Big>potions/speed_big.png</Image_Big>
+		<Image_Small>potions/speed_small.png</Image_Small>
+	</Potion>
+	<Potion>
+		<Name>Accuracy</Name>
+		<Class>medium</Class>
+		<Class_Multiplier>1</Class_Multiplier>
+		<Description>increases accuracy by x for n rounds</Description>
+		<Target>self</Target>
+		<Effect>accuracy</Effect>
+		<Mode>&gt;</Mode>
+		<x>10</x>
+		<n>5</n>
+		<Image_Big>potions/accuracy_big.png</Image_Big>
+		<Image_Small>potions/accuracy_small.png</Image_Small>
+	</Potion>
+	<Potion>
+		<Name>Blindness </Name>
+		<Class>medium</Class>
+		<Class_Multiplier>1</Class_Multiplier>
+		<Description>decreases accuracy by x for n rounds</Description>
+		<Target>opponent</Target>
+		<Effect>accuracy</Effect>
+		<Mode>&lt;</Mode>
+		<x>10</x>
+		<n>5</n>
+		<Image_Big>potions/blindness_big.png</Image_Big>
+		<Image_Small>potions/blindness_small.png</Image_Small>
+	</Potion>
+	<Potion>
+		<Name>Slowness</Name>
+		<Class>medium</Class>
+		<Class_Multiplier>1</Class_Multiplier>
+		<Description>descreases speed by x for n rounds</Description>
+		<Target>opponent</Target>
+		<Effect>speed</Effect>
+		<Mode>&lt;</Mode>
+		<x>10</x>
+		<n>5</n>
+		<Image_Big>potions/slowness_big.png</Image_Big>
+		<Image_Small>potions/slowness_small.png</Image_Small>
+	</Potion>
+	<Potion>
+		<Name>Poison</Name>
+		<Class>strong</Class>
+		<Class_Multiplier>1</Class_Multiplier>
+		<Description>deals x damage for n rounds</Description>
+		<Target>opponent</Target>
+		<Effect>hp</Effect>
+		<Mode>-</Mode>
+		<x>10</x>
+		<n>5</n>
+		<Image_Big>potions/poison_big.png</Image_Big>
+		<Image_Small>potions/poison_small.png</Image_Small>
+	</Potion>
+	<Potion>
+		<Name>Weakness</Name>
+		<Class>medium</Class>
+		<Class_Multiplier>1</Class_Multiplier>
+		<Description>decreases strength by x for n rounds</Description>
+		<Target>opponent</Target>
+		<Effect>strength</Effect>
+		<Mode>&lt;</Mode>
+		<x>10</x>
+		<n>5</n>
+		<Image_Big>potions/weakness_big.png</Image_Big>
+		<Image_Small>potions/weakness_small.png</Image_Small>
+	</Potion>
+</Potions>

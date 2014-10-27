@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Weapons xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Weapon>
+       <Name>Fists</Name>
+	   <Class>-</Class>
+	   <Class_Multiplier>1</Class_Multiplier>
+       <Attack>5</Attack>
+       <Speed>80</Speed>
+       <Accuracy>50</Accuracy>
+	   <Defence>-</Defence>
+	   <Slots>1</Slots>
+	   <Max>2</Max>
+	   <Type>single-hand</Type>
+	   <Image_Big>/dummy/</Image_Big>
+	   <Image_Small>/dummy/</Image_Small>
+    </Weapon>
+	<Weapon>
+       <Name>Dagger</Name>
+	   <Class>weak</Class>
+	   <Class_Multiplier>1</Class_Multiplier>
+       <Attack>10</Attack>
+       <Speed>70</Speed>
+       <Accuracy>40</Accuracy>
+	   <Defence>-</Defence>
+	   <Slots>1</Slots>
+	   <Max>2</Max>
+	   <Type>single-hand</Type>
+	   <Image_Big>/dummy/</Image_Big>
+	   <Image_Small>/dummy/</Image_Small>
+    </Weapon>
+</Weapons>

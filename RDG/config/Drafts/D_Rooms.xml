@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Rooms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Room>
+		<Name>Dead End</Name>
+		<Description>1 door</Description>
+		<Door_Positions>
+			<N>1</N>
+			<E>0</E>
+			<S>0</S>
+			<W>0</W>
+		</Door_Positions>
+		<Monster>
+			<no>0</no>
+			<easy>0,33</easy>
+			<normal>0,67</normal>
+			<hard>0</hard>
+		</Monster>
+		<Item_Multiplier>1,5</Item_Multiplier>
+		<Find_Probabilities>
+			<weak>0,3</weak>
+			<medium>0,5</medium>
+			<strong>0,2</strong>
+		</Find_Probabilities>
+		<Item_Count>3</Item_Count>
+		<Image>/dummy/</Image>
+    </Room>
+	<Room>
+		<Name>Hallway</Name>
+		<Description>2 opposing doors</Description>
+		<Door_Positions>
+			<N>1</N>
+			<E>0</E>
+			<S>1</S>
+			<W>0</W>
+		</Door_Positions>
+		<Monster>
+			<no>0,33</no>
+			<easy>0,5</easy>
+			<normal>0,17</normal>
+			<hard>0</hard>
+		</Monster>
+		<Item_Multiplier>1,25</Item_Multiplier>
+		<Find_Probabilities>
+			<weak>0,3</weak>
+			<medium>0,4</medium>
+			<strong>0</strong>
+		</Find_Probabilities>
+		<Item_Count>2</Item_Count>
+		<Image>/dummy/</Image>
+    </Room>
+</Rooms>

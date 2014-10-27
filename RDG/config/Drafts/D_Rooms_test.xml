@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Rooms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Room>
+		<Name>Dead End</Name>
+		<Description>1 door</Description>
+		<Door_Positions>
+			<N>1</N>
+			<E>0</E>
+			<S>0</S>
+			<W>0</W>
+		</Door_Positions>
+    </Room>
+	<Room>
+		<Name>Hallway</Name>
+		<Description>2 opposing doors</Description>
+		<Door_Positions>
+			<N>1</N>
+			<E>0</E>
+			<S>1</S>
+			<W>0</W>
+		</Door_Positions>
+    </Room>
+</Rooms>

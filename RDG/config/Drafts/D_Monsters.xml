@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Monsters xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Monster>
+       <Name>Rat</Name>
+	   <Level>easy</Level>
+       <HP>20</HP>
+       <Strength>25</Strength>
+	   <Speed>70</Speed>
+	   <Accuracy>45</Accuracy>
+	   <Kill_Bonus_Type>Strength</Kill_Bonus_Type>
+	   <Kill_Bonus_Low>2</Kill_Bonus_Low>
+	   <Kill_Bonus_High>4</Kill_Bonus_High>
+	   <Image_Big>/dummy/</Image_Big>
+	   <Image_Small>/dummy/</Image_Small>
+    </Monster>
+	<Monster>
+       <Name>Spider</Name>
+	   <Level>easy</Level>
+       <HP>25</HP>
+       <Strength>20</Strength>
+	   <Speed>60</Speed>
+	   <Accuracy>60</Accuracy>
+	   <Kill_Bonus_Type>Accuracy</Kill_Bonus_Type>
+	   <Kill_Bonus_Low>1</Kill_Bonus_Low>
+	   <Kill_Bonus_High>2</Kill_Bonus_High>
+	   <Image_Big>/dummy/</Image_Big>
+	   <Image_Small>/dummy/</Image_Small>
+    </Monster>
+</Monsters>

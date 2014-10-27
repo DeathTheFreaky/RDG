@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Armaments xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Armament>
+       <Name>Leather Helmet</Name>
+	   <Class>weak</Class>
+	   <Class_Multiplier>1</Class_Multiplier>
+       <Armor>20</Armor>
+       <Speed>13,33333333</Speed>
+       <Type>leather</Type>
+	   <Bonus>0,1</Bonus>
+	   <Image_Big>/dummy/</Image_Big>
+	   <Image_Small>/dummy/</Image_Small>
+    </Armament>
+	<Armament>
+       <Name>Leather Harness</Name>
+	   <Class>weak</Class>
+	   <Class_Multiplier>1</Class_Multiplier>
+       <Armor>30</Armor>
+       <Speed>20</Speed>
+       <Type>leather</Type>
+	   <Bonus>0,1</Bonus>
+	   <Image_Big>/dummy/</Image_Big>
+	   <Image_Small>/dummy/</Image_Small>
+    </Armament>
+</Armaments>
