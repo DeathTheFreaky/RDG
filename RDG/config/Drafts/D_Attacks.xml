@@ -2,6 +2,8 @@
 <Attacks xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <Attack>
        <Name>Torso</Name>
+	   <Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
+	   <Stats_High_Multiplier>1,2</Stats_High_Multiplier>
 	   <HP_Damage>0,5</HP_Damage>
        <Hit_Probability>0,8</Hit_Probability>
        <Effect>-</Effect>
@@ -9,6 +11,8 @@
     </Attack>
 	<Attack>
        <Name>Head</Name>
+	   <Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
+	   <Stats_High_Multiplier>1,2</Stats_High_Multiplier>
 	   <HP_Damage>0,7</HP_Damage>
        <Hit_Probability>0,3</Hit_Probability>
        <Effect>accuracy</Effect>

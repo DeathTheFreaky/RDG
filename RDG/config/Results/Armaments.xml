@@ -4,6 +4,8 @@
 		<Name>Leather Helmet</Name>
 		<Class>weak</Class>
 		<Class_Multiplier>1</Class_Multiplier>
+		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>20</Armor>
 		<Speed>13.3333333333333</Speed>
 		<Type>leather</Type>
@@ -15,6 +17,8 @@
 		<Name>Leather Harness</Name>
 		<Class>weak</Class>
 		<Class_Multiplier>1</Class_Multiplier>
+		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>30</Armor>
 		<Speed>20</Speed>
 		<Type>leather</Type>
@@ -26,6 +30,8 @@
 		<Name>Leather Gauntlets</Name>
 		<Class>weak</Class>
 		<Class_Multiplier>1</Class_Multiplier>
+		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>10</Armor>
 		<Speed>6.66666666666667</Speed>
 		<Type>leather</Type>
@@ -37,6 +43,8 @@
 		<Name>Leather Cuisse</Name>
 		<Class>weak</Class>
 		<Class_Multiplier>1</Class_Multiplier>
+		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>15</Armor>
 		<Speed>10</Speed>
 		<Type>leather</Type>
@@ -48,6 +56,8 @@
 		<Name>Leather Boots</Name>
 		<Class>weak</Class>
 		<Class_Multiplier>1</Class_Multiplier>
+		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>10</Armor>
 		<Speed>6.66666666666667</Speed>
 		<Type>leather</Type>
@@ -59,6 +69,8 @@
 		<Name>Habergeon Helmet</Name>
 		<Class>medium</Class>
 		<Class_Multiplier>1</Class_Multiplier>
+		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>26.6666666666667</Armor>
 		<Speed>16.6666666666667</Speed>
 		<Type>habergeon</Type>
@@ -70,6 +82,8 @@
 		<Name>Habergeon Harness</Name>
 		<Class>medium</Class>
 		<Class_Multiplier>1</Class_Multiplier>
+		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>40</Armor>
 		<Speed>25</Speed>
 		<Type>habergeon</Type>
@@ -81,6 +95,8 @@
 		<Name>Habergeon Gauntlets</Name>
 		<Class>medium</Class>
 		<Class_Multiplier>1</Class_Multiplier>
+		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>13.3333333333333</Armor>
 		<Speed>8.33333333333333</Speed>
 		<Type>habergeon</Type>
@@ -92,6 +108,8 @@
 		<Name>Habergeon Cuisse</Name>
 		<Class>medium</Class>
 		<Class_Multiplier>1</Class_Multiplier>
+		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>20</Armor>
 		<Speed>12.5</Speed>
 		<Type>habergeon</Type>
@@ -103,6 +121,8 @@
 		<Name>Habergeon Boots</Name>
 		<Class>medium</Class>
 		<Class_Multiplier>1</Class_Multiplier>
+		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>13.3333333333333</Armor>
 		<Speed>8.33333333333333</Speed>
 		<Type>habergeon</Type>
@@ -114,6 +134,8 @@
 		<Name>Plate Helmet</Name>
 		<Class>strong</Class>
 		<Class_Multiplier>1</Class_Multiplier>
+		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>33.3333333333333</Armor>
 		<Speed>20</Speed>
 		<Type>plate</Type>
@@ -125,6 +147,8 @@
 		<Name>Plate Harness</Name>
 		<Class>strong</Class>
 		<Class_Multiplier>1</Class_Multiplier>
+		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>50</Armor>
 		<Speed>30</Speed>
 		<Type>plate</Type>
@@ -136,6 +160,8 @@
 		<Name>Plate Gauntlets</Name>
 		<Class>strong</Class>
 		<Class_Multiplier>1</Class_Multiplier>
+		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>16.6666666666667</Armor>
 		<Speed>10</Speed>
 		<Type>plate</Type>
@@ -147,6 +173,8 @@
 		<Name>Plate Cuisse</Name>
 		<Class>strong</Class>
 		<Class_Multiplier>1</Class_Multiplier>
+		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>25</Armor>
 		<Speed>15</Speed>
 		<Type>plate</Type>
@@ -158,6 +186,8 @@
 		<Name>Plate Boots</Name>
 		<Class>strong</Class>
 		<Class_Multiplier>1</Class_Multiplier>
+		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>16.6666666666667</Armor>
 		<Speed>10</Speed>
 		<Type>plate</Type>

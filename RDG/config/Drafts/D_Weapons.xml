@@ -4,6 +4,8 @@
        <Name>Fists</Name>
 	   <Class>-</Class>
 	   <Class_Multiplier>1</Class_Multiplier>
+	   <Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
+	   <Stats_High_Multiplier>1,2</Stats_High_Multiplier>
        <Attack>5</Attack>
        <Speed>80</Speed>
        <Accuracy>50</Accuracy>
@@ -18,6 +20,8 @@
        <Name>Dagger</Name>
 	   <Class>weak</Class>
 	   <Class_Multiplier>1</Class_Multiplier>
+	   <Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
+	   <Stats_High_Multiplier>1,2</Stats_High_Multiplier>
        <Attack>10</Attack>
        <Speed>70</Speed>
        <Accuracy>40</Accuracy>

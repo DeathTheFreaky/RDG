@@ -4,6 +4,8 @@
        <Name>Leather Helmet</Name>
 	   <Class>weak</Class>
 	   <Class_Multiplier>1</Class_Multiplier>
+	   <Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
+	   <Stats_High_Multiplier>1,2</Stats_High_Multiplier>
        <Armor>20</Armor>
        <Speed>13,33333333</Speed>
        <Type>leather</Type>
@@ -15,6 +17,8 @@
        <Name>Leather Harness</Name>
 	   <Class>weak</Class>
 	   <Class_Multiplier>1</Class_Multiplier>
+	   <Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
+	   <Stats_High_Multiplier>1,2</Stats_High_Multiplier>
        <Armor>30</Armor>
        <Speed>20</Speed>
        <Type>leather</Type>

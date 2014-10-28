@@ -3,6 +3,8 @@
     <Monster>
        <Name>Rat</Name>
 	   <Level>easy</Level>
+	   <Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
+	   <Stats_High_Multiplier>1,2</Stats_High_Multiplier>
        <HP>20</HP>
        <Strength>25</Strength>
 	   <Speed>70</Speed>
@@ -16,6 +18,8 @@
 	<Monster>
        <Name>Spider</Name>
 	   <Level>easy</Level>
+	   <Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
+	   <Stats_High_Multiplier>1,2</Stats_High_Multiplier>
        <HP>25</HP>
        <Strength>20</Strength>
 	   <Speed>60</Speed>

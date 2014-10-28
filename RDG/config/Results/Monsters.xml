@@ -3,6 +3,8 @@
 	<Monster>
 		<Name>Rat</Name>
 		<Level>easy</Level>
+		<Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1,2</Stats_High_Multiplier>
 		<HP>20</HP>
 		<Strength>25</Strength>
 		<Speed>70</Speed>
@@ -16,6 +18,8 @@
 	<Monster>
 		<Name>Spider</Name>
 		<Level>easy</Level>
+		<Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1,2</Stats_High_Multiplier>
 		<HP>25</HP>
 		<Strength>20</Strength>
 		<Speed>60</Speed>
@@ -29,6 +33,8 @@
 	<Monster>
 		<Name>Frog</Name>
 		<Level>easy</Level>
+		<Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1,2</Stats_High_Multiplier>
 		<HP>15</HP>
 		<Strength>10</Strength>
 		<Speed>65</Speed>
@@ -42,6 +48,8 @@
 	<Monster>
 		<Name>Bat</Name>
 		<Level>easy</Level>
+		<Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1,2</Stats_High_Multiplier>
 		<HP>25</HP>
 		<Strength>15</Strength>
 		<Speed>80</Speed>
@@ -55,6 +63,8 @@
 	<Monster>
 		<Name>Salamander</Name>
 		<Level>easy</Level>
+		<Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1,2</Stats_High_Multiplier>
 		<HP>15</HP>
 		<Strength>20</Strength>
 		<Speed>75</Speed>
@@ -68,6 +78,8 @@
 	<Monster>
 		<Name>Goblin</Name>
 		<Level>normal</Level>
+		<Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1,2</Stats_High_Multiplier>
 		<HP>35</HP>
 		<Strength>35</Strength>
 		<Speed>55</Speed>
@@ -81,6 +93,8 @@
 	<Monster>
 		<Name>Gremlin</Name>
 		<Level>normal</Level>
+		<Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1,2</Stats_High_Multiplier>
 		<HP>40</HP>
 		<Strength>45</Strength>
 		<Speed>40</Speed>
@@ -94,6 +108,8 @@
 	<Monster>
 		<Name>Ghost</Name>
 		<Level>normal</Level>
+		<Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1,2</Stats_High_Multiplier>
 		<HP>45</HP>
 		<Strength>50</Strength>
 		<Speed>45</Speed>
@@ -107,6 +123,8 @@
 	<Monster>
 		<Name>Zombie</Name>
 		<Level>normal</Level>
+		<Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1,2</Stats_High_Multiplier>
 		<HP>55</HP>
 		<Strength>45</Strength>
 		<Speed>30</Speed>
@@ -120,6 +138,8 @@
 	<Monster>
 		<Name>Ogre</Name>
 		<Level>hard</Level>
+		<Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1,2</Stats_High_Multiplier>
 		<HP>60</HP>
 		<Strength>80</Strength>
 		<Speed>15</Speed>
@@ -133,6 +153,8 @@
 	<Monster>
 		<Name>Giant</Name>
 		<Level>hard</Level>
+		<Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1,2</Stats_High_Multiplier>
 		<HP>80</HP>
 		<Strength>65</Strength>
 		<Speed>20</Speed>
@@ -146,6 +168,8 @@
 	<Monster>
 		<Name>Cyclops</Name>
 		<Level>hard</Level>
+		<Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1,2</Stats_High_Multiplier>
 		<HP>70</HP>
 		<Strength>70</Strength>
 		<Speed>25</Speed>
