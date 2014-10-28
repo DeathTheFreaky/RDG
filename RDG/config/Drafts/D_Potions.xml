@@ -2,7 +2,7 @@
 <Potions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <Potion>
        <Name>Instant Cure</Name>
-	   <Class>weak</Class>
+	   <Item_Class>weak</Item_Class>
 	   <Class_Multiplier>1</Class_Multiplier>
 	   <Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
 	   <Stats_High_Multiplier>1,2</Stats_High_Multiplier>
@@ -17,7 +17,7 @@
     </Potion>
 	<Potion>
        <Name>Regeneration</Name>
-	   <Class>weak</Class>
+	   <Item_Class>weak</Item_Class>
 	   <Class_Multiplier>1</Class_Multiplier>
 	   <Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
 	   <Stats_High_Multiplier>1,2</Stats_High_Multiplier>

@@ -2,7 +2,7 @@
 <Potions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<Potion>
 		<Name>Instant Cure</Name>
-		<Class>weak</Class>
+		<Item_Class>weak</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
@@ -17,7 +17,7 @@
 	</Potion>
 	<Potion>
 		<Name>Regeneration</Name>
-		<Class>weak</Class>
+		<Item_Class>weak</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
@@ -32,7 +32,7 @@
 	</Potion>
 	<Potion>
 		<Name>Antidote</Name>
-		<Class>strong</Class>
+		<Item_Class>strong</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
@@ -47,7 +47,7 @@
 	</Potion>
 	<Potion>
 		<Name>Strength</Name>
-		<Class>medium</Class>
+		<Item_Class>medium</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
@@ -62,7 +62,7 @@
 	</Potion>
 	<Potion>
 		<Name>Speed</Name>
-		<Class>medium</Class>
+		<Item_Class>medium</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
@@ -77,7 +77,7 @@
 	</Potion>
 	<Potion>
 		<Name>Accuracy</Name>
-		<Class>medium</Class>
+		<Item_Class>medium</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
@@ -92,7 +92,7 @@
 	</Potion>
 	<Potion>
 		<Name>Blindness </Name>
-		<Class>medium</Class>
+		<Item_Class>medium</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
@@ -107,7 +107,7 @@
 	</Potion>
 	<Potion>
 		<Name>Slowness</Name>
-		<Class>medium</Class>
+		<Item_Class>medium</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
@@ -122,7 +122,7 @@
 	</Potion>
 	<Potion>
 		<Name>Poison</Name>
-		<Class>strong</Class>
+		<Item_Class>strong</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
@@ -137,7 +137,7 @@
 	</Potion>
 	<Potion>
 		<Name>Weakness</Name>
-		<Class>medium</Class>
+		<Item_Class>medium</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>

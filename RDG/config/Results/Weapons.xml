@@ -2,7 +2,7 @@
 <Weapons xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<Weapon>
 		<Name>Fists</Name>
-		<Class>-</Class>
+		<Item_Class>-</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
@@ -18,7 +18,7 @@
 	</Weapon>
 	<Weapon>
 		<Name>Dagger</Name>
-		<Class>weak</Class>
+		<Item_Class>weak</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
@@ -34,7 +34,7 @@
 	</Weapon>
 	<Weapon>
 		<Name>Axt</Name>
-		<Class>medium</Class>
+		<Item_Class>medium</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
@@ -50,7 +50,7 @@
 	</Weapon>
 	<Weapon>
 		<Name>Sword</Name>
-		<Class>medium</Class>
+		<Item_Class>medium</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
@@ -66,7 +66,7 @@
 	</Weapon>
 	<Weapon>
 		<Name>Shield</Name>
-		<Class>medium</Class>
+		<Item_Class>medium</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
@@ -82,7 +82,7 @@
 	</Weapon>
 	<Weapon>
 		<Name>Sabre</Name>
-		<Class>medium</Class>
+		<Item_Class>medium</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
@@ -98,7 +98,7 @@
 	</Weapon>
 	<Weapon>
 		<Name>Longsword</Name>
-		<Class>medium</Class>
+		<Item_Class>medium</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
@@ -114,7 +114,7 @@
 	</Weapon>
 	<Weapon>
 		<Name>Bow</Name>
-		<Class>medium</Class>
+		<Item_Class>medium</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
