@@ -3,8 +3,8 @@
     <Monster>
        <Name>Rat</Name>
 	   <Level>easy</Level>
-	   <Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
-	   <Stats_High_Multiplier>1,2</Stats_High_Multiplier>
+	   <Stats_Low_Multiplier>0.80</Stats_Low_Multiplier>
+	   <Stats_High_Multiplier>1.20</Stats_High_Multiplier>
        <HP>20</HP>
        <Strength>25</Strength>
 	   <Speed>70</Speed>
@@ -12,14 +12,14 @@
 	   <Kill_Bonus_Type>Strength</Kill_Bonus_Type>
 	   <Kill_Bonus_Low>2</Kill_Bonus_Low>
 	   <Kill_Bonus_High>4</Kill_Bonus_High>
-	   <Image_Big>/dummy/</Image_Big>
-	   <Image_Small>/dummy/</Image_Small>
+	   <Image_Big>monsters/rat_big.png</Image_Big>
+	   <Image_Small>monsters/rat_small.png</Image_Small>
     </Monster>
 	<Monster>
        <Name>Spider</Name>
 	   <Level>easy</Level>
-	   <Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
-	   <Stats_High_Multiplier>1,2</Stats_High_Multiplier>
+	   <Stats_Low_Multiplier>0.80</Stats_Low_Multiplier>
+	   <Stats_High_Multiplier>1.20</Stats_High_Multiplier>
        <HP>25</HP>
        <Strength>20</Strength>
 	   <Speed>60</Speed>
@@ -27,7 +27,7 @@
 	   <Kill_Bonus_Type>Accuracy</Kill_Bonus_Type>
 	   <Kill_Bonus_Low>1</Kill_Bonus_Low>
 	   <Kill_Bonus_High>2</Kill_Bonus_High>
-	   <Image_Big>/dummy/</Image_Big>
-	   <Image_Small>/dummy/</Image_Small>
+	   <Image_Big>monsters/spider_big.png</Image_Big>
+	   <Image_Small>monsters/spider_small.png</Image_Small>
     </Monster>
 </Monsters>

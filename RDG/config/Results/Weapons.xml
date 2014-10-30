@@ -9,7 +9,7 @@
 		<Attack>5</Attack>
 		<Speed>80</Speed>
 		<Accuracy>50</Accuracy>
-		<Defence>-</Defence>
+		<Defence>0</Defence>
 		<Slots>1</Slots>
 		<Max>2</Max>
 		<Type>single-hand</Type>
@@ -25,7 +25,7 @@
 		<Attack>10</Attack>
 		<Speed>70</Speed>
 		<Accuracy>40</Accuracy>
-		<Defence>-</Defence>
+		<Defence>0</Defence>
 		<Slots>1</Slots>
 		<Max>2</Max>
 		<Type>single-hand</Type>
@@ -41,7 +41,7 @@
 		<Attack>30</Attack>
 		<Speed>40</Speed>
 		<Accuracy>60</Accuracy>
-		<Defence>-</Defence>
+		<Defence>0</Defence>
 		<Slots>1</Slots>
 		<Max>2</Max>
 		<Type>single-hand</Type>
@@ -57,7 +57,7 @@
 		<Attack>20</Attack>
 		<Speed>60</Speed>
 		<Accuracy>50</Accuracy>
-		<Defence>-</Defence>
+		<Defence>0</Defence>
 		<Slots>1</Slots>
 		<Max>2</Max>
 		<Type>single-hand</Type>
@@ -70,9 +70,9 @@
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
-		<Attack>-</Attack>
-		<Speed>-</Speed>
-		<Accuracy>-</Accuracy>
+		<Attack>0</Attack>
+		<Speed>0</Speed>
+		<Accuracy>0</Accuracy>
 		<Defence>50</Defence>
 		<Slots>1</Slots>
 		<Max>1</Max>
@@ -89,7 +89,7 @@
 		<Attack>25</Attack>
 		<Speed>50</Speed>
 		<Accuracy>40</Accuracy>
-		<Defence>-</Defence>
+		<Defence>0</Defence>
 		<Slots>1</Slots>
 		<Max>2</Max>
 		<Type>single-hand</Type>
@@ -105,7 +105,7 @@
 		<Attack>60</Attack>
 		<Speed>20</Speed>
 		<Accuracy>70</Accuracy>
-		<Defence>-</Defence>
+		<Defence>0</Defence>
 		<Slots>2</Slots>
 		<Max>1</Max>
 		<Type>two-hand</Type>
@@ -121,7 +121,7 @@
 		<Attack>40</Attack>
 		<Speed>30</Speed>
 		<Accuracy>80</Accuracy>
-		<Defence>-</Defence>
+		<Defence>0</Defence>
 		<Slots>2</Slots>
 		<Max>1</Max>
 		<Type>two-hand</Type>

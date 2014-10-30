@@ -11,18 +11,19 @@
 		</Door_Positions>
 		<Monster>
 			<no>0</no>
-			<easy>0,33</easy>
-			<normal>0,67</normal>
+			<easy>20</easy>
+			<normal>40</normal>
 			<hard>0</hard>
 		</Monster>
-		<Item_Multiplier>1,5</Item_Multiplier>
+		<Item_Multiplier>1.50</Item_Multiplier>
 		<Find_Probabilities>
-			<weak>0,3</weak>
-			<medium>0,5</medium>
-			<strong>0,2</strong>
+			<none>0</none>
+			<weak>30</weak>
+			<medium>50</medium>
+			<strong>20</strong>
 		</Find_Probabilities>
 		<Item_Count>3</Item_Count>
-		<Image>/dummy/</Image>
+		<Image>rooms/deadend.png</Image>
     </Room>
 	<Room>
 		<Name>Hallway</Name>
@@ -34,18 +35,19 @@
 			<W>0</W>
 		</Door_Positions>
 		<Monster>
-			<no>0,33</no>
-			<easy>0,5</easy>
-			<normal>0,17</normal>
+			<no>20</no>
+			<easy>30</easy>
+			<normal>10</normal>
 			<hard>0</hard>
 		</Monster>
-		<Item_Multiplier>1,25</Item_Multiplier>
+		<Item_Multiplier>1.25</Item_Multiplier>
 		<Find_Probabilities>
-			<weak>0,3</weak>
-			<medium>0,4</medium>
+			<none>30</none>
+			<weak>30</weak>
+			<medium>40</medium>
 			<strong>0</strong>
 		</Find_Probabilities>
 		<Item_Count>2</Item_Count>
-		<Image>/dummy/</Image>
+		<Image>rooms/hallway.png</Image>
     </Room>
 </Rooms>

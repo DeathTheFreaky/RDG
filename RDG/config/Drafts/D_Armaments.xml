@@ -3,27 +3,27 @@
     <Armament>
        <Name>Leather Helmet</Name>
 	   <Item_Class>weak</Item_Class>
-	   <Class_Multiplier>1</Class_Multiplier>
-	   <Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
-	   <Stats_High_Multiplier>1,2</Stats_High_Multiplier>
+	   <Class_Multiplier>1.00</Class_Multiplier>
+	   <Stats_Low_Multiplier>0.80</Stats_Low_Multiplier>
+	   <Stats_High_Multiplier>1.20</Stats_High_Multiplier>
        <Armor>20</Armor>
-       <Speed>13,33333333</Speed>
+       <Speed>13</Speed>
        <Type>leather</Type>
-	   <Bonus>0,1</Bonus>
-	   <Image_Big>/dummy/</Image_Big>
-	   <Image_Small>/dummy/</Image_Small>
+	   <Bonus>0.10</Bonus>
+	   <Image_Big>armaments/leather_helmet_big.png</Image_Big>
+	   <Image_Small>armaments/leather_helmet_small.png</Image_Small>
     </Armament>
 	<Armament>
        <Name>Leather Harness</Name>
 	   <Item_Class>weak</Item_Class>
 	   <Class_Multiplier>1</Class_Multiplier>
-	   <Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
-	   <Stats_High_Multiplier>1,2</Stats_High_Multiplier>
+	   <Stats_Low_Multiplier>0.80</Stats_Low_Multiplier>
+	   <Stats_High_Multiplier>1.20</Stats_High_Multiplier>
        <Armor>30</Armor>
        <Speed>20</Speed>
        <Type>leather</Type>
-	   <Bonus>0,1</Bonus>
-	   <Image_Big>/dummy/</Image_Big>
-	   <Image_Small>/dummy/</Image_Small>
+	   <Bonus>0.10</Bonus>
+	   <Image_Big>armaments/leather_harness_big.png</Image_Big>
+	   <Image_Small>armaments/leather_harness_small.png</Image_Small>
     </Armament>
 </Armaments>

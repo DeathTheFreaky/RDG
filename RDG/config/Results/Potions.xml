@@ -38,7 +38,7 @@
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Description>reverses poison effect</Description>
 		<Target>self</Target>
-		<Effect>poison</Effect>
+		<Effect>hp</Effect>
 		<Mode>x</Mode>
 		<x>1</x>
 		<n>1</n>

@@ -2,17 +2,17 @@
 <Attacks xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<Attack>
 		<Name>Torso</Name>
-		<Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1,2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<HP_Damage>0.5</HP_Damage>
 		<Hit_Probability>0.8</Hit_Probability>
-		<Effect>-</Effect>
-		<x>-</x>
+		<Effect>hp</Effect>
+		<x>0</x>
 	</Attack>
 	<Attack>
 		<Name>Head</Name>
-		<Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1,2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<HP_Damage>0.7</HP_Damage>
 		<Hit_Probability>0.3</Hit_Probability>
 		<Effect>accuracy</Effect>
@@ -20,8 +20,8 @@
 	</Attack>
 	<Attack>
 		<Name>Arms</Name>
-		<Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1,2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<HP_Damage>0.3</HP_Damage>
 		<Hit_Probability>0.7</Hit_Probability>
 		<Effect>strength</Effect>
@@ -29,8 +29,8 @@
 	</Attack>
 	<Attack>
 		<Name>Legs</Name>
-		<Stats_Low_Multiplier>0,8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1,2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<HP_Damage>0.4</HP_Damage>
 		<Hit_Probability>0.6</Hit_Probability>
 		<Effect>speed</Effect>

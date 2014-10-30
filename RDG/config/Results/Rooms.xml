@@ -11,15 +11,16 @@
 		</Door_Positions>
 		<Monster>
 			<no>0</no>
-			<easy>0.33</easy>
-			<normal>0.67</normal>
+			<easy>33</easy>
+			<normal>67</normal>
 			<hard>0</hard>
 		</Monster>
 		<Item_Multiplier>1.5</Item_Multiplier>
 		<Find_Probabilities>
-			<weak>0.3</weak>
-			<medium>0.5</medium>
-			<strong>0.2</strong>
+			<none>0</none>
+			<weak>30</weak>
+			<medium>50</medium>
+			<strong>20</strong>
 		</Find_Probabilities>
 		<Item_Count>3</Item_Count>
 		<Image>rooms/deadend.png</Image>
@@ -34,15 +35,16 @@
 			<W>0</W>
 		</Door_Positions>
 		<Monster>
-			<no>0.33</no>
-			<easy>0.5</easy>
-			<normal>0.17</normal>
+			<no>33</no>
+			<easy>50</easy>
+			<normal>17</normal>
 			<hard>0</hard>
 		</Monster>
 		<Item_Multiplier>1.25</Item_Multiplier>
 		<Find_Probabilities>
-			<weak>0.3</weak>
-			<medium>0.4</medium>
+			<none>30</none>
+			<weak>30</weak>
+			<medium>40</medium>
 			<strong>0</strong>
 		</Find_Probabilities>
 		<Item_Count>2</Item_Count>
@@ -58,15 +60,16 @@
 			<W>0</W>
 		</Door_Positions>
 		<Monster>
-			<no>0.33</no>
-			<easy>0.5</easy>
-			<normal>0.17</normal>
+			<no>33</no>
+			<easy>50</easy>
+			<normal>17</normal>
 			<hard>0</hard>
 		</Monster>
 		<Item_Multiplier>1.25</Item_Multiplier>
 		<Find_Probabilities>
-			<weak>0.3</weak>
-			<medium>0.4</medium>
+			<none>30</none>
+			<weak>30</weak>
+			<medium>40</medium>
 			<strong>0</strong>
 		</Find_Probabilities>
 		<Item_Count>2</Item_Count>
@@ -83,14 +86,15 @@
 		</Door_Positions>
 		<Monster>
 			<no>0</no>
-			<easy>0.67</easy>
-			<normal>0.33</normal>
+			<easy>67</easy>
+			<normal>33</normal>
 			<hard>0</hard>
 		</Monster>
 		<Item_Multiplier>1.1</Item_Multiplier>
 		<Find_Probabilities>
-			<weak>0.5</weak>
-			<medium>0.25</medium>
+			<none>25</none>
+			<weak>50</weak>
+			<medium>25</medium>
 			<strong>0</strong>
 		</Find_Probabilities>
 		<Item_Count>1</Item_Count>
@@ -107,13 +111,14 @@
 		</Door_Positions>
 		<Monster>
 			<no>0</no>
-			<easy>0.67</easy>
-			<normal>0.33</normal>
+			<easy>67</easy>
+			<normal>33</normal>
 			<hard>0</hard>
 		</Monster>
 		<Item_Multiplier>1</Item_Multiplier>
 		<Find_Probabilities>
-			<weak>0.5</weak>
+			<none>50</none>
+			<weak>50</weak>
 			<medium>0</medium>
 			<strong>0</strong>
 		</Find_Probabilities>
@@ -137,9 +142,10 @@
 		</Monster>
 		<Item_Multiplier>2</Item_Multiplier>
 		<Find_Probabilities>
-			<weak>0.1</weak>
-			<medium>0.2</medium>
-			<strong>0.7</strong>
+			<none>0</none>
+			<weak>10</weak>
+			<medium>20</medium>
+			<strong>70</strong>
 		</Find_Probabilities>
 		<Item_Count>5</Item_Count>
 		<Image>rooms/treasure_chamber.png</Image>
