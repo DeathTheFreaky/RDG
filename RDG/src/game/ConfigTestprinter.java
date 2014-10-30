@@ -2,18 +2,18 @@ package game;
 
 import java.util.Map.Entry;
 
-import config_templates.Armament_Template;
-import config_templates.Attack_Template;
-import config_templates.Monster_Template;
-import config_templates.Potion_Template;
-import config_templates.Room_Template;
-import config_templates.Weapon_Template;
+import configTemplates.ArmamentTemplate;
+import configTemplates.AttackTemplate;
+import configTemplates.MonsterTemplate;
+import configTemplates.PotionTemplate;
+import configTemplates.RoomTemplate;
+import configTemplates.WeaponTemplate;
 
-public class Config_Testprinter {
+public class ConfigTestprinter {
 	
 	private Configloader configloader;
 	
-	public Config_Testprinter(Configloader configloader) {
+	public ConfigTestprinter(Configloader configloader) {
 		this.configloader = configloader;
 	}
 	
@@ -22,7 +22,7 @@ public class Config_Testprinter {
 		//Armaments
 		System.out.println("\n\n\nArmaments\n\n");
 		
-		for (Entry<String, Armament_Template> entry : configloader.getArmament_templates().entrySet()) {
+		for (Entry<String, ArmamentTemplate> entry : configloader.getArmamentTemplates().entrySet()) {
 			  
 		  System.out.println(entry.getValue().getName());
 		  System.out.println(entry.getValue().getItem_class());
@@ -41,7 +41,7 @@ public class Config_Testprinter {
 		//Attacks
 		System.out.println("\n\n\nAttacks\n\n");
 		
-		for (Entry<String, Attack_Template> entry : configloader.getAttack_templates().entrySet()) {
+		for (Entry<String, AttackTemplate> entry : configloader.getAttackTemplates().entrySet()) {
 		  
 		  System.out.println(entry.getValue().getName());
 		  System.out.println(entry.getValue().getStats_low_multiplier());
@@ -56,7 +56,7 @@ public class Config_Testprinter {
 		//Monsters
 		System.out.println("\n\n\nMonsters\n\n");
 		
-		for (Entry<String, Monster_Template> entry : configloader.getMonster_templates().entrySet()) {
+		for (Entry<String, MonsterTemplate> entry : configloader.getMonsterTemplates().entrySet()) {
 			  
 		  System.out.println(entry.getValue().getName());
 		  System.out.println(entry.getValue().getLevel());
@@ -77,7 +77,7 @@ public class Config_Testprinter {
 		//Potions
 		System.out.println("\n\n\nPotions\n\n");
 		
-		for (Entry<String, Potion_Template> entry : configloader.getPotion_templates().entrySet()) {
+		for (Entry<String, PotionTemplate> entry : configloader.getPotionTemplates().entrySet()) {
 			  
 		  System.out.println(entry.getValue().getName());
 		  System.out.println(entry.getValue().getItem_class());
@@ -98,7 +98,7 @@ public class Config_Testprinter {
 		//Rooms
 		System.out.println("\n\n\nRooms\n\n");
 		
-		for (Entry<String, Room_Template> entry : configloader.getRoom_templates().entrySet()) {
+		for (Entry<String, RoomTemplate> entry : configloader.getRoomTemplates().entrySet()) {
 			  
 		  System.out.println(entry.getValue().getName());
 		  System.out.println(entry.getValue().getDescription());
@@ -123,7 +123,7 @@ public class Config_Testprinter {
 		//Weapons
 		System.out.println("\n\n\nWeapons\n\n");
 		
-		for (Entry<String, Weapon_Template> entry : configloader.getWeapon_templates().entrySet()) {
+		for (Entry<String, WeaponTemplate> entry : configloader.getWeaponTemplates().entrySet()) {
 			  
 		  System.out.println(entry.getValue().getName());
 		  System.out.println(entry.getValue().getItem_class());

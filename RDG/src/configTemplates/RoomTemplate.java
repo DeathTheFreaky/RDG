@@ -1,26 +1,26 @@
-package config_templates;
+package configTemplates;
 
 import java.util.Map;
 
-public class Room_Template {
+public class RoomTemplate {
 	
 	private String name, description, image;
-	private float item_multiplier;
-	private int item_count;
+	private float itemMultiplier;
+	private int itemCount;
 	private Map<String, Float> monster, find_probabilities;
-	private boolean[] door_positions; //0: N, 1: E, 2: S, 3: W
+	private boolean[] doorPositions; //0: N, 1: E, 2: S, 3: W
 	
-	public Room_Template(String name, String description, String image, float item_multiplier, int item_count, 
-			Map<String, Float> monster, Map<String, Float> find_probabilities, boolean[] door_positions) {
+	public RoomTemplate(String name, String description, String image, float itemMultiplier, int itemCount, 
+			Map<String, Float> monster, Map<String, Float> find_probabilities, boolean[] doorPositions) {
 			
 			this.name = name;
 			this.description = description;
 			this.image = image;
-			this.item_multiplier = item_multiplier;
-			this.item_count = item_count;
+			this.itemMultiplier = itemMultiplier;
+			this.itemCount = itemCount;
 			this.monster = monster;
 			this.find_probabilities = find_probabilities;
-			this.door_positions = door_positions;
+			this.doorPositions = doorPositions;
 			
 	}
 	//maze first creates rooms and doors, then afterwards checks which roomtypes those are
@@ -50,11 +50,11 @@ public class Room_Template {
 	}
 
 	public float getItem_multiplier() {
-		return item_multiplier;
+		return itemMultiplier;
 	}
 
 	public int getItem_count() {
-		return item_count;
+		return itemCount;
 	}
 
 	public Map<String, Float> getMonster() {
@@ -66,6 +66,6 @@ public class Room_Template {
 	}
 
 	public boolean[] getDoor_positions() {
-		return door_positions;
+		return doorPositions;
 	}
 }

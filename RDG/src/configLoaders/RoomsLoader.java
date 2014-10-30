@@ -1,4 +1,4 @@
-package config_loaders;
+package configLoaders;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,22 +24,14 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import config_templates.Room_Template;
-import enums.Enums.attributes;
-import enums.Enums.item_classes;
-import enums.Enums.modes;
-import enums.Enums.targets;
+import configTemplates.RoomTemplate;
+import enums.Enums.Attributes;
+import enums.Enums.ItemClasses;
+import enums.Enums.Modes;
+import enums.Enums.Targets;
 
-public class Rooms_Loader {
+public class RoomsLoader {
 
-	private String configpath;
-	private Map<String, Room_Template> room_templates;
-	
-	public Rooms_Loader(String configpath) {
-		this.configpath = configpath;
-		room_templates = new HashMap<String, Room_Template>();
-	}
-	
 	/**
 	 * Tries to parse XML Config File
 	 * Checks if values from config are valid and throw error on failure
@@ -50,9 +42,9 @@ public class Rooms_Loader {
 	 * @throws IOException 
 	 * @throws SAXException 
 	 */
-	public Map<String, Room_Template> run() throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException {
+	public static Map<String, RoomTemplate> run(String configpath) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException {
 		
-		//implement proper error handling
+		 Map<String, RoomTemplate> roomTemplates = new HashMap<String, RoomTemplate>();
 			
 		File fXmlFile = new File(configpath + "Rooms.xml");
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -73,28 +65,28 @@ public class Rooms_Loader {
 				
 				//allocate memory and store current element's values
 				String name, description, image;
-				float item_multiplier;
-				int item_count;
+				float itemMultiplier;
+				int itemCount;
 				Map<String, Float> monster, find_probabilities;
-				boolean[] door_positions; //0: N, 1: E, 2: S, 3: W
+				boolean[] doorPositions; //0: N, 1: E, 2: S, 3: W
  
  					monster = new HashMap<String, Float>();
  					find_probabilities = new HashMap<String, Float>();
- 					door_positions = new boolean[4];
+ 					doorPositions = new boolean[4];
 					
 					name = eElement.getElementsByTagName("Name").item(0).getTextContent();
 				description = eElement.getElementsByTagName("Description").item(0).getTextContent();
 				image = eElement.getElementsByTagName("Image").item(0).getTextContent();
-				item_multiplier = Float.parseFloat(eElement.getElementsByTagName("Item_Multiplier").item(0).getTextContent());
-				item_count = Integer.parseInt(eElement.getElementsByTagName("Item_Count").item(0).getTextContent());
+				itemMultiplier = Float.parseFloat(eElement.getElementsByTagName("Item_Multiplier").item(0).getTextContent());
+				itemCount = Integer.parseInt(eElement.getElementsByTagName("Item_Count").item(0).getTextContent());
 				
 				//check if parsed values are valid and set enums
 				if (name.length() == 0) throw new IllegalArgumentException("Invalid Name \"" + name + "\" at Room \"" + name + "\"");
 				
-				if (item_multiplier < 0) throw new IllegalArgumentException("Invalid Item Multiplier \"" + item_multiplier + "\" at Room \"" + name + "\"");
-				if (item_count < 0) throw new IllegalArgumentException("Invalid Item Count \"" + item_count + "\" at Room \"" + name + "\"");
+				if (itemMultiplier < 0) throw new IllegalArgumentException("Invalid Item Multiplier \"" + itemMultiplier + "\" at Room \"" + name + "\"");
+				if (itemCount < 0) throw new IllegalArgumentException("Invalid Item Count \"" + itemCount + "\" at Room \"" + name + "\"");
 									
-				//process elements on lower hierarchy levels
+				//process elements on lower hierarchy Levels
 				
 					//read monster placing probabilities
 					NodeList monster_list = (NodeList) eElement.getElementsByTagName("Monster").item(0);
@@ -154,17 +146,17 @@ public class Rooms_Loader {
 						}
 					}
 					
-					door_positions[0] = n == 1;
-					door_positions[1] = e == 1;
-					door_positions[2] = s == 1;
-					door_positions[3] = w == 1;	
+					doorPositions[0] = n == 1;
+					doorPositions[1] = e == 1;
+					doorPositions[2] = s == 1;
+					doorPositions[3] = w == 1;	
 					
 					//put template on list of available templates
-					room_templates.put(name, new Room_Template(name, description, image, item_multiplier, item_count, 
-							monster, find_probabilities, door_positions));
+					roomTemplates.put(name, new RoomTemplate(name, description, image, itemMultiplier, itemCount, 
+							monster, find_probabilities, doorPositions));
 				}
 		}
 		
-		return room_templates;
+		return roomTemplates;
 	}
 }

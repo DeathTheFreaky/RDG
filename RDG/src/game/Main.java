@@ -7,12 +7,12 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import config_templates.Armament_Template;
-import config_templates.Attack_Template;
-import config_templates.Monster_Template;
-import config_templates.Potion_Template;
-import config_templates.Room_Template;
-import config_templates.Weapon_Template;
+import configTemplates.ArmamentTemplate;
+import configTemplates.AttackTemplate;
+import configTemplates.MonsterTemplate;
+import configTemplates.PotionTemplate;
+import configTemplates.RoomTemplate;
+import configTemplates.WeaponTemplate;
 
 public class Main {
 
@@ -34,7 +34,7 @@ public class Main {
 		}
 		
 		//Test Printing
-		Config_Testprinter configprinter = new Config_Testprinter(configloader);
+		ConfigTestprinter configprinter = new ConfigTestprinter(configloader);
 		configprinter.print();
 		
 	}

@@ -1,4 +1,4 @@
-package config_loaders;
+package configLoaders;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,19 +15,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import config_templates.Weapon_Template;
-import enums.Enums.item_classes;
-import enums.Enums.weapon_types;
+import configTemplates.WeaponTemplate;
+import enums.Enums.ItemClasses;
+import enums.Enums.WeaponTypes;
 
-public class Weapons_Loader {
-
-	private String configpath;
-	private Map<String, Weapon_Template> weapon_templates;
-	
-	public Weapons_Loader(String configpath) {
-		this.configpath = configpath;
-		weapon_templates = new HashMap<String, Weapon_Template>();
-	}
+public class WeaponsLoader {
 	
 	/**
 	 * Tries to parse XML Config File
@@ -39,7 +31,9 @@ public class Weapons_Loader {
 	 * @throws IOException 
 	 * @throws SAXException 
 	 */
-	public Map<String, Weapon_Template> run() throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException {
+	public static Map<String, WeaponTemplate> run(String configpath) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException {
+		
+		Map<String, WeaponTemplate> weaponTemplates = new HashMap<String, WeaponTemplate>(); 
 		
 		File fXmlFile = new File(configpath + "Weapons.xml");
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -59,20 +53,20 @@ public class Weapons_Loader {
 				Element eElement = (Element) nNode;
 				
 				//store current element's values
-				String name, item_class_str, type_str, image_big, image_small;
-				item_classes item_class;
-				weapon_types type;
-				float class_multiplier, stats_low_multiplier, stats_high_multiplier, attack, speed, accuracy, defence;
+				String name, itemClassStr, typeStr, imageBig, imageSmall;
+				ItemClasses itemClass;
+				WeaponTypes type;
+				float classMultiplier, statsLowMultiplier, statsHighMultiplier, attack, speed, accuracy, defence;
 				int slots, max;
 				
 				name = eElement.getElementsByTagName("Name").item(0).getTextContent();
-				item_class_str = eElement.getElementsByTagName("Item_Class").item(0).getTextContent();
-				type_str = eElement.getElementsByTagName("Type").item(0).getTextContent();
-				image_big = eElement.getElementsByTagName("Image_Big").item(0).getTextContent();
-				image_small = eElement.getElementsByTagName("Image_Small").item(0).getTextContent();
-				stats_low_multiplier = Float.parseFloat(eElement.getElementsByTagName("Stats_Low_Multiplier").item(0).getTextContent());
-				stats_high_multiplier = Float.parseFloat(eElement.getElementsByTagName("Stats_High_Multiplier").item(0).getTextContent());
-				class_multiplier = Float.parseFloat(eElement.getElementsByTagName("Class_Multiplier").item(0).getTextContent());
+				itemClassStr = eElement.getElementsByTagName("Item_Class").item(0).getTextContent();
+				typeStr = eElement.getElementsByTagName("Type").item(0).getTextContent();
+				imageBig = eElement.getElementsByTagName("Image_Big").item(0).getTextContent();
+				imageSmall = eElement.getElementsByTagName("Image_Small").item(0).getTextContent();
+				statsLowMultiplier = Float.parseFloat(eElement.getElementsByTagName("Stats_Low_Multiplier").item(0).getTextContent());
+				statsHighMultiplier = Float.parseFloat(eElement.getElementsByTagName("Stats_High_Multiplier").item(0).getTextContent());
+				classMultiplier = Float.parseFloat(eElement.getElementsByTagName("Class_Multiplier").item(0).getTextContent());
 				attack = Float.parseFloat(eElement.getElementsByTagName("Attack").item(0).getTextContent());
 				speed = Float.parseFloat(eElement.getElementsByTagName("Speed").item(0).getTextContent());
 				accuracy = Float.parseFloat(eElement.getElementsByTagName("Accuracy").item(0).getTextContent());
@@ -83,23 +77,23 @@ public class Weapons_Loader {
 				//check if parsed values are valid and set enums
 				if (name.length() == 0) throw new IllegalArgumentException("Invalid Name \"" + name + "\" at Weapon \"" + name + "\"");
 				
-				if (item_class_str.equals("-")) item_class = item_classes.NONE;
-				else if (item_class_str.equals("weak")) item_class = item_classes.WEAK;
-				else if (item_class_str.equals("medium")) item_class = item_classes.MEDIUM;
-				else if (item_class_str.equals("strong")) item_class = item_classes.STRONG;
+				if (itemClassStr.equals("-")) itemClass = ItemClasses.NONE;
+				else if (itemClassStr.equals("weak")) itemClass = ItemClasses.WEAK;
+				else if (itemClassStr.equals("medium")) itemClass = ItemClasses.MEDIUM;
+				else if (itemClassStr.equals("strong")) itemClass = ItemClasses.STRONG;
 				else {
-					throw new IllegalArgumentException("Invalid Item Class \"" + item_class_str + "\" at Weapon \"" + name + "\"");
+					throw new IllegalArgumentException("Invalid Item Class \"" + itemClassStr + "\" at Weapon \"" + name + "\"");
 				}
 				
-				if (type_str.equals("single-hand")) type = weapon_types.SINGLEHAND;
-				else if (type_str.equals("two-hand")) type = weapon_types.TWOHAND;
+				if (typeStr.equals("single-hand")) type = WeaponTypes.SINGLEHAND;
+				else if (typeStr.equals("two-hand")) type = WeaponTypes.TWOHAND;
 				else {
-					throw new IllegalArgumentException("Invalid Type \"" + type_str + "\" at Weapon \"" + name + "\"");
+					throw new IllegalArgumentException("Invalid Type \"" + typeStr + "\" at Weapon \"" + name + "\"");
 				}
 				
-				if (class_multiplier < 0) throw new IllegalArgumentException("Invalid Class Multiplier \"" + class_multiplier + "\" at Weapon \"" + name + "\"");
-				if (stats_low_multiplier < 0) throw new IllegalArgumentException("Invalid Stats Low Multiplier \"" + stats_low_multiplier + "\" at Weapon \"" + name + "\"");
-				if (stats_high_multiplier < 0) throw new IllegalArgumentException("Invalid Stats High Multiplier \"" + stats_high_multiplier + "\" at Weapon \"" + name + "\"");
+				if (classMultiplier < 0) throw new IllegalArgumentException("Invalid Class Multiplier \"" + classMultiplier + "\" at Weapon \"" + name + "\"");
+				if (statsLowMultiplier < 0) throw new IllegalArgumentException("Invalid Stats Low Multiplier \"" + statsLowMultiplier + "\" at Weapon \"" + name + "\"");
+				if (statsHighMultiplier < 0) throw new IllegalArgumentException("Invalid Stats High Multiplier \"" + statsHighMultiplier + "\" at Weapon \"" + name + "\"");
 				if (attack < 0) throw new IllegalArgumentException("Invalid Attack \"" + attack + "\" at Weapon \"" + name + "\"");
 				if (speed < 0) throw new IllegalArgumentException("Invalid Speed \"" + speed + "\" at Weapon \"" + name + "\"");
 				if (accuracy < 0) throw new IllegalArgumentException("Invalid Accuracy \"" + accuracy + "\" at Weapon \"" + name + "\"");
@@ -108,12 +102,12 @@ public class Weapons_Loader {
 				if (max < 1 || max > 2) throw new IllegalArgumentException("Invalid Max \"" + max + "\" at Weapon \"" + name + "\"");
 				
 				//put template on list of available templates
-				weapon_templates.put(name, new Weapon_Template(name, image_big, image_small, item_class, type, 
-						class_multiplier, stats_low_multiplier, stats_high_multiplier, attack, speed, accuracy, defence, slots, max));
+				weaponTemplates.put(name, new WeaponTemplate(name, imageBig, imageSmall, itemClass, type, 
+						classMultiplier, statsLowMultiplier, statsHighMultiplier, attack, speed, accuracy, defence, slots, max));
 			}
 		}
 			
-		return weapon_templates;
+		return weaponTemplates;
 	}
 }
 
