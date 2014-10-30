@@ -1,12 +1,18 @@
 package config_templates;
 
+import enums.Enums.item_classes;
+import enums.Enums.weapon_types;
+
 public class Weapon_Template {
 	
-	private String name, item_class, type, image_big, image_small;
-	private float class_multiplier, stats_low_multiplier, stats_high_multiplier, attack, speed, accuracy, defence, slots, max;
+	private String name, image_big, image_small;
+	private item_classes item_class;
+	private weapon_types type;
+	private float class_multiplier, stats_low_multiplier, stats_high_multiplier, attack, speed, accuracy, defence;
+	private int slots, max;
 	
-	public Weapon_Template(String name, String item_class, String type, String image_big, String image_small, 
-			float class_multiplier, float stats_low_multiplier, float stats_high_multiplier, float attack, float speed, float accuracy, float defence, float slots, float max) {
+	public Weapon_Template(String name, String image_big, String image_small, item_classes item_class, weapon_types type, 
+			float class_multiplier, float stats_low_multiplier, float stats_high_multiplier, float attack, float speed, float accuracy, float defence, int slots, int max) {
 	
 		this.name = name;
 		this.item_class = item_class;
@@ -28,11 +34,11 @@ public class Weapon_Template {
 		return name;
 	}
 
-	public String getItem_class() {
+	public item_classes getItem_class() {
 		return item_class;
 	}
 
-	public String getType() {
+	public weapon_types getType() {
 		return type;
 	}
 
@@ -72,11 +78,11 @@ public class Weapon_Template {
 		return defence;
 	}
 
-	public float getSlots() {
+	public int getSlots() {
 		return slots;
 	}
 
-	public float getMax() {
+	public int getMax() {
 		return max;
 	}
 }

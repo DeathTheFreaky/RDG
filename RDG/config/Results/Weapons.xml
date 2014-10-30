@@ -76,7 +76,7 @@
 		<Defence>50</Defence>
 		<Slots>1</Slots>
 		<Max>1</Max>
-		<Type>single-hand, max. 1</Type>
+		<Type>single-hand</Type>
 		<Image_Big>weapons/shield_big.png</Image_Big>
 		<Image_Small>weapons/shield_small.png</Image_Small>
 	</Weapon>

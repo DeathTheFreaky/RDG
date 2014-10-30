@@ -36,13 +36,6 @@ public class Room_Template {
 	  * 1 door: always Dead End
 	  * player start: always player start
 	  */
-	
-	/*bla = myenum.HILBINGER;
-	
-	switch(bla) {
-	case HILBINGER:
-		break;
-	}*/
 
 	public String getName() {
 		return name;

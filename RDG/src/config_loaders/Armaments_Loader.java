@@ -75,6 +75,8 @@ public class Armaments_Loader {
 				bonus = Float.parseFloat(eElement.getElementsByTagName("Bonus").item(0).getTextContent());
 				
 				//check if parsed values are valid and set enums
+				if (name.length() == 0) throw new IllegalArgumentException("Invalid Name \"" + name + "\" at Armament \"" + name + "\"");
+				
 				if (item_class_str.equals("weak")) item_class = item_classes.WEAK;
 				else if (item_class_str.equals("medium")) item_class = item_classes.MEDIUM;
 				else if (item_class_str.equals("strong")) item_class = item_classes.STRONG;
