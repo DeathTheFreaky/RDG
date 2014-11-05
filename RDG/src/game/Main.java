@@ -1,12 +1,18 @@
 package game;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
+import at.RDG.network.ArgumentOutOfRangeException;
+import at.RDG.network.LobbySearcher;
+import at.RDG.network.LobbyServer;
+import at.RDG.network.Serverinfo;
 import config_templates.Armament_Template;
 import config_templates.Attack_Template;
 import config_templates.Monster_Template;
@@ -17,7 +23,10 @@ import config_templates.Weapon_Template;
 public class Main {
 
 	public static void main(String[] args) {
+		//server(Integer.parseInt(args[0]));
+		searcher();
 		
+		/*
 		//path to config files
 		String configpath = "config/Results/";
 		
@@ -36,6 +45,51 @@ public class Main {
 		//Test Printing
 		Config_Testprinter configprinter = new Config_Testprinter(configloader);
 		configprinter.print();
+		*/
+	}
+	
+	private static void server(int count){
+		LobbyServer server = null;
+		try {
+			server = new LobbyServer(1024, "Neue Lobby " + count);
+		} catch (ArgumentOutOfRangeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		server.run();
+	}
+	
+	private static void searcher(){
+		Thread t = new Thread(){
+			@Override
+			public void run(){
+				LinkedList<Serverinfo> lobbyList = new LinkedList<Serverinfo>();
+				LobbySearcher search = new LobbySearcher(1025, lobbyList);
+				search.start();
+				Serverinfo info = null, lastInfo = null;
+				while(true){
+					try {
+						info = lobbyList.getLast();
+					} catch (NoSuchElementException e){
+						
+					}
+					if(info != lastInfo){
+						System.out.println("Lobbyserver: " + info.lobbyName);
+						lastInfo = info;
+					}
+					try {
+						synchronized(search){
+							search.wait();
+							System.out.println("stopped waiting");
+						}
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		};
 		
+		t.start();
 	}
 }
