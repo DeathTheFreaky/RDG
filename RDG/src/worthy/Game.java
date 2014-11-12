@@ -165,5 +165,4 @@ public class Game extends BasicGame {
 		app1.setShowFPS(false);
 		app1.start(); // startet die App
 	}
-
 }
