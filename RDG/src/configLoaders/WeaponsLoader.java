@@ -19,13 +19,19 @@ import configTemplates.WeaponTemplate;
 import enums.Enums.ItemClasses;
 import enums.Enums.WeaponTypes;
 
+/**Tries to parse XML Config File.
+ * Checks if values from config are valid and throws error on failure.
+ * 
+ * @author Flo
+ *
+ */
 public class WeaponsLoader {
 	
-	/**
-	 * Tries to parse XML Config File
-	 * Checks if values from config are valid and throw error on failure
+	/**Tries to parse XML Config File.
+	 * Checks if values from config are valid and throws error on failure.
 	 * 
-	 * @return
+	 * @param configpath
+	 * @return WeaponTemplates
 	 * @throws IllegalArgumentException
 	 * @throws ParserConfigurationException 
 	 * @throws IOException 

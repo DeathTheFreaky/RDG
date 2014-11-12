@@ -1,9 +1,7 @@
 package game;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -22,9 +20,14 @@ import configTemplates.PotionTemplate;
 import configTemplates.RoomTemplate;
 import configTemplates.WeaponTemplate;
 
+/**Loads all necessary XML config entries from XML Files automatically generated with Excel.
+ * 
+ * @author Flo
+ *
+ */
 public class Configloader {
 	
-	private String configpath;
+	private String configpath; //path where all XML config files are stored
 	private Map<String, ArmamentTemplate> ArmamentTemplates;
 	private Map<String, AttackTemplate> attackTemplates;
 	private Map<String, MonsterTemplate> monsterTemplates;
@@ -32,12 +35,16 @@ public class Configloader {
 	private Map<String, RoomTemplate> roomTemplates;
 	private Map<String, WeaponTemplate> weaponTemplates;
 	
+	/**Constructs a Configloader passing the path where all config XML files are stored.
+	 * 
+	 * @param configpath
+	 */
 	public Configloader(String configpath){
 		this.configpath = configpath;
 	}
 
 	/**
-	 * Run all subloaders for all xml config Files
+	 * Runs one subloader for each XML config file.
 	 */
 	public void run() throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException {
 		
@@ -49,26 +56,44 @@ public class Configloader {
 		weaponTemplates = WeaponsLoader.run(configpath);
 	}
 
+	/**
+	 * @return Monster Template class
+	 */
 	public Map<String, MonsterTemplate> getMonsterTemplates() {
 		return monsterTemplates;
 	}
 
+	/**
+	 * @return Potion Template class
+	 */
 	public Map<String, PotionTemplate> getPotionTemplates() {
 		return potionTemplates;
 	}
 
+	/**
+	 * @return Room Template class
+	 */
 	public Map<String, RoomTemplate> getRoomTemplates() {
 		return roomTemplates;
 	}
 
+	/**
+	 * @return Weapon Template class
+	 */
 	public Map<String, WeaponTemplate> getWeaponTemplates() {
 		return weaponTemplates;
 	}
 
+	/**
+	 * @return Attack Template class
+	 */
 	public Map<String, AttackTemplate> getAttackTemplates() {
 		return attackTemplates;
 	}
 	
+	/**
+	 * @return Armament Template class
+	 */
 	public Map<String, ArmamentTemplate> getArmamentTemplates() {
 		return ArmamentTemplates;
 	}

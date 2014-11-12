@@ -21,13 +21,19 @@ import enums.Enums.ItemClasses;
 import enums.Enums.Modes;
 import enums.Enums.Targets;
 
+/**Tries to parse XML Config File.
+ * Checks if values from config are valid and throws error on failure.
+ * 
+ * @author Flo
+ *
+ */
 public class PotionsLoader {
 
-	/**
-	 * Tries to parse XML Config File
-	 * Checks if values from config are valid and throw error on failure
+	/**Tries to parse XML Config File.
+	 * Checks if values from config are valid and throws error on failure.
 	 * 
-	 * @return
+	 * @param configpath
+	 * @return PotionTemplates
 	 * @throws IllegalArgumentException
 	 * @throws ParserConfigurationException 
 	 * @throws IOException 

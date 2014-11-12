@@ -7,7 +7,7 @@
 		<HP_Damage>0.5</HP_Damage>
 		<Hit_Probability>0.8</Hit_Probability>
 		<Effect>hp</Effect>
-		<x>0</x>
+		<x>1</x>
 	</Attack>
 	<Attack>
 		<Name>Head</Name>
@@ -16,7 +16,7 @@
 		<HP_Damage>0.7</HP_Damage>
 		<Hit_Probability>0.3</Hit_Probability>
 		<Effect>accuracy</Effect>
-		<x>0.2</x>
+		<x>0.8</x>
 	</Attack>
 	<Attack>
 		<Name>Arms</Name>
@@ -25,7 +25,7 @@
 		<HP_Damage>0.3</HP_Damage>
 		<Hit_Probability>0.7</Hit_Probability>
 		<Effect>strength</Effect>
-		<x>0.2</x>
+		<x>0.8</x>
 	</Attack>
 	<Attack>
 		<Name>Legs</Name>
@@ -34,6 +34,6 @@
 		<HP_Damage>0.4</HP_Damage>
 		<Hit_Probability>0.6</Hit_Probability>
 		<Effect>speed</Effect>
-		<x>0.2</x>
+		<x>0.8</x>
 	</Attack>
 </Attacks>

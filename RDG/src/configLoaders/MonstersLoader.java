@@ -20,13 +20,19 @@ import enums.Enums.Attributes;
 import enums.Enums.ItemClasses;
 import enums.Enums.Levels;
 
+/**Tries to parse XML Config File.
+ * Checks if values from config are valid and throws error on failure.
+ * 
+ * @author Flo
+ *
+ */
 public class MonstersLoader {
 
-	/**
-	 * Tries to parse XML Config File
-	 * Checks if values from config are valid and throw error on failure
+	/**Tries to parse XML Config File.
+	 * Checks if values from config are valid and throws error on failure.
 	 * 
-	 * @return
+	 * @param configpath
+	 * @return MonsterTemplates
 	 * @throws IllegalArgumentException
 	 * @throws ParserConfigurationException 
 	 * @throws IOException 

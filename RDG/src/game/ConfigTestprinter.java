@@ -9,14 +9,26 @@ import configTemplates.PotionTemplate;
 import configTemplates.RoomTemplate;
 import configTemplates.WeaponTemplate;
 
+/**Prints all parsed XML config entries of a Configloader.
+ * 
+ * @author Flo
+ *
+ */
 public class ConfigTestprinter {
 	
 	private Configloader configloader;
 	
+	/**Constructs the ConfigTestprinter passing a Configloader which stores all parsed XML config entries.
+	 * 
+	 * @param configloader
+	 */
 	public ConfigTestprinter(Configloader configloader) {
 		this.configloader = configloader;
 	}
 	
+	/**Prints all parsed XML config entries of a Configloader.
+	 * 
+	 */
 	public void print() {
 		
 		//Armaments

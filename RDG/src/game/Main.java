@@ -43,6 +43,11 @@ public class Main {
 		
 	}*/
 	
+	/**Start the game and set game parameters display mode, frame rate, always render, show fps.
+	 * 
+	 * @param args
+	 * @throws SlickException
+	 */
 	public static void main(String[] args) throws SlickException {
 
 		AppGameContainer app1 = new AppGameContainer(new Game("Battle Dungeon"));

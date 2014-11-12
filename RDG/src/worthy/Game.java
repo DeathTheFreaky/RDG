@@ -76,6 +76,7 @@ public class Game extends BasicGame {
 		map = new Map().getInstance();
 		map.setPlayer(player);
 		map.fillMap();
+		
 
 		/* Initialize Factory and Manager classes! */
 		groundFactory = new GroundFactory().setUpFactory();
@@ -149,20 +150,5 @@ public class Game extends BasicGame {
 		if(mouseOverChat) {
 			chat.scroll(scroll);
 		}
-	}
-
-	/**Start the game and set game parameters display mode, frame rate, always render, show fps.
-	 * 
-	 * @param args
-	 * @throws SlickException
-	 */
-	public static void main(String[] args) throws SlickException {
-
-		AppGameContainer app1 = new AppGameContainer(new Game("Battle Dungeon"));
-		app1.setDisplayMode(WIDTH, HEIGHT, false); // Breite, Höhe, ???
-		app1.setTargetFrameRate(60); // 60 Frames pro Sekunde
-		app1.setAlwaysRender(true); // Spiel wird auch ohne Fokus aktualisiert
-		app1.setShowFPS(false);
-		app1.start(); // startet die App
 	}
 }
