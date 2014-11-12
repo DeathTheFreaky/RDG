@@ -1,4 +1,4 @@
-package worthy;
+ package worthy;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.LinkedHashMap;
@@ -50,17 +50,19 @@ public abstract class View {
 		downright = new Point();
 	}
 	
-	
-	/*
-	 * Hier werden alle Shapes transformiert (in der berechneten Position)
+	/**Hier werden alle Shapes transformiert (in der berechneten Position)
 	 * gezeichnet
+	 * 
+	 * @param container
+	 * @param graphics
 	 */
 	public abstract void draw(GameContainer container, Graphics graphics);
 	
-	/* Alle Werte, etc. werden hier upgedated */
+	/**Alle Werte, etc. werden hier upgedated
+	 * 
+	 */
+	//???
 	public abstract void update();
-	
-	
 	
 	public void setPosition(String imageName, int x, int y) {
 		this.images.get(imageName).getImage().draw(x * 32, y *32);

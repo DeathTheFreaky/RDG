@@ -48,7 +48,7 @@ public class Game extends BasicGame {
 	private ResourceManager resourceManager;
 	private GroundFactory groundFactory;
 
-	/**Find out if its Player1 or Player2 ?!?
+	/**Construct game and sets Playername as "Find out if its Player 1 or Player2"
 	 * 
 	 * @param title
 	 */
@@ -69,7 +69,6 @@ public class Game extends BasicGame {
 	@Override
 	public void init(GameContainer container) throws SlickException {
 		
-		//set Origin Position for gameEnvironment and chat
 		gameEnvironmentOrigin = new Point(0, 0);
 		chatOrigin = new Point(0, 12);
 
@@ -84,7 +83,7 @@ public class Game extends BasicGame {
 
 		gameEnvironment = new GameEnvironment("GameEnvironment",
 				gameEnvironmentOrigin, new Dimension(480, 384), player);
-
+		
 		chat = new Chat("Chat", chatOrigin, new Dimension(480, 96), container);
 	}
 
@@ -136,6 +135,7 @@ public class Game extends BasicGame {
 	
 	@Override
 	public void mouseMoved(int oldX, int oldY, int newX, int newY) {
+		/* Check if mouse is over chat to enable chat scrolling */
 		if(newX >= 0 && newX <= CHAT_WIDTH && newY > GAME_ENVIRONMENT_HEIGHT && newY <= HEIGHT) {
 			mouseOverChat = true;
 		}else {
@@ -143,18 +143,19 @@ public class Game extends BasicGame {
 		}
 	}
 	
-	/* Enable 
-	 * 
-	 * (non-Javadoc)
-	 * @see org.newdawn.slick.BasicGame#mouseWheelMoved(int)
-	 */
 	@Override
 	public void mouseWheelMoved(int scroll) {
+		/* Enable chat scrolling if mouse if over chat */
 		if(mouseOverChat) {
 			chat.scroll(scroll);
 		}
 	}
 
+	/**Start the game and set game parameters display mode, frame rate, always render, show fps.
+	 * 
+	 * @param args
+	 * @throws SlickException
+	 */
 	public static void main(String[] args) throws SlickException {
 
 		AppGameContainer app1 = new AppGameContainer(new Game("Battle Dungeon"));
