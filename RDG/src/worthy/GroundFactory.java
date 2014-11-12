@@ -6,7 +6,7 @@ import org.newdawn.slick.SpriteSheet;
 /**
  * @author Stefan
  * 
- *         Watch out! If GroundFactory Method >setUpFactory< isn't called first,
+ *         Watch out! If GroundFactory Method setUpFactory() isn't called first,
  *         all methods will return null!
  */
 
@@ -21,6 +21,9 @@ public class GroundFactory {
 
 	
 	
+	/**
+	 * Test Java doc
+	 */
 	public GroundFactory() {
 	
 	}
