@@ -48,10 +48,19 @@ public class Game extends BasicGame {
 	private ResourceManager resourceManager;
 	private GroundFactory groundFactory;
 
+	/**Find out if its Player1 or Player2 ?!?
+	 * 
+	 * @param title
+	 */
 	public Game(String title) {
 		this(title, "Find out if its Player1 or Player2");
 	}
-
+	
+	/**Construct game and set playerName
+	 * 
+	 * @param title
+	 * @param playerName
+	 */
 	public Game(String title, String playerName) {
 		super(title);
 		this.playerName = playerName;
@@ -59,7 +68,8 @@ public class Game extends BasicGame {
 
 	@Override
 	public void init(GameContainer container) throws SlickException {
-
+		
+		//set Origin Position for gameEnvironment and chat
 		gameEnvironmentOrigin = new Point(0, 0);
 		chatOrigin = new Point(0, 12);
 
@@ -133,6 +143,11 @@ public class Game extends BasicGame {
 		}
 	}
 	
+	/* Enable 
+	 * 
+	 * (non-Javadoc)
+	 * @see org.newdawn.slick.BasicGame#mouseWheelMoved(int)
+	 */
 	@Override
 	public void mouseWheelMoved(int scroll) {
 		if(mouseOverChat) {
