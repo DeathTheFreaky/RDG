@@ -183,19 +183,4 @@ public class Game extends BasicGame {
 			chat.scroll(scroll);
 		}
 	}
-
-	/**Starts the game and sets main parameters (Display Size, Framerate, AlwaysRender, ShowFPS).
-	 * 
-	 * @param args
-	 * @throws SlickException
-	 */
-	public static void main(String[] args) throws SlickException {
-
-		AppGameContainer app1 = new AppGameContainer(new Game("Battle Dungeon"));
-		app1.setDisplayMode(WIDTH, HEIGHT, false); // Breite, Höhe, ???
-		app1.setTargetFrameRate(60); // 60 Frames pro Sekunde
-		app1.setAlwaysRender(true); // Spiel wird auch ohne Fokus aktualisiert
-		app1.setShowFPS(false);
-		app1.start(); // startet die App
-	}
 }
