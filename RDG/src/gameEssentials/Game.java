@@ -153,7 +153,6 @@ public class Game extends BasicGame {
 		} else if (key == 46) {
 			chat.focus();
 		}
-		System.out.println("Key <" + key + ">, char <" + c + ">");
 	}
 
 	@Override

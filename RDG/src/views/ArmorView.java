@@ -196,20 +196,16 @@ public class ArmorView extends View {
 	public void switchToSet(int set) {
 		if(set == 1) {
 			this.set = true;
-			System.out.println("Switch to Set 1");
 		}else if(set == 2) {
 			this.set = false;
-			System.out.println("Switch to Set 2");
 		}
 	}
 	
 	public void changeTab(int x, int y) {
 		if(x > tab1X && x < tab1X+tabWidth && y > tab1Y && y < tab1Y+tabHeight) {
 			this.set = true;
-			System.out.println("Tab 1");
 		}else if(x > tab2X && x < tab2X+tabWidth && y > tab2Y && y < tab2Y+tabHeight) {
 			this.set = false;
-			System.out.println("Tab 2");
 		}
 	}
 	
