@@ -2,21 +2,8 @@ package general;
 
 import gameEssentials.Game;
 
-import java.io.IOException;
-import java.util.Map.Entry;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.SlickException;
-import org.xml.sax.SAXException;
-
-import configLoader.ArmamentTemplate;
-import configLoader.AttackTemplate;
-import configLoader.MonsterTemplate;
-import configLoader.PotionTemplate;
-import configLoader.RoomTemplate;
-import configLoader.WeaponTemplate;
 
 public class Main {
 
