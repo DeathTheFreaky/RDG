@@ -9,6 +9,10 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
+/**InventoryView extends a View in the Inventory context.
+ * 
+ * @see View
+ */
 public class InventoryView extends View {
 
 	/* Some Values for positioning this View */
@@ -20,27 +24,68 @@ public class InventoryView extends View {
 	private LinkedList<Equippment> weapons;
 	private LinkedList<Equippment> armor;
 	private LinkedList<Potion> potions;
-	
-	
-	
-	
 
+	/**Constructs an InventoryView passing its origin as single x and y coordinates in tile numbers.
+	 * Dimension will be set to default values in pixels.<br><br>
+	 * InventoryView extends View.
+	 * 
+	 * @param contextName
+	 * @param originX
+	 * @param originY
+	 * @throws SlickException
+	 * @see InventoryView
+	 */
 	public InventoryView(String contextName, int originX, int originY)
 			throws SlickException {
 		this(contextName, new Point(originX, originY));
 	}
 
+	/**Constructs an InventoryView passing its origin as a Point in tile numbers.
+	 * Dimension will be set to default values in pixels.<br><br>
+	 * InventoryView extends View.
+	 * 
+	 * @param contextName
+	 * @param originX
+	 * @param originY
+	 * @throws SlickException
+	 * @param contextName
+	 * @param origin
+	 * @throws SlickException
+	 * @see InventoryView
+	 */
 	public InventoryView(String contextName, Point origin)
 			throws SlickException {
 		this(contextName, origin, new Dimension(640, 480));
 	}
 
+	/**Constructs an InventoryView passing its origin as single x and y coordinates in tile numbers 
+	 * and its Dimension as single x and y coordinates in pixels.<br><br>
+	 * InventoryView extends View.
+	 * 
+	 * @param contextName
+	 * @param originX
+	 * @param originY
+	 * @param width
+	 * @param height
+	 * @throws SlickException
+	 * @see InventoryView
+	 */
 	public InventoryView(String contextName, int originX, int originY,
 			int width, int height) throws SlickException {
 		this(contextName, new Point(originX, originY), new Dimension(width,
 				height));
 	}
 
+	/**Constructs an InventoryView passing its origin as a Point in tile numbers 
+	 * and its Dimension as a Dimension in pixels.<br><br>
+	 * InventoryView extends View.
+	 * 
+	 * @param contextName
+	 * @param origin
+	 * @param size
+	 * @throws SlickException
+	 * @see InventoryView
+	 */
 	public InventoryView(String contextName, Point origin, Dimension size)
 			throws SlickException {
 		super(contextName, origin, size);

@@ -29,4 +29,5 @@ public class Enums {
 	public enum Updates {KEY_PRESSED, KEY_RELEASED}
 	public enum ViewingDirections {NORTH, EAST, SOUTH, WEST}
 	public enum Channels {PRIVATE, PUBLIC}
+	public enum Armor {HEAD, CHEST, ARMS, LEGS, FEET, MAIN_WEAPON, SUB_WEAPON}
 }

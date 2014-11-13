@@ -4,13 +4,18 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.util.Collection;
 import java.util.HashMap;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
-import worthy.Equippment.Armor;
+import enums.Enums.Armor;
 
+/**ArmorView extends a View in the Inventory context.
+ * 
+ * @see View
+ */
 public class ArmorView extends View {
 	
 	/* Values for Positioning of the View */
@@ -42,8 +47,6 @@ public class ArmorView extends View {
 	/* Factory and Resource Classes */
 	private ResourceManager resources;
 
-
-	
 	public ArmorView(String contextName, int originX, int originY)
 			throws SlickException {
 		this(contextName, new Point(originX, originY));

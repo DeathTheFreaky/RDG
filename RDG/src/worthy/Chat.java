@@ -53,7 +53,7 @@ public class Chat extends View {
 	private final int scrollBarX = size.width - 20;
 	private final int scrollBarWidth = 12;
 	private final float scrollBarHeight = (size.height - 3f * strokeSize - inputFieldHeight) / 7f;
-
+	
 	/**Constructs a Chat passing its origin's position as single x and y coordinates in tile numbers.<br>
 	 * The Chat's View dimensions will be set automatically to default values in pixels.
 	 * 
@@ -62,13 +62,13 @@ public class Chat extends View {
 	 * @param originY
 	 * @param container
 	 * @throws SlickException
-	 * @see Chat
+	 * @see CopyOfChat
 	 */
 	public Chat(String contextName, int originX, int originY,
 			GameContainer container) throws SlickException {
 		this(contextName, new Point(originX, originY), container);
 	}
-
+	
 	/**Constructs a Chat passing its origin's position as a point in tile numbers.<br>
 	 * The Chat's View dimensions will be set automatically to default values in pixels.
 	 * 
@@ -76,7 +76,7 @@ public class Chat extends View {
 	 * @param origin
 	 * @param container
 	 * @throws SlickException
-	 * @see Chat
+	 * @see CopyOfChat
 	 */
 	public Chat(String contextName, Point origin, GameContainer container)
 			throws SlickException {
@@ -93,14 +93,14 @@ public class Chat extends View {
 	 * @param height
 	 * @param container
 	 * @throws SlickException
-	 * @see Chat
+	 * @see CopyOfChat
 	 */
 	public Chat(String contextName, int originX, int originY, int width,
 			int height, GameContainer container) throws SlickException {
 		this(contextName, new Point(originX, originY), new Dimension(width,
 				height), container);
 	}
-
+	
 	/**Constructs a Chat passing its origin's position as a Point in tile numbers 
 	 * and the dimension of its superclass View as a Dimension in pixels.
 	 * 
@@ -109,7 +109,7 @@ public class Chat extends View {
 	 * @param size
 	 * @param container
 	 * @throws SlickException
-	 * @see Chat
+	 * @see CopyOfChat
 	 */
 	public Chat(String contextName, Point origin, Dimension size,
 			GameContainer container) throws SlickException {
@@ -158,20 +158,19 @@ public class Chat extends View {
 				shown[i] = false;
 			}
 		}
-
+		
 		/* set font type */
 		Font font = new Font("Verdana", Font.BOLD, 12);
 		TrueTypeFont ttf = new TrueTypeFont(font, true);
-
+		
 		/* create an inputfield and clear it when message is sent */
 		input = new InputField(container, ttf, strokeSize, positionY
 				+ size.height - inputFieldHeight - strokeSize, inputFieldWidth,
 				inputFieldHeight) {
-
 			@Override
 			public void keyPressed(int key, char c) {
 				super.keyPressed(key, c);
-				//container.getInput().consumeEvent();
+				container.getInput().consumeEvent();
 				if (key == 28) {
 					Chat.this.newMessage(new Message(this.getText(), Calendar
 							.getInstance(), Channels.PUBLIC));
@@ -180,7 +179,6 @@ public class Chat extends View {
 				}
 			}
 		};
-
 		input.setBackgroundColor(new Color(1f, 1f, 1f));
 		input.setTextColor(new Color(0f, 0f, 0f));
 		input.setMaxLength(MAXIMUM_LENGTH);
@@ -206,7 +204,6 @@ public class Chat extends View {
 		graphics.setColor(new Color(0f, 0f, 0f));
 		// graphics.setColor(new Color(0f, 0f, 0f));
 		int i = 0;
-		/* draw all messages to a Graphics object */
 		for (Message m : messages) {
 			if (shown[i] == true) {
 				graphics.drawString(m.print(), origin.x
@@ -220,16 +217,13 @@ public class Chat extends View {
 			i++;
 		}
 		zeile = 0;
-		
-		/* render the Graphics object on the screen */
-		input.render(container, graphics);
 	}
 
 	@Override
 	public void update() {
 
 	}
-
+	
 	/**Adds a new message to the list of message, 
 	 * delete oldest message if more than 7 messages are present.<br>
 	 * 
@@ -253,7 +247,7 @@ public class Chat extends View {
 			}
 		}
 	}
-
+	
 	/**Scrolls through messages in Chat if more than 4 messages are stored.<br>
 	 * 
 	 * @param scroll

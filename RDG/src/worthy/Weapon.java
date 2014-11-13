@@ -1,6 +1,7 @@
 package worthy;
 
 import org.newdawn.slick.Image;
+import enums.Enums.Armor;
 
 public class Weapon extends Equippment {
 
