@@ -36,6 +36,7 @@ public class AttacksLoader {
 	 * @throws ParserConfigurationException 
 	 * @throws IOException 
 	 * @throws SAXException 
+	 * @see AttacksLoader
 	 */
 	public static Map<String, AttackTemplate> run(String configpath) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException {
 			

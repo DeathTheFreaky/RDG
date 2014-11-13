@@ -5,12 +5,15 @@ import java.awt.Point;
 
 import org.newdawn.slick.SlickException;
 
+/**Map is used to store all position information of players, rooms and items.
+ * 
+ */
 public class Map {
 
 	/* Enum for Players Movement */
-	public enum Directions {
+	/*public enum Directions {
 		UP, RIGHT, DOWN, LEFT
-	}
+	}*/
 
 	/*
 	 * Static variable, so that we can access the one and only Map class without
@@ -21,30 +24,37 @@ public class Map {
 	/* specifies the number of tiles in width and height */
 	private Dimension size = null;
 
-	/* this Points keep track of the player */
+	/* keep track of the player */
 	private Player player = null;
-	private Point playerScopeCenter = null;
+	private Point playerScopePosition = null; //the upper left corner of the playerScopePosition in tiles
 	private Element[][] scope = null;
 
 	/* Other Player, for displaying etc. */
 	private Player opponent = null;
 
-	/* this arrays saves all Elements to be displayed */
+	/* this arrays save all Elements to be displayed */
 	private Element[][] background = null;
 	private Element[][] overlay = null;
 	// private boolean[][] passable = null;
 
-	/* saves the different kind of rooms for the Minimap */
+	/* saves the different kinds of rooms for the Minimap */
 	private Element[][] minimap = null;
 
 	/* Set Up the GroundFactory */
 	private GroundFactory groundFactory;
 
+	/**Constructs a Map.
+	 * 
+	 * @see Map
+	 */
 	public Map() {
 
 	}
 
-	/* returns the one and only instance of Map */
+	/**
+	 * @return the one and only instance of Map
+	 * @throws SlickException
+	 */
 	public Map getInstance() throws SlickException {
 		if (INSTANCE == null) {
 			INSTANCE = new Map();
@@ -53,16 +63,20 @@ public class Map {
 		return INSTANCE;
 	}
 
-	/* Initializes the Elements of the static Map class */
+	/**Initializes the Elements of the static Map class
+	 * 
+	 * @throws SlickException
+	 */
 	public void init() throws SlickException {
 		size = new Dimension(56, 41);
 		background = new Element[size.width][size.height];
 		overlay = new Element[size.width][size.height];
 		minimap = new Element[5][5];
 		scope = new Element[15][12];
-		playerScopeCenter = new Point();
+		playerScopePosition = new Point();
 		groundFactory = new GroundFactory().setUpFactory();
 
+		/* null-initialize overlay */
 		for (int i = 0; i < size.width; i++) {
 			for (int j = 0; j < size.height; j++) {
 				overlay[i][j] = null;
@@ -70,66 +84,92 @@ public class Map {
 		}
 	}
 
-	/* returns a reference to Player */
+	/**
+	 * @return a reference to Player
+	 */
 	public Player getPlayer() {
 		return this.player;
 	}
 
-	/* returns a reference to the Players Opponent */
+	/**
+	 * @return a reference to the Players Opponent
+	 */
 	public Player getOpponent() {
 		return this.opponent;
 	}
 
-	/* returns last horizontal block */
+	/**
+	 * @return last horizontal block
+	 */
 	public int getWidth() {
 		return this.size.width - 1;
 	}
 
-	/* returns last vertical block */
+	/**
+	 * @return last vertical block
+	 */
 	public int getHeight() {
 		return this.size.height - 1;
 	}
 
-	/* Set the scopeCenter for Player1 */
-	public void setScopeCenterForPlayer(Point scopeCenter) {
-		if (scopeCenter.x >= 0 && scopeCenter.x <= getWidth() - 14
-				&& scopeCenter.y >= 0 && scopeCenter.y <= getHeight() - 11) {
-			this.playerScopeCenter = scopeCenter;
+	/**Set the scopePosition for Player1 passing the scopePosition as a Point<br>
+	 * This Point defines the upper left corner of the scopePosition in tiles.
+	 * 
+	 * @param scopePosition
+	 */
+	public void setScopePositionForPlayer(Point scopePosition) {
+		if (scopePosition.x >= 0 && scopePosition.x <= getWidth() - 14
+				&& scopePosition.y >= 0 && scopePosition.y <= getHeight() - 11) {
+			this.playerScopePosition = scopePosition;
 		} else {
-			System.out.println("ERROR While setting ScopeCenter!");
+			System.out.println("ERROR While setting ScopePosition!");
 			System.out.println("Point would extend Array!");
 		}
 	}
 
-	/* Set the scopeCenter for Player1 */
-	public void setScopeCenterForPlayer(int scopeCenterX, int scopeCenterY) {
-		if (scopeCenterX >= 0 && scopeCenterX <= getWidth() - 14
-				&& scopeCenterY >= 0 && scopeCenterY <= getHeight() - 11) {
-			this.playerScopeCenter.x = scopeCenterX;
-			this.playerScopeCenter.y = scopeCenterY;
+	/**Set the scopePosition for Player1 passing the scopePosition single x and y coordinates.<br>
+	 * X and Y define the upper left corner of the scopePosition in tiles.
+	 * 
+	 * @param scopePositionX
+	 * @param scopePositionY
+	 */
+	public void setScopePositionForPlayer(int scopePositionX, int scopePositionY) {
+		if (scopePositionX >= 0 && scopePositionX <= getWidth() - 14
+				&& scopePositionY >= 0 && scopePositionY <= getHeight() - 11) {
+			this.playerScopePosition.x = scopePositionX;
+			this.playerScopePosition.y = scopePositionY;
 		} else {
-			System.out.println("ERROR While setting ScopeCenter!");
+			System.out.println("ERROR While setting ScopePosition!");
 			System.out.println("Point would extend Array!");
 		}
 	}
 
-	/* Get Scope for the Player */
+	/**Fills the scope beginning from its upper left corner's ScopePosition position on the Map.
+	 * 
+	 * @return scope for the Player
+	 */
 	public Element[][] getScope() {
 		for (int i = 0; i < 15; i++) {
 			for (int j = 0; j < 12; j++) {
-				scope[i][j] = background[playerScopeCenter.x + i][playerScopeCenter.y
+				/* actually, this starts filling the scope form upper left corner, so playerScopePosition is upper left corner of scope */
+				scope[i][j] = background[playerScopePosition.x + i][playerScopePosition.y
 						+ j];
 			}
 		}
 		return scope;
 	}
 
-	/* Get Minimap */
+	/**
+	 * @return Minimap
+	 */
 	public Element[][] getMinimap() {
 		return this.minimap;
 	}
 
-	/* Sets the Player the Map belongs to */
+	/**Sets the Player the Map belongs to
+	 * 
+	 * @param player
+	 */
 	public void setPlayer(Player player) {
 
 		/* player can only be initialized one time (start of game) */
@@ -137,7 +177,10 @@ public class Map {
 			this.player = player;
 	}
 
-	/* Sets the Opponent of the player for displaying, etc. */
+	/**Sets the Opponent of the player for displaying, etc.
+	 * 
+	 * @param opponent
+	 */
 	public void setOpponent(Player opponent) {
 
 		/* opponent can only be initialized one time (start of game) */
@@ -146,7 +189,11 @@ public class Map {
 		}
 	}
 
-	/* looks in the overlay table, if the headed field is passable */
+	/**Checks in the overlay array if the headed field is passable (not a wall etc.).
+	 * @param fieldX
+	 * @param fieldY
+	 * @return
+	 */
 	public boolean isFieldPassable(int fieldX, int fieldY) {
 		if (fieldX < 0 || fieldX > getWidth() || fieldY < 0
 				|| fieldY > getHeight()) {
@@ -158,14 +205,18 @@ public class Map {
 		return false;
 	}
 
-	/* update the map */
+	/**update the map
+	 * 
+	 */
 	public void update() {
 		// player
 		// overlay
 		//
 	}
 
-	/* fills the Map (for Experimenting, Testing) */
+	/**fills the Map (for Experimenting, Testing)
+	 * 
+	 */
 	public void fillMap() {
 		for (int i = 0; i <= getWidth(); i++) {
 			for (int j = 0; j <= getHeight(); j++) {

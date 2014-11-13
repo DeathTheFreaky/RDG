@@ -43,7 +43,7 @@ public class Main {
 		
 	}*/
 	
-	/**Start the game and set game parameters display mode, frame rate, always render, show fps.
+	/**Starts the game and sets game parameters display mode, frame rate, always render, show fps.
 	 * 
 	 * @param args
 	 * @throws SlickException

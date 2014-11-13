@@ -25,6 +25,7 @@ public class RoomTemplate {
 	 * @param monster
 	 * @param find_probabilities
 	 * @param doorPositions
+	 * @see RoomTemplate
 	 */
 	public RoomTemplate(String name, String description, String image, float itemMultiplier, int itemCount, 
 			Map<String, Float> monster, Map<String, Float> find_probabilities, boolean[] doorPositions) {

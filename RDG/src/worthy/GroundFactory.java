@@ -3,13 +3,13 @@ package worthy;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 
-/**
- * @author Stefan
+/**The GroundFactory places ground textures randomly on the map tiles.<br><br>
  * 
- *         Watch out! If GroundFactory Method setUpFactory() isn't called first,
- *         all methods will return null!
+ *  Watch out! If GroundFactory Method setUpFactory() isn't called first,
+ *  all methods will return null!
+ *  
+ * @author Stefan
  */
-
 public class GroundFactory {
 	
 	protected static GroundFactory FACTORY = null;
@@ -20,9 +20,12 @@ public class GroundFactory {
 	private static boolean initialized = false;
 
 	
-	
-	/**
-	 * Test Java doc
+	/**Constructs a GroundFactory.<br>
+	 * 
+	 * Watch out! If GroundFactory Method setUpFactory() isn't called first,
+	 * all methods will return null!
+	 * 
+	 * @see GroundFactory
 	 */
 	public GroundFactory() {
 	
@@ -30,11 +33,16 @@ public class GroundFactory {
 
 	
 	
+	/**Creates a GroundFactory and load static values only ONCE!!!<br>
+	 * 
+	 * static variables only get initialized one time all instances use the
+	 * same variables --> less memory is needed
+	 * 
+	 * @return initizialed GroundFactory
+	 * @throws SlickException
+	 * @see GroundFactory
+	 */
 	public GroundFactory setUpFactory() throws SlickException {
-		/*
-		 * static variables only get initialized one time all instances use the
-		 * same variables --> less memory is needed
-		 */
 		if (!initialized) {
 			initialized = true;
 			FACTORY = new GroundFactory();
@@ -44,11 +52,21 @@ public class GroundFactory {
 		return FACTORY;
 	}
 	
+	/**Creates an instance of ResourceManager to load all necessary resources and stores tile Spritesheet in tiles.
+	 * 
+	 * @throws SlickException
+	 */
 	public void loadFactory() throws SlickException {
 		resources = new ResourceManager().getInstance();
 		tiles = resources.TILES;
 	}
 
+	/**Creates random grey grounds with images taken from tiles Spritesheet.
+	 * 
+	 * @param positionX
+	 * @param positionY
+	 * @return
+	 */
 	public Element createGreyGround(int positionX, int positionY) {
 
 		if (!initialized) {
@@ -86,6 +104,12 @@ public class GroundFactory {
 		}
 	}
 
+	/**Creates random dark grey grounds with images taken from tiles Spritesheet.
+	 * 
+	 * @param positionX
+	 * @param positionY
+	 * @return
+	 */
 	public Element createDarkGreyGround(int positionX, int positionY) {
 
 		if (!initialized) {
@@ -123,6 +147,12 @@ public class GroundFactory {
 		}
 	}
 
+	/**Creates random yellow grounds with images taken from tiles Spritesheet.
+	 * 
+	 * @param positionX
+	 * @param positionY
+	 * @return
+	 */
 	public Element createYellowGroundOne(int positionX, int positionY) {
 
 		if (!initialized) {
@@ -163,6 +193,12 @@ public class GroundFactory {
 		}
 	}
 
+	/**Creates random yellow2 grounds with images taken from tiles Spritesheet.
+	 * 
+	 * @param positionX
+	 * @param positionY
+	 * @return
+	 */
 	public Element createYellowGroundTwo(int positionX, int positionY) {
 
 		if (!initialized) {
@@ -203,6 +239,12 @@ public class GroundFactory {
 		}
 	}
 
+	/**Creates borders at room borders.
+	 * 
+	 * @param positionX
+	 * @param positionY
+	 * @return
+	 */
 	public Element createBorder(int positionX, int positionY) {
 		return new Element("Border", tiles.getSubImage(0, 0), positionX,
 				positionY);

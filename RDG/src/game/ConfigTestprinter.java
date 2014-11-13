@@ -21,6 +21,7 @@ public class ConfigTestprinter {
 	/**Constructs the ConfigTestprinter passing a Configloader which stores all parsed XML config entries.
 	 * 
 	 * @param configloader
+	 * @see ConfigTestprinter
 	 */
 	public ConfigTestprinter(Configloader configloader) {
 		this.configloader = configloader;

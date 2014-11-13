@@ -22,13 +22,11 @@ public class Enums {
 	 * TINCR -> temporarily increase attribute by x for n rounds<br>
 	 * TDECR -> temporarily decrease attribute by x for n rounds<br>
 	 * LIFT -> lift poison effect
-	 *  
-	 * @author Flo
-	 *
 	 */
 	public enum Modes {INCR, DECR, TINCR, TDECR, LIFT} 
-		//INCR -> increase x over n rounds
-		//TINCR -> temporarily increase attribute for n rounds
-		//LIFT -> lift poison effect
 	public enum WeaponTypes {SINGLEHAND, TWOHAND}	
+	public enum Directions {UP, RIGHT, DOWN, LEFT}
+	public enum Updates {KEY_PRESSED, KEY_RELEASED}
+	public enum ViewingDirections {NORTH, EAST, SOUTH, WEST}
+	public enum Channels {PRIVATE, PUBLIC}
 }

@@ -30,6 +30,7 @@ public class MonsterTemplate {
 	 * @param accuracy
 	 * @param killBonusLow
 	 * @param killBonusHigh
+	 * @see MonsterTemplate
 	 */
 	public MonsterTemplate(String name, String imageBig, String imageSmall, Levels level, Attributes killBonusType, 
 		float statsLowMultiplier, float statsHighMultiplier, float hp, float strength, float speed, float accuracy, float killBonusLow, float killBonusHigh) {

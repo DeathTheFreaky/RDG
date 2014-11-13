@@ -3,17 +3,20 @@ package worthy;
 import java.awt.Dimension;
 import java.awt.Point;
 
-import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
-import worthy.Player.Updates;
+import enums.Enums.Updates;
 
+/**Game class stores the main configuration parameters of a game and defines what needs to be done in each iteration of the game loop.
+ * 
+ * @see BasicGame
+ */
 public class Game extends BasicGame {
 	
-	/* Game Variables */
+	/* Game Variables in pixels */
 	public static final int WIDTH = 640;
 	public static final int HEIGHT = 480;
 	public static final int GAME_ENVIRONMENT_WIDTH = 480;
@@ -26,7 +29,7 @@ public class Game extends BasicGame {
 	/* how many milliseconds passed until the next Update */
 	private int timeToUpdate = 0;
 
-	/* Origins of the different Views */
+	/* Origins of the different Views in tile numbers */
 	private Point gameEnvironmentOrigin;
 	private Point chatOrigin;
 	
@@ -51,6 +54,7 @@ public class Game extends BasicGame {
 	/**Construct game and sets Playername as "Find out if its Player 1 or Player2"
 	 * 
 	 * @param title
+	 * @see Game
 	 */
 	public Game(String title) {
 		this(title, "Find out if its Player1 or Player2");
@@ -60,6 +64,7 @@ public class Game extends BasicGame {
 	 * 
 	 * @param title
 	 * @param playerName
+	 * @see Game
 	 */
 	public Game(String title, String playerName) {
 		super(title);
@@ -69,6 +74,7 @@ public class Game extends BasicGame {
 	@Override
 	public void init(GameContainer container) throws SlickException {
 		
+		/* Points in tile numbers */
 		gameEnvironmentOrigin = new Point(0, 0);
 		chatOrigin = new Point(0, 12);
 
@@ -82,6 +88,7 @@ public class Game extends BasicGame {
 		groundFactory = new GroundFactory().setUpFactory();
 		resourceManager = new ResourceManager().getInstance();
 
+		/* Dimension is specified in pixels */
 		gameEnvironment = new GameEnvironment("GameEnvironment",
 				gameEnvironmentOrigin, new Dimension(480, 384), player);
 		
@@ -136,7 +143,7 @@ public class Game extends BasicGame {
 	
 	@Override
 	public void mouseMoved(int oldX, int oldY, int newX, int newY) {
-		/* Check if mouse is over chat to enable chat scrolling */
+		/* Check if mouse is over chat to enable chat scrolling. X and Y in pixels! */
 		if(newX >= 0 && newX <= CHAT_WIDTH && newY > GAME_ENVIRONMENT_HEIGHT && newY <= HEIGHT) {
 			mouseOverChat = true;
 		}else {

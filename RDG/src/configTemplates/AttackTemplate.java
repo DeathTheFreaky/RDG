@@ -22,6 +22,7 @@ public class AttackTemplate {
 	 * @param hpDamage
 	 * @param hitProbability
 	 * @param x
+	 * @see AttackTemplate
 	 */
 	public AttackTemplate(String name, Attributes effect, float statsLowMultiplier, 
 			float statsHighMultiplier, float hpDamage, float hitProbability, float x) {

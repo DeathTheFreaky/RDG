@@ -35,6 +35,7 @@ public class ArmamentsLoader {
 	 * @throws ParserConfigurationException 
 	 * @throws IOException 
 	 * @throws SAXException 
+	 * @see ArmamentsLoader
 	 */
 	public static Map<String, ArmamentTemplate> run(String configpath) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException {
 		

@@ -35,7 +35,8 @@ public class WeaponsLoader {
 	 * @throws IllegalArgumentException
 	 * @throws ParserConfigurationException 
 	 * @throws IOException 
-	 * @throws SAXException 
+	 * @throws SAXException
+	 * @see WeaponsLoader 
 	 */
 	public static Map<String, WeaponTemplate> run(String configpath) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException {
 		

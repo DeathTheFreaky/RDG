@@ -47,6 +47,7 @@ public class RoomsLoader {
 	 * @throws ParserConfigurationException 
 	 * @throws IOException 
 	 * @throws SAXException 
+	 * @see RoomsLoader
 	 */
 	public static Map<String, RoomTemplate> run(String configpath) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException {
 		

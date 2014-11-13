@@ -38,6 +38,7 @@ public class Configloader {
 	/**Constructs a Configloader passing the path where all config XML files are stored.
 	 * 
 	 * @param configpath
+	 * @see Configloader
 	 */
 	public Configloader(String configpath){
 		this.configpath = configpath;

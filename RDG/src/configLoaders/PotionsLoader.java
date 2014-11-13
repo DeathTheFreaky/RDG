@@ -38,6 +38,7 @@ public class PotionsLoader {
 	 * @throws ParserConfigurationException 
 	 * @throws IOException 
 	 * @throws SAXException 
+	 * @see PotionsLoader
 	 */
 	public static Map<String, PotionTemplate> run(String configpath) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException {
 		

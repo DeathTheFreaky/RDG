@@ -8,15 +8,18 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
 
+/**Stores and draws all Elements in a particular context's View.
+ *
+ */
 public abstract class View {
 	
 	/* Sets the contextName, to specify which Context you are working with */
 	protected String contextName;
-	/* Sets the origin, where this context should be drawn at; specifies the center */
+	/* Sets the origin, where this context should be drawn at in tiles numbers (left upper corner) */
 	protected Point origin;
-	/* Sets the last point down right */
+	/* Sets the last point down right in tile numbers (not pixels!) */
 	protected Point downright;
-	/* Sets the dimension, to specify the width and the height of the context */
+	/* Sets the dimension, to specify the width and the height of the context in pixels */
 	protected Dimension size;
 	
 	/* is needed for some values and actualizing positions */
@@ -25,32 +28,34 @@ public abstract class View {
 	/* Collection for all Shapes, that should be drawn */
 	protected LinkedHashMap<String, Element> images;
 	
-	/**Construct a View passing origin's single x and y locations.
+	/**Construct a View passing origin's single x and y locations in tile numbers.
 	 * Dimension will be set automatically.
 	 * 
 	 * @param contextName
 	 * @param originX
 	 * @param originY
 	 * @throws SlickException
+	 * @see View
 	 */
 	public View(String contextName, int originX, int originY)
 			throws SlickException {
 		this(contextName, new Point(originX, originY));
 	}
 	
-	/**Construct a View passing origin as a point.
+	/**Construct a View passing origin as a point in tile numbers.
 	 * Dimension will be set automatically.
 	 * 
 	 * @param contextName
 	 * @param origin
 	 * @throws SlickException
+	 * @see View
 	 */
 	public View(String contextName, Point origin) throws SlickException {
 		this(contextName, origin, new Dimension(640, 480));
 	}
 	
-	/**Construct a View passing origin's single x and y locations
-	 * and the View's size by its single x and y values.
+	/**Construct a View passing origin's single x and y locations in tile numbers
+	 * and the View's size by its single x and y values in pixels.
 	 * 
 	 * @param contextName
 	 * @param originX
@@ -58,17 +63,19 @@ public abstract class View {
 	 * @param width
 	 * @param height
 	 * @throws SlickException
+	 * @see View
 	 */
 	public View(String contextName, int originX, int originY, int width, int height) throws SlickException {
 		this(contextName, new Point(originX, originY), new Dimension(width, height));
 	}
 	
-	/**Construct a View passing origin as a point and the View's size as a Dimension.
+	/**Construct a View passing origin as a point in tile numbers and the View's size as a Dimension in pixels.
 	 * 
 	 * @param contextName
 	 * @param origin
 	 * @param size
 	 * @throws SlickException
+	 * @see View
 	 */
 	public View(String contextName, Point origin, Dimension size) throws SlickException {
 		this.contextName = contextName;
@@ -93,7 +100,7 @@ public abstract class View {
 	 */
 	public abstract void update();
 	
-	/**Draw's image at specified location in View.
+	/**Draw's image at specified location in pixels in View.
 	 * 
 	 * @param imageName
 	 * @param x
@@ -132,7 +139,7 @@ public abstract class View {
 		return this.contextName;
 	}
 	
-	/**Sets center of the View.
+	/**Sets upper left corner of the View in tile numbers.
 	 * 
 	 * @param originX
 	 * @param originY
@@ -142,7 +149,7 @@ public abstract class View {
 		this.origin.y = originY;
 	}
 	
-	/**Sets center of the View.
+	/**Sets upper left corner in tile numbers.
 	 * 
 	 * @param origin
 	 */
@@ -151,13 +158,13 @@ public abstract class View {
 	}
 		
 	/**
-	 * @return Center of the View.
+	 * @return Upper left corner of the view in tile numbers.
 	 */
 	public Point getOrigin() {
 		return this.origin;
 	}
 	
-	/**Sets the Dimension's size.
+	/**Sets the Dimension's size in pixels.
 	 * 
 	 * @param width
 	 * @param height
@@ -167,7 +174,7 @@ public abstract class View {
 		this.size.height = height;
 	}
 	
-	/**Sets the Dimension's size.
+	/**Sets the Dimension's size in pixels.
 	 * 
 	 * @param size
 	 */
@@ -176,7 +183,7 @@ public abstract class View {
 	}
 	
 	/**
-	 * @return Dimension of View
+	 * @return Dimension of View in pixels
 	 */
 	public Dimension getSize() {
 		return this.size;

@@ -35,6 +35,7 @@ public class PotionTemplate {
 	 * @param statsHighMultiplier
 	 * @param x
 	 * @param n
+	 * @see PotionTemplate
 	 */
 	public PotionTemplate(String name, String description, String imageBig, String imageSmall, ItemClasses itemClass, Targets target, Modes mode, Attributes effect,
 			float classMultiplier, float statsLowMultiplier, float statsHighMultiplier, float x, int n){

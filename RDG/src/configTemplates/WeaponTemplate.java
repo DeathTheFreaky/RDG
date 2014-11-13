@@ -32,6 +32,7 @@ public class WeaponTemplate {
 	 * @param defence
 	 * @param slots
 	 * @param max
+	 * @see WeaponTemplate
 	 */
 	public WeaponTemplate(String name, String imageBig, String imageSmall, ItemClasses itemClass, WeaponTypes type, 
 			float classMultiplier, float statsLowMultiplier, float statsHighMultiplier, float attack, float speed, float accuracy, float defence, int slots, int max) {

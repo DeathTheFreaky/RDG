@@ -26,6 +26,7 @@ public class ArmamentTemplate {
 	 * @param armor
 	 * @param speed
 	 * @param bonus
+	 * @see ArmamentTemplate
 	 */
 	public ArmamentTemplate(String name, String type,String imageBig, String imageSmall, ItemClasses itemClass,
 			float classMultiplier, float statsLowMultiplier, float statsHighMultiplier, float armor, float speed, float bonus) {

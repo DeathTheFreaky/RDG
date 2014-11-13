@@ -37,6 +37,7 @@ public class MonstersLoader {
 	 * @throws ParserConfigurationException 
 	 * @throws IOException 
 	 * @throws SAXException 
+	 * @see MonstersLoader
 	 */
 	public static Map<String, MonsterTemplate> run(String configpath)  throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException {
 		
