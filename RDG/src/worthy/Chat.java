@@ -18,7 +18,7 @@ public class Chat extends View {
 
 	/* Maximum for saved Messages and Message Length */
 	private final int MAXIMUM_MESSAGES = 7;
-	private final int MAXIMUM_LENGTH = 40;
+	private final int MAXIMUM_LENGTH = 39;
 
 	/* Input Field for typing messages */
 	private InputField input;
@@ -31,6 +31,23 @@ public class Chat extends View {
 
 	/* For displaying row by row */
 	private int zeile = 0;
+
+	/* Different Colors */
+	Color textColor = new Color(0f, 0f, 0f);
+	Color backgroundColor = new Color(1f, 1f, 1f);
+	Color borderColor = new Color(0.2f, 0.2f, 0.2f);
+
+	/* Chat Window Values */
+	private int positionX;
+	private int positionY;
+	private final int strokeSize = 5;
+	private final int inputFieldHeight = 20;
+	private final int inputFieldWidth = size.width - 2 * strokeSize;
+
+	/* Scrolling Bar Values */
+	private final int scrollBarX = size.width - 20;
+	private final int scrollBarWidth = 12;
+	private final float scrollBarHeight = (size.height - 3f * strokeSize - inputFieldHeight) / 7f;
 
 	public Chat(String contextName, int originX, int originY,
 			GameContainer container) throws SlickException {
@@ -51,6 +68,9 @@ public class Chat extends View {
 	public Chat(String contextName, Point origin, Dimension size,
 			GameContainer container) throws SlickException {
 		super(contextName, origin, size);
+
+		positionX = origin.x * GameEnvironment.BLOCK_SIZE;
+		positionY = origin.y * GameEnvironment.BLOCK_SIZE;
 
 		messages = new LinkedList<Message>();
 		messages.add(new Message("New Game Started! Player vs. Opponent",
@@ -87,25 +107,45 @@ public class Chat extends View {
 		Font font = new Font("Verdana", Font.BOLD, 12);
 		TrueTypeFont ttf = new TrueTypeFont(font, true);
 
-		input = new InputField(container, ttf, 15, origin.y
-				* GameEnvironment.BLOCK_SIZE + size.height - 25, 450, 20) {
+		input = new InputField(container, ttf, strokeSize, positionY
+				+ size.height - inputFieldHeight - strokeSize, inputFieldWidth,
+				inputFieldHeight) {
 			@Override
 			public void keyPressed(int key, char c) {
 				super.keyPressed(key, c);
+				//container.getInput().consumeEvent();
 				if (key == 28) {
-					System.out.println("Enter pressed!");
 					Chat.this.newMessage(new Message(this.getText(), Calendar
 							.getInstance(), Channels.PUBLIC));
 					this.setText("");
+					this.deactivate();
 				}
 			}
 		};
-		input.setBackgroundColor(new Color(255, 0, 0));
+		input.setBackgroundColor(new Color(1f, 1f, 1f));
+		input.setTextColor(new Color(0f, 0f, 0f));
 		input.setMaxLength(MAXIMUM_LENGTH);
 	}
 
 	@Override
 	public void draw(GameContainer container, Graphics graphics) {
+		graphics.setColor(borderColor);
+		graphics.fillRect(origin.x * GameEnvironment.BLOCK_SIZE, origin.y
+				* GameEnvironment.BLOCK_SIZE, size.width, size.height);
+
+		graphics.setColor(backgroundColor);
+		graphics.fillRect(positionX + strokeSize, positionY + strokeSize,
+				size.width - 2 * strokeSize, size.height - 3 * strokeSize
+						- inputFieldHeight);
+		graphics.fillRect(positionX + strokeSize, positionY + size.height
+				- strokeSize - inputFieldHeight, inputFieldWidth,
+				inputFieldHeight);
+
+		graphics.setColor(new Color(0.2f, 0.5f, 0.9f));
+		input.render(container, graphics);
+
+		graphics.setColor(new Color(0f, 0f, 0f));
+		// graphics.setColor(new Color(0f, 0f, 0f));
 		int i = 0;
 		for (Message m : messages) {
 			if (shown[i] == true) {
@@ -113,12 +153,13 @@ public class Chat extends View {
 						* GameEnvironment.BLOCK_SIZE + 10, origin.y
 						* GameEnvironment.BLOCK_SIZE + zeile * 14 + 5);
 				zeile++;
+				graphics.fillRect(scrollBarX, origin.y
+						* GameEnvironment.BLOCK_SIZE + strokeSize + i
+						* scrollBarHeight, scrollBarWidth, scrollBarHeight);
 			}
 			i++;
 		}
 		zeile = 0;
-
-		input.render(container, graphics);
 	}
 
 	@Override
@@ -145,33 +186,36 @@ public class Chat extends View {
 
 	public void scroll(int scroll) { // +120 rauf, -120 runter scrollen
 		scroll /= 120;
-		System.out.println("Scroll" + scroll);
-		
-		if(messages.size() < 5) {
+
+		if (messages.size() < 5) {
 			return;
 		}
 
-		for(int i = 0; i < 4; i++) {
-			if(shown[i] == true) {
-				if(i == 0 && scroll < 0) {	// 
+		for (int i = 0; i < 4; i++) {
+			if (shown[i] == true) {
+				if (i == 0 && scroll < 0) { //
 					shown[i] = false;
-					shown[i+4] = true;
+					shown[i + 4] = true;
 					break;
-				}else if(i == 3 && scroll > 0) {
+				} else if (i == 3 && scroll > 0) {
 					shown[6] = false;
-					shown[i-1] = true;
-				}else {
-					if(scroll > 0 && i != 0) {	// raufscrollen
-						shown[i+3] = false;
-						shown[i-1] = true;
-					}else if(scroll < 0 && i != 3) {	// runterscrollen
-						
+					shown[i - 1] = true;
+				} else {
+					if (scroll > 0 && i != 0) { // raufscrollen
+						shown[i + 3] = false;
+						shown[i - 1] = true;
+					} else if (scroll < 0 && i != 3) { // runterscrollen
+
 						shown[i] = false;
-						shown[i+4] = true;
+						shown[i + 4] = true;
 					}
 				}
 			}
 		}
+	}
+	
+	public void focus() {
+		input.setFocus(true);
 	}
 
 }
