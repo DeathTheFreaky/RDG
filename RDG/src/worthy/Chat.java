@@ -113,7 +113,8 @@ public class Chat extends View {
 			@Override
 			public void keyPressed(int key, char c) {
 				super.keyPressed(key, c);
-				//container.getInput().consumeEvent();
+				if(this.getText().length() >= this.getMaxLength() && this.isFocused())
+					container.getInput().consumeEvent();
 				if (key == 28) {
 					Chat.this.newMessage(new Message(this.getText(), Calendar
 							.getInstance(), Channels.PUBLIC));
