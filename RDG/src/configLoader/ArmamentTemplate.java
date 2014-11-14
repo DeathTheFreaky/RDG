@@ -1,5 +1,6 @@
 package configLoader;
 
+import general.Enums.Armor;
 import general.Enums.ItemClasses;
 
 /**ArmamentTemplate is used to store the default Armament values.
@@ -12,7 +13,8 @@ public class ArmamentTemplate {
 	private String name, type, imageBig, imageSmall;
 	private ItemClasses itemClass;
 	private float classMultiplier, statsLowMultiplier, statsHighMultiplier, armor, speed, bonus;
-
+	private Armor armorType;
+	
 	/**Construct an ArmamentTemplate storing the default Armament values.
 	 * 
 	 * @param name
@@ -42,6 +44,12 @@ public class ArmamentTemplate {
 		this.armor = armor;
 		this.speed = speed;
 		this.bonus = bonus;
+		
+		if (name.contains("Helmet")) this.armorType = Armor.HEAD;
+		else if (name.contains("Harness")) this.armorType = Armor.CHEST;
+		else if (name.contains("Gauntlets")) this.armorType = Armor.ARMS;
+		else if (name.contains("Cuisse")) this.armorType = Armor.LEGS;
+		else if (name.contains("Boots")) this.armorType = Armor.FEET;
 	}
 
 	/**
@@ -119,5 +127,12 @@ public class ArmamentTemplate {
 	 */
 	public float getBonus() {
 		return bonus;
+	}
+	
+	/**
+	 * @return armorType
+	 */
+	public Armor getArmorType() {
+		return armorType;
 	}
 }
