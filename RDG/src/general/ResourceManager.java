@@ -11,6 +11,7 @@ public class ResourceManager {
 	public Image ARMOR_BACKGROUND;
 	public SpriteSheet TILES; //more efficient picture loading 
 	
+	/* only for testing purposes - actual game will need collection for all types */
 	public Image PLAYER;
 	public Image HELMET;
 	public Image ARMS;

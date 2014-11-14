@@ -9,7 +9,7 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
-import elements.Equippment;
+import elements.Equipment;
 import elements.Potion;
 
 /**InventoryView extends a View in the Inventory context.
@@ -24,8 +24,8 @@ public class InventoryView extends View {
 	private final int border = 5;
 	
 	/* Collection for all Items, saved in Inventory */
-	private LinkedList<Equippment> weapons;
-	private LinkedList<Equippment> armor;
+	private LinkedList<Equipment> weapons;
+	private LinkedList<Equipment> armor;
 	private LinkedList<Potion> potions;
 
 	/**Constructs an InventoryView passing its origin as single x and y coordinates in tile numbers.
@@ -96,8 +96,8 @@ public class InventoryView extends View {
 		ORIGIN_X = origin.x * GameEnvironment.BLOCK_SIZE;
 		ORIGIN_Y = 240;
 		
-		weapons = new LinkedList<Equippment>();
-		armor = new LinkedList<Equippment>();
+		weapons = new LinkedList<Equipment>();
+		armor = new LinkedList<Equipment>();
 		potions = new LinkedList<Potion>();
 	}
 

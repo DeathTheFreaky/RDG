@@ -10,11 +10,11 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
-import elements.Equippment;
+import elements.Equipment;
 import general.ResourceManager;
 import general.Enums.Armor;
 
-/**ArmorView extends a View in the Inventory context.
+/**ArmorView extends a View in the Armor context.
  * 
  * @see View
  */
@@ -39,31 +39,74 @@ public class ArmorView extends View {
 	private boolean set = true;
 
 	/* HashMap for all equipped Armor */
-	HashMap<Armor, Equippment> armor1;
-	HashMap<Armor, Equippment> armor2;
+	HashMap<Armor, Equipment> armor1;
+	HashMap<Armor, Equipment> armor2;
 
 	/* Collection for the armor, is used for iterating through all armor */
-	Collection<Equippment> equippment1;
-	Collection<Equippment> equippment2;
+	Collection<Equipment> equipment1;
+	Collection<Equipment> equipment2;
 
 	/* Factory and Resource Classes */
 	private ResourceManager resources;
 
+	/**Constructs an ArmorView passing its origin as single x and y coordinates in tile numbers.<br>
+	 * Dimension will be set to default values in pixels.<br><br>
+	 * ArmorView extends View.
+	 * 
+	 * @param contextName
+	 * @param originX
+	 * @param originY
+	 * @throws SlickException
+	 * @see ArmorView
+	 */
 	public ArmorView(String contextName, int originX, int originY)
 			throws SlickException {
 		this(contextName, new Point(originX, originY));
 	}
 
+	/**Constructs an ArmorView passing its origin as a Point in tile numbers.<br>
+	 * Dimension will be set to default values in pixels.<br><br>
+	 * ArmorView extends View.
+	 * 
+	 * @param contextName
+	 * @param origin
+	 * @throws SlickException
+	 * @see ArmorView
+	 */
 	public ArmorView(String contextName, Point origin) throws SlickException {
 		this(contextName, origin, new Dimension(640, 480));
 	}
 
+	/**Constructs an ArmorView passing its origin as single x and y coordinates in tile numbers
+	 * and its Dimension as single x and y coordinates in pixels.<br>
+	 * Dimension will be set to default values in pixels.<br><br>
+	 * ArmorView extends View.
+	 * 
+	 * @param contextName
+	 * @param originX
+	 * @param originY
+	 * @param width
+	 * @param height
+	 * @throws SlickException
+	 * @see ArmorView
+	 */
 	public ArmorView(String contextName, int originX, int originY, int width,
 			int height) throws SlickException {
 		this(contextName, new Point(originX, originY), new Dimension(width,
 				height));
 	}
 
+	/**Constructs an ArmorView passing its origin as a Point in tile numbers 
+	 * and its Dimension as a Dimension.<br>
+	 * Dimension will be set to default values in pixels.<br><br>
+	 * ArmorView extends View.
+	 * 
+	 * @param contextName
+	 * @param origin
+	 * @param size
+	 * @throws SlickException
+	 * @see ArmorView
+	 */
 	public ArmorView(String contextName, Point origin, Dimension size)
 			throws SlickException {
 		super(contextName, origin, size);
@@ -80,10 +123,10 @@ public class ArmorView extends View {
 
 		resources = new ResourceManager().getInstance();
 
-		armor1 = new HashMap<Armor, Equippment>(7);
-		equippment1 = armor1.values();
-		armor2 = new HashMap<Armor, Equippment>(7);
-		equippment2 = armor2.values();
+		armor1 = new HashMap<Armor, Equipment>(7);
+		equipment1 = armor1.values();
+		armor2 = new HashMap<Armor, Equipment>(7);
+		equipment2 = armor2.values();
 	}
 
 	@Override
@@ -91,6 +134,7 @@ public class ArmorView extends View {
 		graphics.setColor(new Color(0.5f, 0.5f, 0.5f));
 		graphics.fillRect(ORIGIN_X, ORIGIN_Y, size.width, tabHeight+5);
 		
+		/* draw sets */
 		graphics.setColor(new Color(1f, 0f, 0f));
 		if(set) {
 			graphics.fillRect(tab1X, tab1Y, tabWidth, tabHeight);
@@ -107,13 +151,15 @@ public class ArmorView extends View {
 		
 		graphics.setColor(new Color(1f, 0f, 0f));
 		graphics.fillRect(ORIGIN_X, ORIGIN_Y+30, size.width, size.height-2*(tabHeight-5));
-
+		
+		/* draw warrior image */
 		graphics.drawImage(resources.ARMOR_BACKGROUND, ORIGIN_X, ORIGIN_Y+tabHeight+10);
 
 		graphics.drawImage(resources.HELMET, ORIGIN_X + 100, ORIGIN_Y + 39);
 
+		/* draw equipment */
 		if (set) {
-			for (Equippment e : equippment1) {
+			for (Equipment e : equipment1) {
 				switch (e.getArmorType()) {
 				case MAIN_WEAPON:
 					graphics.drawImage(e.getImage(), ORIGIN_X, ORIGIN_Y);
@@ -139,7 +185,7 @@ public class ArmorView extends View {
 				}
 			}
 		} else {
-			for (Equippment e : equippment2) {
+			for (Equipment e : equipment2) {
 				switch (e.getArmorType()) {
 				case MAIN_WEAPON:
 					graphics.drawImage(e.getImage(), ORIGIN_X, ORIGIN_Y);
@@ -175,24 +221,36 @@ public class ArmorView extends View {
 
 	}
 
-	public void equip(Equippment equippment) {
+	/**Outfits an equipment item.
+	 * 
+	 * @param equipment
+	 */
+	public void equip(Equipment equipment) {
 		if (set) {
-			armor1.put(equippment.getArmorType(), equippment);
-			if (equippment.getArmorType() == Armor.SUB_WEAPON
+			/* replaces existing armor of same type or add armor if none is present yet */
+			armor1.put(equipment.getArmorType(), equipment);
+			/* removes Main Weapon if already equipped and new Sub Weapon is about to be equipped  */
+			if (equipment.getArmorType() == Armor.SUB_WEAPON
 					&& armor1.get(Armor.MAIN_WEAPON) != null) {
 				armor1.remove(Armor.MAIN_WEAPON);
 			}
-			equippment1 = armor1.values();
+			/* store all equipped armors to set 1 */
+			equipment1 = armor1.values();
 		} else {
-			armor2.put(equippment.getArmorType(), equippment);
-			if (equippment.getArmorType() == Armor.SUB_WEAPON
+			armor2.put(equipment.getArmorType(), equipment);
+			if (equipment.getArmorType() == Armor.SUB_WEAPON
 					&& armor2.get(Armor.MAIN_WEAPON) != null) {
 				armor2.remove(Armor.MAIN_WEAPON);
 			}
-			equippment2 = armor2.values();
+			equipment2 = armor2.values();
 		}
 	}
 	
+	/**DEPRECATED!!!<br>
+	 * Switches between sets 1 and 2. 
+	 * 
+	 * @param set
+	 */
 	public void switchToSet(int set) {
 		if(set == 1) {
 			this.set = true;
@@ -201,6 +259,11 @@ public class ArmorView extends View {
 		}
 	}
 	
+	/**Switches between Equipment tabs 1 and 2.
+	 * 
+	 * @param x
+	 * @param y
+	 */
 	public void changeTab(int x, int y) {
 		if(x > tab1X && x < tab1X+tabWidth && y > tab1Y && y < tab1Y+tabHeight) {
 			this.set = true;
