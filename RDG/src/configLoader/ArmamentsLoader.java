@@ -58,15 +58,14 @@ public class ArmamentsLoader {
 				Element eElement = (Element) nNode;
 				
 				//store current element's values
-				String name, itemClassStr, type, imageBig, imageSmall;
+				String name, itemClassStr, type, image;
 				ItemClasses itemClass;
 				float classMultiplier, statsLowMultiplier, statsHighMultiplier, armor, speed, bonus;
 				
 				name = eElement.getElementsByTagName("Name").item(0).getTextContent();
 				itemClassStr = eElement.getElementsByTagName("Item_Class").item(0).getTextContent();
 				type = eElement.getElementsByTagName("Type").item(0).getTextContent();
-				imageBig = eElement.getElementsByTagName("Image_Big").item(0).getTextContent();
-				imageSmall = eElement.getElementsByTagName("Image_Small").item(0).getTextContent();
+				image = eElement.getElementsByTagName("Image").item(0).getTextContent();
 				statsLowMultiplier = Float.parseFloat(eElement.getElementsByTagName("Stats_Low_Multiplier").item(0).getTextContent());
 				statsHighMultiplier = Float.parseFloat(eElement.getElementsByTagName("Stats_High_Multiplier").item(0).getTextContent());
 				classMultiplier = Float.parseFloat(eElement.getElementsByTagName("Class_Multiplier").item(0).getTextContent());
@@ -92,7 +91,7 @@ public class ArmamentsLoader {
 				if (bonus < 0) throw new IllegalArgumentException("Invalid Bonus \"" + bonus + "\" at Armament \"" + name + "\"");
 				
 				//put template on list of available templates
-				armamentTemplates.put(name, new ArmamentTemplate(name, type, imageBig, imageSmall, itemClass, 
+				armamentTemplates.put(name, new ArmamentTemplate(name, type, image, itemClass, 
 						classMultiplier, statsLowMultiplier, statsHighMultiplier, armor, speed, bonus));
 			}
 		}

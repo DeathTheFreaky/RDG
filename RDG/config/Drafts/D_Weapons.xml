@@ -13,8 +13,7 @@
 	   <Slots>1</Slots>
 	   <Max>2</Max>
 	   <Type>single-hand</Type>
-	   <Image_Big>weapons/fists_big.png</Image_Big>
-	   <Image_Small>weapons/fists_small.png</Image_Small>
+	   <Image>weapons/fists.png</Image>
     </Weapon>
 	<Weapon>
        <Name>Dagger</Name>
@@ -29,7 +28,6 @@
 	   <Slots>1</Slots>
 	   <Max>2</Max>
 	   <Type>single-hand</Type>
-	   <Image_Big>weapons/dagger_big.png</Image_Big>
-	   <Image_Small>weapons/dagger_small.png</Image_Small>
+	   <Image>weapons/dagger.png</Image>
     </Weapon>
 </Weapons>

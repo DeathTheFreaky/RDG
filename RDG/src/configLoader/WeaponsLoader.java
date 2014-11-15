@@ -59,7 +59,7 @@ public class WeaponsLoader {
 				Element eElement = (Element) nNode;
 				
 				//store current element's values
-				String name, itemClassStr, typeStr, imageBig, imageSmall;
+				String name, itemClassStr, typeStr, image;
 				ItemClasses itemClass;
 				WeaponTypes type;
 				float classMultiplier, statsLowMultiplier, statsHighMultiplier, attack, speed, accuracy, defence;
@@ -68,8 +68,7 @@ public class WeaponsLoader {
 				name = eElement.getElementsByTagName("Name").item(0).getTextContent();
 				itemClassStr = eElement.getElementsByTagName("Item_Class").item(0).getTextContent();
 				typeStr = eElement.getElementsByTagName("Type").item(0).getTextContent();
-				imageBig = eElement.getElementsByTagName("Image_Big").item(0).getTextContent();
-				imageSmall = eElement.getElementsByTagName("Image_Small").item(0).getTextContent();
+				image = eElement.getElementsByTagName("Image").item(0).getTextContent();
 				statsLowMultiplier = Float.parseFloat(eElement.getElementsByTagName("Stats_Low_Multiplier").item(0).getTextContent());
 				statsHighMultiplier = Float.parseFloat(eElement.getElementsByTagName("Stats_High_Multiplier").item(0).getTextContent());
 				classMultiplier = Float.parseFloat(eElement.getElementsByTagName("Class_Multiplier").item(0).getTextContent());
@@ -108,7 +107,7 @@ public class WeaponsLoader {
 				if (max < 1 || max > 2) throw new IllegalArgumentException("Invalid Max \"" + max + "\" at Weapon \"" + name + "\"");
 				
 				//put template on list of available templates
-				weaponTemplates.put(name, new WeaponTemplate(name, imageBig, imageSmall, itemClass, type, 
+				weaponTemplates.put(name, new WeaponTemplate(name, image, itemClass, type, 
 						classMultiplier, statsLowMultiplier, statsHighMultiplier, attack, speed, accuracy, defence, slots, max));
 			}
 		}

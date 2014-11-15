@@ -61,7 +61,7 @@ public class PotionsLoader {
 				Element eElement = (Element) nNode;
 				
 				//store current element's values
-				String name, itemClassStr, description, targetStr, modeStr, effectStr, imageBig, imageSmall;
+				String name, itemClassStr, description, targetStr, modeStr, effectStr, image;
 				ItemClasses itemClass;
 				Attributes effect;
 				Targets target;
@@ -75,8 +75,7 @@ public class PotionsLoader {
 				targetStr = eElement.getElementsByTagName("Target").item(0).getTextContent();
 				modeStr = eElement.getElementsByTagName("Mode").item(0).getTextContent();
 				effectStr = eElement.getElementsByTagName("Effect").item(0).getTextContent();
-				imageBig = eElement.getElementsByTagName("Image_Big").item(0).getTextContent();
-				imageSmall = eElement.getElementsByTagName("Image_Small").item(0).getTextContent();
+				image = eElement.getElementsByTagName("Image").item(0).getTextContent();
 				statsLowMultiplier = Float.parseFloat(eElement.getElementsByTagName("Stats_Low_Multiplier").item(0).getTextContent());
 				statsHighMultiplier = Float.parseFloat(eElement.getElementsByTagName("Stats_High_Multiplier").item(0).getTextContent());
 				classMultiplier = Float.parseFloat(eElement.getElementsByTagName("Class_Multiplier").item(0).getTextContent());
@@ -124,7 +123,7 @@ public class PotionsLoader {
 				
 				
 				//put template on list of available templates
-				potionTemplates.put(name, new PotionTemplate(name, description, imageBig, imageSmall, itemClass, target, mode, effect,
+				potionTemplates.put(name, new PotionTemplate(name, description, image, itemClass, target, mode, effect,
 						classMultiplier, statsLowMultiplier, statsHighMultiplier, x, n));
 			}
 		}

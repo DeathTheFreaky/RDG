@@ -2,6 +2,7 @@
 <Attacks xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<Attack>
 		<Name>Torso</Name>
+		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<HP_Damage>0.5</HP_Damage>
@@ -11,6 +12,7 @@
 	</Attack>
 	<Attack>
 		<Name>Head</Name>
+		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<HP_Damage>0.7</HP_Damage>
@@ -20,6 +22,7 @@
 	</Attack>
 	<Attack>
 		<Name>Arms</Name>
+		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<HP_Damage>0.3</HP_Damage>
@@ -29,6 +32,7 @@
 	</Attack>
 	<Attack>
 		<Name>Legs</Name>
+		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<HP_Damage>0.4</HP_Damage>

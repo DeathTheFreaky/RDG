@@ -45,8 +45,8 @@ public class Main {
 		}
 		
 		//Test Printing
-		/*ConfigTestprinter configprinter = new ConfigTestprinter(configloader);
-		configprinter.print();*/
+		ConfigTestprinter configprinter = new ConfigTestprinter(configloader);
+		configprinter.print();
 
 		AppGameContainer app1 = new AppGameContainer(new Game("Battle Dungeon"));
 		app1.setDisplayMode(Game.WIDTH, Game.HEIGHT, false); // Breite, Höhe, ???

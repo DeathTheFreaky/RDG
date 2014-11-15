@@ -12,7 +12,7 @@ public class AttackTemplate {
 	
 	private Attacks type;
 	private Attributes effect;
-	private float statsLowMultiplier, statsHighMultiplier, hpDamage, hitProbability, x;
+	private float classMultiplier, statsLowMultiplier, statsHighMultiplier, hpDamage, hitProbability, x;
 	
 	/**Construct an AttackTemplate storing the default Attack values.
 	 * 
@@ -25,12 +25,13 @@ public class AttackTemplate {
 	 * @param x
 	 * @see AttackTemplate
 	 */
-	public AttackTemplate(Attacks type, Attributes effect, float statsLowMultiplier, 
+	public AttackTemplate(Attacks type, Attributes effect, float classMultiplier, float statsLowMultiplier, 
 			float statsHighMultiplier, float hpDamage, float hitProbability, float x) {
 
 		
 		this.type = type;
 		this.effect = effect;
+		this.classMultiplier = classMultiplier;
 		this.statsLowMultiplier = statsLowMultiplier;
 		this.statsHighMultiplier = statsHighMultiplier;
 		this.hpDamage = hpDamage;
@@ -52,6 +53,13 @@ public class AttackTemplate {
 	 */
 	public Attributes getEffect() {
 		return effect;
+	}
+	
+	/**
+	 * @return Class Multiplier for balancing
+	 */
+	public float getClass_multiplier() {
+		return classMultiplier;
 	}
 
 	/**

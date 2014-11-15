@@ -63,11 +63,12 @@ public class AttacksLoader {
 				Attacks type;
 				String name, effectStr;
 				Attributes effect;
-				float statsLowMultiplier, statsHighMultiplier, hpDamage, hitProbability, x;
+				float classMultiplier, statsLowMultiplier, statsHighMultiplier, hpDamage, hitProbability, x;
 				
 				name = eElement.getElementsByTagName("Name").item(0).getTextContent();
 				statsLowMultiplier = Float.parseFloat(eElement.getElementsByTagName("Stats_Low_Multiplier").item(0).getTextContent());
 				statsHighMultiplier = Float.parseFloat(eElement.getElementsByTagName("Stats_High_Multiplier").item(0).getTextContent());
+				classMultiplier = Float.parseFloat(eElement.getElementsByTagName("Class_Multiplier").item(0).getTextContent());
 				hpDamage = Float.parseFloat(eElement.getElementsByTagName("HP_Damage").item(0).getTextContent());
 				hitProbability = Float.parseFloat(eElement.getElementsByTagName("Hit_Probability").item(0).getTextContent());
 				x = Float.parseFloat(eElement.getElementsByTagName("x").item(0).getTextContent());
@@ -90,6 +91,7 @@ public class AttacksLoader {
 					throw new IllegalArgumentException("Invalid Effect \"" + effectStr + "\" at Attack \"" + name + "\"");
 				}
 				
+				if (classMultiplier < 0) throw new IllegalArgumentException("Invalid Class Multiplier \"" + classMultiplier + "\" at Attack \"" + name + "\"");
 				if (statsLowMultiplier < 0) throw new IllegalArgumentException("Invalid Stats Low Multiplier \"" + statsLowMultiplier + "\" at Attack \"" + name + "\"");
 				if (statsHighMultiplier < 0) throw new IllegalArgumentException("Invalid Stats High Multiplier \"" + statsHighMultiplier + "\" at Attack \"" + name + "\"");
 				if (hpDamage < 0) throw new IllegalArgumentException("Invalid HP Damage \"" + hpDamage + "\" at Attack \"" + name + "\"");
@@ -97,7 +99,7 @@ public class AttacksLoader {
 				if (x < 0) throw new IllegalArgumentException("Invalid x \"" + x + "\" at Attack \"" + name + "\"");
 				
 				//put template on list of available templates
-				attackTemplates.put(type, new AttackTemplate(type, effect, statsLowMultiplier, statsHighMultiplier, hpDamage, hitProbability, x));
+				attackTemplates.put(type, new AttackTemplate(type, effect, classMultiplier, statsLowMultiplier, statsHighMultiplier, hpDamage, hitProbability, x));
 			}
 		}
 		

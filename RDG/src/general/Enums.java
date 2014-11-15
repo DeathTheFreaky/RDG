@@ -32,4 +32,5 @@ public class Enums {
 	public enum ViewingDirections {NORTH, EAST, SOUTH, WEST}
 	public enum Channels {PRIVATE, PUBLIC}
 	public enum Armor {HEAD, CHEST, ARMS, LEGS, FEET, MAIN_WEAPON, SUB_WEAPON}
+	public enum CreatureType {PLAYER, MONSTER}
 }

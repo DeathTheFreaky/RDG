@@ -3,6 +3,7 @@
 	<Monster>
 		<Name>Rat</Name>
 		<Level>easy</Level>
+		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<HP>20</HP>
@@ -12,12 +13,12 @@
 		<Kill_Bonus_Type>strength</Kill_Bonus_Type>
 		<Kill_Bonus_Low>2</Kill_Bonus_Low>
 		<Kill_Bonus_High>4</Kill_Bonus_High>
-		<Image_Big>monsters/rat_big.png</Image_Big>
-		<Image_Small>monsters/rat_small.png</Image_Small>
+		<Image>monsters/rat.png</Image>
 	</Monster>
 	<Monster>
 		<Name>Spider</Name>
 		<Level>easy</Level>
+		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<HP>25</HP>
@@ -27,12 +28,12 @@
 		<Kill_Bonus_Type>accuracy</Kill_Bonus_Type>
 		<Kill_Bonus_Low>1</Kill_Bonus_Low>
 		<Kill_Bonus_High>2</Kill_Bonus_High>
-		<Image_Big>monsters/spider_big.png</Image_Big>
-		<Image_Small>monsters/spider_small.png</Image_Small>
+		<Image>monsters/spider.png</Image>
 	</Monster>
 	<Monster>
 		<Name>Frog</Name>
 		<Level>easy</Level>
+		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<HP>15</HP>
@@ -42,12 +43,12 @@
 		<Kill_Bonus_Type>accuracy</Kill_Bonus_Type>
 		<Kill_Bonus_Low>1</Kill_Bonus_Low>
 		<Kill_Bonus_High>2</Kill_Bonus_High>
-		<Image_Big>monsters/frog_big.png</Image_Big>
-		<Image_Small>monsters/frog_small.png</Image_Small>
+		<Image>monsters/frog.png</Image>
 	</Monster>
 	<Monster>
 		<Name>Bat</Name>
 		<Level>easy</Level>
+		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<HP>25</HP>
@@ -57,12 +58,12 @@
 		<Kill_Bonus_Type>speed</Kill_Bonus_Type>
 		<Kill_Bonus_Low>1</Kill_Bonus_Low>
 		<Kill_Bonus_High>2</Kill_Bonus_High>
-		<Image_Big>monsters/bat_big.png</Image_Big>
-		<Image_Small>monsters/bat_small.png</Image_Small>
+		<Image>monsters/bat.png</Image>
 	</Monster>
 	<Monster>
 		<Name>Salamander</Name>
 		<Level>easy</Level>
+		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<HP>15</HP>
@@ -72,12 +73,12 @@
 		<Kill_Bonus_Type>speed</Kill_Bonus_Type>
 		<Kill_Bonus_Low>1</Kill_Bonus_Low>
 		<Kill_Bonus_High>2</Kill_Bonus_High>
-		<Image_Big>monsters/salamander_big.png</Image_Big>
-		<Image_Small>monsters/salamander_small.png</Image_Small>
+		<Image>monsters/salamander.png</Image>
 	</Monster>
 	<Monster>
 		<Name>Goblin</Name>
 		<Level>normal</Level>
+		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<HP>35</HP>
@@ -87,12 +88,12 @@
 		<Kill_Bonus_Type>speed</Kill_Bonus_Type>
 		<Kill_Bonus_Low>3</Kill_Bonus_Low>
 		<Kill_Bonus_High>5</Kill_Bonus_High>
-		<Image_Big>monsters/goblin_big.png</Image_Big>
-		<Image_Small>monsters/goblin_small.png</Image_Small>
+		<Image>monsters/goblin.png</Image>
 	</Monster>
 	<Monster>
 		<Name>Gremlin</Name>
 		<Level>normal</Level>
+		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<HP>40</HP>
@@ -102,12 +103,12 @@
 		<Kill_Bonus_Type>accuracy</Kill_Bonus_Type>
 		<Kill_Bonus_Low>4</Kill_Bonus_Low>
 		<Kill_Bonus_High>7</Kill_Bonus_High>
-		<Image_Big>monsters/gremlin_big.png</Image_Big>
-		<Image_Small>monsters/gremlin_small.png</Image_Small>
+		<Image>monsters/gremlin.png</Image>
 	</Monster>
 	<Monster>
 		<Name>Ghost</Name>
 		<Level>normal</Level>
+		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<HP>45</HP>
@@ -117,12 +118,12 @@
 		<Kill_Bonus_Type>speed</Kill_Bonus_Type>
 		<Kill_Bonus_Low>3</Kill_Bonus_Low>
 		<Kill_Bonus_High>5</Kill_Bonus_High>
-		<Image_Big>monsters/ghost_big.png</Image_Big>
-		<Image_Small>monsters/ghost_small.png</Image_Small>
+		<Image>monsters/ghost.png</Image>
 	</Monster>
 	<Monster>
 		<Name>Zombie</Name>
 		<Level>normal</Level>
+		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<HP>55</HP>
@@ -132,12 +133,12 @@
 		<Kill_Bonus_Type>strength</Kill_Bonus_Type>
 		<Kill_Bonus_Low>5</Kill_Bonus_Low>
 		<Kill_Bonus_High>10</Kill_Bonus_High>
-		<Image_Big>monsters/zombie_big.png</Image_Big>
-		<Image_Small>monsters/zombie_small.png</Image_Small>
+		<Image>monsters/zombie.png</Image>
 	</Monster>
 	<Monster>
 		<Name>Ogre</Name>
 		<Level>hard</Level>
+		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<HP>60</HP>
@@ -147,12 +148,12 @@
 		<Kill_Bonus_Type>strength</Kill_Bonus_Type>
 		<Kill_Bonus_Low>20</Kill_Bonus_Low>
 		<Kill_Bonus_High>30</Kill_Bonus_High>
-		<Image_Big>monsters/ogre_big.png</Image_Big>
-		<Image_Small>monsters/ogre_small.png</Image_Small>
+		<Image>monsters/ogre.png</Image>
 	</Monster>
 	<Monster>
 		<Name>Giant</Name>
 		<Level>hard</Level>
+		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<HP>80</HP>
@@ -162,12 +163,12 @@
 		<Kill_Bonus_Type>strength</Kill_Bonus_Type>
 		<Kill_Bonus_Low>20</Kill_Bonus_Low>
 		<Kill_Bonus_High>30</Kill_Bonus_High>
-		<Image_Big>monsters/giant_big.png</Image_Big>
-		<Image_Small>monsters/giant_small.png</Image_Small>
+		<Image>monsters/giant.png</Image>
 	</Monster>
 	<Monster>
 		<Name>Cyclops</Name>
 		<Level>hard</Level>
+		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<HP>70</HP>
@@ -177,7 +178,6 @@
 		<Kill_Bonus_Type>strength</Kill_Bonus_Type>
 		<Kill_Bonus_Low>20</Kill_Bonus_Low>
 		<Kill_Bonus_High>30</Kill_Bonus_High>
-		<Image_Big>monsters/cyclops_big.png</Image_Big>
-		<Image_Small>monsters/cyclops_small.png</Image_Small>
+		<Image>monsters/cyclops.png</Image>
 	</Monster>
 </Monsters>
