@@ -15,6 +15,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import general.Enums.Attacks;
 import general.Enums.Attributes;
 import general.Enums.ItemClasses;
 
@@ -37,9 +38,9 @@ public class AttacksLoader {
 	 * @throws SAXException 
 	 * @see AttacksLoader
 	 */
-	public static Map<String, AttackTemplate> run(String configpath) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException {
+	public static Map<Attacks, AttackTemplate> run(String configpath) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException {
 			
-		Map<String, AttackTemplate> attackTemplates = new HashMap<String, AttackTemplate>();
+		Map<Attacks, AttackTemplate> attackTemplates = new HashMap<Attacks, AttackTemplate>();
 		
 		File fXmlFile = new File(configpath + "Attacks.xml");
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -59,6 +60,7 @@ public class AttacksLoader {
 				Element eElement = (Element) nNode;
 				
 				//store current element's values
+				Attacks type;
 				String name, effectStr;
 				Attributes effect;
 				float statsLowMultiplier, statsHighMultiplier, hpDamage, hitProbability, x;
@@ -74,6 +76,12 @@ public class AttacksLoader {
 				//check if parsed values are valid and set enums
 				if (name.length() == 0) throw new IllegalArgumentException("Invalid Name \"" + name + "\" at Attack \"" + name + "\"");
 				
+				if (name.equals("Torso")) type = Attacks.TORSO;
+				else if (name.equals("Head")) type = Attacks.HEAD;
+				else if (name.equals("Arms")) type = Attacks.ARMS;
+				else if (name.equals("Legs")) type = Attacks.LEGS;
+				else throw new IllegalArgumentException("Invalid Name \"" + name + "\" at Attack \"" + name + "\"");
+				
 				if (effectStr.equals("hp")) effect = Attributes.HP;
 				else if (effectStr.equals("speed")) effect = Attributes.SPEED;
 				else if (effectStr.equals("accuracy")) effect = Attributes.ACCURACY;
@@ -88,9 +96,8 @@ public class AttacksLoader {
 				if (hitProbability < 0) throw new IllegalArgumentException("Invalid Hit Probability \"" + hitProbability + "\" at Attack \"" + name + "\"");
 				if (x < 0) throw new IllegalArgumentException("Invalid x \"" + x + "\" at Attack \"" + name + "\"");
 				
-				
 				//put template on list of available templates
-				attackTemplates.put(name, new AttackTemplate(name, effect, statsLowMultiplier, statsHighMultiplier, hpDamage, hitProbability, x));
+				attackTemplates.put(type, new AttackTemplate(type, effect, statsLowMultiplier, statsHighMultiplier, hpDamage, hitProbability, x));
 			}
 		}
 		

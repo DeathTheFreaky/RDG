@@ -27,6 +27,7 @@ import org.xml.sax.SAXException;
 import general.Enums.Attributes;
 import general.Enums.ItemClasses;
 import general.Enums.Modes;
+import general.Enums.RoomTypes;
 import general.Enums.Targets;
 
 /**Tries to parse XML Config File.
@@ -48,9 +49,9 @@ public class RoomsLoader {
 	 * @throws SAXException 
 	 * @see RoomsLoader
 	 */
-	public static Map<String, RoomTemplate> run(String configpath) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException {
+	public static Map<RoomTypes, RoomTemplate> run(String configpath) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException {
 		
-		 Map<String, RoomTemplate> roomTemplates = new HashMap<String, RoomTemplate>();
+		 Map<RoomTypes, RoomTemplate> roomTemplates = new HashMap<RoomTypes, RoomTemplate>();
 			
 		File fXmlFile = new File(configpath + "Rooms.xml");
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -70,6 +71,7 @@ public class RoomsLoader {
 				Element eElement = (Element) nNode;
 				
 				//allocate memory and store current element's values
+				RoomTypes type = null;
 				String name, description, image;
 				float itemMultiplier;
 				int itemCount;
@@ -80,13 +82,21 @@ public class RoomsLoader {
  					find_probabilities = new HashMap<String, Float>();
  					doorPositions = new boolean[4];
 					
-					name = eElement.getElementsByTagName("Name").item(0).getTextContent();
+				name = eElement.getElementsByTagName("Name").item(0).getTextContent();
 				description = eElement.getElementsByTagName("Description").item(0).getTextContent();
 				image = eElement.getElementsByTagName("Image").item(0).getTextContent();
 				itemMultiplier = Float.parseFloat(eElement.getElementsByTagName("Item_Multiplier").item(0).getTextContent());
 				itemCount = Integer.parseInt(eElement.getElementsByTagName("Item_Count").item(0).getTextContent());
 				
 				//check if parsed values are valid and set enums
+				if (name.equals("Dead End")) type = RoomTypes.DEADEND;
+				else if (name.equals("Hallway")) type = RoomTypes.HALLWAY;
+				else if (name.equals("Turn")) type = RoomTypes.TURN;
+				else if (name.equals("Junction")) type = RoomTypes.JUNCTION;
+				else if (name.equals("T-Junction")) type = RoomTypes.TJUNCTION;
+				else if (name.equals("Treasure Chamber")) type = RoomTypes.TREASURECHAMBER;
+				else throw new IllegalArgumentException("Invalid RoomType \"" + name + "\" at Room \"" + name + "\"");
+				
 				if (name.length() == 0) throw new IllegalArgumentException("Invalid Name \"" + name + "\" at Room \"" + name + "\"");
 				
 				if (itemMultiplier < 0) throw new IllegalArgumentException("Invalid Item Multiplier \"" + itemMultiplier + "\" at Room \"" + name + "\"");
@@ -158,7 +168,7 @@ public class RoomsLoader {
 					doorPositions[3] = w == 1;	
 					
 					//put template on list of available templates
-					roomTemplates.put(name, new RoomTemplate(name, description, image, itemMultiplier, itemCount, 
+					roomTemplates.put(type, new RoomTemplate(type, description, image, itemMultiplier, itemCount, 
 							monster, find_probabilities, doorPositions));
 				}
 		}

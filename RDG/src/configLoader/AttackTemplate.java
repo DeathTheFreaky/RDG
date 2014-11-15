@@ -1,5 +1,6 @@
 package configLoader;
 
+import general.Enums.Attacks;
 import general.Enums.Attributes;
 
 /**AttackTemplate is used to store the default Attack values.
@@ -9,7 +10,7 @@ import general.Enums.Attributes;
  */
 public class AttackTemplate {
 	
-	private String name;
+	private Attacks type;
 	private Attributes effect;
 	private float statsLowMultiplier, statsHighMultiplier, hpDamage, hitProbability, x;
 	
@@ -24,9 +25,11 @@ public class AttackTemplate {
 	 * @param x
 	 * @see AttackTemplate
 	 */
-	public AttackTemplate(String name, Attributes effect, float statsLowMultiplier, 
+	public AttackTemplate(Attacks type, Attributes effect, float statsLowMultiplier, 
 			float statsHighMultiplier, float hpDamage, float hitProbability, float x) {
-		this.name = name;
+
+		
+		this.type = type;
 		this.effect = effect;
 		this.statsLowMultiplier = statsLowMultiplier;
 		this.statsHighMultiplier = statsHighMultiplier;
@@ -38,8 +41,8 @@ public class AttackTemplate {
 	/**
 	 * @return Attack's name
 	 */
-	public String getName() {
-		return name;
+	public Attacks getType() {
+		return type;
 	}
 
 	/**

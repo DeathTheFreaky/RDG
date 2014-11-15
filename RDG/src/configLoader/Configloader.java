@@ -1,5 +1,8 @@
 package configLoader;
 
+import general.Enums.Attacks;
+import general.Enums.RoomTypes;
+
 import java.io.IOException;
 import java.util.Map;
 
@@ -16,10 +19,10 @@ public class Configloader {
 	
 	private String configpath; //path where all XML config files are stored
 	private Map<String, ArmamentTemplate> ArmamentTemplates;
-	private Map<String, AttackTemplate> attackTemplates;
+	private Map<Attacks, AttackTemplate> attackTemplates;
 	private Map<String, MonsterTemplate> monsterTemplates;
 	private Map<String, PotionTemplate> potionTemplates;
-	private Map<String, RoomTemplate> roomTemplates;
+	private Map<RoomTypes, RoomTemplate> roomTemplates;
 	private Map<String, WeaponTemplate> weaponTemplates;
 	
 	/**Constructs a Configloader passing the path where all config XML files are stored.
@@ -61,7 +64,7 @@ public class Configloader {
 	/**
 	 * @return Room Template class
 	 */
-	public Map<String, RoomTemplate> getRoomTemplates() {
+	public Map<RoomTypes, RoomTemplate> getRoomTemplates() {
 		return roomTemplates;
 	}
 
@@ -75,7 +78,7 @@ public class Configloader {
 	/**
 	 * @return Attack Template class
 	 */
-	public Map<String, AttackTemplate> getAttackTemplates() {
+	public Map<Attacks, AttackTemplate> getAttackTemplates() {
 		return attackTemplates;
 	}
 	
