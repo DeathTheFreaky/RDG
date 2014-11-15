@@ -11,6 +11,8 @@ import org.newdawn.slick.Image;
  */
 
 public class Element {
+	
+	/* At the beginning, one cannot know if it is player 1 or player 2 -> make variables protected so they can be changed later on */
 
 	/* Here is the Image referenced */
 	protected Image image;

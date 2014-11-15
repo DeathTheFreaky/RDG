@@ -9,6 +9,7 @@ import org.newdawn.slick.SlickException;
 
 import elements.Creature;
 import views.GameEnvironment;
+import general.GroundFactory;
 import general.ResourceManager;
 import general.Enums.CreatureType;
 import general.Enums.Directions;
@@ -27,9 +28,6 @@ public class Player extends Creature {
 	public enum ViewingDirections {
 		NORTH, EAST, SOUTH, WEST
 	}*/
-	
-	/* to be deleted once map class draws all stuff */
-	Image playerImage;
 
 	/* is used for Players Movement and Rotation during Update */
 	boolean up, right, down, left = false;
@@ -64,8 +62,22 @@ public class Player extends Creature {
 	 * @throws SlickException
 	 * @see Player
 	 */
-	public Player() throws SlickException {
+	/*public Player() throws SlickException {
+		
 		this("Player" + (1 + totalNumberOfPlayers), new Point(0, 0));
+	}*/
+	
+	/**Constructs a Player.<br>
+	 * Player will be positioned automatically in the upper left or lower right corner, depending on its player number.
+	 * 
+	 * @param creatureName
+	 * @param image
+	 * @param type
+	 * @throws SlickException
+	 */
+	public Player(String creatureName, Image image, CreatureType type) throws SlickException {
+		
+		this(creatureName, image, new Point(0, 0), type);
 	}
 
 	/**Constructs a Player.<br>
@@ -76,9 +88,10 @@ public class Player extends Creature {
 	 * @throws SlickException
 	 * @see Player
 	 */
-	public Player(String creatureName, Point originOfGameEnvironment) throws SlickException {
+	public Player(String creatureName, Image image, Point originOfGameEnvironment, CreatureType type) throws SlickException {
 		
-		super(creatureName, new ResourceManager().getInstance().PLAYER, CreatureType.PLAYER, 100, 10, 10, 10);
+		/* at first create player as player1 - later check if it is player 1 or 2 and change type accordingly */
+		super(creatureName, image, type, 100, 10, 10, 10);
 		
 		this.originOfGameEnvironment = originOfGameEnvironment;
 
@@ -88,13 +101,11 @@ public class Player extends Creature {
 		 * Das mit der static Variable funktioniert wahrscheinlich nicht, weil
 		 * auf 2 PCs die Klassen instanziiert werden
 		 */
-		playerNumber = ++totalNumberOfPlayers;
-
-		/*
-		 * Hier sollte überprüft werden, ob es sich um den Spieler oder den
-		 * Gegner handelt, damit man eine entsprechende Grafik einbinden kann
-		 */
-		playerImage = new ResourceManager().getInstance().PLAYER;
+		playerNumber = ++totalNumberOfPlayers;	
+		
+		/* set player number according to CreatureType */
+		if (type == CreatureType.PLAYER1) playerNumber = 1;
+		else if (type == CreatureType.PLAYER2) playerNumber = 2;
 
 		/* is needed for some values contained in the Map Class */
 		map = new Map().getInstance();
@@ -240,7 +251,7 @@ public class Player extends Creature {
 	 * @param graphics
 	 */
 	public void draw(GameContainer container, Graphics graphics) {
-		graphics.drawImage(playerImage,
+		graphics.drawImage(image,
 				(originOfGameEnvironment.x + position.x - cameraPosition.x)
 						* GameEnvironment.BLOCK_SIZE,
 				(originOfGameEnvironment.y + position.y - cameraPosition.y)

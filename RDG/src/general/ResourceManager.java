@@ -12,7 +12,8 @@ public class ResourceManager {
 	public SpriteSheet TILES; //more efficient picture loading 
 	
 	/* only for testing purposes - actual game will need collection for all types */
-	public Image PLAYER;
+	public Image PLAYER1;
+	public Image PLAYER2;
 	public Image HELMET;
 	public Image ARMS;
 	public Image CUIRASS;
@@ -38,7 +39,8 @@ public class ResourceManager {
 	 * @throws SlickException
 	 */
 	private void loadResources() throws SlickException {
-		PLAYER = new Image("./pictures/soldier_32x32.png");
+		PLAYER1 = new Image("./pictures/soldier_32x32.png");
+		PLAYER2 = new Image("./pictures/soldier_32x32.png");
 		ARMOR_BACKGROUND = new Image("./pictures/warrior_160x160.png");
 		TILES = new SpriteSheet("./pictures/tileset.png", 32, 32);
 		HELMET = new Image("./pictures/Head.png");

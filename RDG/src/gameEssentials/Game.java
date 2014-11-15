@@ -13,6 +13,7 @@ import views.ArmorView;
 import views.Chat;
 import views.GameEnvironment;
 import views.InventoryView;
+import general.Enums.CreatureType;
 import general.GroundFactory;
 import general.ResourceManager;
 import general.Enums.Updates;
@@ -92,8 +93,12 @@ public class Game extends BasicGame {
 		chatOrigin = new Point(0, 12);
 		armorViewOrigin = new Point(15, 0);
 		inventoryViewOrigin = new Point(15, 12);
-
-		player = new Player(playerName, gameEnvironmentOrigin);
+		
+		/* network lobby must be called before this to detect player type */
+		CreatureType playerType = CreatureType.PLAYER1;
+		if (playerType == CreatureType.PLAYER1) player = new Player(playerName, new ResourceManager().getInstance().PLAYER1, gameEnvironmentOrigin, playerType);
+		else if (playerType == CreatureType.PLAYER2) player = new Player(playerName, new ResourceManager().getInstance().PLAYER2, gameEnvironmentOrigin, playerType);
+		
 		map = new Map().getInstance();
 		map.setPlayer(player);
 		map.fillMap();
