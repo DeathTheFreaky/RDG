@@ -10,6 +10,7 @@ import org.newdawn.slick.SlickException;
 import elements.Creature;
 import views.GameEnvironment;
 import general.ResourceManager;
+import general.Enums.CreatureType;
 import general.Enums.Directions;
 import general.Enums.Updates;
 import general.Enums.ViewingDirections;
@@ -17,7 +18,7 @@ import general.Enums.ViewingDirections;
 /**Player stores all information associated with the player.
  * 
  */
-public class Player {
+public class Player extends Creature {
 
 	/*public enum Updates {
 		KEY_PRESSED, KEY_RELEASED
@@ -26,9 +27,9 @@ public class Player {
 	public enum ViewingDirections {
 		NORTH, EAST, SOUTH, WEST
 	}*/
-
-	/* The Image, which displays the Player */
-	private Image playerImage;
+	
+	/* to be deleted once map class draws all stuff */
+	Image playerImage;
 
 	/* is used for Players Movement and Rotation during Update */
 	boolean up, right, down, left = false;
@@ -39,14 +40,8 @@ public class Player {
 	/* is needed to find out if its Player 1 or Player 2 */
 	private static int totalNumberOfPlayers = 0;
 
-	/* saves the name of the Players */
-	public String NAME;
-
 	/* specifies if it is player1 or player2 */
 	private int playerNumber;
-
-	/* tracks the Position of the player on the map */
-	private Point position;
 
 	/* tracks the position of the camera on the map */
 	private Point cameraPosition;
@@ -81,8 +76,10 @@ public class Player {
 	 * @throws SlickException
 	 * @see Player
 	 */
-	public Player(String name, Point originOfGameEnvironment) throws SlickException {
-		this.NAME = name;
+	public Player(String creatureName, Point originOfGameEnvironment) throws SlickException {
+		
+		super(creatureName, new ResourceManager().getInstance().PLAYER, CreatureType.PLAYER, 100, 10, 10, 10);
+		
 		this.originOfGameEnvironment = originOfGameEnvironment;
 
 		/* unique player number, to identify a player */
