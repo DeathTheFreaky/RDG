@@ -7,6 +7,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
+import elements.Creature;
 import views.GameEnvironment;
 import general.ResourceManager;
 import general.Enums.Directions;

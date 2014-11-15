@@ -27,12 +27,6 @@ public class Monster extends Creature {
 	
 	/* kill bonus defines, how much of an attribute gain the player receives when killing the monster */
 	public final float killBonus;
-	
-	/* Attributes of the Monster */
-	private float hp;
-	private float strength;
-	private float speed;
-	private float accuracy;
 		
 	/* classMultiplier, statsLowMulitplier and statsHighMultiplier, killBonusLow and killBonusHigh are needed in Factory Class; 
 	 * statsLowMulitplier and statsHighMultiplier are used by randomClass to return value within this interval;
@@ -57,14 +51,10 @@ public class Monster extends Creature {
 	public Monster(String creatureName, Image image, Levels level, Attributes killBonusType, 
 			float killBonus, float hp, float strength, float speed, float accuracy) {
 		
-		super(creatureName, image, CreatureType.MONSTER);
+		super(creatureName, image, CreatureType.MONSTER, hp, strength, speed, accuracy);
 		
 		this.level = level;
 		this.killBonusType = killBonusType;
 		this.killBonus = killBonus;
-		this.hp = hp;
-		this.strength = strength;
-		this.speed = speed;
-		this.accuracy = accuracy;
 	}
 }
