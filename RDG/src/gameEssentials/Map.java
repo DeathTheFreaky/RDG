@@ -7,6 +7,7 @@ import org.newdawn.slick.SlickException;
 
 import elements.Element;
 import general.GroundFactory;
+import general.ResourceManager;
 
 /**Map is used to store all position information of players, rooms and items.
  * 
@@ -264,6 +265,17 @@ public class Map {
 				}
 			}
 		}
+		
+		//test print loaded armament stuff
+		ResourceManager testloader = null;
+		try {
+			testloader = new ResourceManager().getInstance();
+		} catch (SlickException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		overlay[1][1] = new Element("Plate Helmet", testloader.IMAGES.get("Plate Helmet"),
+				1, 1);
 		
 	}
 }

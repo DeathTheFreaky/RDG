@@ -2,13 +2,19 @@ package gameEssentials;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
+import org.xml.sax.SAXException;
 
+import configLoader.ConfigTestprinter;
+import configLoader.Configloader;
 import views.ArmorView;
 import views.Chat;
 import views.GameEnvironment;
@@ -73,6 +79,15 @@ public class Game extends BasicGame {
 
 	/* Map which is needed for each Player */
 	private Map map;
+	
+	/* resource path */
+	public static final String IMAGEPATH = "./resources/images/";
+	
+	//path to config files
+	public static final String CONFIGPATH = "config/Results/";
+			
+	//create instance of configloader
+	private Configloader configloader = null;
 
 	/* Declare all classes, we need for the game (Factory, Resourceloader) */
 	// private ResourceManager resourceManager;
@@ -101,20 +116,34 @@ public class Game extends BasicGame {
 	@Override
 	public void init(GameContainer container) throws SlickException {
 		
+		/* load config - must be successful in order to continue */
+		try {
+			configloader = new Configloader().getInstance();
+		} catch (IllegalArgumentException | ParserConfigurationException
+				| SAXException | IOException e) {
+			e.printStackTrace();
+			System.err.println("\nParsing Configuration Files failed\nExiting program\n");
+			System.exit(1);
+		}
+				
+		//Test Printing
+		/*ConfigTestprinter configprinter = new ConfigTestprinter(configloader);
+		configprinter.print();*/
+				
 		/* Points in tile numbers */
 		gameEnvironmentOrigin = new Point(0, 0);
 		chatOrigin = new Point(0, 12);
 		armorViewOrigin = new Point(15, 0);
 		inventoryViewOrigin = new Point(15, 12);
 		
+		/* Initialize Factory and Manager classes! */
+		new ResourceManager().getInstance();	
+		new GroundFactory().setUpFactory();
+		
 		/* network lobby must be called before this to detect player type */
 		CreatureType playerType = CreatureType.PLAYER1;
-		if (playerType == CreatureType.PLAYER1) player = new Player(playerName, new ResourceManager().getInstance().PLAYER1, gameEnvironmentOrigin, playerType);
-		else if (playerType == CreatureType.PLAYER2) player = new Player(playerName, new ResourceManager().getInstance().PLAYER2, gameEnvironmentOrigin, playerType);
-		
-		/* Initialize Factory and Manager classes! */
-		new GroundFactory().setUpFactory();
-		new ResourceManager().getInstance();
+		if (playerType == CreatureType.PLAYER1) player = new Player(playerName, new ResourceManager().getInstance().IMAGES.get("Player1"), gameEnvironmentOrigin, playerType);
+		else if (playerType == CreatureType.PLAYER2) player = new Player(playerName, new ResourceManager().getInstance().IMAGES.get("Player2"), gameEnvironmentOrigin, playerType);
 		
 		map = new Map().getInstance();
 		map.setPlayer(player);

@@ -108,12 +108,13 @@ public class GameEnvironment extends View {
 
 	@Override
 	public void draw(GameContainer container, Graphics graphics) {
-		/* downright is refferd to in tile numbers */
+		/* downright is refered to in tile numbers */
 		for (int i = 0; i < downright.x; i++) {
 			for (int j = 0; j < downright.y; j++) {
 				if ((1 + i) * BLOCK_SIZE <= size.width
 						&& (1 + j) * BLOCK_SIZE <= size.height) {
-					graphics.drawImage(scope[i][j].getImage(), origin.x * BLOCK_SIZE + i * BLOCK_SIZE,
+					/* draw all image in GameEnvironment as 32x32, no matter if they are 32x32 or 64x64 sized */
+					graphics.drawImage(scope[i][j].getImage().getScaledCopy(32, 32), origin.x * BLOCK_SIZE + i * BLOCK_SIZE,
 							origin.y * BLOCK_SIZE + j * BLOCK_SIZE);
 				} else {
 					System.out.println("Image would extend the scope "

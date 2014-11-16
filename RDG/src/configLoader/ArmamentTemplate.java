@@ -1,5 +1,7 @@
 package configLoader;
 
+import org.newdawn.slick.Image;
+
 import general.Enums.Armor;
 import general.Enums.ItemClasses;
 
