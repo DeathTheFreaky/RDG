@@ -1,13 +1,19 @@
 package general;
 
 import java.awt.Dimension;
+import java.io.IOException;
 import java.util.Map;
 
-import org.newdawn.slick.SlickException;
+import javax.xml.parsers.ParserConfigurationException;
 
+import org.newdawn.slick.SlickException;
+import org.xml.sax.SAXException;
+
+import configLoader.Configloader;
 import configLoader.RoomTemplate;
 import elements.Element;
 import elements.Room;
+import gameEssentials.Game;
 import general.Enums.RoomTypes;
 
 /**RoomFactory receives a Room's default parameters form RoomTemplate class.<br>
@@ -19,9 +25,8 @@ import general.Enums.RoomTypes;
 public class RoomFactory {
 	
 	/* make sure RoomFactory can only be instantiated once*/
-	protected static RoomFactory FACTORY = null;
+	private static RoomFactory FACTORY = null;
 	private static ResourceManager resources = null;
-	private static boolean initialized = false;
 	
 	/* size of the room */
 	Dimension size;
@@ -35,12 +40,22 @@ public class RoomFactory {
 	/* overlay shall be filled with items and monsters */
 	Element[][] overlay = null;
 	
+	/* other Factories needed to fill Room */
+	private ArmamentFactory armamentFactory = null;
+	private PotionFactory potionFactory = null;
+	private WeaponFactory weaponFactory = null;
+	private MonsterFactory monsterFactory = null;
+	
 	/* GroundFactory used to fill the Room's ground textures */
 	//GroundFactory groundFactory; //use only if different rooms need different ground textures
 	
-	public RoomFactory(Map<RoomTypes, RoomTemplate> roomTemplates) throws SlickException {
-		this.roomTemplates = roomTemplates;
-		//groundFactory = new GroundFactory().setUpFactory();
+	public RoomFactory() throws SlickException {
+		try {
+			this.roomTemplates = new Configloader().getInstance().getRoomTemplates();
+		} catch (IllegalArgumentException | ParserConfigurationException
+				| SAXException | IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**Creates a RoomFactory and loads its static values only ONCE!!!<br>
@@ -48,14 +63,13 @@ public class RoomFactory {
 	 * Static variables only get initialized one time and all instances use the
 	 * same variables --> less memory is needed!
 	 * 
-	 * @return initizialed RoomFactory
+	 * @return initialized RoomFactory
 	 * @throws SlickException
 	 * @see RoomFactory
 	 */
-	public RoomFactory setUpFactory(Map<RoomTypes, RoomTemplate> roomTemplates) throws SlickException {
-		if (!initialized) {
-			initialized = true;
-			FACTORY = new RoomFactory(roomTemplates);
+	public RoomFactory getInstance() throws SlickException {
+		if (FACTORY == null) {
+			FACTORY = new RoomFactory();
 		}
 		return FACTORY;
 	}
@@ -66,7 +80,7 @@ public class RoomFactory {
 	 */
 	public Room createRoom(RoomTypes type) {
 		
-		size = new Dimension(12, 9);
+		size = new Dimension(Game.ROOMWIDTH, Game.ROOMHEIGHT);
 		
 		/* null-initialize overlay */
 		for (int i = 0; i < size.width; i++) {
@@ -76,8 +90,9 @@ public class RoomFactory {
 		}
 		
 		//fillGround(); -> implemented in map - only needed if rooms need specific ground
+		//return new Room(type, background, overlay);
 		
-		return new Room(type, background, overlay);
+		return new Room(type, background, overlay); //background is created by Map but passed here for simpler changes
 	}
 	
 	/**fills the Room's Ground with textures 

@@ -138,7 +138,7 @@ public class Game extends BasicGame {
 		
 		/* Initialize Factory and Manager classes! */
 		new ResourceManager().getInstance();	
-		new GroundFactory().setUpFactory();
+		new GroundFactory().getInstance();
 		
 		/* network lobby must be called before this to detect player type */
 		CreatureType playerType = CreatureType.PLAYER1;

@@ -79,7 +79,7 @@ public class Map {
 		minimap = new Element[Game.MINIMAPWIDTH][Game.MINIMAPHEIGHT];
 		scope = new Element[Game.SCOPEWIDTH][Game.SCOPEHEIGHT];
 		playerScopePosition = new Point();
-		groundFactory = new GroundFactory().setUpFactory();
+		groundFactory = new GroundFactory().getInstance();
 
 		/* null-initialize overlay */
 		for (int i = 0; i < size.width; i++) {

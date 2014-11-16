@@ -78,7 +78,7 @@ public class ResourceManager {
 	        IMAGES.put(entry.getKey(), new Image (Game.IMAGEPATH + entry.getValue().getImage()));
 	    }
 	    // no images yet
-	    /*for (Entry<String, PotionTemplate> entry : configloader.getPotionTemplates().entrySet()) {
+	    for (Entry<String, PotionTemplate> entry : configloader.getPotionTemplates().entrySet()) {
 	        IMAGES.put(entry.getKey(), new Image (Game.IMAGEPATH + entry.getValue().getImage()));
 	    }
 	    for (Entry<String, WeaponTemplate> entry : configloader.getWeaponTemplates().entrySet()) {
@@ -86,14 +86,14 @@ public class ResourceManager {
 	    }
 	    for (Entry<String, MonsterTemplate> entry : configloader.getMonsterTemplates().entrySet()) {
 	        IMAGES.put(entry.getKey(), new Image (Game.IMAGEPATH + entry.getValue().getImage()));
-	    }*/
+	    }
 	    	    
 	    /* Print which images are stored now */
-	    Iterator testit = IMAGES.entrySet().iterator();
+	    /*Iterator testit = IMAGES.entrySet().iterator();
 	    while (testit.hasNext()) {
 	        Map.Entry pairs = (Map.Entry)testit.next();
 	        System.out.println(pairs.getKey() + " = " + pairs.getValue());
-	    }
+	    }*/
 	}
 
 	/**Returns the one and only instance of ResourceManager and triggers loading all Ressources.<br>

@@ -18,9 +18,6 @@ public class GroundFactory {
 
 	private static SpriteSheet tiles = null;
 	private static ResourceManager resources = null;
-
-	private static boolean initialized = false;
-
 	
 	/**Constructs a GroundFactory.<br>
 	 * 
@@ -33,24 +30,20 @@ public class GroundFactory {
 		
 	}
 
-	
-	
 	/**Creates a GroundFactory and loads its static values only ONCE!!!<br>
 	 * 
 	 * Static variables only get initialized one time and all instances use the
 	 * same variables --> less memory is needed!
 	 * 
-	 * @return initizialed GroundFactory
+	 * @return initialized GroundFactory
 	 * @throws SlickException
 	 * @see GroundFactory
 	 */
-	public GroundFactory setUpFactory() throws SlickException {
-		if (!initialized) {
-			initialized = true;
+	public GroundFactory getInstance() throws SlickException {
+		if (FACTORY == null) {
 			FACTORY = new GroundFactory();
 			FACTORY.loadFactory();
 		}
-		
 		return FACTORY;
 	}
 	
@@ -71,7 +64,7 @@ public class GroundFactory {
 	 */
 	public Element createGreyGround(int positionX, int positionY) {
 
-		if (!initialized) {
+		if (FACTORY == null) {
 			System.out.println("Error! GroundFactory isn't initialized!");
 			System.out.println("Call Method: >GroundFactory.setUpFactory()<");
 			return null;
@@ -115,7 +108,7 @@ public class GroundFactory {
 	 */
 	public Element createDarkGreyGround(int positionX, int positionY) {
 
-		if (!initialized) {
+		if (FACTORY == null) {
 			System.out.println("Error! GroundFactory isn't initialized!");
 			System.out.println("Call Method: >GroundFactory.setUpFactory()<");
 			return null;
@@ -158,7 +151,7 @@ public class GroundFactory {
 	 */
 	public Element createYellowGroundOne(int positionX, int positionY) {
 
-		if (!initialized) {
+		if (FACTORY == null) {
 			System.out.println("Error! GroundFactory isn't initialized!");
 			System.out.println("Call Method: >GroundFactory.setUpFactory()<");
 			return null;
@@ -204,7 +197,7 @@ public class GroundFactory {
 	 */
 	public Element createYellowGroundTwo(int positionX, int positionY) {
 
-		if (!initialized) {
+		if (FACTORY == null) {
 			System.out.println("Error! GroundFactory isn't initialized!");
 			System.out.println("Call Method: >GroundFactory.setUpFactory()<");
 			return null;
@@ -251,7 +244,7 @@ public class GroundFactory {
 	 */
 	public Element createBrownGround(int positionX, int positionY) {
 
-		if (!initialized) {
+		if (FACTORY == null) {
 			System.out.println("Error! GroundFactory isn't initialized!");
 			System.out.println("Call Method: >GroundFactory.setUpFactory()<");
 			return null;

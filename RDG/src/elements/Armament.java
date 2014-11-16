@@ -38,6 +38,21 @@ public class Armament extends Equipment {
 	 * statsLowMulitplier and statsHighMultiplier are used by randomClass to return value within this interval;
 	 * classMultiplier is used on all stats of this class for balancing */
 
+	/**Constructs an Armament.<br>
+	 * Shall only be called from a Factory Class and the Armament's values shall be final.<br>
+	 * Armor and speed values will be set according to a random factor between statsLowMulitplier and statsHighMultiplier 
+	 * returned by randomClass and a balancing classMultiplier.
+	 * 
+	 * @param armamentName
+	 * @param image
+	 * @param type
+	 * @param itemClass
+	 * @param armor
+	 * @param speed
+	 * @param bonus
+	 * @param armorType
+	 * @see Armament
+	 */
 	public Armament(String armamentName, Image image, String type, ItemClasses itemClass,
 			float armor, float speed, float bonus, Armor armorType) {
 		
