@@ -35,6 +35,19 @@ public class Game extends BasicGame {
 	public static final int ARMOR_HEIGHT = 240;
 	public static final int INVENTORY_WIDTH = 160;
 	public static final int INVENTORY_HEIGHT = 240;
+	
+	//final if these values cannot be changed later on - if we want to change roomsize, minimap size, scope size -> don't make final
+	/* room, minimap, scope sizes */
+	public static int ROOMWIDTH = 8; //should be even -> door's width = 2
+	public static int ROOMHEIGHT = 6; //should be even -> door's width = 2
+	public static int MINIMAPWIDTH = 5;
+	public static int MINIMAPHEIGHT = 5;
+	public static int SCOPEWIDTH = 15;
+	public static int SCOPEHEIGHT = 12;
+	
+	/* room numbers */
+	public static int ROOMSHOR = 5;
+	public static int ROOMSVER = 5;
 
 	/* every milliseconds an Update is made */
 	private final int UPDATE = 200;
@@ -99,15 +112,14 @@ public class Game extends BasicGame {
 		if (playerType == CreatureType.PLAYER1) player = new Player(playerName, new ResourceManager().getInstance().PLAYER1, gameEnvironmentOrigin, playerType);
 		else if (playerType == CreatureType.PLAYER2) player = new Player(playerName, new ResourceManager().getInstance().PLAYER2, gameEnvironmentOrigin, playerType);
 		
+		/* Initialize Factory and Manager classes! */
+		new GroundFactory().setUpFactory();
+		new ResourceManager().getInstance();
+		
 		map = new Map().getInstance();
 		map.setPlayer(player);
 		map.fillMap();
 		
-
-		/* Initialize Factory and Manager classes! */
-		new GroundFactory().setUpFactory();
-		new ResourceManager().getInstance();
-
 		/* Dimension is specified in pixels */
 		gameEnvironment = new GameEnvironment("GameEnvironment",
 

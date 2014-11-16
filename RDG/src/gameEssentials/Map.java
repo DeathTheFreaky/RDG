@@ -38,7 +38,7 @@ public class Map {
 	/* this arrays save all Elements to be displayed */
 	private Element[][] background = null;
 	private Element[][] overlay = null;
-	// private boolean[][] passable = null;
+	//private boolean[][] passable = null; //walls are not passable -> is being determined via overlay null -> yes or no!
 
 	/* saves the different kinds of rooms for the Minimap */
 	private Element[][] minimap = null;
@@ -71,11 +71,12 @@ public class Map {
 	 * @throws SlickException
 	 */
 	public void init() throws SlickException {
-		size = new Dimension(56, 41);
+		size = new Dimension(Game.ROOMSHOR * (Game.ROOMWIDTH + 1) + 1, Game.ROOMSVER * (Game.ROOMHEIGHT + 1) + 1); //5 rooms + walls
 		background = new Element[size.width][size.height];
 		overlay = new Element[size.width][size.height];
-		minimap = new Element[5][5];
-		scope = new Element[15][12];
+		//passable = new boolean[size.width][size.height];
+		minimap = new Element[Game.MINIMAPWIDTH][Game.MINIMAPHEIGHT];
+		scope = new Element[Game.SCOPEWIDTH][Game.SCOPEHEIGHT];
 		playerScopePosition = new Point();
 		groundFactory = new GroundFactory().setUpFactory();
 
@@ -85,6 +86,13 @@ public class Map {
 				overlay[i][j] = null;
 			}
 		}
+		
+		/* true-initialize passable */
+		/*for (int i = 0; i < size.width; i++) {
+			for (int j = 0; j < size.height; j++) {
+				passable[i][j] = true;
+			}
+		}*/
 	}
 
 	/**
@@ -152,11 +160,13 @@ public class Map {
 	 * @return scope for the Player
 	 */
 	public Element[][] getScope() {
-		for (int i = 0; i < 15; i++) {
-			for (int j = 0; j < 12; j++) {
-				/* actually, this starts filling the scope form upper left corner, so playerScopePosition is upper left corner of scope */
-				scope[i][j] = background[playerScopePosition.x + i][playerScopePosition.y
-						+ j];
+		for (int i = 0; i < Game.SCOPEWIDTH; i++) {
+			for (int j = 0; j < Game.SCOPEHEIGHT; j++) {
+				/* starts filling the scope form upper left corner */
+				scope[i][j] = background[playerScopePosition.x + i][playerScopePosition.y + j];
+				if (overlay[playerScopePosition.x + i][playerScopePosition.y + j] != null) {
+					scope[i][j] = overlay[playerScopePosition.x + i][playerScopePosition.y + j];
+				}
 			}
 		}
 		return scope;
@@ -192,7 +202,7 @@ public class Map {
 		}
 	}
 
-	/**Checks in the overlay array if the headed field is passable (not a wall etc.).
+	/**Checks in the passable array if the headed field is passable (not a wall etc.).
 	 * @param fieldX
 	 * @param fieldY
 	 * @return
@@ -207,7 +217,7 @@ public class Map {
 		}
 		return false;
 	}
-
+	
 	/**update the map
 	 * 
 	 */
@@ -216,23 +226,44 @@ public class Map {
 		// overlay
 		//
 	}
-
-	/**fills the Map (for Experimenting, Testing)
+	
+	/**Fills the map with rooms and their contents.
 	 * 
 	 */
 	public void fillMap() {
+		
 		for (int i = 0; i <= getWidth(); i++) {
 			for (int j = 0; j <= getHeight(); j++) {
-
-				if (i % 2 == 1 || j % 2 == 1) {
-					background[i][j] = groundFactory
-							.createYellowGroundTwo(i, j);
-				} else {
-					background[i][j] = groundFactory.createBorder(i, j);
+				
+				/* load ground textures -> testing only */
+				background[i][j] = groundFactory
+						.createYellowGroundOne(i, j);
+				
+				int wallmodx = i % (Game.ROOMWIDTH+1);
+				int wallmody = j % (Game.ROOMHEIGHT+1);
+				
+				/* load walls and set them to not passable */
+				if (wallmodx == 0 || wallmody == 0) {
+					overlay[i][j] = groundFactory
+							.createDarkGreyGround(i, j);
+					//passable[i][j] = false;
+				} 
+				
+				/* add doors in the middle -> testing only -> shall be moved to labyrinth algorithm */
+								
+				/* horizontal doors */
+				if ((wallmodx == Game.ROOMWIDTH/2 || wallmodx == Game.ROOMWIDTH/2+1) && wallmody == 0 && j != 0 && j != getHeight()) {
+					overlay[i][j] = null;
+					//passable[i][j] = true;
 				}
-
+				
+				/* vertical doors */
+				if (wallmodx == 0 && i != 0 && i != getWidth() && (wallmody == Game.ROOMHEIGHT/2 || wallmody == Game.ROOMHEIGHT/2+1)) {
+					overlay[i][j] = null;
+					//passable[i][j] = true;
+				}
 			}
 		}
+		
 	}
-
 }
