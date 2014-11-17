@@ -10,7 +10,7 @@ import general.Enums.WeaponTypes;
  */
 public class WeaponTemplate {
 	
-	private String name, imageBig, imageSmall;
+	private String name, image;
 	private ItemClasses itemClass;
 	private WeaponTypes type;
 	private float classMultiplier, statsLowMultiplier, statsHighMultiplier, attack, speed, accuracy, defence;
@@ -34,14 +34,13 @@ public class WeaponTemplate {
 	 * @param max
 	 * @see WeaponTemplate
 	 */
-	public WeaponTemplate(String name, String imageBig, String imageSmall, ItemClasses itemClass, WeaponTypes type, 
+	public WeaponTemplate(String name, String image, ItemClasses itemClass, WeaponTypes type, 
 			float classMultiplier, float statsLowMultiplier, float statsHighMultiplier, float attack, float speed, float accuracy, float defence, int slots, int max) {
 	
 		this.name = name;
 		this.itemClass = itemClass;
 		this.type = type;
-		this.imageBig = imageBig;
-		this.imageSmall = imageSmall;
+		this.image = image;
 		this.classMultiplier = classMultiplier;
 		this.statsLowMultiplier = statsLowMultiplier;
 		this.statsHighMultiplier = statsHighMultiplier;
@@ -75,17 +74,10 @@ public class WeaponTemplate {
 	}
 
 	/**
-	 * @return detailed image
+	 * @return image
 	 */
-	public String getImage_big() {
-		return imageBig;
-	}
-
-	/**
-	 * @return map image
-	 */
-	public String getImage_small() {
-		return imageSmall;
+	public String getImage() {
+		return image;
 	}
 
 	/**

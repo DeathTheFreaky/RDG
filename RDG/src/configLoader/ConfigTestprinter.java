@@ -1,5 +1,8 @@
 package configLoader;
 
+import general.Enums.Attacks;
+import general.Enums.RoomTypes;
+
 import java.util.Map.Entry;
 
 /**Prints all parsed XML config entries of a Configloader.
@@ -39,17 +42,17 @@ public class ConfigTestprinter {
 		  System.out.println(entry.getValue().getSpeed());
 		  System.out.println(entry.getValue().getType());
 		  System.out.println(entry.getValue().getBonus());
-		  System.out.println(entry.getValue().getImage_big());
-		  System.out.println(entry.getValue().getImage_small());
+		  System.out.println(entry.getValue().getImage());
 		  System.out.println();
 		}
 		
 		//Attacks
 		System.out.println("\n\n\nAttacks\n\n");
 		
-		for (Entry<String, AttackTemplate> entry : configloader.getAttackTemplates().entrySet()) {
+		for (Entry<Attacks, AttackTemplate> entry : configloader.getAttackTemplates().entrySet()) {
 		  
-		  System.out.println(entry.getValue().getName());
+		  System.out.println(entry.getValue().getType());
+		  System.out.println(entry.getValue().getClass_multiplier());
 		  System.out.println(entry.getValue().getStats_low_multiplier());
 		  System.out.println(entry.getValue().getStats_high_multiplier());
 		  System.out.println(entry.getValue().getHp_damage());
@@ -75,8 +78,7 @@ public class ConfigTestprinter {
 		  System.out.println(entry.getValue().getKill_bonus_type());
 		  System.out.println(entry.getValue().getKill_bonus_low());
 		  System.out.println(entry.getValue().getKill_bonus_high());
-		  System.out.println(entry.getValue().getImage_big());
-		  System.out.println(entry.getValue().getImage_small());
+		  System.out.println(entry.getValue().getImage());
 		  System.out.println();
 		}
 		
@@ -96,17 +98,16 @@ public class ConfigTestprinter {
 		  System.out.println(entry.getValue().getMode());
 		  System.out.println(entry.getValue().getX());
 		  System.out.println(entry.getValue().getN());
-		  System.out.println(entry.getValue().getImage_big());
-		  System.out.println(entry.getValue().getImage_small());
+		  System.out.println(entry.getValue().getImage());
 		  System.out.println();
 		}
 		
 		//Rooms
 		System.out.println("\n\n\nRooms\n\n");
 		
-		for (Entry<String, RoomTemplate> entry : configloader.getRoomTemplates().entrySet()) {
+		for (Entry<RoomTypes, RoomTemplate> entry : configloader.getRoomTemplates().entrySet()) {
 			  
-		  System.out.println(entry.getValue().getName());
+		  System.out.println(entry.getValue().getType());
 		  System.out.println(entry.getValue().getDescription());
 		  System.out.println(entry.getValue().getDoor_positions()[0]);
 		  System.out.println(entry.getValue().getDoor_positions()[1]);
@@ -143,8 +144,7 @@ public class ConfigTestprinter {
 		  System.out.println(entry.getValue().getSlots());
 		  System.out.println(entry.getValue().getMax());
 		  System.out.println(entry.getValue().getType());
-		  System.out.println(entry.getValue().getImage_big());
-		  System.out.println(entry.getValue().getImage_small());
+		  System.out.println(entry.getValue().getImage());
 		  System.out.println();
 		}
 	}

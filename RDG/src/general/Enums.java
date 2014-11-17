@@ -24,10 +24,13 @@ public class Enums {
 	 * LIFT -> lift poison effect
 	 */
 	public enum Modes {INCR, DECR, TINCR, TDECR, LIFT} 
-	public enum WeaponTypes {SINGLEHAND, TWOHAND}	
+	public enum WeaponTypes {SINGLEHAND, TWOHAND}
+	public enum Attacks {TORSO, HEAD, ARMS, LEGS}
+	public enum RoomTypes {DEADEND, HALLWAY, TURN, TJUNCTION, JUNCTION, TREASURECHAMBER}
 	public enum Directions {UP, RIGHT, DOWN, LEFT}
 	public enum Updates {KEY_PRESSED, KEY_RELEASED}
 	public enum ViewingDirections {NORTH, EAST, SOUTH, WEST}
 	public enum Channels {PRIVATE, PUBLIC}
 	public enum Armor {HEAD, CHEST, ARMS, LEGS, FEET, MAIN_WEAPON, SUB_WEAPON}
+	public enum CreatureType {PLAYER1, PLAYER2, MONSTER}
 }

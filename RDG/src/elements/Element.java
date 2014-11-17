@@ -11,15 +11,17 @@ import org.newdawn.slick.Image;
  */
 
 public class Element {
+	
+	/* At the beginning, one cannot know if it is player 1 or player 2 -> make variables protected so they can be changed later on */
 
 	/* Here is the Image referenced */
-	private Image image;
+	protected Image image;
 	/* This variable saves the position of the Shape in upper left corner in tile numbers */
-	private Point position;
+	protected Point position;
 	/* This variable declares if the Object is visible or not */
-	private boolean visible = true;
+	protected boolean visible = true;
 	/* saves the Name of the element */
-	public String NAME = null;
+	protected String NAME = null;
 	
 	
 

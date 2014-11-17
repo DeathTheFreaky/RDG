@@ -1,5 +1,7 @@
 package configLoader;
 
+import general.Enums.RoomTypes;
+
 import java.util.Map;
 
 /**RoomTemplate is used to store the default Room values.
@@ -9,7 +11,8 @@ import java.util.Map;
  */
 public class RoomTemplate {
 	
-	private String name, description, image;
+	private RoomTypes type;
+	private String description, image;
 	private float itemMultiplier;
 	private int itemCount;
 	private Map<String, Float> monster, find_probabilities;
@@ -27,10 +30,10 @@ public class RoomTemplate {
 	 * @param doorPositions
 	 * @see RoomTemplate
 	 */
-	public RoomTemplate(String name, String description, String image, float itemMultiplier, int itemCount, 
+	public RoomTemplate(RoomTypes type, String description, String image, float itemMultiplier, int itemCount, 
 			Map<String, Float> monster, Map<String, Float> find_probabilities, boolean[] doorPositions) {
-			
-			this.name = name;
+		
+			this.type = type;
 			this.description = description;
 			this.image = image;
 			this.itemMultiplier = itemMultiplier;
@@ -57,8 +60,8 @@ public class RoomTemplate {
 	/**
 	 * @return Room type name
 	 */
-	public String getName() {
-		return name;
+	public RoomTypes getType() {
+		return type;
 	}
 
 	/**

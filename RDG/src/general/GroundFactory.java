@@ -14,7 +14,7 @@ import elements.Element;
  */
 public class GroundFactory {
 	
-	protected static GroundFactory FACTORY = null;
+	private static GroundFactory FACTORY = null;
 
 	private static SpriteSheet tiles = null;
 	private static ResourceManager resources = null;
@@ -30,15 +30,15 @@ public class GroundFactory {
 	 * @see GroundFactory
 	 */
 	public GroundFactory() {
-	
+		
 	}
 
 	
 	
-	/**Creates a GroundFactory and load static values only ONCE!!!<br>
+	/**Creates a GroundFactory and loads its static values only ONCE!!!<br>
 	 * 
-	 * static variables only get initialized one time all instances use the
-	 * same variables --> less memory is needed
+	 * Static variables only get initialized one time and all instances use the
+	 * same variables --> less memory is needed!
 	 * 
 	 * @return initizialed GroundFactory
 	 * @throws SlickException
@@ -106,7 +106,8 @@ public class GroundFactory {
 		}
 	}
 
-	/**Creates random dark grey grounds with images taken from tiles Spritesheet.
+	/**Creates random dark grey grounds with images taken from tiles Spritesheet.<br>
+	 * Used for Walls.
 	 * 
 	 * @param positionX
 	 * @param positionY
@@ -240,15 +241,51 @@ public class GroundFactory {
 					positionX, positionY);
 		}
 	}
-
-	/**Creates borders at room borders.
+	
+	/**Creates random brown grounds with images taken from tiles Spritesheet.<br>
+	 * Used for the ground textures of Treasure Chamber.
 	 * 
 	 * @param positionX
 	 * @param positionY
 	 * @return
 	 */
-	public Element createBorder(int positionX, int positionY) {
-		return new Element("Border", tiles.getSubImage(0, 0), positionX,
-				positionY);
+	public Element createBrownGround(int positionX, int positionY) {
+
+		if (!initialized) {
+			System.out.println("Error! GroundFactory isn't initialized!");
+			System.out.println("Call Method: >GroundFactory.setUpFactory()<");
+			return null;
+		}
+
+		double random = Math.random();
+
+		if (random > 0.8888) {
+			return new Element("BrownGround", tiles.getSubImage(0, 4),
+					positionX, positionY);
+		} else if (random > 0.7777) {
+			return new Element("BrownGround", tiles.getSubImage(1, 4),
+					positionX, positionY);
+		} else if (random > 0.6666) {
+			return new Element("BrownGround", tiles.getSubImage(2, 4),
+					positionX, positionY);
+		} else if (random > 0.5555) {
+			return new Element("BrownGround", tiles.getSubImage(0, 5),
+					positionX, positionY);
+		} else if (random > 0.4444) {
+			return new Element("BrownGround", tiles.getSubImage(1, 5),
+					positionX, positionY);
+		} else if (random > 0.3333) {
+			return new Element("BrownGround", tiles.getSubImage(2, 5),
+					positionX, positionY);
+		} else if (random > 0.2222) {
+			return new Element("BrownGround", tiles.getSubImage(0, 6),
+					positionX, positionY);
+		} else if (random > 0.1111) {
+			return new Element("BrownGround", tiles.getSubImage(1, 6),
+					positionX, positionY);
+		} else {
+			return new Element("BrownGround", tiles.getSubImage(2, 6),
+					positionX, positionY);
+		}
 	}
 }

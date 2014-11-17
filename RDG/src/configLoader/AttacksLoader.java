@@ -15,6 +15,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import general.Enums.Attacks;
 import general.Enums.Attributes;
 import general.Enums.ItemClasses;
 
@@ -37,9 +38,9 @@ public class AttacksLoader {
 	 * @throws SAXException 
 	 * @see AttacksLoader
 	 */
-	public static Map<String, AttackTemplate> run(String configpath) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException {
+	public static Map<Attacks, AttackTemplate> run(String configpath) throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException {
 			
-		Map<String, AttackTemplate> attackTemplates = new HashMap<String, AttackTemplate>();
+		Map<Attacks, AttackTemplate> attackTemplates = new HashMap<Attacks, AttackTemplate>();
 		
 		File fXmlFile = new File(configpath + "Attacks.xml");
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -59,13 +60,15 @@ public class AttacksLoader {
 				Element eElement = (Element) nNode;
 				
 				//store current element's values
+				Attacks type;
 				String name, effectStr;
 				Attributes effect;
-				float statsLowMultiplier, statsHighMultiplier, hpDamage, hitProbability, x;
+				float classMultiplier, statsLowMultiplier, statsHighMultiplier, hpDamage, hitProbability, x;
 				
 				name = eElement.getElementsByTagName("Name").item(0).getTextContent();
 				statsLowMultiplier = Float.parseFloat(eElement.getElementsByTagName("Stats_Low_Multiplier").item(0).getTextContent());
 				statsHighMultiplier = Float.parseFloat(eElement.getElementsByTagName("Stats_High_Multiplier").item(0).getTextContent());
+				classMultiplier = Float.parseFloat(eElement.getElementsByTagName("Class_Multiplier").item(0).getTextContent());
 				hpDamage = Float.parseFloat(eElement.getElementsByTagName("HP_Damage").item(0).getTextContent());
 				hitProbability = Float.parseFloat(eElement.getElementsByTagName("Hit_Probability").item(0).getTextContent());
 				x = Float.parseFloat(eElement.getElementsByTagName("x").item(0).getTextContent());
@@ -73,6 +76,12 @@ public class AttacksLoader {
 				
 				//check if parsed values are valid and set enums
 				if (name.length() == 0) throw new IllegalArgumentException("Invalid Name \"" + name + "\" at Attack \"" + name + "\"");
+				
+				if (name.equals("Torso")) type = Attacks.TORSO;
+				else if (name.equals("Head")) type = Attacks.HEAD;
+				else if (name.equals("Arms")) type = Attacks.ARMS;
+				else if (name.equals("Legs")) type = Attacks.LEGS;
+				else throw new IllegalArgumentException("Invalid Name \"" + name + "\" at Attack \"" + name + "\"");
 				
 				if (effectStr.equals("hp")) effect = Attributes.HP;
 				else if (effectStr.equals("speed")) effect = Attributes.SPEED;
@@ -82,15 +91,15 @@ public class AttacksLoader {
 					throw new IllegalArgumentException("Invalid Effect \"" + effectStr + "\" at Attack \"" + name + "\"");
 				}
 				
+				if (classMultiplier < 0) throw new IllegalArgumentException("Invalid Class Multiplier \"" + classMultiplier + "\" at Attack \"" + name + "\"");
 				if (statsLowMultiplier < 0) throw new IllegalArgumentException("Invalid Stats Low Multiplier \"" + statsLowMultiplier + "\" at Attack \"" + name + "\"");
 				if (statsHighMultiplier < 0) throw new IllegalArgumentException("Invalid Stats High Multiplier \"" + statsHighMultiplier + "\" at Attack \"" + name + "\"");
 				if (hpDamage < 0) throw new IllegalArgumentException("Invalid HP Damage \"" + hpDamage + "\" at Attack \"" + name + "\"");
 				if (hitProbability < 0) throw new IllegalArgumentException("Invalid Hit Probability \"" + hitProbability + "\" at Attack \"" + name + "\"");
 				if (x < 0) throw new IllegalArgumentException("Invalid x \"" + x + "\" at Attack \"" + name + "\"");
 				
-				
 				//put template on list of available templates
-				attackTemplates.put(name, new AttackTemplate(name, effect, statsLowMultiplier, statsHighMultiplier, hpDamage, hitProbability, x));
+				attackTemplates.put(type, new AttackTemplate(type, effect, classMultiplier, statsLowMultiplier, statsHighMultiplier, hpDamage, hitProbability, x));
 			}
 		}
 		

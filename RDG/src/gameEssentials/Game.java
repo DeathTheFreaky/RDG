@@ -2,17 +2,24 @@ package gameEssentials;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
+import org.xml.sax.SAXException;
 
+import configLoader.ConfigTestprinter;
+import configLoader.Configloader;
 import views.ArmorView;
 import views.Chat;
 import views.GameEnvironment;
 import views.InventoryView;
+import general.Enums.CreatureType;
 import general.GroundFactory;
 import general.ResourceManager;
 import general.Enums.Updates;
@@ -34,6 +41,19 @@ public class Game extends BasicGame {
 	public static final int ARMOR_HEIGHT = 240;
 	public static final int INVENTORY_WIDTH = 160;
 	public static final int INVENTORY_HEIGHT = 240;
+	
+	//final if these values cannot be changed later on - if we want to change roomsize, minimap size, scope size -> don't make final
+	/* room, minimap, scope sizes */
+	public static int ROOMWIDTH = 8; //should be even -> door's width = 2
+	public static int ROOMHEIGHT = 6; //should be even -> door's width = 2
+	public static int MINIMAPWIDTH = 5;
+	public static int MINIMAPHEIGHT = 5;
+	public static int SCOPEWIDTH = 15;
+	public static int SCOPEHEIGHT = 12;
+	
+	/* room numbers */
+	public static int ROOMSHOR = 5;
+	public static int ROOMSVER = 5;
 
 	/* every milliseconds an Update is made */
 	private final int UPDATE = 200;
@@ -59,6 +79,15 @@ public class Game extends BasicGame {
 
 	/* Map which is needed for each Player */
 	private Map map;
+	
+	/* resource path */
+	public static final String IMAGEPATH = "./resources/images/";
+	
+	//path to config files
+	public static final String CONFIGPATH = "config/Results/";
+			
+	//create instance of configloader
+	private Configloader configloader = null;
 
 	/* Declare all classes, we need for the game (Factory, Resourceloader) */
 	// private ResourceManager resourceManager;
@@ -87,22 +116,39 @@ public class Game extends BasicGame {
 	@Override
 	public void init(GameContainer container) throws SlickException {
 		
+		/* load config - must be successful in order to continue */
+		try {
+			configloader = new Configloader().getInstance();
+		} catch (IllegalArgumentException | ParserConfigurationException
+				| SAXException | IOException e) {
+			e.printStackTrace();
+			System.err.println("\nParsing Configuration Files failed\nExiting program\n");
+			System.exit(1);
+		}
+				
+		//Test Printing
+		/*ConfigTestprinter configprinter = new ConfigTestprinter(configloader);
+		configprinter.print();*/
+				
 		/* Points in tile numbers */
 		gameEnvironmentOrigin = new Point(0, 0);
 		chatOrigin = new Point(0, 12);
 		armorViewOrigin = new Point(15, 0);
 		inventoryViewOrigin = new Point(15, 12);
-
-		player = new Player(playerName, gameEnvironmentOrigin);
+		
+		/* Initialize Factory and Manager classes! */
+		new ResourceManager().getInstance();	
+		new GroundFactory().setUpFactory();
+		
+		/* network lobby must be called before this to detect player type */
+		CreatureType playerType = CreatureType.PLAYER1;
+		if (playerType == CreatureType.PLAYER1) player = new Player(playerName, new ResourceManager().getInstance().IMAGES.get("Player1"), gameEnvironmentOrigin, playerType);
+		else if (playerType == CreatureType.PLAYER2) player = new Player(playerName, new ResourceManager().getInstance().IMAGES.get("Player2"), gameEnvironmentOrigin, playerType);
+		
 		map = new Map().getInstance();
 		map.setPlayer(player);
 		map.fillMap();
 		
-
-		/* Initialize Factory and Manager classes! */
-		new GroundFactory().setUpFactory();
-		new ResourceManager().getInstance();
-
 		/* Dimension is specified in pixels */
 		gameEnvironment = new GameEnvironment("GameEnvironment",
 

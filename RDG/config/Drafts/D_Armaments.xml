@@ -10,8 +10,7 @@
        <Speed>13</Speed>
        <Type>leather</Type>
 	   <Bonus>0.10</Bonus>
-	   <Image_Big>armaments/leather_helmet_big.png</Image_Big>
-	   <Image_Small>armaments/leather_helmet_small.png</Image_Small>
+	   <Image>armaments/leather_helmet.png</Image>
     </Armament>
 	<Armament>
        <Name>Leather Harness</Name>
@@ -23,7 +22,6 @@
        <Speed>20</Speed>
        <Type>leather</Type>
 	   <Bonus>0.10</Bonus>
-	   <Image_Big>armaments/leather_harness_big.png</Image_Big>
-	   <Image_Small>armaments/leather_harness_small.png</Image_Small>
+	   <Image>armaments/leather_harness.png</Image>
     </Armament>
 </Armaments>

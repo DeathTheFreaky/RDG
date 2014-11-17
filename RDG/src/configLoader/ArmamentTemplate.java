@@ -1,5 +1,7 @@
 package configLoader;
 
+import org.newdawn.slick.Image;
+
 import general.Enums.Armor;
 import general.Enums.ItemClasses;
 
@@ -10,7 +12,7 @@ import general.Enums.ItemClasses;
  */
 public class ArmamentTemplate {
 	
-	private String name, type, imageBig, imageSmall;
+	private String name, type, image;
 	private ItemClasses itemClass;
 	private float classMultiplier, statsLowMultiplier, statsHighMultiplier, armor, speed, bonus;
 	private Armor armorType;
@@ -30,14 +32,13 @@ public class ArmamentTemplate {
 	 * @param bonus
 	 * @see ArmamentTemplate
 	 */
-	public ArmamentTemplate(String name, String type,String imageBig, String imageSmall, ItemClasses itemClass,
+	public ArmamentTemplate(String name, String type,String image, ItemClasses itemClass,
 			float classMultiplier, float statsLowMultiplier, float statsHighMultiplier, float armor, float speed, float bonus) {
 		
 		this.name = name;
 		this.itemClass = itemClass;
 		this.type = type;
-		this.imageBig = imageBig;
-		this.imageSmall = imageSmall;
+		this.image = image;
 		this.classMultiplier = classMultiplier;
 		this.statsLowMultiplier = statsLowMultiplier;
 		this.statsHighMultiplier = statsHighMultiplier;
@@ -74,17 +75,10 @@ public class ArmamentTemplate {
 	}
 
 	/**
-	 * @return detailed image
+	 * @return image
 	 */
-	public String getImage_big() {
-		return imageBig;
-	}
-
-	/**
-	 * @return map image
-	 */
-	public String getImage_small() {
-		return imageSmall;
+	public String getImage() {
+		return image;
 	}
 
 	/**

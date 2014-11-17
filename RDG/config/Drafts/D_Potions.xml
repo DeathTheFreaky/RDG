@@ -12,8 +12,7 @@
 	   <Mode>+</Mode>
 	   <x>50</x>
 	   <n>1</n>
-	   <Image_Big>potions/instant_cure_big.png</Image_Big>
-	   <Image_Small>potions/instant_cure_small.png</Image_Small>
+	   <Image>potions/instant_cure.png</Image>
     </Potion>
 	<Potion>
        <Name>Regeneration</Name>
@@ -27,7 +26,6 @@
 	   <Mode>+</Mode>
 	   <x>10</x>
 	   <n>5</n>
-	   <Image_Big>potions/regeneration_big.png</Image_Big>
-	   <Image_Small>potions/regeneration_small.png</Image_Small>
+	   <Image>potions/regeneration.png</Image>
     </Potion>
 </Potions>

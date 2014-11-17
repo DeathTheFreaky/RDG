@@ -7,8 +7,11 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
+import elements.Creature;
 import views.GameEnvironment;
+import general.GroundFactory;
 import general.ResourceManager;
+import general.Enums.CreatureType;
 import general.Enums.Directions;
 import general.Enums.Updates;
 import general.Enums.ViewingDirections;
@@ -16,7 +19,7 @@ import general.Enums.ViewingDirections;
 /**Player stores all information associated with the player.
  * 
  */
-public class Player {
+public class Player extends Creature {
 
 	/*public enum Updates {
 		KEY_PRESSED, KEY_RELEASED
@@ -25,9 +28,6 @@ public class Player {
 	public enum ViewingDirections {
 		NORTH, EAST, SOUTH, WEST
 	}*/
-
-	/* The Image, which displays the Player */
-	private Image playerImage;
 
 	/* is used for Players Movement and Rotation during Update */
 	boolean up, right, down, left = false;
@@ -38,14 +38,8 @@ public class Player {
 	/* is needed to find out if its Player 1 or Player 2 */
 	private static int totalNumberOfPlayers = 0;
 
-	/* saves the name of the Players */
-	public String NAME;
-
 	/* specifies if it is player1 or player2 */
 	private int playerNumber;
-
-	/* tracks the Position of the player on the map */
-	private Point position;
 
 	/* tracks the position of the camera on the map */
 	private Point cameraPosition;
@@ -68,8 +62,22 @@ public class Player {
 	 * @throws SlickException
 	 * @see Player
 	 */
-	public Player() throws SlickException {
+	/*public Player() throws SlickException {
+		
 		this("Player" + (1 + totalNumberOfPlayers), new Point(0, 0));
+	}*/
+	
+	/**Constructs a Player.<br>
+	 * Player will be positioned automatically in the upper left or lower right corner, depending on its player number.
+	 * 
+	 * @param creatureName
+	 * @param image
+	 * @param type
+	 * @throws SlickException
+	 */
+	public Player(String creatureName, Image image, CreatureType type) throws SlickException {
+		
+		this(creatureName, image, new Point(0, 0), type);
 	}
 
 	/**Constructs a Player.<br>
@@ -80,8 +88,11 @@ public class Player {
 	 * @throws SlickException
 	 * @see Player
 	 */
-	public Player(String name, Point originOfGameEnvironment) throws SlickException {
-		this.NAME = name;
+	public Player(String creatureName, Image image, Point originOfGameEnvironment, CreatureType type) throws SlickException {
+		
+		/* at first create player as player1 - later check if it is player 1 or 2 and change type accordingly */
+		super(creatureName, image, type, 100, 10, 10, 10);
+		
 		this.originOfGameEnvironment = originOfGameEnvironment;
 
 		/* unique player number, to identify a player */
@@ -90,13 +101,11 @@ public class Player {
 		 * Das mit der static Variable funktioniert wahrscheinlich nicht, weil
 		 * auf 2 PCs die Klassen instanziiert werden
 		 */
-		playerNumber = ++totalNumberOfPlayers;
-
-		/*
-		 * Hier sollte überprüft werden, ob es sich um den Spieler oder den
-		 * Gegner handelt, damit man eine entsprechende Grafik einbinden kann
-		 */
-		playerImage = new ResourceManager().getInstance().PLAYER;
+		playerNumber = ++totalNumberOfPlayers;	
+		
+		/* set player number according to CreatureType */
+		if (type == CreatureType.PLAYER1) playerNumber = 1;
+		else if (type == CreatureType.PLAYER2) playerNumber = 2;
 
 		/* is needed for some values contained in the Map Class */
 		map = new Map().getInstance();
@@ -242,7 +251,7 @@ public class Player {
 	 * @param graphics
 	 */
 	public void draw(GameContainer container, Graphics graphics) {
-		graphics.drawImage(playerImage,
+		graphics.drawImage(image,
 				(originOfGameEnvironment.x + position.x - cameraPosition.x)
 						* GameEnvironment.BLOCK_SIZE,
 				(originOfGameEnvironment.y + position.y - cameraPosition.y)

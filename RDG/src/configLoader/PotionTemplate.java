@@ -12,7 +12,7 @@ import general.Enums.Targets;
  */
 public class PotionTemplate {
 	
-	private String name, description, imageBig, imageSmall;
+	private String name, description, image;
 	private ItemClasses itemClass;
 	private Attributes effect;
 	private Targets target;
@@ -37,7 +37,7 @@ public class PotionTemplate {
 	 * @param n
 	 * @see PotionTemplate
 	 */
-	public PotionTemplate(String name, String description, String imageBig, String imageSmall, ItemClasses itemClass, Targets target, Modes mode, Attributes effect,
+	public PotionTemplate(String name, String description, String image, ItemClasses itemClass, Targets target, Modes mode, Attributes effect,
 			float classMultiplier, float statsLowMultiplier, float statsHighMultiplier, float x, int n){
 		
 		this.name = name;
@@ -46,8 +46,7 @@ public class PotionTemplate {
 		this.target = target;
 		this.mode = mode;
 		this.effect = effect;
-		this.imageBig = imageBig;
-		this.imageSmall = imageSmall;
+		this.image = image;
 		this.classMultiplier = classMultiplier;
 		this.statsLowMultiplier = statsLowMultiplier;
 		this.statsHighMultiplier = statsHighMultiplier;
@@ -102,17 +101,10 @@ public class PotionTemplate {
 	}
 
 	/**
-	 * @return detailed image
+	 * @return image
 	 */
-	public String getImage_big() {
-		return imageBig;
-	}
-
-	/**
-	 * @return map image
-	 */
-	public String getImage_small() {
-		return imageSmall;
+	public String getImage() {
+		return image;
 	}
 
 	/**

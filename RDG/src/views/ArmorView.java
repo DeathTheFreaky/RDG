@@ -153,9 +153,9 @@ public class ArmorView extends View {
 		graphics.fillRect(ORIGIN_X, ORIGIN_Y+30, size.width, size.height-2*(tabHeight-5));
 		
 		/* draw warrior image */
-		graphics.drawImage(resources.ARMOR_BACKGROUND, ORIGIN_X, ORIGIN_Y+tabHeight+10);
+		graphics.drawImage(resources.IMAGES.get("Armor_Background"), ORIGIN_X, ORIGIN_Y+tabHeight+10);
 
-		graphics.drawImage(resources.HELMET, ORIGIN_X + 100, ORIGIN_Y + 39);
+		graphics.drawImage(resources.IMAGES.get("Helmet"), ORIGIN_X + 100, ORIGIN_Y + 39);
 
 		/* draw equipment */
 		if (set) {
