@@ -51,7 +51,7 @@ public class MonsterFactory {
 		return FACTORY;
 	}
 	
-	/**Creates new Monster with default and randomized stats.
+	/**Creates new Monster with randomized stats.
 	 * 
 	 * @param name
 	 * @return a new Monster

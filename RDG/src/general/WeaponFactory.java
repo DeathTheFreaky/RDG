@@ -22,6 +22,9 @@ public class WeaponFactory {
 	
 	/* templates */
 	Map<String, WeaponTemplate> weaponTemplates;
+	
+	/* Room type also influenced stats of this item */
+	private final float itemMultiplier;
 
 	/**Creates an WeaponFactory and loads its static values only ONCE!!!<br>
 	 * 
@@ -45,7 +48,7 @@ public class WeaponFactory {
 	 */
 	public WeaponFactory(float itemMultiplier) {
 		
-		
+		this.itemMultiplier = itemMultiplier;
 	}
 	
 	/**Creates an WeaponFactory and loads its static values only ONCE!!!<br>
@@ -80,7 +83,7 @@ public class WeaponFactory {
 		return FACTORY;
 	}
 	
-	/**Creates new Weapon with default and randomized stats.
+	/**Creates new Weapon with randomized stats.
 	 * 
 	 * @param name
 	 * @return a new Weapon

@@ -281,4 +281,44 @@ public class GroundFactory {
 					positionX, positionY);
 		}
 	}
+	
+	/**Creates door grounds with images taken from tiles Spritesheet.<br>
+	 * Used for the ground textures of doors to Treasure Chamber.
+	 * 
+	 * @param positionX
+	 * @param positionY
+	 * @return
+	 */
+	public Element createDoorGround1(int positionX, int positionY) {
+
+		if (FACTORY == null) {
+			System.out.println("Error! GroundFactory isn't initialized!");
+			System.out.println("Call Method: >GroundFactory.setUpFactory()<");
+			return null;
+		}
+
+		double random = Math.random();
+
+		return new Element("DoorGround", tiles.getSubImage(5, 3), positionX, positionY);
+	}
+	
+	/**Creates door grounds with images taken from tiles Spritesheet.<br>
+	 * Used for the ground textures of doors to Treasure Chamber.
+	 * 
+	 * @param positionX
+	 * @param positionY
+	 * @return
+	 */
+	public Element createDoorGround2(int positionX, int positionY) {
+
+		if (FACTORY == null) {
+			System.out.println("Error! GroundFactory isn't initialized!");
+			System.out.println("Call Method: >GroundFactory.setUpFactory()<");
+			return null;
+		}
+
+		double random = Math.random();
+
+		return new Element("DoorGround", tiles.getSubImage(5, 3).getFlippedCopy(false, true), positionX, positionY);
+	}
 }

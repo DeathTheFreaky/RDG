@@ -254,14 +254,52 @@ public class Map {
 								
 				/* horizontal doors */
 				if ((wallmodx == Game.ROOMWIDTH/2 || wallmodx == Game.ROOMWIDTH/2+1) && wallmody == 0 && j != 0 && j != getHeight()) {
-					overlay[i][j] = null;
+					
+					int nodoory1 = getHeight()/2 - (Game.ROOMHEIGHT/2);
+					int nodoory2 = getHeight()/2 + (Game.ROOMHEIGHT/2 + 1);
+					int nodoorx1 = getWidth()/2;
+					int nodoorx2 = getWidth()/2 + 1;
+					
+					if (!((i == nodoorx1 || i == nodoorx2) && ((j == nodoory1) || (j == nodoory2)))) {
+						overlay[i][j] = null;
+					}
 					//passable[i][j] = true;
 				}
 				
 				/* vertical doors */
 				if (wallmodx == 0 && i != 0 && i != getWidth() && (wallmody == Game.ROOMHEIGHT/2 || wallmody == Game.ROOMHEIGHT/2+1)) {
-					overlay[i][j] = null;
-					//passable[i][j] = true;
+					
+					int nodoory1 = getHeight()/2;
+					int nodoory2 = getHeight()/2 + 1;
+					int nodoorx1 = getWidth()/2 - (Game.ROOMWIDTH/2);
+					int nodoorx2 = getWidth()/2 + (Game.ROOMWIDTH/2 + 1);
+					
+					System.out.println(nodoorx1);
+					System.out.println(nodoorx2);
+					System.out.println(nodoory1);
+					System.out.println(nodoory2);
+					
+					System.out.println(i + ", " + j);
+					
+					if (!((i == nodoorx1 || i == nodoorx2) && ((j == nodoory1) || (j == nodoory2)))) {
+						overlay[i][j] = null;
+					}
+					/* place door texture on background and overlay -> if key is obtained -> remove door textures from overlay temporarily when hitting "E" key*/
+					else {
+						if (j == nodoory1) {
+							background[i][j] = groundFactory.createDoorGround2(i, j);
+							overlay[i][j] = groundFactory.createDoorGround2(i, j);
+						}
+						else {
+							background[i][j] = groundFactory.createDoorGround1(i, j);
+							overlay[i][j] = groundFactory.createDoorGround1(i, j);
+						}
+					}
+				}
+				
+				/* fill treausure chamber ground */
+				if (!(i > (getWidth()/2+Game.ROOMWIDTH/2) || i < (getWidth()/2-Game.ROOMWIDTH/2+1) || j > (getHeight()/2+Game.ROOMHEIGHT/2) ||  j < (getHeight()/2-Game.ROOMHEIGHT/2+1))) {
+					background[i][j] = groundFactory.createBrownGround(i, j);
 				}
 			}
 		}

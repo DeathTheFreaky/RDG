@@ -32,27 +32,32 @@ public class Attack {
 	/* Damage Multiplier on opponent's attribute dealt by attack's special effect */
 	public final float attributeDamageMultiplier;
 	
-	/* classMultiplier, statsLowMulitplier and statsHighMultiplier are needed in Factory Class; 
-	 * statsLowMulitplier and statsHighMultiplier are used by randomClass to return value within this interval;
+	/* used on every call of this class to vary attack strength based on random values */
+	public final float statsLowMultiplier, statsHighMultiplier;
+		
+	/* classMultiplier is needed in Factory Class; 
 	 * classMultiplier is used on all stats of this class for balancing */
 	
 	/**Constructs an Attack.<br>
-	 * Shall only be called from a Factory Class and the Attack's values shall be final.<br>
+	 * The Attack's values shall be final.<br>
+	 * Attack shall only be created by Fight Class.<br>
 	 * hpDamageMultiplier and attributeDamageMultiplier values will be set according to a random factor between statsLowMulitplier and statsHighMultiplier 
 	 * returned by randomClass and a balancing classMultiplier.
 	 * 
 	 * @param type
 	 * @param effect
-	 * @param hpDamage
+	 * @param hpDamageMultiplier
 	 * @param hitProbability
-	 * @param x
+	 * @param attributeDamageMultiplier
 	 * @see Attack
 	 */
-	public Attack(Attacks type, Attributes effect, float hpDamage, float hitProbability, float x) {
+	public Attack(Attacks type, Attributes effect, float hpDamageMultiplier, float hitProbability, float attributeDamageMultiplier, float statsLowMultiplier, float statsHighMultiplier) {
 		this.type = type;
 		this.effect = effect;
-		this.hpDamageMultiplier = hpDamage;
+		this.hpDamageMultiplier = hpDamageMultiplier;
 		this.hitProbability = hitProbability;
-		this.attributeDamageMultiplier = x;
+		this.attributeDamageMultiplier = attributeDamageMultiplier;
+		this.statsLowMultiplier = statsLowMultiplier;
+		this.statsHighMultiplier = statsHighMultiplier;
 	}
 }

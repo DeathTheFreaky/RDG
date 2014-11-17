@@ -2,16 +2,23 @@ package general;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.xml.sax.SAXException;
 
 import configLoader.ArmamentTemplate;
 import configLoader.Configloader;
 import elements.Armament;
+import elements.Attack;
+import general.Enums.Armor;
+import general.Enums.Attacks;
+import general.Enums.ItemClasses;
 
 /**ArmamentFactory receives an Armament's default parameters from ArmamentTemplate class.<br>
  * It then sets the Armament's variables either to the default values or to random values
@@ -26,6 +33,12 @@ public class ArmamentFactory {
 	
 	/* templates */
 	Map<String, ArmamentTemplate> armamentTemplates;
+	
+	/* Room type also influenced stats of this item */
+	private final float itemMultiplier;
+	
+	/* list of all armament names */
+	private List<String> armaments;
 	
 	/**Creates an ArmamentFactory and loads its static values only ONCE!!!<br>
 	 * 
@@ -48,6 +61,9 @@ public class ArmamentFactory {
 	 * @see ArmamentFactory
 	 */
 	public ArmamentFactory(float itemMultiplier) {
+		
+		this.itemMultiplier = itemMultiplier;
+		armaments = new LinkedList<String>(); //which type -> return random element
 		
 		try {
 			armamentTemplates = new Configloader().getInstance().getArmamentTemplates();
@@ -89,14 +105,24 @@ public class ArmamentFactory {
 		return FACTORY;
 	}
 	
-	/**Creates new Armament with default and randomized stats.
+	/**Creates new Armament with randomized stats.
 	 * 
 	 * @param name
-	 * @return a new Armament
+	 * @return desired Armament
 	 * @see ArmamentFactory
 	 */
-	public Armament createArmament(String name) {
+	public Armament getArmament(String name) {
 		
-		return new Armament(name, null, name, null, 0, 0, 0, null);
-	}
+		ArmamentTemplate tempTemplate = armamentTemplates.get(name);
+		
+		Image image;
+		String type;
+		ItemClasses itemClass;
+		float armor;
+		float speed;
+		float bonus;
+		Armor armorType;
+		
+		return new Armament(name, null, name, null, itemMultiplier, itemMultiplier, itemMultiplier, null);
+	}	
 }

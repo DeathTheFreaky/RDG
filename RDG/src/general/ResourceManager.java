@@ -60,7 +60,7 @@ public class ResourceManager {
 			throw new NullPointerException("Configloader must be set!");
 		}
 		
-		TILES = new SpriteSheet(Game.IMAGEPATH + "tileset.png", 32, 32);
+		TILES = new SpriteSheet(Game.IMAGEPATH + "/rooms/tileset.png", 32, 32);
 		
 		IMAGES.put("Player1", new Image(Game.IMAGEPATH + "soldier_32x32.png"));
 		IMAGES.put("Player2", new Image(Game.IMAGEPATH + "soldier_32x32.png"));

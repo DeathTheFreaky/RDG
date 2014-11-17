@@ -24,6 +24,9 @@ public class PotionFactory {
 	/* templates */
 	Map<String, PotionTemplate> potionTemplates;
 	
+	/* Room type also influenced stats of this item */
+	private final float itemMultiplier;
+	
 	/**Creates an PotionFactory and loads its static values only ONCE!!!<br>
 	 * 
 	 * Static variables only get initialized one time and all instances use the
@@ -46,7 +49,7 @@ public class PotionFactory {
 	 */
 	public PotionFactory(float itemMultiplier) {
 		
-		
+		this.itemMultiplier = itemMultiplier;
 	}
 	
 	/**Creates an PotionFactory and loads its static values only ONCE!!!<br>
@@ -81,7 +84,7 @@ public class PotionFactory {
 		return FACTORY;
 	}
 	
-	/**Creates new Potion with default and randomized stats.
+	/**Creates new Potion with randomized stats.
 	 * 
 	 * @param name
 	 * @return a new Potion
