@@ -2,7 +2,11 @@ package general;
 
 import elements.Armament;
 import elements.Potion;
+import general.Enums.Armor;
+import general.Enums.Attributes;
 import general.Enums.ItemClasses;
+import general.Enums.Modes;
+import general.Enums.Targets;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,6 +17,7 @@ import java.util.Map.Entry;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.xml.sax.SAXException;
 
@@ -43,15 +48,19 @@ public class PotionFactory {
 	/* lists of potions for each item class */
 	private Map<ItemClasses, List<String>> itemClassList = null;
 	
+	/* resource manager needed for obtaining images */
+	private static ResourceManager resources = null;
+	
 	/**Creates an PotionFactory and loads its static values only ONCE!!!<br>
 	 * 
 	 * Static variables only get initialized one time and all instances use the
 	 * same variables --> less memory is needed!
 	 * 
 	 * @param itemMultiplier
+	 * @throws SlickException 
 	 * @see PotionFactory
 	 */
-	public PotionFactory() {
+	public PotionFactory() throws SlickException {
 		this(1);
 	}
 	
@@ -61,13 +70,15 @@ public class PotionFactory {
 	 * same variables --> less memory is needed!
 	 * 
 	 * @param itemMultiplier
+	 * @throws SlickException 
 	 * @see PotionFactory
 	 */
-	public PotionFactory(float itemMultiplier) {
+	public PotionFactory(float itemMultiplier) throws SlickException {
 		
 		this.itemMultiplier = itemMultiplier;
 		potions = new ArrayList<String>(); //which type -> return random element
 		itemClassList = new HashMap<ItemClasses, List<String>>();
+		resources = new ResourceManager().getInstance();
 		
 		List weaklist = new ArrayList<String>();
 		List mediumlist = new ArrayList<String>();
@@ -146,6 +157,17 @@ public class PotionFactory {
 	 */
 	public Potion createPotion(String name) {
 		
-		return new Potion(name, null, name, null, null, null, null, 0, 0);
+		PotionTemplate tempTemplate = potionTemplates.get(name);
+		
+		Image image = resources.IMAGES.get(name);
+		String description = tempTemplate.getDescription();
+		ItemClasses itemClass = tempTemplate.getItem_class();
+		Attributes effect = tempTemplate.getEffect();
+		Targets target = tempTemplate.getTarget();
+		Modes mode = tempTemplate.getMode();
+		float power = tempTemplate.getX() * tempTemplate.getClass_multiplier() * Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier()); 
+		int duration = tempTemplate.getN();
+		
+		return new Potion(name, image, description, itemClass, effect, target, mode, power, duration);
 	}
 }

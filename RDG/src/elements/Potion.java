@@ -65,7 +65,7 @@ public class Potion extends Element {
 	 * @see Potion
 	 */
 	public Potion(String potionName, Image image, String description, ItemClasses itemClass,
-			Attributes effect, Targets target, Modes mode, float x, int n) {
+			Attributes effect, Targets target, Modes mode, float power, int duration) {
 		
 		super(potionName, image);
 		
@@ -74,7 +74,7 @@ public class Potion extends Element {
 		this.EFFECT = effect;
 		this.TARGET = target;
 		this.MODE = mode;
-		this.POWER = x;
-		this.DURATION = n;
+		this.POWER = power;
+		this.DURATION = duration;
 	}
 }

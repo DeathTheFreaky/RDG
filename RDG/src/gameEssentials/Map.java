@@ -6,8 +6,11 @@ import java.awt.Point;
 import org.newdawn.slick.SlickException;
 
 import elements.Element;
+import elements.Room;
+import general.Enums.RoomTypes;
 import general.GroundFactory;
 import general.ResourceManager;
+import general.RoomFactory;
 
 /**Map is used to store all position information of players, rooms and items.
  * 
@@ -31,7 +34,8 @@ public class Map {
 	/* keep track of the player */
 	private Player player = null;
 	private Point playerScopePosition = null; //the upper left corner of the playerScopePosition in tiles
-	private Element[][] scope = null;
+	private Element[][] backgroundScope = null;
+	private Element[][] overlayScope = null;
 
 	/* Other Player, for displaying etc. */
 	private Player opponent = null;
@@ -46,6 +50,12 @@ public class Map {
 
 	/* Set Up the GroundFactory */
 	private GroundFactory groundFactory;
+	
+	/* Multidimensional Array storing all Rooms */
+	private Room[][] rooms = null;
+	
+	/* Room Factory is needed to create and fill rooms */
+	private RoomFactory roomFactory;
 
 	/**Constructs a Map.
 	 * 
@@ -77,9 +87,12 @@ public class Map {
 		overlay = new Element[size.width][size.height];
 		//passable = new boolean[size.width][size.height];
 		minimap = new Element[Game.MINIMAPWIDTH][Game.MINIMAPHEIGHT];
-		scope = new Element[Game.SCOPEWIDTH][Game.SCOPEHEIGHT];
+		backgroundScope = new Element[Game.SCOPEWIDTH][Game.SCOPEHEIGHT];
+		overlayScope = new Element[Game.SCOPEWIDTH][Game.SCOPEHEIGHT];
+		rooms = new Room[Game.ROOMSHOR][Game.ROOMSVER];
 		playerScopePosition = new Point();
 		groundFactory = new GroundFactory().getInstance();
+		roomFactory = new RoomFactory().getInstance();
 
 		/* null-initialize overlay */
 		for (int i = 0; i < size.width; i++) {
@@ -87,6 +100,11 @@ public class Map {
 				overlay[i][j] = null;
 			}
 		}
+		
+		fillMap();
+		
+		//test door pos detection
+		loadRooms();
 		
 		/* true-initialize passable */
 		/*for (int i = 0; i < size.width; i++) {
@@ -156,21 +174,32 @@ public class Map {
 		}
 	}
 
-	/**Fills the scope beginning from its upper left corner's ScopePosition position on the Map.
+	/**Fills the background scope beginning from its upper left corner's ScopePosition position on the Map.
 	 * 
 	 * @return scope for the Player
 	 */
-	public Element[][] getScope() {
+	public Element[][] getBackgroundScope() {
 		for (int i = 0; i < Game.SCOPEWIDTH; i++) {
 			for (int j = 0; j < Game.SCOPEHEIGHT; j++) {
 				/* starts filling the scope form upper left corner */
-				scope[i][j] = background[playerScopePosition.x + i][playerScopePosition.y + j];
-				if (overlay[playerScopePosition.x + i][playerScopePosition.y + j] != null) {
-					scope[i][j] = overlay[playerScopePosition.x + i][playerScopePosition.y + j];
-				}
+				backgroundScope[i][j] = background[playerScopePosition.x + i][playerScopePosition.y + j];
 			}
 		}
-		return scope;
+		return backgroundScope;
+	}
+	
+	/**Fills the overlay scope beginning from its upper left corner's ScopePosition position on the Map.
+	 * 
+	 * @return scope for the Player
+	 */
+	public Element[][] getOverlayScope() {
+		for (int i = 0; i < Game.SCOPEWIDTH; i++) {
+			for (int j = 0; j < Game.SCOPEHEIGHT; j++) {
+				/* starts filling the scope form upper left corner */
+				overlayScope[i][j] = overlay[playerScopePosition.x + i][playerScopePosition.y + j];
+			}
+		}
+		return overlayScope;
 	}
 
 	/**
@@ -219,26 +248,132 @@ public class Map {
 		return false;
 	}
 	
-	/**update the map
+	/**update the map - load rooms' overlays and backgrounds
 	 * 
 	 */
 	public void update() {
 		// player
 		// overlay
-		//
+
+		updateRooms();
+	}
+	
+	/**updates all background and overlay fields based on room data
+	 * 
+	 */
+	public void updateRooms(){
+		for (int i = 0; i < Game.ROOMSHOR; i++) {
+			for (int j = 0; j < Game.ROOMSVER; j++) {
+				for (int x = 0; x < Game.ROOMWIDTH; x++) {
+					for (int y = 0; y < Game.ROOMHEIGHT; y++) {
+						
+						int posx = i * (Game.ROOMWIDTH+1) + x + 1;
+						int posy = j * (Game.ROOMHEIGHT+1) + y + 1;
+							
+						background[posx][posy] = rooms[i][j].background[x][y];
+						overlay[posx][posy] = rooms[i][j].overlay[x][y];
+					}
+				}
+			}
+		}
+	}
+	
+	/**Detects the type of a Room based on the neighboring doors.
+	 * 
+	 * @param i
+	 * @param j
+	 */
+	public RoomTypes detectRoomType(int i, int j) {
+		
+		/* door positions -> set to true if there is a door at this position */
+		boolean[] doorpos = new boolean[] {false, false, false, false}; //0: N, 1: E, 2: S, 3: W
+		
+		int hordoorx = (i + 1) * (Game.ROOMWIDTH + 1) - Game.ROOMWIDTH / 2 - 1;
+		int hordoory1 = j * (Game.ROOMHEIGHT + 1);
+		int hordoory2 = (j + 1) * (Game.ROOMHEIGHT + 1);
+		int verdoorx1 = i * (Game.ROOMWIDTH + 1);
+		int verdoorx2 = (i + 1) * (Game.ROOMWIDTH + 1);
+		int verdoory = (j + 1) * (Game.ROOMHEIGHT + 1) - Game.ROOMHEIGHT / 2 - 1;
+				
+		/* count doors */
+		int doorcount = 0;
+		
+		/* roomType */
+		RoomTypes type = null;
+				
+		/* there are doors if overlay is empty -> no wall */
+		if (overlay[hordoorx][hordoory1] == null) {
+			doorpos[0] = true;
+			doorcount++;
+		}
+		if (overlay[verdoorx1][verdoory] == null) {
+			doorpos[1] = true;
+			doorcount++;
+		}
+		if (overlay[hordoorx][hordoory2] == null) {
+			doorpos[2] = true;
+			doorcount++;
+		}
+		if (overlay[verdoorx2][verdoory] == null) {
+			doorpos[3] = true;
+			doorcount++;
+		}
+		
+		/* detect room types based on number of doors - for 2 doors also check door positions */
+		switch (doorcount) {
+			case 1:
+				type = RoomTypes.DEADEND;
+				break;
+			case 2:
+				for (int z = 0; z < 4; z++) {
+					int posTurn = (z+1)%4;
+					int posHallway = (z+2)%4;
+					if (doorpos[z] && doorpos[posTurn]) type = RoomTypes.TURN;
+					if (doorpos[z] && doorpos[posHallway]) type = RoomTypes.HALLWAY;
+				}
+				type = RoomTypes.TURN;
+				break;
+			case 3:
+				type = RoomTypes.TJUNCTION;
+				break;
+			case 4:
+				type = RoomTypes.JUNCTION;
+				break;
+		}
+				
+		/* check for treasure chamber -> middle of the map */
+		if ((i == Game.ROOMSHOR/2) && (j == Game.ROOMSVER/2)) type = RoomTypes.TREASURECHAMBER;
+		
+		return type;
+	}
+	
+	/**Loads Rooms from RoomFactory.<br>
+	 * Room Type will be detected according to door positions created by maze algorithm.
+	 * 
+	 */
+	public void loadRooms() {
+		
+		for (int i = 0; i < Game.ROOMSHOR; i++) {
+			for (int j = 0; j < Game.ROOMSVER; j++) {
+				
+				/* detect room types and load according room */
+				RoomTypes type = detectRoomType(i, j);
+				
+				//System.out.println(i + ", " + j + ": " + type);
+			
+				rooms[i][j] = roomFactory.createRoom(type);
+			}
+		}
 	}
 	
 	/**Fills the map with rooms and their contents.
 	 * 
 	 */
 	public void fillMap() {
-		
+				
+		/* load walls and doors */
 		for (int i = 0; i <= getWidth(); i++) {
 			for (int j = 0; j <= getHeight(); j++) {
-				
-				/* load ground textures -> testing only */
-				background[i][j] = groundFactory
-						.createYellowGroundOne(i, j);
 				
 				int wallmodx = i % (Game.ROOMWIDTH+1);
 				int wallmody = j % (Game.ROOMHEIGHT+1);
@@ -262,6 +397,7 @@ public class Map {
 					
 					if (!((i == nodoorx1 || i == nodoorx2) && ((j == nodoory1) || (j == nodoory2)))) {
 						overlay[i][j] = null;
+						background[i][j] = groundFactory.createGreyGround(i, j);
 					}
 					//passable[i][j] = true;
 				}
@@ -274,15 +410,9 @@ public class Map {
 					int nodoorx1 = getWidth()/2 - (Game.ROOMWIDTH/2);
 					int nodoorx2 = getWidth()/2 + (Game.ROOMWIDTH/2 + 1);
 					
-					System.out.println(nodoorx1);
-					System.out.println(nodoorx2);
-					System.out.println(nodoory1);
-					System.out.println(nodoory2);
-					
-					System.out.println(i + ", " + j);
-					
 					if (!((i == nodoorx1 || i == nodoorx2) && ((j == nodoory1) || (j == nodoory2)))) {
 						overlay[i][j] = null;
+						background[i][j] = groundFactory.createGreyGround(i, j);
 					}
 					/* place door texture on background and overlay -> if key is obtained -> remove door textures from overlay temporarily when hitting "E" key*/
 					else {
@@ -296,24 +426,7 @@ public class Map {
 						}
 					}
 				}
-				
-				/* fill treausure chamber ground */
-				if (!(i > (getWidth()/2+Game.ROOMWIDTH/2) || i < (getWidth()/2-Game.ROOMWIDTH/2+1) || j > (getHeight()/2+Game.ROOMHEIGHT/2) ||  j < (getHeight()/2-Game.ROOMHEIGHT/2+1))) {
-					background[i][j] = groundFactory.createBrownGround(i, j);
-				}
 			}
 		}
-		
-		//test print loaded armament stuff
-		ResourceManager testloader = null;
-		try {
-			testloader = new ResourceManager().getInstance();
-		} catch (SlickException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		overlay[1][1] = new Element("Plate Helmet", testloader.IMAGES.get("Plate Helmet"),
-				1, 1);
-		
 	}
 }

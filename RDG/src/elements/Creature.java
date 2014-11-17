@@ -15,13 +15,13 @@ public class Creature extends Element{
 	/* Creature can either be Player or Monster */
 	public final CreatureType type;
 	
-	/* Permanent Attributes of the Creature */
+	/* Temporary Attributes of the Creature (for 1 Fight only) */
 	private float hp;
 	private float strength;
 	private float speed;
 	private float accuracy;
 	
-	/* Temporary Attributes of the Creature (for 1 Fight only) */
+	/* Permanent Attributes of the Creature */
 	private float orHp;
 	private float orStrength;
 	private float orSpeed;

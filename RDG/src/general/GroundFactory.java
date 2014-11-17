@@ -235,6 +235,52 @@ public class GroundFactory {
 		}
 	}
 	
+	/**Creates random green grounds with images taken from tiles Spritesheet.<br>
+	 * 
+	 * @param positionX
+	 * @param positionY
+	 * @return
+	 */
+	public Element createGreenGround(int positionX, int positionY) {
+
+		if (FACTORY == null) {
+			System.out.println("Error! GroundFactory isn't initialized!");
+			System.out.println("Call Method: >GroundFactory.setUpFactory()<");
+			return null;
+		}
+
+		double random = Math.random();
+
+		if (random > 0.8888) {
+			return new Element("BrownGround", tiles.getSubImage(5, 4),
+					positionX, positionY);
+		} else if (random > 0.7777) {
+			return new Element("BrownGround", tiles.getSubImage(6, 4),
+					positionX, positionY);
+		} else if (random > 0.6666) {
+			return new Element("BrownGround", tiles.getSubImage(7, 4),
+					positionX, positionY);
+		} else if (random > 0.5555) {
+			return new Element("BrownGround", tiles.getSubImage(5, 5),
+					positionX, positionY);
+		} else if (random > 0.4444) {
+			return new Element("BrownGround", tiles.getSubImage(6, 5),
+					positionX, positionY);
+		} else if (random > 0.3333) {
+			return new Element("BrownGround", tiles.getSubImage(7, 5),
+					positionX, positionY);
+		} else if (random > 0.2222) {
+			return new Element("BrownGround", tiles.getSubImage(5, 6),
+					positionX, positionY);
+		} else if (random > 0.1111) {
+			return new Element("BrownGround", tiles.getSubImage(6, 6),
+					positionX, positionY);
+		} else {
+			return new Element("BrownGround", tiles.getSubImage(7, 6),
+					positionX, positionY);
+		}
+	}
+	
 	/**Creates random brown grounds with images taken from tiles Spritesheet.<br>
 	 * Used for the ground textures of Treasure Chamber.
 	 * 

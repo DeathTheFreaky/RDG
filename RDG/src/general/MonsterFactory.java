@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.xml.sax.SAXException;
 
@@ -16,10 +17,13 @@ import configLoader.ArmamentTemplate;
 import configLoader.Configloader;
 import configLoader.MonsterTemplate;
 import configLoader.PotionTemplate;
+import configLoader.WeaponTemplate;
 import elements.Monster;
 import elements.Potion;
+import general.Enums.Attributes;
 import general.Enums.ItemClasses;
 import general.Enums.Levels;
+import general.Enums.WeaponTypes;
 
 /**MonsterFactory receives a Monster's default parameters from MonsterTemplate class.<br>
  * It then sets the Monster's variables either to the default values or to random values
@@ -41,18 +45,23 @@ public class MonsterFactory {
 	/* lists of monsters for each monster level */
 	private Map<Levels, List<String>> levelList = null;
 	
+	/* resource manager needed for obtaining images */
+	private static ResourceManager resources = null;
+	
 	/**Creates an MonsterFactory and loads its static values only ONCE!!!<br>
 	 * 
 	 * Static variables only get initialized one time and all instances use the
 	 * same variables --> less memory is needed!
 	 * 
 	 * @param itemMultiplier
+	 * @throws SlickException 
 	 * @see MonsterFactory
 	 */
-	public MonsterFactory() {
+	public MonsterFactory() throws SlickException {
 		
 		monsters = new ArrayList<String>(); //which type -> return random element
 		levelList = new HashMap<Levels, List<String>>();
+		resources = new ResourceManager().getInstance();
 		
 		List easylist = new ArrayList<String>();
 		List normallist = new ArrayList<String>();
@@ -93,6 +102,13 @@ public class MonsterFactory {
 		return FACTORY;
 	}
 	
+	/**
+	 * @return list of all Monsters' names
+	 */
+	public List getAllMonsters() {
+		return monsters;
+	}
+	
 	/**Creates new Monster with randomized stats.
 	 * 
 	 * @param name
@@ -101,14 +117,18 @@ public class MonsterFactory {
 	 */
 	public Monster createMonster(String name) {
 		
+		MonsterTemplate tempTemplate = monsterTemplates.get(name);
+		
+		Image image = resources.IMAGES.get(name);
+		Levels level = tempTemplate.getLevel();
+		Attributes killBonusType = tempTemplate.getKill_bonus_type();
+		float killBonus = tempTemplate.getClassMultiplier() * Chances.randomValue(tempTemplate.getKill_bonus_low(), tempTemplate.getKill_bonus_high()); 
+		float hp = tempTemplate.getHp() * tempTemplate.getClassMultiplier() * Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier()); 
+		float strength = tempTemplate.getStrength() * tempTemplate.getClassMultiplier() * Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier()); 
+		float speed = tempTemplate.getSpeed() * tempTemplate.getClassMultiplier() * Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier());  
+		float accuracy = tempTemplate.getAccuracy() * tempTemplate.getClassMultiplier() * Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier()); 
+		
 		return new Monster(name, null, null, null, 0, 0, 0, 0, 0);
-	}
-	
-	/**
-	 * @return list of all Monsters' names
-	 */
-	public List getAllMonsters() {
-		return monsters;
 	}
 }
 

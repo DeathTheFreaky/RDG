@@ -13,7 +13,7 @@ public class MonsterTemplate {
 	private String name, image;
 	private Attributes killBonusType;
 	private Levels level; 
-	private float statsLowMultiplier, statsHighMultiplier, hp, strength, speed, accuracy, killBonusLow, killBonusHigh;
+	private float classMultiplier, statsLowMultiplier, statsHighMultiplier, hp, strength, speed, accuracy, killBonusLow, killBonusHigh;
 	
 	/**Construct a MonsterTemplate storing the default Monster values.
 	 * 
@@ -33,12 +33,13 @@ public class MonsterTemplate {
 	 * @see MonsterTemplate
 	 */
 	public MonsterTemplate(String name, String image, Levels level, Attributes killBonusType, 
-		float statsLowMultiplier, float statsHighMultiplier, float hp, float strength, float speed, float accuracy, float killBonusLow, float killBonusHigh) {
+		float classMultiplier, float statsLowMultiplier, float statsHighMultiplier, float hp, float strength, float speed, float accuracy, float killBonusLow, float killBonusHigh) {
 		
 		this.name = name; 
 		this.level = level; 
 		this.killBonusType = killBonusType; 
 		this.image = image;
+		this.classMultiplier = classMultiplier;
 		this.statsLowMultiplier = statsLowMultiplier; 
 		this.statsHighMultiplier = statsHighMultiplier; 
 		this.hp = hp; 
@@ -77,6 +78,13 @@ public class MonsterTemplate {
 	 */
 	public String getImage() {
 		return image;
+	}
+	
+	/**
+	 * @return classMultiplier
+	 */
+	public float getClassMultiplier() {
+		return classMultiplier;
 	}
 
 	/**

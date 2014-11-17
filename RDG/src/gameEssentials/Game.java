@@ -147,7 +147,7 @@ public class Game extends BasicGame {
 		
 		map = new Map().getInstance();
 		map.setPlayer(player);
-		map.fillMap();
+		//map.fillMap();
 		
 		/* Dimension is specified in pixels */
 		gameEnvironment = new GameEnvironment("GameEnvironment",

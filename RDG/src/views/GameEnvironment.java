@@ -23,7 +23,8 @@ public class GameEnvironment extends View {
 	private Player player;
 
 	/* Reference to the Shapes, which are shown in the GameEnvironment. Scope Elements are passed from Map Class. */
-	private Element[][] scope;
+	private Element[][] backgroundScope;
+	private Element[][] overlayScope;
 
 	/**Constructs a GameEnvironment passing its origin as single x and y coordinates in tile numbers.<br>
 	 * Dimension will be set to default values in pixels.<br><br>
@@ -114,8 +115,14 @@ public class GameEnvironment extends View {
 				if ((1 + i) * BLOCK_SIZE <= size.width
 						&& (1 + j) * BLOCK_SIZE <= size.height) {
 					/* draw all image in GameEnvironment as 32x32, no matter if they are 32x32 or 64x64 sized */
-					graphics.drawImage(scope[i][j].getImage().getScaledCopy(32, 32), origin.x * BLOCK_SIZE + i * BLOCK_SIZE,
+					if (backgroundScope[i][j] != null) {
+						graphics.drawImage(backgroundScope[i][j].getImage().getScaledCopy(32, 32), origin.x * BLOCK_SIZE + i * BLOCK_SIZE,
 							origin.y * BLOCK_SIZE + j * BLOCK_SIZE);
+					}
+					if (overlayScope[i][j] != null) {
+						graphics.drawImage(overlayScope[i][j].getImage().getScaledCopy(32, 32), origin.x * BLOCK_SIZE + i * BLOCK_SIZE,
+								origin.y * BLOCK_SIZE + j * BLOCK_SIZE);
+					}
 				} else {
 					System.out.println("Image would extend the scope "
 							+ "of the GameEnvironment!");
@@ -130,7 +137,9 @@ public class GameEnvironment extends View {
 
 	@Override
 	public void update() {
-		scope = map.getScope();
+		map.update();
+		backgroundScope = map.getBackgroundScope();
+		overlayScope = map.getOverlayScope();
 	}
 
 }

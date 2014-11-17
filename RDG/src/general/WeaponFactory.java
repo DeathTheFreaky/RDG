@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.xml.sax.SAXException;
 
@@ -18,7 +19,9 @@ import configLoader.PotionTemplate;
 import configLoader.WeaponTemplate;
 import elements.Potion;
 import elements.Weapon;
+import general.Enums.Armor;
 import general.Enums.ItemClasses;
+import general.Enums.WeaponTypes;
 
 /**WeaponFactory receives a Weapon's default parameters from WeaponTemplate class.<br>
  * It then sets the Weapon's variables either to the default values or to random values
@@ -42,6 +45,9 @@ public class WeaponFactory {
 	
 	/* lists of weapons for each item class */
 	private Map<ItemClasses, List<String>> itemClassList = null;
+	
+	/* resource manager needed for obtaining images */
+	private static ResourceManager resources = null;
 
 	/**Creates an WeaponFactory and loads its static values only ONCE!!!<br>
 	 * 
@@ -49,9 +55,10 @@ public class WeaponFactory {
 	 * same variables --> less memory is needed!
 	 * 
 	 * @param itemMultiplier
+	 * @throws SlickException 
 	 * @see WeaponFactory
 	 */
-	public WeaponFactory() {
+	public WeaponFactory() throws SlickException {
 		this(1);
 	}
 	
@@ -61,13 +68,15 @@ public class WeaponFactory {
 	 * same variables --> less memory is needed!
 	 * 
 	 * @param itemMultiplier
+	 * @throws SlickException 
 	 * @see WeaponFactory
 	 */
-	public WeaponFactory(float itemMultiplier) {
+	public WeaponFactory(float itemMultiplier) throws SlickException {
 		
 		this.itemMultiplier = itemMultiplier;
 		weapons = new ArrayList<String>(); //which type -> return random element
 		itemClassList = new HashMap<ItemClasses, List<String>>();
+		resources = new ResourceManager().getInstance();
 		
 		List weaklist = new ArrayList<String>();
 		List mediumlist = new ArrayList<String>();
@@ -146,6 +155,17 @@ public class WeaponFactory {
 	 */
 	public Weapon createWeapon(String name) {
 		
-		return new Weapon(name, null, 0, 0, 0, 0, null, null, 0);
+		WeaponTemplate tempTemplate = weaponTemplates.get(name);
+		
+		Image image = resources.IMAGES.get(name);
+		float attack = tempTemplate.getAttack() * tempTemplate.getClass_multiplier() * Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier());
+		float speed = tempTemplate.getSpeed() * tempTemplate.getClass_multiplier() * Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier());
+		float accuracy = tempTemplate.getAccuracy() * tempTemplate.getClass_multiplier() * Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier());
+		float defense = tempTemplate.getDefence() * tempTemplate.getClass_multiplier() * Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier());
+		ItemClasses itemClass = tempTemplate.getItem_class();
+		WeaponTypes type = tempTemplate.getType();
+		int max = tempTemplate.getMax();
+		
+		return new Weapon(name, image, attack, speed, accuracy, defense, itemClass, type, max);
 	}
 }

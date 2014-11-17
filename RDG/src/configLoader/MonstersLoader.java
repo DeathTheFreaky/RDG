@@ -63,7 +63,7 @@ public class MonstersLoader {
 				String name, levelStr, killBonusTypeStr, image;
 				Attributes killBonusType;
 				Levels level;
-				float statsLowMultiplier, statsHighMultiplier, hp, strength, speed, accuracy, killBonusLow, killBonusHigh;
+				float classMultiplier, statsLowMultiplier, statsHighMultiplier, hp, strength, speed, accuracy, killBonusLow, killBonusHigh;
 				
 				name = eElement.getElementsByTagName("Name").item(0).getTextContent();
 				levelStr = eElement.getElementsByTagName("Level").item(0).getTextContent();
@@ -71,6 +71,7 @@ public class MonstersLoader {
 				image = eElement.getElementsByTagName("Image").item(0).getTextContent();
 				statsLowMultiplier = Float.parseFloat(eElement.getElementsByTagName("Stats_Low_Multiplier").item(0).getTextContent());
 				statsHighMultiplier = Float.parseFloat(eElement.getElementsByTagName("Stats_High_Multiplier").item(0).getTextContent());
+				classMultiplier = Float.parseFloat(eElement.getElementsByTagName("Class_Multiplier").item(0).getTextContent());
 				hp = Float.parseFloat(eElement.getElementsByTagName("HP").item(0).getTextContent());
 				strength = Float.parseFloat(eElement.getElementsByTagName("Strength").item(0).getTextContent());
 				speed = Float.parseFloat(eElement.getElementsByTagName("Speed").item(0).getTextContent());
@@ -96,6 +97,7 @@ public class MonstersLoader {
 					throw new IllegalArgumentException("Invalid Kill Bonus Type \"" + killBonusTypeStr + "\" at Attack \"" + name + "\"");
 				}
 				
+				if (classMultiplier < 0) throw new IllegalArgumentException("Invalid Class Multiplier \"" + classMultiplier + "\" at Monster \"" + name + "\"");
 				if (statsLowMultiplier < 0) throw new IllegalArgumentException("Invalid Stats Low Multiplier \"" + statsLowMultiplier + "\" at Monster \"" + name + "\"");
 				if (statsHighMultiplier < 0) throw new IllegalArgumentException("Invalid Stats High Multiplier \"" + statsHighMultiplier + "\" at Monster \"" + name + "\"");
 				if (hp < 0) throw new IllegalArgumentException("Invalid HP \"" + hp + "\" at Monster \"" + name + "\"");
@@ -108,7 +110,7 @@ public class MonstersLoader {
 				
 				//put template on list of available templates
 				monsterTemplates.put(name, new MonsterTemplate(name, image,  level, killBonusType, 
-						statsLowMultiplier, statsHighMultiplier, hp, strength, speed, accuracy, killBonusLow, killBonusHigh));
+						classMultiplier, statsLowMultiplier, statsHighMultiplier, hp, strength, speed, accuracy, killBonusLow, killBonusHigh));
 			}
 		}
 		
