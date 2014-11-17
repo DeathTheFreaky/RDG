@@ -1,10 +1,12 @@
 package general;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -16,9 +18,11 @@ import configLoader.ArmamentTemplate;
 import configLoader.Configloader;
 import elements.Armament;
 import elements.Attack;
+import gameEssentials.Game;
 import general.Enums.Armor;
 import general.Enums.Attacks;
 import general.Enums.ItemClasses;
+import general.Enums.Levels;
 
 /**ArmamentFactory receives an Armament's default parameters from ArmamentTemplate class.<br>
  * It then sets the Armament's variables either to the default values or to random values
@@ -39,6 +43,9 @@ public class ArmamentFactory {
 	
 	/* list of all armament names */
 	private List<String> armaments;
+	
+	/* lists of armaments for each item class */
+	private Map<ItemClasses, List<String>> itemClassList = null;
 	
 	/**Creates an ArmamentFactory and loads its static values only ONCE!!!<br>
 	 * 
@@ -63,7 +70,12 @@ public class ArmamentFactory {
 	public ArmamentFactory(float itemMultiplier) {
 		
 		this.itemMultiplier = itemMultiplier;
-		armaments = new LinkedList<String>(); //which type -> return random element
+		armaments = new ArrayList<String>(); //which type -> return random element
+		itemClassList = new HashMap<ItemClasses, List<String>>();
+		
+		List weaklist = new ArrayList<String>();
+		List mediumlist = new ArrayList<String>();
+		List stronglist = new ArrayList<String>();
 		
 		try {
 			armamentTemplates = new Configloader().getInstance().getArmamentTemplates();
@@ -71,6 +83,17 @@ public class ArmamentFactory {
 				| ParserConfigurationException | SAXException | IOException e) {
 			e.printStackTrace();
 		}
+		
+		/* create lists of items corresponding to their item classes */
+		for (Entry<String, ArmamentTemplate> entry : armamentTemplates.entrySet()) {
+	        if (entry.getValue().getItem_class() == ItemClasses.WEAK) weaklist.add(entry.getKey());
+	        else if (entry.getValue().getItem_class() == ItemClasses.MEDIUM) mediumlist.add(entry.getKey());
+	        else if (entry.getValue().getItem_class() == ItemClasses.STRONG) stronglist.add(entry.getKey());
+	    }
+		
+		itemClassList.put(ItemClasses.WEAK, weaklist);
+		itemClassList.put(ItemClasses.MEDIUM, mediumlist);
+		itemClassList.put(ItemClasses.STRONG, stronglist);
 	}
 	
 	/**Creates an ArmamentFactory and loads its static values only ONCE!!!<br>
@@ -105,13 +128,27 @@ public class ArmamentFactory {
 		return FACTORY;
 	}
 	
+	/**
+	 * @return list of all Armaments' names
+	 */
+	public List getAllArmaments() {
+		return armaments;
+	}
+	
+	/**
+	 * @return HashMap with lists of all Armaments's names grouped by item classes
+	 */
+	public Map<ItemClasses, List<String>> getItemClasses() {
+		return itemClassList;
+	}
+	
 	/**Creates new Armament with randomized stats.
 	 * 
 	 * @param name
 	 * @return desired Armament
 	 * @see ArmamentFactory
 	 */
-	public Armament getArmament(String name) {
+	public Armament createArmament(String name) {
 		
 		ArmamentTemplate tempTemplate = armamentTemplates.get(name);
 		

@@ -92,6 +92,9 @@ public class RoomFactory {
 		//fillGround(); -> implemented in map - only needed if rooms need specific ground
 		//return new Room(type, background, overlay);
 		
+		//return random values in arraylist
+		// http://stackoverflow.com/questions/12487592/randomly-select-an-item-from-a-list
+		
 		return new Room(type, background, overlay); //background is created by Map but passed here for simpler changes
 	}
 	

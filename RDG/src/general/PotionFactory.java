@@ -2,12 +2,22 @@ package general;
 
 import elements.Armament;
 import elements.Potion;
+import general.Enums.ItemClasses;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.newdawn.slick.SlickException;
+import org.xml.sax.SAXException;
 
 import configLoader.ArmamentTemplate;
+import configLoader.Configloader;
 import configLoader.PotionTemplate;
 
 /**PotionFactory receives a Potion's default parameters from PotionTemplate class.<br>
@@ -26,6 +36,12 @@ public class PotionFactory {
 	
 	/* Room type also influenced stats of this item */
 	private final float itemMultiplier;
+	
+	/* list of all potion names */
+	private List<String> potions;
+	
+	/* lists of potions for each item class */
+	private Map<ItemClasses, List<String>> itemClassList = null;
 	
 	/**Creates an PotionFactory and loads its static values only ONCE!!!<br>
 	 * 
@@ -50,6 +66,30 @@ public class PotionFactory {
 	public PotionFactory(float itemMultiplier) {
 		
 		this.itemMultiplier = itemMultiplier;
+		potions = new ArrayList<String>(); //which type -> return random element
+		itemClassList = new HashMap<ItemClasses, List<String>>();
+		
+		List weaklist = new ArrayList<String>();
+		List mediumlist = new ArrayList<String>();
+		List stronglist = new ArrayList<String>();
+		
+		try {
+			potionTemplates = new Configloader().getInstance().getPotionTemplates();
+		} catch (IllegalArgumentException | SlickException
+				| ParserConfigurationException | SAXException | IOException e) {
+			e.printStackTrace();
+		}
+		
+		/* create lists of items corresponding to their item classes */
+		for (Entry<String, PotionTemplate> entry : potionTemplates.entrySet()) {
+	        if (entry.getValue().getItem_class() == ItemClasses.WEAK) weaklist.add(entry.getKey());
+	        else if (entry.getValue().getItem_class() == ItemClasses.MEDIUM) mediumlist.add(entry.getKey());
+	        else if (entry.getValue().getItem_class() == ItemClasses.STRONG) stronglist.add(entry.getKey());
+	    }
+		
+		itemClassList.put(ItemClasses.WEAK, weaklist);
+		itemClassList.put(ItemClasses.MEDIUM, mediumlist);
+		itemClassList.put(ItemClasses.STRONG, stronglist);
 	}
 	
 	/**Creates an PotionFactory and loads its static values only ONCE!!!<br>
@@ -82,6 +122,20 @@ public class PotionFactory {
 			FACTORY = new PotionFactory(itemMultiplier);
 		}
 		return FACTORY;
+	}
+	
+	/**
+	 * @return list of all Potions' names
+	 */
+	public List getAllPotions() {
+		return potions;
+	}
+	
+	/**
+	 * @return HashMap with lists of all Potions's names grouped by item classes
+	 */
+	public Map<ItemClasses, List<String>> getItemClasses() {
+		return itemClassList;
 	}
 	
 	/**Creates new Potion with randomized stats.

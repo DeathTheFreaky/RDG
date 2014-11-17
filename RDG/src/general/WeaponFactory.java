@@ -1,13 +1,24 @@
 package general;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.newdawn.slick.SlickException;
+import org.xml.sax.SAXException;
 
+import configLoader.ArmamentTemplate;
+import configLoader.Configloader;
 import configLoader.PotionTemplate;
 import configLoader.WeaponTemplate;
 import elements.Potion;
 import elements.Weapon;
+import general.Enums.ItemClasses;
 
 /**WeaponFactory receives a Weapon's default parameters from WeaponTemplate class.<br>
  * It then sets the Weapon's variables either to the default values or to random values
@@ -25,6 +36,12 @@ public class WeaponFactory {
 	
 	/* Room type also influenced stats of this item */
 	private final float itemMultiplier;
+	
+	/* list of all weapon names */
+	private List<String> weapons;
+	
+	/* lists of weapons for each item class */
+	private Map<ItemClasses, List<String>> itemClassList = null;
 
 	/**Creates an WeaponFactory and loads its static values only ONCE!!!<br>
 	 * 
@@ -49,6 +66,30 @@ public class WeaponFactory {
 	public WeaponFactory(float itemMultiplier) {
 		
 		this.itemMultiplier = itemMultiplier;
+		weapons = new ArrayList<String>(); //which type -> return random element
+		itemClassList = new HashMap<ItemClasses, List<String>>();
+		
+		List weaklist = new ArrayList<String>();
+		List mediumlist = new ArrayList<String>();
+		List stronglist = new ArrayList<String>();
+		
+		try {
+			weaponTemplates = new Configloader().getInstance().getWeaponTemplates();
+		} catch (IllegalArgumentException | SlickException
+				| ParserConfigurationException | SAXException | IOException e) {
+			e.printStackTrace();
+		}
+		
+		/* create lists of items corresponding to their item classes */
+		for (Entry<String, WeaponTemplate> entry : weaponTemplates.entrySet()) {
+	        if (entry.getValue().getItem_class() == ItemClasses.WEAK) weaklist.add(entry.getKey());
+	        else if (entry.getValue().getItem_class() == ItemClasses.MEDIUM) mediumlist.add(entry.getKey());
+	        else if (entry.getValue().getItem_class() == ItemClasses.STRONG) stronglist.add(entry.getKey());
+	    }
+		
+		itemClassList.put(ItemClasses.WEAK, weaklist);
+		itemClassList.put(ItemClasses.MEDIUM, mediumlist);
+		itemClassList.put(ItemClasses.STRONG, stronglist);
 	}
 	
 	/**Creates an WeaponFactory and loads its static values only ONCE!!!<br>
@@ -81,6 +122,20 @@ public class WeaponFactory {
 			FACTORY = new WeaponFactory(itemMultiplier);
 		}
 		return FACTORY;
+	}
+	
+	/**
+	 * @return list of all Weapons' names
+	 */
+	public List getAllWeapons() {
+		return weapons;
+	}
+	
+	/**
+	 * @return HashMap with lists of all Weapons's names grouped by item classes
+	 */
+	public Map<ItemClasses, List<String>> getItemClasses() {
+		return itemClassList;
 	}
 	
 	/**Creates new Weapon with randomized stats.
