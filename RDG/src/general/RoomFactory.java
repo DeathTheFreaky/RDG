@@ -2,6 +2,7 @@ package general;
 
 import java.awt.Dimension;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -14,6 +15,8 @@ import configLoader.RoomTemplate;
 import elements.Element;
 import elements.Room;
 import gameEssentials.Game;
+import general.Enums.ItemClasses;
+import general.Enums.Levels;
 import general.Enums.RoomTypes;
 
 /**RoomFactory receives a Room's default parameters form RoomTemplate class.<br>
@@ -43,6 +46,12 @@ public class RoomFactory {
 	/* GroundFactory used to fill the Room's ground textures */
 	private GroundFactory groundFactory; //use only if different rooms need different ground textures
 	
+	/* retrieve lists of all possible monsters, armaments, weapons, weapons */
+	Map<Levels, List<String>> monstersLeveledList = null;
+	Map<ItemClasses, List<String>> armamentClassedList = null;
+	Map<ItemClasses, List<String>> potionClassedList = null;
+	Map<ItemClasses, List<String>> weaponClassedList = null;
+	
 	/**Creates a RoomFactory and loads its static values only ONCE!!!<br>
 	 * 
 	 * Static variables only get initialized one time and all instances use the
@@ -61,9 +70,20 @@ public class RoomFactory {
 			e.printStackTrace();
 		}
 		
+		/* create all needed resources */
 		size = new Dimension(Game.ROOMWIDTH, Game.ROOMHEIGHT);
 		resources = new ResourceManager().getInstance();
 		groundFactory = new GroundFactory().getInstance();
+		armamentFactory = new ArmamentFactory().getInstance();
+		potionFactory = new PotionFactory().getInstance();
+		weaponFactory = new WeaponFactory().getInstance();
+		monsterFactory = new MonsterFactory().getInstance();
+		
+		/* retrieve lists of all possible monsters, armaments, weapons, weapons */
+		monstersLeveledList = monsterFactory.getLeveledMonsters();
+		armamentClassedList = armamentFactory.getItemClasses();
+		potionClassedList = potionFactory.getItemClasses();
+		weaponClassedList = weaponFactory.getItemClasses();
 	}
 	
 	/**Creates a RoomFactory and loads its static values only ONCE!!!<br>
@@ -91,7 +111,6 @@ public class RoomFactory {
 	public Room createRoom(RoomTypes type) {
 		
 		size = new Dimension(Game.ROOMWIDTH, Game.ROOMHEIGHT);
-		
 		Element[][] background = new Element[Game.ROOMWIDTH][Game.ROOMHEIGHT];
 		Element[][] overlay = new Element[Game.ROOMWIDTH][Game.ROOMHEIGHT];
 				
@@ -102,6 +121,8 @@ public class RoomFactory {
 			}
 		}
 		
+		overlay = addMonster(type, overlay);
+		overlay = addItems(type, overlay);
 		background = fillGround(type, background); 
 		
 		overlay[1][1] = new Element("Plate Helmet", resources.IMAGES.get("Plate Helmet"),
@@ -113,8 +134,37 @@ public class RoomFactory {
 		return new Room(type, background, overlay);
 	}
 	
-	/**fills the Room's Ground with textures 
+	/**Puts a Monster into a Room.<br>
+	 * Which kind of Monster and whether a Monster is placed in the Room 
+	 * depends on the Room type and the associated config values.
 	 * 
+	 * @param type
+	 * @param overlay
+	 * @return an overlay with or without a placed monster
+	 */
+	public Element[][] addMonster(RoomTypes type, Element[][] overlay) {
+		
+		return overlay;
+	}
+	
+	/**Puts Items (Armament, Potion, Weapon) into a Room.<br>
+	 * Which kind of Item and whether an Item is placed in the Room 
+	 * depends on the Room type and the associated config values.
+	 * 
+	 * @param type
+	 * @param overlay
+	 * @return an overlay with randomly chosen items
+	 */
+	public Element[][] addItems(RoomTypes type, Element[][] overlay) {
+		
+		return overlay;
+	}
+	
+	/**Fills the Room's Ground with textures.
+
+	 * @param type
+	 * @param background
+	 * @return a background filled with ground textures
 	 */
 	public Element[][] fillGround(RoomTypes type, Element[][] background) {
 		

@@ -37,9 +37,6 @@ public class WeaponFactory {
 	/* templates */
 	Map<String, WeaponTemplate> weaponTemplates;
 	
-	/* Room type also influenced stats of this item */
-	private final float itemMultiplier;
-	
 	/* list of all weapon names */
 	private List<String> weapons;
 	
@@ -48,7 +45,7 @@ public class WeaponFactory {
 	
 	/* resource manager needed for obtaining images */
 	private static ResourceManager resources = null;
-
+	
 	/**Creates an WeaponFactory and loads its static values only ONCE!!!<br>
 	 * 
 	 * Static variables only get initialized one time and all instances use the
@@ -59,21 +56,7 @@ public class WeaponFactory {
 	 * @see WeaponFactory
 	 */
 	public WeaponFactory() throws SlickException {
-		this(1);
-	}
-	
-	/**Creates an WeaponFactory and loads its static values only ONCE!!!<br>
-	 * 
-	 * Static variables only get initialized one time and all instances use the
-	 * same variables --> less memory is needed!
-	 * 
-	 * @param itemMultiplier
-	 * @throws SlickException 
-	 * @see WeaponFactory
-	 */
-	public WeaponFactory(float itemMultiplier) throws SlickException {
 		
-		this.itemMultiplier = itemMultiplier;
 		weapons = new ArrayList<String>(); //which type -> return random element
 		itemClassList = new HashMap<ItemClasses, List<String>>();
 		resources = new ResourceManager().getInstance();
@@ -117,22 +100,6 @@ public class WeaponFactory {
 		return FACTORY;
 	}
 	
-	/**Creates an WeaponFactory and loads its static values only ONCE!!!<br>
-	 * 
-	 * Static variables only get initialized one time and all instances use the
-	 * same variables --> less memory is needed!
-	 * 
-	 * @return initialized WeaponFactory
-	 * @throws SlickException
-	 * @see RoomFactory
-	 */
-	public WeaponFactory getInstance(float itemMultiplier) throws SlickException {
-		if (FACTORY == null) {
-			FACTORY = new WeaponFactory(itemMultiplier);
-		}
-		return FACTORY;
-	}
-	
 	/**
 	 * @return list of all Weapons' names
 	 */
@@ -153,15 +120,15 @@ public class WeaponFactory {
 	 * @return a new Weapon
 	 * @see WeaponFactory
 	 */
-	public Weapon createWeapon(String name) {
+	public Weapon createWeapon(String name, float itemMultiplier) {
 		
 		WeaponTemplate tempTemplate = weaponTemplates.get(name);
 		
 		Image image = resources.IMAGES.get(name);
-		float attack = tempTemplate.getAttack() * tempTemplate.getClass_multiplier() * Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier());
-		float speed = tempTemplate.getSpeed() * tempTemplate.getClass_multiplier() * Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier());
-		float accuracy = tempTemplate.getAccuracy() * tempTemplate.getClass_multiplier() * Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier());
-		float defense = tempTemplate.getDefence() * tempTemplate.getClass_multiplier() * Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier());
+		float attack = tempTemplate.getAttack() * itemMultiplier * tempTemplate.getClass_multiplier() * Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier());
+		float speed = tempTemplate.getSpeed() * itemMultiplier * tempTemplate.getClass_multiplier() * Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier());
+		float accuracy = tempTemplate.getAccuracy() * itemMultiplier * tempTemplate.getClass_multiplier() * Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier());
+		float defense = tempTemplate.getDefence() * itemMultiplier * tempTemplate.getClass_multiplier() * Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier());
 		ItemClasses itemClass = tempTemplate.getItem_class();
 		WeaponTypes type = tempTemplate.getType();
 		int max = tempTemplate.getMax();

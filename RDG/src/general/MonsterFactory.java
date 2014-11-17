@@ -103,6 +103,13 @@ public class MonsterFactory {
 	}
 	
 	/**
+	 * @return hashMap of all Monsters' names, grouped by their level
+	 */
+	public Map<Levels, List<String>> getLeveledMonsters() {
+		return levelList;
+	}
+	
+	/**
 	 * @return list of all Monsters' names
 	 */
 	public List getAllMonsters() {

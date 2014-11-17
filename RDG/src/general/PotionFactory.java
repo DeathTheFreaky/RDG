@@ -39,9 +39,6 @@ public class PotionFactory {
 	/* templates */
 	Map<String, PotionTemplate> potionTemplates;
 	
-	/* Room type also influenced stats of this item */
-	private final float itemMultiplier;
-	
 	/* list of all potion names */
 	private List<String> potions;
 	
@@ -61,21 +58,7 @@ public class PotionFactory {
 	 * @see PotionFactory
 	 */
 	public PotionFactory() throws SlickException {
-		this(1);
-	}
-	
-	/**Creates an PotionFactory and loads its static values only ONCE!!!<br>
-	 * 
-	 * Static variables only get initialized one time and all instances use the
-	 * same variables --> less memory is needed!
-	 * 
-	 * @param itemMultiplier
-	 * @throws SlickException 
-	 * @see PotionFactory
-	 */
-	public PotionFactory(float itemMultiplier) throws SlickException {
 		
-		this.itemMultiplier = itemMultiplier;
 		potions = new ArrayList<String>(); //which type -> return random element
 		itemClassList = new HashMap<ItemClasses, List<String>>();
 		resources = new ResourceManager().getInstance();
@@ -119,22 +102,6 @@ public class PotionFactory {
 		return FACTORY;
 	}
 	
-	/**Creates an PotionFactory and loads its static values only ONCE!!!<br>
-	 * 
-	 * Static variables only get initialized one time and all instances use the
-	 * same variables --> less memory is needed!
-	 * 
-	 * @return initialized PotionFactory
-	 * @throws SlickException
-	 * @see RoomFactory
-	 */
-	public PotionFactory getInstance(float itemMultiplier) throws SlickException {
-		if (FACTORY == null) {
-			FACTORY = new PotionFactory(itemMultiplier);
-		}
-		return FACTORY;
-	}
-	
 	/**
 	 * @return list of all Potions' names
 	 */
@@ -155,7 +122,7 @@ public class PotionFactory {
 	 * @return a new Potion
 	 * @see PotionFactory
 	 */
-	public Potion createPotion(String name) {
+	public Potion createPotion(String name, float itemMultiplier) {
 		
 		PotionTemplate tempTemplate = potionTemplates.get(name);
 		
@@ -165,7 +132,7 @@ public class PotionFactory {
 		Attributes effect = tempTemplate.getEffect();
 		Targets target = tempTemplate.getTarget();
 		Modes mode = tempTemplate.getMode();
-		float power = tempTemplate.getX() * tempTemplate.getClass_multiplier() * Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier()); 
+		float power = tempTemplate.getX() *  itemMultiplier * tempTemplate.getClass_multiplier() * Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier()); 
 		int duration = tempTemplate.getN();
 		
 		return new Potion(name, image, description, itemClass, effect, target, mode, power, duration);

@@ -38,9 +38,6 @@ public class ArmamentFactory {
 	/* templates */
 	Map<String, ArmamentTemplate> armamentTemplates;
 	
-	/* Room type also influenced stats of this item */
-	private final float itemMultiplier;
-	
 	/* list of all armament names */
 	private List<String> armaments;
 	
@@ -60,21 +57,7 @@ public class ArmamentFactory {
 	 * @see ArmamentFactory
 	 */
 	public ArmamentFactory() throws SlickException {
-		this(1);
-	}
-	
-	/**Creates an ArmamentFactory and loads its static values only ONCE!!!<br>
-	 * 
-	 * Static variables only get initialized one time and all instances use the
-	 * same variables --> less memory is needed!
-	 * 
-	 * @param itemMultiplier
-	 * @throws SlickException 
-	 * @see ArmamentFactory
-	 */
-	public ArmamentFactory(float itemMultiplier) throws SlickException {
 		
-		this.itemMultiplier = itemMultiplier;
 		armaments = new ArrayList<String>(); //which type -> return random element
 		itemClassList = new HashMap<ItemClasses, List<String>>();
 		resources = new ResourceManager().getInstance();
@@ -118,22 +101,6 @@ public class ArmamentFactory {
 		return FACTORY;
 	}
 	
-	/**Creates an ArmamentFactory and loads its static values only ONCE!!!<br>
-	 * 
-	 * Static variables only get initialized one time and all instances use the
-	 * same variables --> less memory is needed!
-	 * 
-	 * @return initialized ArmamentFactory
-	 * @throws SlickException
-	 * @see RoomFactory
-	 */
-	public ArmamentFactory getInstance(float itemMultiplier) throws SlickException {
-		if (FACTORY == null) {
-			FACTORY = new ArmamentFactory(itemMultiplier);
-		}
-		return FACTORY;
-	}
-	
 	/**
 	 * @return list of all Armaments' names
 	 */
@@ -154,15 +121,17 @@ public class ArmamentFactory {
 	 * @return desired Armament
 	 * @see ArmamentFactory
 	 */
-	public Armament createArmament(String name) {
+	public Armament createArmament(String name, float itemMultiplier) {
 		
 		ArmamentTemplate tempTemplate = armamentTemplates.get(name);
 		
 		Image image = resources.IMAGES.get(name);
 		String type = tempTemplate.getType();
 		ItemClasses itemClass = tempTemplate.getItem_class();
-		float armor = tempTemplate.getArmor() * tempTemplate.getClass_multiplier() * Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier());
-		float speed = tempTemplate.getSpeed() * tempTemplate.getClass_multiplier() * Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier());
+		float armor = tempTemplate.getArmor() * itemMultiplier * tempTemplate.getClass_multiplier() * 
+				Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier());
+		float speed = tempTemplate.getSpeed() * itemMultiplier * tempTemplate.getClass_multiplier() * 
+				Chances.randomValue(tempTemplate.getStats_low_multiplier(), tempTemplate.getStats_high_multiplier());
 		float bonus = tempTemplate.getBonus();
 		Armor armorType = tempTemplate.getArmorType();
 		
