@@ -21,7 +21,7 @@ public class Element {
 	/* This variable declares if the Object is visible or not */
 	protected boolean visible = true;
 	/* saves the Name of the element */
-	protected String NAME = null;
+	public String NAME = null;
 	
 	
 

@@ -4,7 +4,6 @@ import org.newdawn.slick.Image;
 
 import general.Enums.Armor;
 import general.Enums.ItemClasses;
-import general.Enums.WeaponTypes;
 
 /**Armament is used by a player to protect himself against damage.<br>
  * There are different types of Armament available for the player's head, chest, arms and feet. <br>
