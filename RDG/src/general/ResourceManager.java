@@ -1,4 +1,6 @@
 package general;
+import gameEssentials.Game;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -7,8 +9,6 @@ import java.util.Map.Entry;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import gameEssentials.Game;
-
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
@@ -16,9 +16,6 @@ import org.xml.sax.SAXException;
 
 import configLoader.ArmamentTemplate;
 import configLoader.Configloader;
-import configLoader.MonsterTemplate;
-import configLoader.PotionTemplate;
-import configLoader.WeaponTemplate;
 
 /**ResourceManager loads all Resources from harddrive into memory.<br>
  * setConfigloader() must be called by Game Class before loadResources() can be called.
@@ -89,10 +86,13 @@ public class ResourceManager {
 	    }*/
 	    	    
 	    /* Print which images are stored now */
-	    Iterator testit = IMAGES.entrySet().iterator();
+	    /*Iterator testit = IMAGES.entrySet().iterator();
 	    while (testit.hasNext()) {
 	        Map.Entry pairs = (Map.Entry)testit.next();
 	        System.out.println(pairs.getKey() + " = " + pairs.getValue());
+	    }*/
+	    for(String s : IMAGES.keySet()) {
+	    	System.out.println("Key: " + s + ", Value: " + IMAGES.get(s));
 	    }
 	}
 
