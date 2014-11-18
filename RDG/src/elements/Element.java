@@ -1,4 +1,6 @@
 package elements;
+import general.Enums.ImageSize;
+
 import java.awt.Point;
 
 import org.newdawn.slick.Image;
@@ -21,7 +23,7 @@ public class Element {
 	/* This variable declares if the Object is visible or not */
 	protected boolean visible = true;
 	/* saves the Name of the element */
-	protected String NAME = null;
+	public String NAME = null;
 	
 	
 
@@ -119,8 +121,14 @@ public class Element {
 	/**
 	 * @return An Element's image.
 	 */
-	public Image getImage() {
-		return this.image;
+	public Image getImage(ImageSize is) {
+		switch(is) {
+		case d32x32:
+			return this.image.getScaledCopy(32, 32);
+		case d20x20:
+			return this.image.getScaledCopy(20, 20);
+		}
+		return null;
 	}
 
 	/**

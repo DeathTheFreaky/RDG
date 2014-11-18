@@ -1,13 +1,12 @@
 package general;
+import gameEssentials.Game;
+
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.parsers.ParserConfigurationException;
-
-import gameEssentials.Game;
 
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
@@ -94,6 +93,9 @@ public class ResourceManager {
 	        Map.Entry pairs = (Map.Entry)testit.next();
 	        System.out.println(pairs.getKey() + " = " + pairs.getValue());
 	    }*/
+	    for(String s : IMAGES.keySet()) {
+	    	System.out.println("Key: " + s + ", Value: " + IMAGES.get(s));
+	    }
 	}
 
 	/**Returns the one and only instance of ResourceManager and triggers loading all Ressources.<br>

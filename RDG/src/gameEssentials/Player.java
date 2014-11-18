@@ -9,8 +9,6 @@ import org.newdawn.slick.SlickException;
 
 import elements.Creature;
 import views.GameEnvironment;
-import general.GroundFactory;
-import general.ResourceManager;
 import general.Enums.CreatureType;
 import general.Enums.Directions;
 import general.Enums.Updates;
@@ -30,8 +28,8 @@ public class Player extends Creature {
 	}*/
 
 	/* is used for Players Movement and Rotation during Update */
-	boolean up, right, down, left = false;
-	ViewingDirections lastViewingDirection = ViewingDirections.NORTH;
+	private boolean up, right, down, left = false;
+	private ViewingDirections lastViewingDirection = ViewingDirections.NORTH;
 
 	private Point originOfGameEnvironment;
 
@@ -213,36 +211,86 @@ public class Player extends Creature {
 	 */
 	public void update() {
 		if (up == true) {
+			switch(lastViewingDirection) {
+			case WEST:
+				image.rotate(90f);
+				break;
+			case SOUTH:
+				image.rotate(180f);
+				break;
+			case EAST:
+				image.rotate(-90f);
+				break;
+			default:
+				break;
+			}
+			lastViewingDirection = ViewingDirections.NORTH;
 			if (map.isFieldPassable(position.x, position.y - 1)) {
 				position.move(position.x, position.y - 1);
 				moveCamera(Directions.UP);
 				map.setScopePositionForPlayer(cameraPosition);
 			}
 		} else if (left == true) {
+			switch(lastViewingDirection) {
+			case NORTH:
+				image.rotate(-90f);
+				break;
+			case SOUTH:
+				image.rotate(90f);
+				break;
+			case EAST:
+				image.rotate(180f);
+				break;
+			default:
+				break;
+			}
+			lastViewingDirection = ViewingDirections.WEST;
 			if (map.isFieldPassable(position.x - 1, position.y)) {
 				position.move(position.x - 1, position.y);
 				moveCamera(Directions.LEFT);
 				map.setScopePositionForPlayer(cameraPosition);
 			}
 		} else if (down == true) {
+			switch(lastViewingDirection) {
+			case WEST:
+				image.rotate(-90f);
+				break;
+			case NORTH:
+				image.rotate(180f);
+				break;
+			case EAST:
+				image.rotate(90f);
+				break;
+			default:
+				break;
+			}
+			lastViewingDirection = ViewingDirections.SOUTH;
 			if (map.isFieldPassable(position.x, position.y + 1)) {
 				position.move(position.x, position.y + 1);
 				moveCamera(Directions.DOWN);
 				map.setScopePositionForPlayer(cameraPosition);
 			}
 		} else if (right == true) {
+			switch(lastViewingDirection) {
+			case WEST:
+				image.rotate(180f);
+				break;
+			case SOUTH:
+				image.rotate(-90f);
+				break;
+			case NORTH:
+				image.rotate(90f);
+				break;
+			default:
+				break;
+			}
+			lastViewingDirection = ViewingDirections.EAST;
 			if (map.isFieldPassable(position.x + 1, position.y)) {
 				position.move(position.x + 1, position.y);
 				moveCamera(Directions.RIGHT);
 				map.setScopePositionForPlayer(cameraPosition);
 			}
 		}
-
-		/*
-		 * System.out.println("Player Position: (" + position.x + ", " +
-		 * position.y + ")"); System.out.println("Camera Position: (" +
-		 * cameraPosition.x + ", " + cameraPosition.y + ")");
-		 */
 	}
 
 	/**Draws Player on the map.
@@ -301,5 +349,11 @@ public class Player extends Creature {
 			break;
 		}
 	}
-
+	
+	/**
+	 * Returns the Direction of View of the player
+	 */
+	public ViewingDirections getDirectionOfView() {
+		return this.lastViewingDirection;
+	}
 }

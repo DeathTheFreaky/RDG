@@ -9,6 +9,7 @@ import org.newdawn.slick.SlickException;
 
 import elements.Element;
 import gameEssentials.Map;
+import general.Enums.ImageSize;
 
 
 /**Stores and draws all Elements in a particular context's View.
@@ -110,7 +111,7 @@ public abstract class View {
 	 * @param y
 	 */
 	public void setPosition(String imageName, int x, int y) {
-		this.images.get(imageName).getImage().draw(x * 32, y *32);
+		this.images.get(imageName).getImage(ImageSize.d32x32).draw(x * 32, y *32);
 	}
 	
 	/**Attaches image to View's LinkedHashMap of images.

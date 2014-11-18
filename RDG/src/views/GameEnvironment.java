@@ -7,10 +7,14 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
+import elements.Creature;
 import elements.Element;
+import fighting.Fight;
 import gameEssentials.Player;
+import general.Enums.ImageSize;
 
-/**GameEnvironment extends a View in the GameEnvironment context.
+/**
+ * GameEnvironment extends a View in the GameEnvironment context.
  * 
  * @see View
  */
@@ -22,13 +26,25 @@ public class GameEnvironment extends View {
 	/* Reference to the player, for which the GameEnvironment is shown */
 	private Player player;
 
-	/* Reference to the Shapes, which are shown in the GameEnvironment. Scope Elements are passed from Map Class. */
+	/*
+	 * Reference to the Shapes, which are shown in the GameEnvironment. Scope
+	 * Elements are passed from Map Class.
+	 */
 	private Element[][] backgroundScope;
 	private Element[][] overlayScope;
 
-	/**Constructs a GameEnvironment passing its origin as single x and y coordinates in tile numbers.<br>
-	 * Dimension will be set to default values in pixels.<br><br>
-	 * GameEnvironment extends View. 
+	/* Marks if the player is in a Fight (for displaying Fighting Screen) */
+	private boolean fight = true;
+	
+	/* Kind of View/Instance where the Fight takes place/is shown */
+	private Fight fightInstance;
+
+	/**
+	 * Constructs a GameEnvironment passing its origin as single x and y
+	 * coordinates in tile numbers.<br>
+	 * Dimension will be set to default values in pixels.<br>
+	 * <br>
+	 * GameEnvironment extends View.
 	 * 
 	 * @param contextName
 	 * @param originX
@@ -42,9 +58,12 @@ public class GameEnvironment extends View {
 		this(contextName, new Point(originX, originY), player);
 	}
 
-	/**Constructs a GameEnvironment passing its origin as a Point in tile numbers.<br>
-	 * Dimension will be set to default values in pixels.<br><br>
-	 * GameEnvironment extends View. 
+	/**
+	 * Constructs a GameEnvironment passing its origin as a Point in tile
+	 * numbers.<br>
+	 * Dimension will be set to default values in pixels.<br>
+	 * <br>
+	 * GameEnvironment extends View.
 	 * 
 	 * @param contextName
 	 * @param origin
@@ -57,8 +76,11 @@ public class GameEnvironment extends View {
 		this(contextName, origin, new Dimension(640, 480), player);
 	}
 
-	/**Constructs a GameEnvironment passing its origin in tiles and dimension in pixels as single x and y coordinates.<br><br>
-	 * GameEnvironment extends View. 
+	/**
+	 * Constructs a GameEnvironment passing its origin in tiles and dimension in
+	 * pixels as single x and y coordinates.<br>
+	 * <br>
+	 * GameEnvironment extends View.
 	 * 
 	 * @param contextName
 	 * @param originX
@@ -75,8 +97,11 @@ public class GameEnvironment extends View {
 				height), player);
 	}
 
-	/**Constructs a GameEnvironment passing its origin as point in tile numbers and its dimension in pixels as Dimension.<br><br>
-	 * GameEnvironment extends View. 
+	/**
+	 * Constructs a GameEnvironment passing its origin as point in tile numbers
+	 * and its dimension in pixels as Dimension.<br>
+	 * <br>
+	 * GameEnvironment extends View.
 	 * 
 	 * @param contextName
 	 * @param origin
@@ -89,6 +114,8 @@ public class GameEnvironment extends View {
 			Player player) throws SlickException {
 		super(contextName, origin, size);
 		this.player = player;
+		
+		fightInstance = new Fight(origin, size, this);
 
 		if (size.width % BLOCK_SIZE != 0) {
 			System.out.println("WATCH OUT! GameEnvironment only works well, "
@@ -109,37 +136,75 @@ public class GameEnvironment extends View {
 
 	@Override
 	public void draw(GameContainer container, Graphics graphics) {
-		/* downright is refered to in tile numbers */
-		for (int i = 0; i < downright.x; i++) {
-			for (int j = 0; j < downright.y; j++) {
-				if ((1 + i) * BLOCK_SIZE <= size.width
-						&& (1 + j) * BLOCK_SIZE <= size.height) {
-					/* draw all image in GameEnvironment as 32x32, no matter if they are 32x32 or 64x64 sized */
-					if (backgroundScope[i][j] != null) {
-						graphics.drawImage(backgroundScope[i][j].getImage().getScaledCopy(32, 32), origin.x * BLOCK_SIZE + i * BLOCK_SIZE,
-							origin.y * BLOCK_SIZE + j * BLOCK_SIZE);
+		/* if the player is not in a current fight */
+		if (!fightInstance.isInFight()) {
+			
+			/* downright is refered to in tile numbers */
+			for (int i = 0; i < downright.x; i++) {
+				for (int j = 0; j < downright.y; j++) {
+					if ((1 + i) * BLOCK_SIZE <= size.width
+							&& (1 + j) * BLOCK_SIZE <= size.height) {
+						/*
+						 * draw all image in GameEnvironment as 32x32, no matter
+						 * if they are 32x32 or 64x64 sized
+						 */
+						if (backgroundScope[i][j] != null) {
+							graphics.drawImage(
+									backgroundScope[i][j].getImage(
+											ImageSize.d32x32).getScaledCopy(32,
+											32), origin.x * BLOCK_SIZE + i
+											* BLOCK_SIZE, origin.y * BLOCK_SIZE
+											+ j * BLOCK_SIZE);
+						}
+						if (overlayScope[i][j] != null) {
+							graphics.drawImage(
+									overlayScope[i][j].getImage(
+											ImageSize.d32x32).getScaledCopy(32,
+											32), origin.x * BLOCK_SIZE + i
+											* BLOCK_SIZE, origin.y * BLOCK_SIZE
+											+ j * BLOCK_SIZE);
+						}
+					} else {
+						System.out.println("Image would extend the scope "
+								+ "of the GameEnvironment!");
+						System.out.println("Something wrong is happening - "
+								+ "Fix that!");
 					}
-					if (overlayScope[i][j] != null) {
-						graphics.drawImage(overlayScope[i][j].getImage().getScaledCopy(32, 32), origin.x * BLOCK_SIZE + i * BLOCK_SIZE,
-								origin.y * BLOCK_SIZE + j * BLOCK_SIZE);
-					}
-				} else {
-					System.out.println("Image would extend the scope "
-							+ "of the GameEnvironment!");
-					System.out.println("Something wrong is happening - "
-							+ "Fix that!");
 				}
 			}
+
+			player.draw(container, graphics);
+			
+		}else {	// show Fight
+			fightInstance.draw(container, graphics);
 		}
-		
-		player.draw(container, graphics);
+
 	}
 
 	@Override
 	public void update() {
-		map.update();
+		//map.update();	Warum???
 		backgroundScope = map.getBackgroundScope();
 		overlayScope = map.getOverlayScope();
+	}
+	
+	
+	/**
+	 * starts a Fight with the set creature as enemy
+	 * 
+	 * @param creature - the enemy
+	 */
+	public void startFight(Creature creature) {
+		fightInstance.newFight(creature);
+	}
+	
+	/**
+	 * Looks if player is currently in a fight
+	 * 
+	 * @return true - in a fight
+	 */
+	public boolean isFightActive() {
+		return fightInstance.isInFight();
 	}
 
 }
