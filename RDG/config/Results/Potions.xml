@@ -12,8 +12,7 @@
 		<Mode>+</Mode>
 		<x>50</x>
 		<n>1</n>
-		<Image_Big>potions/instant_cure_big.png</Image_Big>
-		<Image_Small>potions/instant_cure_small.png</Image_Small>
+		<Image>potions/instant_cure.png</Image>
 	</Potion>
 	<Potion>
 		<Name>Regeneration</Name>
@@ -27,8 +26,7 @@
 		<Mode>+</Mode>
 		<x>10</x>
 		<n>5</n>
-		<Image_Big>potions/regeneration_big.png</Image_Big>
-		<Image_Small>potions/regeneration_small.png</Image_Small>
+		<Image>potions/regeneration.png</Image>
 	</Potion>
 	<Potion>
 		<Name>Antidote</Name>
@@ -42,8 +40,7 @@
 		<Mode>x</Mode>
 		<x>1</x>
 		<n>1</n>
-		<Image_Big>potions/antidote_big.png</Image_Big>
-		<Image_Small>potions/antidote_small.png</Image_Small>
+		<Image>potions/antidote.png</Image>
 	</Potion>
 	<Potion>
 		<Name>Strength</Name>
@@ -57,8 +54,7 @@
 		<Mode>&gt;</Mode>
 		<x>10</x>
 		<n>5</n>
-		<Image_Big>potions/strength_big.png</Image_Big>
-		<Image_Small>potions/strength_small.png</Image_Small>
+		<Image>potions/strength.png</Image>
 	</Potion>
 	<Potion>
 		<Name>Speed</Name>
@@ -72,8 +68,7 @@
 		<Mode>&gt;</Mode>
 		<x>10</x>
 		<n>5</n>
-		<Image_Big>potions/speed_big.png</Image_Big>
-		<Image_Small>potions/speed_small.png</Image_Small>
+		<Image>potions/speed.png</Image>
 	</Potion>
 	<Potion>
 		<Name>Accuracy</Name>
@@ -87,8 +82,7 @@
 		<Mode>&gt;</Mode>
 		<x>10</x>
 		<n>5</n>
-		<Image_Big>potions/accuracy_big.png</Image_Big>
-		<Image_Small>potions/accuracy_small.png</Image_Small>
+		<Image>potions/accuracy.png</Image>
 	</Potion>
 	<Potion>
 		<Name>Blindness </Name>
@@ -102,8 +96,7 @@
 		<Mode>&lt;</Mode>
 		<x>10</x>
 		<n>5</n>
-		<Image_Big>potions/blindness_big.png</Image_Big>
-		<Image_Small>potions/blindness_small.png</Image_Small>
+		<Image>potions/blindness.png</Image>
 	</Potion>
 	<Potion>
 		<Name>Slowness</Name>
@@ -117,8 +110,7 @@
 		<Mode>&lt;</Mode>
 		<x>10</x>
 		<n>5</n>
-		<Image_Big>potions/slowness_big.png</Image_Big>
-		<Image_Small>potions/slowness_small.png</Image_Small>
+		<Image>potions/slowness.png</Image>
 	</Potion>
 	<Potion>
 		<Name>Poison</Name>
@@ -132,8 +124,7 @@
 		<Mode>-</Mode>
 		<x>10</x>
 		<n>5</n>
-		<Image_Big>potions/poison_big.png</Image_Big>
-		<Image_Small>potions/poison_small.png</Image_Small>
+		<Image>potions/poison.png</Image>
 	</Potion>
 	<Potion>
 		<Name>Weakness</Name>
@@ -147,7 +138,6 @@
 		<Mode>&lt;</Mode>
 		<x>10</x>
 		<n>5</n>
-		<Image_Big>potions/weakness_big.png</Image_Big>
-		<Image_Small>potions/weakness_small.png</Image_Small>
+		<Image>potions/weakness.png</Image>
 	</Potion>
 </Potions>

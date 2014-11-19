@@ -1,1 +1,6 @@
 /bin/
+
+# Allow used libraries to be added to git repo
+!/libraries/slick.jar
+!/libraries/jar/lwjgl.jar
+!/libraries/jar/jinput.jar

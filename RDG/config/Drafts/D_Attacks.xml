@@ -2,6 +2,7 @@
 <Attacks xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <Attack>
        <Name>Torso</Name>
+	   <Class_Multiplier>1.00</Class_Multiplier>
 	   <Stats_Low_Multiplier>0.80</Stats_Low_Multiplier>
 	   <Stats_High_Multiplier>1.20</Stats_High_Multiplier>
 	   <HP_Damage>0.50</HP_Damage>
@@ -11,6 +12,7 @@
     </Attack>
 	<Attack>
        <Name>Head</Name>
+	   <Class_Multiplier>1.00</Class_Multiplier>
 	   <Stats_Low_Multiplier>0.80</Stats_Low_Multiplier>
 	   <Stats_High_Multiplier>1.20</Stats_High_Multiplier>
 	   <HP_Damage>0.70</HP_Damage>

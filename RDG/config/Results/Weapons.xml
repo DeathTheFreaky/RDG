@@ -13,8 +13,7 @@
 		<Slots>1</Slots>
 		<Max>2</Max>
 		<Type>single-hand</Type>
-		<Image_Big>weapons/fists_big.png</Image_Big>
-		<Image_Small>weapons/fists_small.png</Image_Small>
+		<Image>weapons/fists.png</Image>
 	</Weapon>
 	<Weapon>
 		<Name>Dagger</Name>
@@ -29,8 +28,7 @@
 		<Slots>1</Slots>
 		<Max>2</Max>
 		<Type>single-hand</Type>
-		<Image_Big>weapons/dagger_big.png</Image_Big>
-		<Image_Small>weapons/dagger_small.png</Image_Small>
+		<Image>weapons/dagger.png</Image>
 	</Weapon>
 	<Weapon>
 		<Name>Axt</Name>
@@ -45,8 +43,7 @@
 		<Slots>1</Slots>
 		<Max>2</Max>
 		<Type>single-hand</Type>
-		<Image_Big>weapons/axt_big.png</Image_Big>
-		<Image_Small>weapons/axt_small.png</Image_Small>
+		<Image>weapons/axt.png</Image>
 	</Weapon>
 	<Weapon>
 		<Name>Sword</Name>
@@ -61,8 +58,7 @@
 		<Slots>1</Slots>
 		<Max>2</Max>
 		<Type>single-hand</Type>
-		<Image_Big>weapons/sword_big.png</Image_Big>
-		<Image_Small>weapons/sword_small.png</Image_Small>
+		<Image>weapons/sword.png</Image>
 	</Weapon>
 	<Weapon>
 		<Name>Shield</Name>
@@ -77,8 +73,7 @@
 		<Slots>1</Slots>
 		<Max>1</Max>
 		<Type>single-hand</Type>
-		<Image_Big>weapons/shield_big.png</Image_Big>
-		<Image_Small>weapons/shield_small.png</Image_Small>
+		<Image>weapons/shield.png</Image>
 	</Weapon>
 	<Weapon>
 		<Name>Sabre</Name>
@@ -93,8 +88,7 @@
 		<Slots>1</Slots>
 		<Max>2</Max>
 		<Type>single-hand</Type>
-		<Image_Big>weapons/sabre_big.png</Image_Big>
-		<Image_Small>weapons/sabre_small.png</Image_Small>
+		<Image>weapons/sabre.png</Image>
 	</Weapon>
 	<Weapon>
 		<Name>Longsword</Name>
@@ -109,8 +103,7 @@
 		<Slots>2</Slots>
 		<Max>1</Max>
 		<Type>two-hand</Type>
-		<Image_Big>weapons/longsword_big.png</Image_Big>
-		<Image_Small>weapons/longsword_small.png</Image_Small>
+		<Image>weapons/longsword.png</Image>
 	</Weapon>
 	<Weapon>
 		<Name>Bow</Name>
@@ -125,7 +118,6 @@
 		<Slots>2</Slots>
 		<Max>1</Max>
 		<Type>two-hand</Type>
-		<Image_Big>weapons/bow_big.png</Image_Big>
-		<Image_Small>weapons/bow_small.png</Image_Small>
+		<Image>weapons/bow.png</Image>
 	</Weapon>
 </Weapons>
