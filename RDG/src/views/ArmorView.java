@@ -11,6 +11,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
 import elements.Equipment;
+import general.Enums.ImageSize;
 import general.ResourceManager;
 import general.Enums.Armor;
 
@@ -175,31 +176,31 @@ public class ArmorView extends View {
 			for (Equipment e : equipment1) {
 				switch (e.getArmorType()) {
 				case MAIN_WEAPON:
-					graphics.drawImage(e.getImage(), ORIGIN_X + 20, ORIGIN_Y
+					graphics.drawImage(e.getImage(ImageSize.d20x20), ORIGIN_X + 20, ORIGIN_Y
 							+ 75 + tabHeight + 10);
 					break;
 				case SUB_WEAPON:
-					graphics.drawImage(e.getImage(), ORIGIN_X + 125, ORIGIN_Y
+					graphics.drawImage(e.getImage(ImageSize.d20x20), ORIGIN_X + 125, ORIGIN_Y
 							+ 60 + tabHeight + 10);
 					break;
 				case HEAD:
-					graphics.drawImage(e.getImage(), ORIGIN_X + 100, ORIGIN_Y
+					graphics.drawImage(e.getImage(ImageSize.d20x20), ORIGIN_X + 100, ORIGIN_Y
 							+ 5 + tabHeight + 10);
 					break;
 				case CHEST:
-					graphics.drawImage(e.getImage(), ORIGIN_X + 120, ORIGIN_Y
+					graphics.drawImage(e.getImage(ImageSize.d20x20), ORIGIN_X + 120, ORIGIN_Y
 							+ 30 + tabHeight + 10);
 					break;
 				case ARMS:
-					graphics.drawImage(e.getImage(), ORIGIN_X + 30, ORIGIN_Y
+					graphics.drawImage(e.getImage(ImageSize.d20x20), ORIGIN_X + 30, ORIGIN_Y
 							+ 45 + tabHeight + 10);
 					break;
 				case LEGS:
-					graphics.drawImage(e.getImage(), ORIGIN_X + 125, ORIGIN_Y
+					graphics.drawImage(e.getImage(ImageSize.d20x20), ORIGIN_X + 125, ORIGIN_Y
 							+ 100 + tabHeight + 10);
 					break;
 				case FEET:
-					graphics.drawImage(e.getImage(), ORIGIN_X + 35, ORIGIN_Y
+					graphics.drawImage(e.getImage(ImageSize.d20x20), ORIGIN_X + 35, ORIGIN_Y
 							+ 115 + tabHeight + 10);
 					break;
 				}
@@ -208,31 +209,31 @@ public class ArmorView extends View {
 			for (Equipment e : equipment2) {
 				switch (e.getArmorType()) {
 				case MAIN_WEAPON:
-					graphics.drawImage(e.getImage(), ORIGIN_X + 20, ORIGIN_Y
+					graphics.drawImage(e.getImage(ImageSize.d20x20), ORIGIN_X + 20, ORIGIN_Y
 							+ 75 + tabHeight + 10);
 					break;
 				case SUB_WEAPON:
-					graphics.drawImage(e.getImage(), ORIGIN_X + 125, ORIGIN_Y
+					graphics.drawImage(e.getImage(ImageSize.d20x20), ORIGIN_X + 125, ORIGIN_Y
 							+ 60 + tabHeight + 10);
 					break;
 				case HEAD:
-					graphics.drawImage(e.getImage(), ORIGIN_X + 100, ORIGIN_Y
+					graphics.drawImage(e.getImage(ImageSize.d20x20), ORIGIN_X + 100, ORIGIN_Y
 							+ 5 + tabHeight + 10);
 					break;
 				case CHEST:
-					graphics.drawImage(e.getImage(), ORIGIN_X + 120, ORIGIN_Y
+					graphics.drawImage(e.getImage(ImageSize.d20x20), ORIGIN_X + 120, ORIGIN_Y
 							+ 30 + tabHeight + 10);
 					break;
 				case ARMS:
-					graphics.drawImage(e.getImage(), ORIGIN_X + 30, ORIGIN_Y
+					graphics.drawImage(e.getImage(ImageSize.d20x20), ORIGIN_X + 30, ORIGIN_Y
 							+ 45 + tabHeight + 10);
 					break;
 				case LEGS:
-					graphics.drawImage(e.getImage(), ORIGIN_X + 125, ORIGIN_Y
+					graphics.drawImage(e.getImage(ImageSize.d20x20), ORIGIN_X + 125, ORIGIN_Y
 							+ 100 + tabHeight + 10);
 					break;
 				case FEET:
-					graphics.drawImage(e.getImage(), ORIGIN_X + 35, ORIGIN_Y
+					graphics.drawImage(e.getImage(ImageSize.d20x20), ORIGIN_X + 35, ORIGIN_Y
 							+ 115 + tabHeight + 10);
 					break;
 				}
@@ -254,22 +255,22 @@ public class ArmorView extends View {
 	 * 
 	 * @param equipment
 	 */
-	public void equip(Equipment equipment) {
+	/*public void equip(Equipment equipment) {
 		if (set) {
 			/*
 			 * replaces existing armor of same type or add armor if none is
 			 * present yet
-			 */
+			 *
 			armor1.put(equipment.getArmorType(), equipment);
 			/*
 			 * removes Main Weapon if already equipped and new Sub Weapon is
 			 * about to be equipped
-			 */
+			 *
 			if (equipment.getArmorType() == Armor.SUB_WEAPON
 					&& armor1.get(Armor.MAIN_WEAPON) != null) {
 				armor1.remove(Armor.MAIN_WEAPON);
 			}
-			/* store all equipped armors to set 1 */
+			/* store all equipped armors to set 1 *
 			equipment1 = armor1.values();
 		} else {
 			armor2.put(equipment.getArmorType(), equipment);
@@ -279,7 +280,7 @@ public class ArmorView extends View {
 			}
 			equipment2 = armor2.values();
 		}
-	}
+	}*/
 
 	/**
 	 * DEPRECATED!!!<br>
@@ -311,20 +312,37 @@ public class ArmorView extends View {
 		}
 	}
 
-	public boolean equipArmor(Equipment equipment, int x, int y) {
+	/**
+	 * equips the Equipment in a Set
+	 * 
+	 * @param equipment - Element
+	 * @param x - MousePosition
+	 * @param y - MousePosition
+	 * @return null or the Equipment that has to be stored in the Inventory
+	 */
+	public Equipment equipArmor(Equipment equipment, int x, int y) {
+		Equipment e = null;
 		if (equipment == null) {
-			return false;
+			return e;
 		}
 		if (x > ORIGIN_X && x < ORIGIN_X + size.width && y > ORIGIN_Y
 				&& y < ORIGIN_Y + size.height) {
 			if (set) {
+				if(armor1.containsKey(equipment.getArmorType())) {
+					e = armor1.get(equipment.getArmorType());
+				}
 				armor1.put(equipment.getArmorType(), equipment);
 			} else {
+				if(armor2.containsKey(equipment.getArmorType())) {
+					e = armor2.get(equipment.getArmorType());
+				}
 				armor2.put(equipment.getArmorType(), equipment);
 			}
-			return true;
+			return e;
+		}else {
+			e = equipment;
 		}
-		return false;
+		return e;
 	}
 
 	public Equipment getEquipment(int mouseX, int mouseY) {

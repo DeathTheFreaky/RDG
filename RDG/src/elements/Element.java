@@ -1,4 +1,6 @@
 package elements;
+import general.Enums.ImageSize;
+
 import java.awt.Point;
 
 import org.newdawn.slick.Image;
@@ -23,7 +25,7 @@ public class Element {
 	/* saves the Name of the element */
 	public String NAME = null;
 	
-	//
+	
 
 	/**Constructs an Element. It will be positioned automatically at (0,0).<br>
 	 * Element will be visible by default.
@@ -119,8 +121,14 @@ public class Element {
 	/**
 	 * @return An Element's image.
 	 */
-	public Image getImage() {
-		return this.image;
+	public Image getImage(ImageSize is) {
+		switch(is) {
+		case d32x32:
+			return this.image.getScaledCopy(32, 32);
+		case d20x20:
+			return this.image.getScaledCopy(20, 20);
+		}
+		return null;
 	}
 
 	/**

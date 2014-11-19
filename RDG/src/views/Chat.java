@@ -16,7 +16,9 @@ import views.chat.InputField;
 import views.chat.Message;
 import general.Enums.Channels;
 
-/**Chat is used to display game status messages and exchange text messages between players.<br>
+/**
+ * Chat is used to display game status messages and exchange text messages
+ * between players.<br>
  * Chat extends a View in the Game context.
  * 
  * @see View
@@ -48,16 +50,24 @@ public class Chat extends View {
 	private int positionX;
 	private int positionY;
 	private final int strokeSize = 5;
+	private final int timeSpace = 60;
 	private final int inputFieldHeight = 20;
-	private final int inputFieldWidth = size.width - 2 * strokeSize;
+	private final int inputFieldWidth = size.width - 3 * strokeSize - timeSpace;
 
 	/* Scrolling Bar Values */
 	private final int scrollBarX = size.width - 20;
 	private final int scrollBarWidth = 12;
 	private final float scrollBarHeight = (size.height - 3f * strokeSize - inputFieldHeight) / 7f;
-	
-	/**Constructs a Chat passing its origin's position as single x and y coordinates in tile numbers.<br>
-	 * The Chat's View dimensions will be set automatically to default values in pixels.
+
+	/* Time */
+	private int hour = -1;
+	private int minute = -1;
+
+	/**
+	 * Constructs a Chat passing its origin's position as single x and y
+	 * coordinates in tile numbers.<br>
+	 * The Chat's View dimensions will be set automatically to default values in
+	 * pixels.
 	 * 
 	 * @param contextName
 	 * @param originX
@@ -70,9 +80,12 @@ public class Chat extends View {
 			GameContainer container) throws SlickException {
 		this(contextName, new Point(originX, originY), container);
 	}
-	
-	/**Constructs a Chat passing its origin's position as a point in tile numbers.<br>
-	 * The Chat's View dimensions will be set automatically to default values in pixels.
+
+	/**
+	 * Constructs a Chat passing its origin's position as a point in tile
+	 * numbers.<br>
+	 * The Chat's View dimensions will be set automatically to default values in
+	 * pixels.
 	 * 
 	 * @param contextName
 	 * @param origin
@@ -85,8 +98,10 @@ public class Chat extends View {
 		this(contextName, origin.x, origin.y, 640, 400, container);
 	}
 
-	/**Constructs a Chat passing its origin's position as single x and y coordinates in tile numbers 
-	 * and the dimension of its superclass View as single x and y coordinates in pixels.
+	/**
+	 * Constructs a Chat passing its origin's position as single x and y
+	 * coordinates in tile numbers and the dimension of its superclass View as
+	 * single x and y coordinates in pixels.
 	 * 
 	 * @param contextName
 	 * @param originX
@@ -102,9 +117,11 @@ public class Chat extends View {
 		this(contextName, new Point(originX, originY), new Dimension(width,
 				height), container);
 	}
-	
-	/**Constructs a Chat passing its origin's position as a Point in tile numbers 
-	 * and the dimension of its superclass View as a Dimension in pixels.
+
+	/**
+	 * Constructs a Chat passing its origin's position as a Point in tile
+	 * numbers and the dimension of its superclass View as a Dimension in
+	 * pixels.
 	 * 
 	 * @param contextName
 	 * @param origin
@@ -120,38 +137,35 @@ public class Chat extends View {
 		positionX = origin.x * GameEnvironment.BLOCK_SIZE;
 		positionY = origin.y * GameEnvironment.BLOCK_SIZE;
 
+		hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+		minute = Calendar.getInstance().get(Calendar.MINUTE);
+
 		messages = new LinkedList<Message>();
-		
-		/* print a welcoming message and use an instance of Calendar class to get current time */
+
+		/*
+		 * print a welcoming message and use an instance of Calendar class to
+		 * get current time
+		 */
 		messages.add(new Message("New Game Started! Player vs. Opponent",
 				Calendar.getInstance()));
 		/* print end of this game session */
-		/* if game session overlaps a full hour, react accordingly ->
-		 * use up minutes until full hour is reached,
-		 * increase hour,
-		 * increase remaining minutes starting form 0
+		/*
+		 * if game session overlaps a full hour, react accordingly -> use up
+		 * minutes until full hour is reached, increase hour, increase remaining
+		 * minutes starting form 0
 		 */
 		if (Calendar.getInstance().get(Calendar.MINUTE) >= 45) {
 			messages.add(new Message(
 					"Instance ends at "
-							+ ((Calendar.getInstance()
-									.get(Calendar.HOUR_OF_DAY) + 1) > 23 ? "00"
-									: (Calendar.getInstance().get(
-											Calendar.HOUR_OF_DAY) + 1))
+							+ ((hour + 1) > 23 ? "00" : (hour + 1))
 							+ ":"
-							+ ((Calendar.getInstance().get(Calendar.MINUTE) - 45) > 9 ? (Calendar
-									.getInstance().get(Calendar.MINUTE) - 45)
-									: "0"
-											+ (Calendar.getInstance().get(
-													Calendar.MINUTE) - 45)),
-					Calendar.getInstance()));
+							+ ((minute - 45) > 9 ? (minute - 45) : "0"
+									+ (minute - 45)), Calendar.getInstance()));
 		} else {
-			messages.add(new Message("Instance ends at "
-					+ Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + ":"
-					+ (Calendar.getInstance().get(Calendar.MINUTE) + 15),
-					Calendar.getInstance()));
+			messages.add(new Message("Instance ends at " + hour + ":"
+					+ (minute + 15), Calendar.getInstance()));
 		}
-		
+
 		/* set first 4 messages to be shown */
 		for (int i = 0; i < MAXIMUM_MESSAGES; i++) {
 			if (i < 4) {
@@ -160,21 +174,22 @@ public class Chat extends View {
 				shown[i] = false;
 			}
 		}
-		
+
 		/* set font type */
 		Font font = new Font("Verdana", Font.BOLD, 12);
 		TrueTypeFont ttf = new TrueTypeFont(font, true);
-		
+
 		/* create an inputfield and clear it when message is sent */
-		input = new InputField(container, ttf, strokeSize, positionY
-				+ size.height - inputFieldHeight - strokeSize, inputFieldWidth,
-				inputFieldHeight) {
+		input = new InputField(container, ttf, strokeSize*2 + timeSpace,
+				positionY + size.height - inputFieldHeight - strokeSize,
+				inputFieldWidth, inputFieldHeight) {
 			@Override
 			public void keyPressed(int key, char c) {
 				super.keyPressed(key, c);
-				if (this.getText().length() >= this.getMaxLength() && this.isFocused())
+				if (this.getText().length() >= this.getMaxLength()
+						&& this.isFocused())
 					container.getInput().consumeEvent();
-				if (key == 28) {
+				if (key == 28 && this.isFocused() && this.getText() != "") {
 					Chat.this.newMessage(new Message(this.getText(), Calendar
 							.getInstance(), Channels.PUBLIC));
 					this.setText("");
@@ -220,19 +235,30 @@ public class Chat extends View {
 			i++;
 		}
 		zeile = 0;
+
+		graphics.setColor(new Color(0f, 0f, 1f));
+		graphics.fillRect(strokeSize, positionY + size.height
+				- inputFieldHeight - strokeSize, timeSpace, inputFieldHeight);
+		
+		graphics.setColor(new Color(0f, 0f, 0f));
+		graphics.drawString("<" + hour + ":"
+				+ (minute > 9 ? minute : ("0" + minute)) + ">", strokeSize + 2,
+				positionY + size.height - inputFieldHeight - strokeSize);
 	}
 
 	@Override
 	public void update() {
-
+		hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+		minute = Calendar.getInstance().get(Calendar.MINUTE);
 	}
-	
-	/**Adds a new message to the list of message, 
-	 * delete oldest message if more than 7 messages are present.<br>
+
+	/**
+	 * Adds a new message to the list of message, delete oldest message if more
+	 * than 7 messages are present.<br>
 	 * 
 	 * Only the first 4 messages will be shown and rendered on the screen.
 	 * 
-	 * @param message 
+	 * @param message
 	 */
 	private void newMessage(Message message) {
 		messages.add(message);
@@ -250,14 +276,15 @@ public class Chat extends View {
 			}
 		}
 	}
-	
-	/**Scrolls through messages in Chat if more than 4 messages are stored.<br>
+
+	/**
+	 * Scrolls through messages in Chat if more than 4 messages are stored.<br>
 	 * 
 	 * @param scroll
 	 */
 	public void scroll(int scroll) { // +120 rauf, -120 runter scrollen
 		scroll /= 120;
-		
+
 		/* only scroll chat if there are more message not currently displayed */
 		if (messages.size() < 5) {
 			return;
@@ -265,11 +292,11 @@ public class Chat extends View {
 
 		for (int i = 0; i < 4; i++) {
 			if (shown[i] == true) {
-				if (i == 0 && scroll < 0) { //undisplay first message
+				if (i == 0 && scroll < 0) { // undisplay first message
 					shown[i] = false;
 					shown[i + 4] = true;
 					break;
-				} else if (i == 3 && scroll > 0) { //undisplay last message
+				} else if (i == 3 && scroll > 0) { // undisplay last message
 					shown[6] = false;
 					shown[i - 1] = true;
 				} else {
@@ -285,9 +312,13 @@ public class Chat extends View {
 			}
 		}
 	}
-	
-	public void focus() {
-		input.setFocus(true);
+
+	public void setFocus(boolean b) {
+		input.setFocus(b);
+	}
+
+	public boolean hasFocus() {
+		return input.hasFocus();
 	}
 
 }

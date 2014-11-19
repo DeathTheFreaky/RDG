@@ -19,6 +19,7 @@ import views.Chat;
 import views.GameEnvironment;
 import views.InventoryView;
 import general.Enums.CreatureType;
+import general.Enums.ImageSize;
 import general.GroundFactory;
 import general.ResourceManager;
 import general.Enums.Updates;
@@ -153,9 +154,9 @@ public class Game extends BasicGame {
 		inventoryViewOrigin = new Point(15, 12);
 
 		/* Initialize Factory and Manager classes! */
-		new ResourceManager().getInstance();	
+		new ResourceManager().getInstance();
 		new GroundFactory().getInstance();
-		
+
 		/* network lobby must be called before this to detect player type */
 		CreatureType playerType = CreatureType.PLAYER1;
 		if (playerType == CreatureType.PLAYER1) {
@@ -170,8 +171,8 @@ public class Game extends BasicGame {
 
 		map = new Map().getInstance();
 		map.setPlayer(player);
-		//map.fillMap();
-		
+		// map.fillMap();
+
 		/* Dimension is specified in pixels */
 		gameEnvironment = new GameEnvironment("GameEnvironment",
 
@@ -196,6 +197,7 @@ public class Game extends BasicGame {
 		if (timeToUpdate > UPDATE) {
 			player.update();
 			gameEnvironment.update();
+			chat.update();
 
 			timeToUpdate = 0;
 		}
@@ -213,7 +215,8 @@ public class Game extends BasicGame {
 		inventoryView.draw(container, g);
 
 		if (dragging && draggedEquipment != null) {
-			g.drawImage(draggedEquipment.getImage(), draggedX, draggedY);
+			g.drawImage(draggedEquipment.getImage(ImageSize.d20x20), draggedX,
+					draggedY);
 		}
 	}
 
@@ -221,17 +224,29 @@ public class Game extends BasicGame {
 	public void keyPressed(int key, char c) {
 
 		/* Key Values for Players Movement! (a,s,d,w) */
-		if (key == 30 || key == 31 || key == 32 || key == 17) {
+		if ((key == 30 || key == 31 || key == 32 || key == 17)
+				&& !gameEnvironment.isFightActive()) {
 			player.update(key, Updates.KEY_PRESSED);
-		} else if (key == 46) {
-			chat.focus();
+		} else if (key == 15) {
+			if (chat.hasFocus()) {
+				chat.setFocus(false);
+			} else {
+				chat.setFocus(true);
+			}
+		} else if (key == 18) {
+			Equipment e = map.getItemInFrontOfPlayer();
+			if (e != null) {
+				inventoryView.storeEquipment(e);
+			}
 		}
+		System.out.println("Key: " + key + ", Char: " + c);
 	}
 
 	@Override
 	public void keyReleased(int key, char c) {
 		/* Key Values for Players Movement! (a,s,d,w) */
-		if (key == 30 || key == 31 || key == 32 || key == 17) {
+		if ((key == 30 || key == 31 || key == 32 || key == 17)
+				&& !gameEnvironment.isFightActive()) {
 			player.update(key, Updates.KEY_RELEASED);
 		}
 	}
@@ -247,11 +262,16 @@ public class Game extends BasicGame {
 	@Override
 	public void mouseDragged(int oldx, int oldy, int newx, int newy) {
 		if (!dragging) {
+			if(gameEnvironment.isFightActive()) {
+				System.out.println("You cannot change your Equipment during fight");
+				dragging = true;
+				return;
+			}
 			this.draggedEquipment = inventoryView.getEquipment(oldx, oldy);
-			if(draggedEquipment == null) {
+			if (draggedEquipment == null) {
 				this.draggedEquipment = armorView.getEquipment(oldx, oldy);
 			}
-			if(draggedEquipment != null) {
+			if (draggedEquipment != null) {
 				dragging = true;
 			}
 		}
@@ -264,8 +284,9 @@ public class Game extends BasicGame {
 	public void mouseReleased(int button, int x, int y) {
 		if (button == 0) { // linke Maustaste
 			if (dragging) {
-				if(!armorView.equipArmor(draggedEquipment, x, y)) {
-					inventoryView.storeEquipment(draggedEquipment);
+				Equipment e;
+				if ((e = armorView.equipArmor(draggedEquipment, x, y)) != null) {
+					inventoryView.storeEquipment(e);
 				}
 				dragging = false;
 				draggedEquipment = null;

@@ -63,9 +63,9 @@ public class MonsterFactory {
 		levelList = new HashMap<Levels, List<String>>();
 		resources = new ResourceManager().getInstance();
 		
-		List easylist = new ArrayList<String>();
-		List normallist = new ArrayList<String>();
-		List hardlist = new ArrayList<String>();
+		List<String> easylist = new ArrayList<String>();
+		List<String> normallist = new ArrayList<String>();
+		List<String> hardlist = new ArrayList<String>();
 		
 		try {
 			monsterTemplates = new Configloader().getInstance().getMonsterTemplates();

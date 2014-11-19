@@ -28,8 +28,8 @@ public class Player extends Creature {
 	}*/
 
 	/* is used for Players Movement and Rotation during Update */
-	boolean up, right, down, left = false;
-	ViewingDirections lastViewingDirection = ViewingDirections.NORTH;
+	private boolean up, right, down, left = false;
+	private ViewingDirections lastViewingDirection = ViewingDirections.NORTH;
 
 	private Point originOfGameEnvironment;
 
@@ -349,5 +349,11 @@ public class Player extends Creature {
 			break;
 		}
 	}
-
+	
+	/**
+	 * Returns the Direction of View of the player
+	 */
+	public ViewingDirections getDirectionOfView() {
+		return this.lastViewingDirection;
+	}
 }

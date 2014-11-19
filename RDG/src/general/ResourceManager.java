@@ -28,14 +28,17 @@ public class ResourceManager {
 	/* only one instance of ResourceManager is allowed */
 	private static ResourceManager INSTANCE = null;
 
-	/* used for more efficient picture loading */
-	public SpriteSheet TILES; 
+	public SpriteSheet TILES; //more efficient picture loading 
 	
 	/* Hashmap for all Images */
 	public Map<String, Image> IMAGES;
 	
 	/* Configloader which holds image paths */
 	private Configloader configloader = null;
+
+	/*
+	 * public enum Direction { NORTH, SOUTH, EAST, WEST }
+	 */
 
 	/**Constructs a RessourceManager.<br>
 	 * 
@@ -52,27 +55,9 @@ public class ResourceManager {
 	 */
 	private void loadResources() throws SlickException {
 		
-		/* load config from XML files */
-		try {
-			configloader = new Configloader().getInstance();
-		} catch (IllegalArgumentException | ParserConfigurationException
-				| SAXException | IOException e) {
-			e.printStackTrace();
-		}
-		
 		if (configloader == null) {
 			throw new NullPointerException("Configloader must be set!");
 		}
-		
-		/* load images */
-		loadImages();
-	
-	}
-	
-	/**Load Images from harddrive into memory
-	 * @throws SlickException 
-	 */
-	private void loadImages() throws SlickException {
 		
 		TILES = new SpriteSheet(Game.IMAGEPATH + "/rooms/tileset.png", 32, 32);
 		
@@ -91,6 +76,7 @@ public class ResourceManager {
 	    for (Entry<String, ArmamentTemplate> entry : configloader.getArmamentTemplates().entrySet()) {
 	        IMAGES.put(entry.getKey(), new Image (Game.IMAGEPATH + entry.getValue().getImage()));
 	    }
+	    // no images yet
 	    for (Entry<String, PotionTemplate> entry : configloader.getPotionTemplates().entrySet()) {
 	        IMAGES.put(entry.getKey(), new Image (Game.IMAGEPATH + entry.getValue().getImage()));
 	    }
@@ -102,6 +88,11 @@ public class ResourceManager {
 	    }
 	    	    
 	    /* Print which images are stored now */
+	    /*Iterator testit = IMAGES.entrySet().iterator();
+	    while (testit.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)testit.next();
+	        System.out.println(pairs.getKey() + " = " + pairs.getValue());
+	    }*/
 	    for(String s : IMAGES.keySet()) {
 	    	System.out.println("Key: " + s + ", Value: " + IMAGES.get(s));
 	    }
@@ -115,6 +106,13 @@ public class ResourceManager {
 	public ResourceManager getInstance() throws SlickException {
 		if (INSTANCE == null) {
 			INSTANCE = new ResourceManager();
+			try {
+				INSTANCE.configloader = new Configloader().getInstance();
+			} catch (IllegalArgumentException | ParserConfigurationException
+					| SAXException | IOException e) {
+				e.printStackTrace();
+			}
+			if (INSTANCE.configloader == null) throw new NullPointerException("Configloader must be set on first call of an instance of this ResourceManager");
 			INSTANCE.loadResources(); 
 		} 
 		return INSTANCE;

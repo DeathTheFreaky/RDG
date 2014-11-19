@@ -14,6 +14,7 @@ import elements.Equipment;
 import elements.Potion;
 import elements.Weapon;
 import general.Enums.Armor;
+import general.Enums.ImageSize;
 import general.Enums.ItemClasses;
 import general.Enums.WeaponTypes;
 import general.ResourceManager;
@@ -157,7 +158,7 @@ public class InventoryView extends View {
 		int x = 0, y = 0;
 
 		for (Equipment a : armor) {
-			graphics.drawImage(a.getImage(), 10 + ORIGIN_X + x * 40, 10
+			graphics.drawImage(a.getImage(ImageSize.d20x20), 10 + ORIGIN_X + x * 40, 10
 					+ ORIGIN_Y + y * 40);
 			if (x == 3) {
 				x = 0;
