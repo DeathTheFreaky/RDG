@@ -1,23 +1,19 @@
 package general;
 
 import java.awt.Dimension;
-import java.io.IOException;
-import java.util.List;
+import java.awt.Point;
 import java.util.Map;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.newdawn.slick.SlickException;
-import org.xml.sax.SAXException;
 
-import configLoader.Configloader;
+import configLoader.ArmamentTemplate;
 import configLoader.RoomTemplate;
 import elements.Element;
 import elements.Equipment;
+import elements.Monster;
 import elements.Room;
 import gameEssentials.Game;
 import general.Enums.Armor;
-import general.Enums.ItemClasses;
 import general.Enums.Levels;
 import general.Enums.RoomTypes;
 
@@ -31,95 +27,20 @@ import general.Enums.RoomTypes;
  */
 public class RoomFactory {
 
-	/* make sure RoomFactory can only be instantiated once */
-	private static RoomFactory FACTORY = null;
-	private static ResourceManager resources = null;
-
-	/* size of the room */
-	Dimension size;
-
-	/* passed from configLoader - used to load defaults */
-	private Map<RoomTypes, RoomTemplate> roomTemplates;
-
-	/* other Factories needed to fill Room */
-	private ArmamentFactory armamentFactory = null;
-	private PotionFactory potionFactory = null;
-	private WeaponFactory weaponFactory = null;
-	private MonsterFactory monsterFactory = null;
-
-	/* GroundFactory used to fill the Room's ground textures */
-	private GroundFactory groundFactory; // use only if different rooms need
-											// different ground textures
-
-	/* retrieve lists of all possible monsters, armaments, weapons, weapons */
-	Map<Levels, List<String>> monstersLeveledList = null;
-	Map<ItemClasses, List<String>> armamentClassedList = null;
-	Map<ItemClasses, List<String>> potionClassedList = null;
-	Map<ItemClasses, List<String>> weaponClassedList = null;
-
-	/**
-	 * Creates a RoomFactory and loads its static values only ONCE!!!<br>
-	 * 
-	 * Static variables only get initialized one time and all instances use the
-	 * same variables --> less memory is needed!
-	 * 
-	 * @return initialized RoomFactory
-	 * @throws SlickException
-	 * @see RoomFactory
-	 */
-	public RoomFactory() throws SlickException {
-
-		try {
-			this.roomTemplates = new Configloader().getInstance()
-					.getRoomTemplates();
-		} catch (IllegalArgumentException | ParserConfigurationException
-				| SAXException | IOException e) {
-			e.printStackTrace();
-		}
-
-		/* create all needed resources */
-		size = new Dimension(Game.ROOMWIDTH, Game.ROOMHEIGHT);
-		resources = new ResourceManager().getInstance();
-		groundFactory = new GroundFactory().getInstance();
-		armamentFactory = new ArmamentFactory().getInstance();
-		potionFactory = new PotionFactory().getInstance();
-		weaponFactory = new WeaponFactory().getInstance();
-		monsterFactory = new MonsterFactory().getInstance();
-
-		/* retrieve lists of all possible monsters, armaments, weapons, weapons */
-		monstersLeveledList = monsterFactory.getLeveledMonsters();
-		armamentClassedList = armamentFactory.getItemClasses();
-		potionClassedList = potionFactory.getItemClasses();
-		weaponClassedList = weaponFactory.getItemClasses();
-	}
-
-	/**
-	 * Creates a RoomFactory and loads its static values only ONCE!!!<br>
-	 * 
-	 * Static variables only get initialized one time and all instances use the
-	 * same variables --> less memory is needed!
-	 * 
-	 * @return initialized RoomFactory
-	 * @throws SlickException
-	 * @see RoomFactory
-	 */
-	public RoomFactory getInstance() throws SlickException {
-		if (FACTORY == null) {
-			FACTORY = new RoomFactory();
-		}
-		return FACTORY;
-	}
-
 	/**
 	 * Creates a new Room with ground textures according to the room type.<br>
 	 * The room will be filled randomly with monsters and items.
 	 * 
 	 * @return an Instance of Room
+	 * @throws SlickException 
 	 * @see RoomFactory
 	 */
-	public Room createRoom(RoomTypes type) {
+	public static Room createRoom(RoomTypes type) throws SlickException {
+		
+		ResourceManager resources = new ResourceManager().getInstance();
+		RoomTemplate tempTemplate = resources.ROOM_TEMPLATES.get(type);
 
-		size = new Dimension(Game.ROOMWIDTH, Game.ROOMHEIGHT);
+		Dimension size = new Dimension(Game.ROOMWIDTH, Game.ROOMHEIGHT);
 		Element[][] background = new Element[Game.ROOMWIDTH][Game.ROOMHEIGHT];
 		Element[][] overlay = new Element[Game.ROOMWIDTH][Game.ROOMHEIGHT];
 
@@ -130,9 +51,9 @@ public class RoomFactory {
 			}
 		}
 
-		overlay = addMonster(type, overlay);
-		overlay = addItems(type, overlay);
-		background = fillGround(type, background);
+		overlay = addMonster(type, overlay, tempTemplate);
+		overlay = addItems(type, overlay, resources);
+		background = fillGround(type, background, size);
 
 		overlay[1][1] = new Equipment("Plate Helmet",
 				resources.IMAGES.get("Plate Helmet"), Armor.HEAD);
@@ -152,10 +73,41 @@ public class RoomFactory {
 	 * 
 	 * @param type
 	 * @param overlay
+	 * @param resources
+	 * @param map 
 	 * @return an overlay with or without a placed monster
+	 * @throws SlickException 
 	 */
-	public Element[][] addMonster(RoomTypes type, Element[][] overlay) {
-
+	private static Element[][] addMonster(RoomTypes type, Element[][] overlay, RoomTemplate tempTemplate) throws SlickException {
+		
+		Map<Levels, Float> monsterProbabilities = tempTemplate.getMonster();
+		int monsterCount = tempTemplate.getMonsterCount();
+		
+		System.out.println("monsterCount: " + monsterCount);
+				
+		/* place monsters on random, free fields in the room */
+		for (int i = 0; i < monsterCount; i++) {
+			
+			/* first find a free field, return null if no free field is found after 15 rounds */
+			Point randPoint = Chances.randomFreeField(overlay);
+			
+			if (randPoint != null) { //no free field was found 
+				
+				System.out.println("x: " + randPoint.x + ", y: " + randPoint.y);
+				
+				/* get a random Monster, according to the monster levels allowed in this Room's definition*/ 
+				String monsterName = Chances.randomMonster(monsterProbabilities);
+				
+				if (monsterName != null) { //no monster shall be placed
+					overlay[randPoint.x][randPoint.y] = MonsterFactory.createMonster(monsterName);
+				}
+			}
+			else {
+				System.out.println("null");
+				break;
+			}
+		}
+		
 		return overlay;
 	}
 
@@ -166,9 +118,10 @@ public class RoomFactory {
 	 * 
 	 * @param type
 	 * @param overlay
+	 * @param resources
 	 * @return an overlay with randomly chosen items
 	 */
-	public Element[][] addItems(RoomTypes type, Element[][] overlay) {
+	private static Element[][] addItems(RoomTypes type, Element[][] overlay, ResourceManager resources) {
 
 		return overlay;
 	}
@@ -178,9 +131,11 @@ public class RoomFactory {
 	 * 
 	 * @param type
 	 * @param background
+	 * @param size
 	 * @return a background filled with ground textures
+	 * @throws SlickException 
 	 */
-	public Element[][] fillGround(RoomTypes type, Element[][] background) {
+	private static Element[][] fillGround(RoomTypes type, Element[][] background, Dimension size) throws SlickException {
 
 		/* null-initialize background */
 		for (int i = 0; i < size.width - 1; i++) {
@@ -195,25 +150,25 @@ public class RoomFactory {
 
 				switch (type) {
 				case DEADEND:
-					background[i][j] = groundFactory
+					background[i][j] = GroundFactory
 							.createYellowGroundOne(i, j);
 					break;
 				case HALLWAY:
-					background[i][j] = groundFactory.createGreenGround(i, j);
+					background[i][j] = GroundFactory.createGreenGround(i, j);
 					break;
 				case TURN:
-					background[i][j] = groundFactory.createGreenGround(i, j);
+					background[i][j] = GroundFactory.createGreenGround(i, j);
 					break;
 				case TJUNCTION:
-					background[i][j] = groundFactory
+					background[i][j] = GroundFactory
 							.createYellowGroundTwo(i, j);
 					break;
 				case JUNCTION:
-					background[i][j] = groundFactory
+					background[i][j] = GroundFactory
 							.createYellowGroundOne(i, j);
 					break;
 				case TREASURECHAMBER:
-					background[i][j] = groundFactory.createBrownGround(i, j);
+					background[i][j] = GroundFactory.createBrownGround(i, j);
 					break;
 				}
 			}

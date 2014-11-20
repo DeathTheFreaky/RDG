@@ -13,7 +13,7 @@ public class Enums {
 
 	public enum ItemClasses {NONE, WEAK, MEDIUM, STRONG}
 	public enum Attributes {HP, SPEED, ACCURACY, STRENGTH}
-	public enum Levels {EASY, NORMAL, HARD}
+	public enum Levels {NONE, EASY, NORMAL, HARD}
 	public enum Targets {SELF, OPPONENT}
 	/**Defines Potion's work modes.<br><br>
 	 * 

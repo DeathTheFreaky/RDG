@@ -15,6 +15,7 @@
 			<normal>67</normal>
 			<hard>0</hard>
 		</Monster>
+		<Monster_Count>1</Monster_Count>
 		<Item_Multiplier>1.5</Item_Multiplier>
 		<Find_Probabilities>
 			<none>0</none>
@@ -40,6 +41,7 @@
 			<normal>17</normal>
 			<hard>0</hard>
 		</Monster>
+		<Monster_Count>1</Monster_Count>
 		<Item_Multiplier>1.25</Item_Multiplier>
 		<Find_Probabilities>
 			<none>30</none>
@@ -65,6 +67,7 @@
 			<normal>17</normal>
 			<hard>0</hard>
 		</Monster>
+		<Monster_Count>1</Monster_Count>
 		<Item_Multiplier>1.25</Item_Multiplier>
 		<Find_Probabilities>
 			<none>30</none>
@@ -90,6 +93,7 @@
 			<normal>33</normal>
 			<hard>0</hard>
 		</Monster>
+		<Monster_Count>1</Monster_Count>
 		<Item_Multiplier>1.1</Item_Multiplier>
 		<Find_Probabilities>
 			<none>25</none>
@@ -115,6 +119,7 @@
 			<normal>33</normal>
 			<hard>0</hard>
 		</Monster>
+		<Monster_Count>1</Monster_Count>
 		<Item_Multiplier>1</Item_Multiplier>
 		<Find_Probabilities>
 			<none>50</none>
@@ -140,6 +145,7 @@
 			<normal>0</normal>
 			<hard>1</hard>
 		</Monster>
+		<Monster_Count>1</Monster_Count>
 		<Item_Multiplier>2</Item_Multiplier>
 		<Find_Probabilities>
 			<none>0</none>

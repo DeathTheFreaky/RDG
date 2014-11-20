@@ -20,7 +20,6 @@ import views.GameEnvironment;
 import views.InventoryView;
 import general.Enums.CreatureType;
 import general.Enums.ImageSize;
-import general.GroundFactory;
 import general.ResourceManager;
 import general.Enums.Updates;
 
@@ -57,6 +56,9 @@ public class Game extends BasicGame {
 	/* room numbers */
 	public static int ROOMSHOR = 5;
 	public static int ROOMSVER = 5;
+	
+	/* number of tries when looking for a free field in a room */
+	public static int MAXTRIES = 15;
 
 	/* every milliseconds an Update is made */
 	private final int UPDATE = 200;
@@ -155,7 +157,6 @@ public class Game extends BasicGame {
 
 		/* Initialize Factory and Manager classes! */
 		new ResourceManager().getInstance();
-		new GroundFactory().getInstance();
 
 		/* network lobby must be called before this to detect player type */
 		CreatureType playerType = CreatureType.PLAYER1;
@@ -262,8 +263,9 @@ public class Game extends BasicGame {
 	@Override
 	public void mouseDragged(int oldx, int oldy, int newx, int newy) {
 		if (!dragging) {
-			if(gameEnvironment.isFightActive()) {
-				System.out.println("You cannot change your Equipment during fight");
+			if (gameEnvironment.isFightActive()) {
+				System.out
+						.println("You cannot change your Equipment during fight");
 				dragging = true;
 				return;
 			}

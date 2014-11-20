@@ -1,8 +1,14 @@
 package general;
+
 import gameEssentials.Game;
+import general.Enums.ItemClasses;
+import general.Enums.Levels;
+import general.Enums.RoomTypes;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -17,30 +23,61 @@ import configLoader.ArmamentTemplate;
 import configLoader.Configloader;
 import configLoader.MonsterTemplate;
 import configLoader.PotionTemplate;
+import configLoader.RoomTemplate;
 import configLoader.WeaponTemplate;
 
-/**ResourceManager loads all Resources from harddrive into memory.<br>
- * setConfigloader() must be called by Game Class before loadResources() can be called.
+/**
+ * ResourceManager loads all Data from Config Files and Resources from harddrive
+ * into memory.<br>
+ * setConfigloader() must be called by Game Class before loadResources() can be
+ * called.
  *
  */
 public class ResourceManager {
+	
+	/* public variables are quasi constants -> they will only be set once and do never change ? */
 
 	/* only one instance of ResourceManager is allowed */
 	private static ResourceManager INSTANCE = null;
 
-	public SpriteSheet TILES; //more efficient picture loading 
-	
+	/* more efficient picture loading */
+	public SpriteSheet TILES;
+
 	/* Hashmap for all Images */
 	public Map<String, Image> IMAGES;
-	
+
 	/* Configloader which holds image paths */
 	private Configloader configloader = null;
 
-	/*
-	 * public enum Direction { NORTH, SOUTH, EAST, WEST }
-	 */
+	/* config templates */
+	public Map<String, ArmamentTemplate> ARMAMENT_TEMPLATES;
+	public Map<String, PotionTemplate> POTION_TEMPLATES;
+	public Map<String, WeaponTemplate> WEAPON_TEMPLATES;
+	public Map<String, MonsterTemplate> MONSTER_TEMPLATES;
+	public Map<RoomTypes, RoomTemplate> ROOM_TEMPLATES;
 
-	/**Constructs a RessourceManager.<br>
+	/* lists of all item names */
+	public List<String> ITEMS;
+
+	/* map of lists of items grouped by item class */
+	public Map<ItemClasses, List<String>> ITEMCLASSLIST = null;
+
+	/* lists for armament, portion, weapon and monster names */
+	public List<String> ARMAMENTS;
+	public List<String> POTIONS;
+	public List<String> WEAPONS;
+	public List<String> MONSTERS;
+
+	/* maps of lists of armaments, portions, weapons - grouped by item class */
+	public Map<ItemClasses, List<String>> ARMAMENTS_CLASSIFIED;
+	public Map<ItemClasses, List<String>> POTIONS_CLASSIFIED;
+	public Map<ItemClasses, List<String>> WEAPONS_CLASSIFIED;
+
+	/* map of lists of all monsters - grouped by monster level */
+	public Map<Levels, List<String>> MONSTERS_LEVELED;
+
+	/**
+	 * Constructs a RessourceManager.<br>
 	 * 
 	 * @throws SlickException
 	 * @see ResourceManager
@@ -49,21 +86,55 @@ public class ResourceManager {
 		IMAGES = new HashMap<String, Image>();
 	}
 
-	/**Loads all ressources from harddrive into memory.
+	/**
+	 * Loads all ressources from harddrive into memory.
 	 * 
 	 * @throws SlickException
 	 */
 	private void loadResources() throws SlickException {
-		
+
+		/* load config data */
+		try {
+			configloader = new Configloader().getInstance();
+		} catch (IllegalArgumentException | ParserConfigurationException
+				| SAXException | IOException e) {
+			e.printStackTrace();
+		}
+
 		if (configloader == null) {
 			throw new NullPointerException("Configloader must be set!");
 		}
+
+		/* load images */
+		loadImages();
+
+		/* load items */
+		ITEMS = new ArrayList<String>();
+		ITEMCLASSLIST = new HashMap<ItemClasses, List<String>>();
+		loadArmaments();
+		loadPotions();
+		loadWeapons();
+
+		/* load monsters */
+		loadMonsters();
 		
+		/* load rooms */
+		loadRooms();
+	}
+
+	/**
+	 * Load all Images from harddrive into memory.
+	 * 
+	 * @throws SlickException
+	 */
+	private void loadImages() throws SlickException {
+
 		TILES = new SpriteSheet(Game.IMAGEPATH + "/rooms/tileset.png", 32, 32);
-		
+
 		IMAGES.put("Player1", new Image(Game.IMAGEPATH + "soldier_32x32.png"));
 		IMAGES.put("Player2", new Image(Game.IMAGEPATH + "soldier_32x32.png"));
-		IMAGES.put("Armor_Background", new Image(Game.IMAGEPATH + "warrior_160x160.png"));
+		IMAGES.put("Armor_Background", new Image(Game.IMAGEPATH
+				+ "warrior_160x160.png"));
 		IMAGES.put("Helmet", new Image(Game.IMAGEPATH + "Head.png"));
 		IMAGES.put("Arms", new Image(Game.IMAGEPATH + "Arm.png"));
 		IMAGES.put("Cuirass", new Image(Game.IMAGEPATH + "Chest.png"));
@@ -71,34 +142,193 @@ public class ResourceManager {
 		IMAGES.put("Shoes", new Image(Game.IMAGEPATH + "Feet.png"));
 		IMAGES.put("M_Weapon", new Image(Game.IMAGEPATH + "Weapon.png"));
 		IMAGES.put("S_Weapon", new Image(Game.IMAGEPATH + "Weapon2.png"));
-		
+
 		/* load images from paths stored in config loader */
-	    for (Entry<String, ArmamentTemplate> entry : configloader.getArmamentTemplates().entrySet()) {
-	        IMAGES.put(entry.getKey(), new Image (Game.IMAGEPATH + entry.getValue().getImage()));
-	    }
-	    // no images yet
-	    for (Entry<String, PotionTemplate> entry : configloader.getPotionTemplates().entrySet()) {
-	        IMAGES.put(entry.getKey(), new Image (Game.IMAGEPATH + entry.getValue().getImage()));
-	    }
-	    for (Entry<String, WeaponTemplate> entry : configloader.getWeaponTemplates().entrySet()) {
-	        IMAGES.put(entry.getKey(), new Image (Game.IMAGEPATH + entry.getValue().getImage()));
-	    }
-	    for (Entry<String, MonsterTemplate> entry : configloader.getMonsterTemplates().entrySet()) {
-	        IMAGES.put(entry.getKey(), new Image (Game.IMAGEPATH + entry.getValue().getImage()));
-	    }
-	    	    
-	    /* Print which images are stored now */
-	    /*Iterator testit = IMAGES.entrySet().iterator();
-	    while (testit.hasNext()) {
-	        Map.Entry pairs = (Map.Entry)testit.next();
-	        System.out.println(pairs.getKey() + " = " + pairs.getValue());
-	    }*/
-	    for(String s : IMAGES.keySet()) {
-	    	System.out.println("Key: " + s + ", Value: " + IMAGES.get(s));
-	    }
+		for (Entry<String, ArmamentTemplate> entry : configloader
+				.getArmamentTemplates().entrySet()) {
+			IMAGES.put(entry.getKey(), new Image(Game.IMAGEPATH
+					+ entry.getValue().getImage()));
+		}
+		for (Entry<String, PotionTemplate> entry : configloader
+				.getPotionTemplates().entrySet()) {
+			IMAGES.put(entry.getKey(), new Image(Game.IMAGEPATH
+					+ entry.getValue().getImage()));
+		}
+		for (Entry<String, WeaponTemplate> entry : configloader
+				.getWeaponTemplates().entrySet()) {
+			IMAGES.put(entry.getKey(), new Image(Game.IMAGEPATH
+					+ entry.getValue().getImage()));
+		}
+		for (Entry<String, MonsterTemplate> entry : configloader
+				.getMonsterTemplates().entrySet()) {
+			IMAGES.put(entry.getKey(), new Image(Game.IMAGEPATH
+					+ entry.getValue().getImage()));
+		}
+
+		/* Print which images are stored now */
+		/*
+		 * for(String s : IMAGES.keySet()) { System.out.println("Key: " + s +
+		 * ", Value: " + IMAGES.get(s)); }
+		 */
 	}
 
-	/**Returns the one and only instance of ResourceManager and triggers loading all Ressources.<br>
+	/**
+	 * Load Armament template from Configloader, create name list and classified name list and add Armament name to Item name list.
+	 */
+	private void loadArmaments() {
+
+		ARMAMENTS = new ArrayList<String>();
+		ARMAMENTS_CLASSIFIED = new HashMap<ItemClasses, List<String>>();
+
+		List<String> weaklist = new ArrayList<String>();
+		List<String> mediumlist = new ArrayList<String>();
+		List<String> stronglist = new ArrayList<String>();
+
+		ARMAMENT_TEMPLATES = configloader.getArmamentTemplates();
+
+		/* create lists of items corresponding to their item classes */
+		for (Entry<String, ArmamentTemplate> entry : ARMAMENT_TEMPLATES
+				.entrySet()) {
+			
+			ARMAMENTS.add(entry.getKey());
+			ITEMS.add(entry.getKey());
+			
+			if (entry.getValue().getItem_class() == ItemClasses.WEAK) {
+				weaklist.add(entry.getKey());
+			} else if (entry.getValue().getItem_class() == ItemClasses.MEDIUM) {
+				mediumlist.add(entry.getKey());
+			} else if (entry.getValue().getItem_class() == ItemClasses.STRONG) {
+				stronglist.add(entry.getKey());
+			}
+		}
+
+		ARMAMENTS_CLASSIFIED.put(ItemClasses.WEAK, weaklist);
+		ARMAMENTS_CLASSIFIED.put(ItemClasses.MEDIUM, mediumlist);
+		ARMAMENTS_CLASSIFIED.put(ItemClasses.STRONG, stronglist);
+		
+		ITEMCLASSLIST.put(ItemClasses.WEAK, weaklist);
+		ITEMCLASSLIST.put(ItemClasses.MEDIUM, mediumlist);
+		ITEMCLASSLIST.put(ItemClasses.STRONG, stronglist);
+	}
+
+	/**
+	 * Load Potion template from Configloader, create name list and classified name list and add Potion name to Item name list.
+	 */
+	private void loadPotions() {
+
+		POTIONS = new ArrayList<String>();
+		POTIONS_CLASSIFIED = new HashMap<ItemClasses, List<String>>();
+
+		List<String> weaklist = new ArrayList<String>();
+		List<String> mediumlist = new ArrayList<String>();
+		List<String> stronglist = new ArrayList<String>();
+
+		POTION_TEMPLATES = configloader.getPotionTemplates();
+
+		/* create lists of items corresponding to their item classes */
+		for (Entry<String, PotionTemplate> entry : POTION_TEMPLATES.entrySet()) {
+			
+			POTIONS.add(entry.getKey());
+			ITEMS.add(entry.getKey());
+			
+			if (entry.getValue().getItem_class() == ItemClasses.WEAK) {
+				weaklist.add(entry.getKey());
+			} else if (entry.getValue().getItem_class() == ItemClasses.MEDIUM) {
+				mediumlist.add(entry.getKey());
+			} else if (entry.getValue().getItem_class() == ItemClasses.STRONG) {
+				stronglist.add(entry.getKey());
+			}
+		}
+
+		POTIONS_CLASSIFIED.put(ItemClasses.WEAK, weaklist);
+		POTIONS_CLASSIFIED.put(ItemClasses.MEDIUM, mediumlist);
+		POTIONS_CLASSIFIED.put(ItemClasses.STRONG, stronglist);
+		
+		ITEMCLASSLIST.put(ItemClasses.WEAK, weaklist);
+		ITEMCLASSLIST.put(ItemClasses.MEDIUM, mediumlist);
+		ITEMCLASSLIST.put(ItemClasses.STRONG, stronglist);
+	}
+
+	/**
+	 * Load Weapon template from Configloader, create name list and classified name list and add Weapon name to Item name list.
+	 */
+	private void loadWeapons() {
+
+		WEAPONS = new ArrayList<String>();
+		WEAPONS_CLASSIFIED = new HashMap<ItemClasses, List<String>>();
+
+		List<String> weaklist = new ArrayList<String>();
+		List<String> mediumlist = new ArrayList<String>();
+		List<String> stronglist = new ArrayList<String>();
+
+		WEAPON_TEMPLATES = configloader.getWeaponTemplates();
+
+		/* create lists of items corresponding to their item classes */
+		for (Entry<String, WeaponTemplate> entry : WEAPON_TEMPLATES.entrySet()) {
+			
+			WEAPONS.add(entry.getKey());
+			ITEMS.add(entry.getKey());
+			
+			if (entry.getValue().getItem_class() == ItemClasses.WEAK) {
+				weaklist.add(entry.getKey());
+			} else if (entry.getValue().getItem_class() == ItemClasses.MEDIUM) {
+				mediumlist.add(entry.getKey());
+			} else if (entry.getValue().getItem_class() == ItemClasses.STRONG) {
+				stronglist.add(entry.getKey());
+			}
+		}
+
+		WEAPONS_CLASSIFIED.put(ItemClasses.WEAK, weaklist);
+		WEAPONS_CLASSIFIED.put(ItemClasses.MEDIUM, mediumlist);
+		WEAPONS_CLASSIFIED.put(ItemClasses.STRONG, stronglist);
+		
+		ITEMCLASSLIST.put(ItemClasses.WEAK, weaklist);
+		ITEMCLASSLIST.put(ItemClasses.MEDIUM, mediumlist);
+		ITEMCLASSLIST.put(ItemClasses.STRONG, stronglist);
+	}
+	
+	/**
+	 * Load Monster template from Configloader, create name list and leveled name list.
+	 */
+	private void loadMonsters() {
+
+		MONSTERS = new ArrayList<String>(); // which type -> return random
+											// element
+		MONSTERS_LEVELED = new HashMap<Levels, List<String>>();
+
+		List<String> easylist = new ArrayList<String>();
+		List<String> normallist = new ArrayList<String>();
+		List<String> hardlist = new ArrayList<String>();
+
+		MONSTER_TEMPLATES = configloader.getMonsterTemplates();
+
+		/* create lists of items corresponding to their item classes */
+		for (Entry<String, MonsterTemplate> entry : MONSTER_TEMPLATES.entrySet()) {
+			if (entry.getValue().getLevel() == Levels.EASY) {
+				easylist.add(entry.getKey());
+			} else if (entry.getValue().getLevel() == Levels.NORMAL) {
+				normallist.add(entry.getKey());
+			} else if (entry.getValue().getLevel() == Levels.HARD) {
+				hardlist.add(entry.getKey());
+			}
+		}
+
+		MONSTERS_LEVELED.put(Levels.EASY, easylist);
+		MONSTERS_LEVELED.put(Levels.NORMAL, normallist);
+		MONSTERS_LEVELED.put(Levels.HARD, hardlist);
+	}
+	
+	/**
+	 * Load Room template from Configloader.
+	 */
+	private void loadRooms() {
+
+		ROOM_TEMPLATES = configloader.getRoomTemplates();
+	}
+
+	/**
+	 * Returns the one and only instance of ResourceManager and triggers loading
+	 * all Ressources.<br>
 	 * 
 	 * @return the one and only instance of ResourceManager
 	 * @throws SlickException
@@ -106,15 +336,8 @@ public class ResourceManager {
 	public ResourceManager getInstance() throws SlickException {
 		if (INSTANCE == null) {
 			INSTANCE = new ResourceManager();
-			try {
-				INSTANCE.configloader = new Configloader().getInstance();
-			} catch (IllegalArgumentException | ParserConfigurationException
-					| SAXException | IOException e) {
-				e.printStackTrace();
-			}
-			if (INSTANCE.configloader == null) throw new NullPointerException("Configloader must be set on first call of an instance of this ResourceManager");
-			INSTANCE.loadResources(); 
-		} 
+			INSTANCE.loadResources();
+		}
 		return INSTANCE;
 	}
 }

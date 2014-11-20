@@ -7,7 +7,6 @@ import org.newdawn.slick.SlickException;
 
 import elements.Element;
 import elements.Equipment;
-import elements.Potion;
 import elements.Room;
 import general.Enums.RoomTypes;
 import general.GroundFactory;
@@ -18,11 +17,6 @@ import general.RoomFactory;
  * 
  */
 public class Map {
-
-	/* Enum for Players Movement */
-	/*
-	 * public enum Directions { UP, RIGHT, DOWN, LEFT }
-	 */
 
 	/*
 	 * Static variable, so that we can access the one and only Map class without
@@ -52,14 +46,8 @@ public class Map {
 	/* saves the different kinds of rooms for the Minimap */
 	private Element[][] minimap = null;
 
-	/* Set Up the GroundFactory */
-	private GroundFactory groundFactory;
-
 	/* Multidimensional Array storing all Rooms */
 	private Room[][] rooms = null;
-
-	/* Room Factory is needed to create and fill rooms */
-	private RoomFactory roomFactory;
 
 	/**
 	 * Constructs a Map.
@@ -98,8 +86,6 @@ public class Map {
 		overlayScope = new Element[Game.SCOPEWIDTH][Game.SCOPEHEIGHT];
 		rooms = new Room[Game.ROOMSHOR][Game.ROOMSVER];
 		playerScopePosition = new Point();
-		groundFactory = new GroundFactory().getInstance();
-		roomFactory = new RoomFactory().getInstance();
 
 		/* null-initialize overlay */
 		for (int i = 0; i < size.width; i++) {
@@ -442,8 +428,10 @@ public class Map {
 	 * Room Type will be detected according to door positions created by maze
 	 * algorithm.
 	 * 
+	 * @throws SlickException
+	 * 
 	 */
-	public void loadRooms() {
+	public void loadRooms() throws SlickException {
 
 		for (int i = 0; i < Game.ROOMSHOR; i++) {
 			for (int j = 0; j < Game.ROOMSVER; j++) {
@@ -451,9 +439,7 @@ public class Map {
 				/* detect room types and load according room */
 				RoomTypes type = detectRoomType(i, j);
 
-				// System.out.println(i + ", " + j + ": " + type);
-
-				rooms[i][j] = roomFactory.createRoom(type);
+				rooms[i][j] = RoomFactory.createRoom(type);
 			}
 		}
 	}
@@ -461,8 +447,10 @@ public class Map {
 	/**
 	 * Fills the map with rooms and their contents.
 	 * 
+	 * @throws SlickException
+	 * 
 	 */
-	public void fillMap() {
+	public void fillMap() throws SlickException {
 
 		/* load walls and doors */
 		for (int i = 0; i <= getWidth(); i++) {
@@ -473,7 +461,7 @@ public class Map {
 
 				/* load walls and set them to not passable */
 				if (wallmodx == 0 || wallmody == 0) {
-					overlay[i][j] = groundFactory.createDarkGreyGround(i, j);
+					overlay[i][j] = GroundFactory.createDarkGreyGround(i, j);
 					// passable[i][j] = false;
 				}
 
@@ -493,7 +481,7 @@ public class Map {
 
 					if (!((i == nodoorx1 || i == nodoorx2) && ((j == nodoory1) || (j == nodoory2)))) {
 						overlay[i][j] = null;
-						background[i][j] = groundFactory.createGreyGround(i, j);
+						background[i][j] = GroundFactory.createGreyGround(i, j);
 					}
 					// passable[i][j] = true;
 				}
@@ -511,7 +499,7 @@ public class Map {
 
 					if (!((i == nodoorx1 || i == nodoorx2) && ((j == nodoory1) || (j == nodoory2)))) {
 						overlay[i][j] = null;
-						background[i][j] = groundFactory.createGreyGround(i, j);
+						background[i][j] = GroundFactory.createGreyGround(i, j);
 					}
 					/*
 					 * place door texture on background and overlay -> if key is
@@ -520,14 +508,14 @@ public class Map {
 					 */
 					else {
 						if (j == nodoory1) {
-							background[i][j] = groundFactory.createDoorGround2(
+							background[i][j] = GroundFactory.createDoorGround2(
 									i, j);
-							overlay[i][j] = groundFactory.createDoorGround2(i,
+							overlay[i][j] = GroundFactory.createDoorGround2(i,
 									j);
 						} else {
-							background[i][j] = groundFactory.createDoorGround1(
+							background[i][j] = GroundFactory.createDoorGround1(
 									i, j);
-							overlay[i][j] = groundFactory.createDoorGround1(i,
+							overlay[i][j] = GroundFactory.createDoorGround1(i,
 									j);
 						}
 					}

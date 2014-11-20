@@ -117,12 +117,13 @@ public class ConfigTestprinter {
 		  System.out.println(entry.getValue().getMonster().get("easy"));
 		  System.out.println(entry.getValue().getMonster().get("normal"));
 		  System.out.println(entry.getValue().getMonster().get("hard"));
-		  System.out.println(entry.getValue().getItem_multiplier());
+		  System.out.println(entry.getValue().getMonsterCount());
+		  System.out.println(entry.getValue().getItemMultiplier());
 		  System.out.println(entry.getValue().getFind_probabilities().get("none"));
 		  System.out.println(entry.getValue().getFind_probabilities().get("weak"));
 		  System.out.println(entry.getValue().getFind_probabilities().get("medium"));
 		  System.out.println(entry.getValue().getFind_probabilities().get("strong"));
-		  System.out.println(entry.getValue().getItem_count());
+		  System.out.println(entry.getValue().getItemCount());
 		  System.out.println(entry.getValue().getImage());
 		  System.out.println();
 		}

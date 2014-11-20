@@ -6,20 +6,69 @@ import org.newdawn.slick.SpriteSheet;
 import elements.Element;
 
 /**The GroundFactory places ground textures randomly on the map tiles.<br><br>
+ * 
+ *  Watch out! If GroundFactory Method setUpFactory() isn't called first,
+ *  all methods will return null!
+ *  
+ * @author Stefan
  */
-public class GroundFactory {
+public class GroundFactoryBackup {
+	
+	private static GroundFactoryBackup FACTORY = null;
+
+	private static SpriteSheet tiles = null;
+	private static ResourceManager resources = null;
+	
+	/**Constructs a GroundFactory.<br>
+	 * 
+	 * Watch out! If GroundFactory Method setUpFactory() isn't called first,
+	 * all methods will return null!
+	 * 
+	 * @see GroundFactory
+	 */
+	public GroundFactoryBackup() {
+		
+	}
+
+	/**Creates a GroundFactory and loads its static values only ONCE!!!<br>
+	 * 
+	 * Static variables only get initialized one time and all instances use the
+	 * same variables --> less memory is needed!
+	 * 
+	 * @return initialized GroundFactory
+	 * @throws SlickException
+	 * @see GroundFactory
+	 */
+	public GroundFactoryBackup getInstance() throws SlickException {
+		if (FACTORY == null) {
+			FACTORY = new GroundFactoryBackup();
+			FACTORY.loadFactory();
+		}
+		return FACTORY;
+	}
+	
+	/**Creates an instance of ResourceManager to load all necessary resources and stores tile Spritesheet in tiles.
+	 * 
+	 * @throws SlickException
+	 */
+	public void loadFactory() throws SlickException {
+		resources = new ResourceManager().getInstance();
+		tiles = resources.TILES;
+	}
 
 	/**Creates random grey grounds with images taken from tiles Spritesheet.
 	 * 
 	 * @param positionX
 	 * @param positionY
 	 * @return
-	 * @throws SlickException 
 	 */
-	public static Element createGreyGround(int positionX, int positionY) throws SlickException {
-		
-		ResourceManager resources = new ResourceManager().getInstance();
-		SpriteSheet tiles = resources.TILES;
+	public Element createGreyGround(int positionX, int positionY) {
+
+		if (FACTORY == null) {
+			System.out.println("Error! GroundFactory isn't initialized!");
+			System.out.println("Call Method: >GroundFactory.setUpFactory()<");
+			return null;
+		}
 
 		double random = Math.random();
 
@@ -56,12 +105,14 @@ public class GroundFactory {
 	 * @param positionX
 	 * @param positionY
 	 * @return
-	 * @throws SlickException 
 	 */
-	public static Element createDarkGreyGround(int positionX, int positionY) throws SlickException {
+	public Element createDarkGreyGround(int positionX, int positionY) {
 
-		ResourceManager resources = new ResourceManager().getInstance();
-		SpriteSheet tiles = resources.TILES;
+		if (FACTORY == null) {
+			System.out.println("Error! GroundFactory isn't initialized!");
+			System.out.println("Call Method: >GroundFactory.setUpFactory()<");
+			return null;
+		}
 
 		double random = Math.random();
 
@@ -97,12 +148,14 @@ public class GroundFactory {
 	 * @param positionX
 	 * @param positionY
 	 * @return
-	 * @throws SlickException 
 	 */
-	public static Element createYellowGroundOne(int positionX, int positionY) throws SlickException {
+	public Element createYellowGroundOne(int positionX, int positionY) {
 
-		ResourceManager resources = new ResourceManager().getInstance();
-		SpriteSheet tiles = resources.TILES;
+		if (FACTORY == null) {
+			System.out.println("Error! GroundFactory isn't initialized!");
+			System.out.println("Call Method: >GroundFactory.setUpFactory()<");
+			return null;
+		}
 
 		double random = Math.random();
 
@@ -141,12 +194,14 @@ public class GroundFactory {
 	 * @param positionX
 	 * @param positionY
 	 * @return
-	 * @throws SlickException 
 	 */
-	public static Element createYellowGroundTwo(int positionX, int positionY) throws SlickException {
+	public Element createYellowGroundTwo(int positionX, int positionY) {
 
-		ResourceManager resources = new ResourceManager().getInstance();
-		SpriteSheet tiles = resources.TILES;
+		if (FACTORY == null) {
+			System.out.println("Error! GroundFactory isn't initialized!");
+			System.out.println("Call Method: >GroundFactory.setUpFactory()<");
+			return null;
+		}
 
 		double random = Math.random();
 
@@ -185,12 +240,14 @@ public class GroundFactory {
 	 * @param positionX
 	 * @param positionY
 	 * @return
-	 * @throws SlickException 
 	 */
-	public static Element createGreenGround(int positionX, int positionY) throws SlickException {
+	public Element createGreenGround(int positionX, int positionY) {
 
-		ResourceManager resources = new ResourceManager().getInstance();
-		SpriteSheet tiles = resources.TILES;
+		if (FACTORY == null) {
+			System.out.println("Error! GroundFactory isn't initialized!");
+			System.out.println("Call Method: >GroundFactory.setUpFactory()<");
+			return null;
+		}
 
 		double random = Math.random();
 
@@ -230,12 +287,14 @@ public class GroundFactory {
 	 * @param positionX
 	 * @param positionY
 	 * @return
-	 * @throws SlickException 
 	 */
-	public static Element createBrownGround(int positionX, int positionY) throws SlickException {
+	public Element createBrownGround(int positionX, int positionY) {
 
-		ResourceManager resources = new ResourceManager().getInstance();
-		SpriteSheet tiles = resources.TILES;
+		if (FACTORY == null) {
+			System.out.println("Error! GroundFactory isn't initialized!");
+			System.out.println("Call Method: >GroundFactory.setUpFactory()<");
+			return null;
+		}
 
 		double random = Math.random();
 
@@ -275,12 +334,16 @@ public class GroundFactory {
 	 * @param positionX
 	 * @param positionY
 	 * @return
-	 * @throws SlickException 
 	 */
-	public static Element createDoorGround1(int positionX, int positionY) throws SlickException {
+	public Element createDoorGround1(int positionX, int positionY) {
 
-		ResourceManager resources = new ResourceManager().getInstance();
-		SpriteSheet tiles = resources.TILES;
+		if (FACTORY == null) {
+			System.out.println("Error! GroundFactory isn't initialized!");
+			System.out.println("Call Method: >GroundFactory.setUpFactory()<");
+			return null;
+		}
+
+		double random = Math.random();
 
 		return new Element("DoorGround", tiles.getSubImage(5, 3), positionX, positionY);
 	}
@@ -291,13 +354,17 @@ public class GroundFactory {
 	 * @param positionX
 	 * @param positionY
 	 * @return
-	 * @throws SlickException 
 	 */
-	public static Element createDoorGround2(int positionX, int positionY) throws SlickException {
+	public Element createDoorGround2(int positionX, int positionY) {
 
-		ResourceManager resources = new ResourceManager().getInstance();
-		SpriteSheet tiles = resources.TILES;
-		
+		if (FACTORY == null) {
+			System.out.println("Error! GroundFactory isn't initialized!");
+			System.out.println("Call Method: >GroundFactory.setUpFactory()<");
+			return null;
+		}
+
+		double random = Math.random();
+
 		return new Element("DoorGround", tiles.getSubImage(5, 3).getFlippedCopy(false, true), positionX, positionY);
 	}
 }

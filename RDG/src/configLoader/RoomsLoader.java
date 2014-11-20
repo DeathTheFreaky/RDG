@@ -26,6 +26,7 @@ import org.xml.sax.SAXException;
 
 import general.Enums.Attributes;
 import general.Enums.ItemClasses;
+import general.Enums.Levels;
 import general.Enums.Modes;
 import general.Enums.RoomTypes;
 import general.Enums.Targets;
@@ -74,17 +75,19 @@ public class RoomsLoader {
 				RoomTypes type = null;
 				String name, description, image;
 				float itemMultiplier;
-				int itemCount;
-				Map<String, Float> monster, find_probabilities;
+				int monsterCount, itemCount;
+				Map<Levels, Float> monster; 
+				Map<ItemClasses, Float> find_probabilities;
 				boolean[] doorPositions; //0: N, 1: E, 2: S, 3: W
  
- 					monster = new HashMap<String, Float>();
- 					find_probabilities = new HashMap<String, Float>();
+ 					monster = new HashMap<Levels, Float>();
+ 					find_probabilities = new HashMap<ItemClasses, Float>();
  					doorPositions = new boolean[4];
 					
 				name = eElement.getElementsByTagName("Name").item(0).getTextContent();
 				description = eElement.getElementsByTagName("Description").item(0).getTextContent();
 				image = eElement.getElementsByTagName("Image").item(0).getTextContent();
+				monsterCount = Integer.parseInt(eElement.getElementsByTagName("Monster_Count").item(0).getTextContent());
 				itemMultiplier = Float.parseFloat(eElement.getElementsByTagName("Item_Multiplier").item(0).getTextContent());
 				itemCount = Integer.parseInt(eElement.getElementsByTagName("Item_Count").item(0).getTextContent());
 				
@@ -99,6 +102,7 @@ public class RoomsLoader {
 				
 				if (name.length() == 0) throw new IllegalArgumentException("Invalid Name \"" + name + "\" at Room \"" + name + "\"");
 				
+				if (monsterCount < 0) throw new IllegalArgumentException("Invalid Monster Count \"" + monsterCount + "\" at Room \"" + name + "\"");
 				if (itemMultiplier < 0) throw new IllegalArgumentException("Invalid Item Multiplier \"" + itemMultiplier + "\" at Room \"" + name + "\"");
 				if (itemCount < 0) throw new IllegalArgumentException("Invalid Item Count \"" + itemCount + "\" at Room \"" + name + "\"");
 									
@@ -114,7 +118,20 @@ public class RoomsLoader {
 							
 							if (Float.parseFloat(monster_node.getTextContent()) < 0) throw new IllegalArgumentException("Invalid Monster/" + monster_node.getNodeName() + " \"" + monster_node.getTextContent() + "\" at Room \"" + name + "\"");
 							
-							monster.put(monster_node.getNodeName(),  Float.parseFloat(monster_node.getTextContent()));
+							String monsterProbability = monster_node.getNodeName();
+							Levels monsterLevel = null;
+							
+							if (monsterProbability.equals("no")) {
+								monsterLevel = Levels.NONE;
+							} else if (monsterProbability.equals("easy")) {
+								monsterLevel = Levels.EASY;
+							} else if (monsterProbability.equals("normal")) {
+								monsterLevel = Levels.NORMAL;
+							} else if (monsterProbability.equals("hard")) {
+								monsterLevel = Levels.HARD;
+							}
+							
+							monster.put(monsterLevel,  Float.parseFloat(monster_node.getTextContent()));
 						}
 					}
 					
@@ -127,8 +144,21 @@ public class RoomsLoader {
 						if (find_prob_node.getNodeType() == Node.ELEMENT_NODE) {
 							
 							if (Float.parseFloat(find_prob_node.getTextContent()) < 0) throw new IllegalArgumentException("Invalid Find Probability/" + find_prob_node.getNodeName() + " \"" + find_prob_node.getTextContent() + "\" at Room \"" + name + "\"");
-															
-							find_probabilities.put(find_prob_node.getNodeName(),  Float.parseFloat(find_prob_node.getTextContent()));
+								
+							String itemProbability = find_prob_node.getNodeName();
+							ItemClasses itemLevel = null;
+							
+							if (itemProbability.equals("no")) {
+								itemLevel = ItemClasses.NONE;
+							} else if (itemProbability.equals("easy")) {
+								itemLevel = ItemClasses.WEAK;
+							} else if (itemProbability.equals("normal")) {
+								itemLevel = ItemClasses.MEDIUM;
+							} else if (itemProbability.equals("hard")) {
+								itemLevel = ItemClasses.STRONG;
+							}
+							
+							find_probabilities.put(itemLevel,  Float.parseFloat(find_prob_node.getTextContent()));
 						}
 					}
 					
@@ -166,9 +196,9 @@ public class RoomsLoader {
 					doorPositions[1] = e == 1;
 					doorPositions[2] = s == 1;
 					doorPositions[3] = w == 1;	
-					
+										
 					//put template on list of available templates
-					roomTemplates.put(type, new RoomTemplate(type, description, image, itemMultiplier, itemCount, 
+					roomTemplates.put(type, new RoomTemplate(type, description, image, monsterCount, itemMultiplier, itemCount, 
 							monster, find_probabilities, doorPositions));
 				}
 		}

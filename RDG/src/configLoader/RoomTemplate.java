@@ -1,5 +1,7 @@
 package configLoader;
 
+import general.Enums.ItemClasses;
+import general.Enums.Levels;
 import general.Enums.RoomTypes;
 
 import java.util.Map;
@@ -14,8 +16,9 @@ public class RoomTemplate {
 	private RoomTypes type;
 	private String description, image;
 	private float itemMultiplier;
-	private int itemCount;
-	private Map<String, Float> monster, find_probabilities;
+	private int monsterCount, itemCount;
+	private Map<Levels, Float> monster;
+	private Map<ItemClasses, Float> find_probabilities;
 	private boolean[] doorPositions; //0: N, 1: E, 2: S, 3: W
 	
 	/**Construct a RoomTemplate storing the default Room values.
@@ -30,12 +33,13 @@ public class RoomTemplate {
 	 * @param doorPositions
 	 * @see RoomTemplate
 	 */
-	public RoomTemplate(RoomTypes type, String description, String image, float itemMultiplier, int itemCount, 
-			Map<String, Float> monster, Map<String, Float> find_probabilities, boolean[] doorPositions) {
+	public RoomTemplate(RoomTypes type, String description, String image, int monsterCount, float itemMultiplier, int itemCount, 
+			Map<Levels, Float> monster, Map<ItemClasses, Float> find_probabilities, boolean[] doorPositions) {
 		
 			this.type = type;
 			this.description = description;
 			this.image = image;
+			this.monsterCount = monsterCount;
 			this.itemMultiplier = itemMultiplier;
 			this.itemCount = itemCount;
 			this.monster = monster;
@@ -77,32 +81,39 @@ public class RoomTemplate {
 	public String getImage() {
 		return image;
 	}
+	
+	/**
+	 * @return maximum number of monsters found in this Room
+	 */
+	public int getMonsterCount() {
+		return monsterCount;
+	}
 
 	/**
 	 * @return multiplier on items' stats found in this Room
 	 */
-	public float getItem_multiplier() {
+	public float getItemMultiplier() {
 		return itemMultiplier;
 	}
 
 	/**
-	 * @return number of items found in this Room
+	 * @return maximum number of items found in this Room
 	 */
-	public int getItem_count() {
+	public int getItemCount() {
 		return itemCount;
 	}
 
 	/**
 	 * @return possibilities for all monsters of each specific level to appear in this room
 	 */
-	public Map<String, Float> getMonster() {
+	public Map<Levels, Float> getMonster() {
 		return monster;
 	}
 
 	/**
 	 * @return probabilites for all items of each specific item class to be found in this room
 	 */
-	public Map<String, Float> getFind_probabilities() {
+	public Map<ItemClasses, Float> getFind_probabilities() {
 		return find_probabilities;
 	}
 
