@@ -1,12 +1,13 @@
-package at.RDG.network;
+package at.RDG.network.discovery;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
-import java.net.SocketAddress;
 import java.net.SocketException;
+
+import at.RDG.network.ArgumentOutOfRangeException;
+import at.RDG.network.NetworkStatics;
 
 public class LobbyServer extends Thread {
 	
@@ -29,26 +30,21 @@ public class LobbyServer extends Thread {
 		try {
 			//socket = new MulticastSocket(new InetSocketAddress(NetworkStatics.IP, this.port));
 			socket = new MulticastSocket(this.port);
+			socket.setBroadcast(true);
+			/*
 			group = InetAddress.getByName(NetworkStatics.GROUPNAME);
-			System.out.println(group.getHostAddress());
 			socket.joinGroup(group);
+			*/
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
-			if(!socket.isBound() || group == null){
+			if(!socket.isBound()/* || group == null*/){
 				Thread.currentThread().interrupt();
 				//TODO error msg and logging
 			}
 		}
 		
-		try {
-			System.out.println(socket.getInterface());
-		} catch (SocketException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		System.out.println(socket.getLocalAddress());
 		//receive and answer Requests
 		DatagramPacket packet;
 		while(!Thread.interrupted()){
@@ -74,11 +70,13 @@ public class LobbyServer extends Thread {
 		}
 		
 		//close Socket when interrupted
+		/*
 		try {
 			socket.leaveGroup(group);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		*/
 		socket.close();
 	}
 	

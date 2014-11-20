@@ -1,4 +1,4 @@
-package at.RDG.network;
+package at.RDG.network.discovery;
 
 import java.net.InetAddress;
 

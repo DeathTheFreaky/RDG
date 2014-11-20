@@ -10,9 +10,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 import at.RDG.network.ArgumentOutOfRangeException;
-import at.RDG.network.LobbySearcher;
-import at.RDG.network.LobbyServer;
-import at.RDG.network.Serverinfo;
+import at.RDG.network.discovery.LobbySearcher;
+import at.RDG.network.discovery.LobbyServer;
+import at.RDG.network.discovery.Serverinfo;
 import config_templates.Armament_Template;
 import config_templates.Attack_Template;
 import config_templates.Monster_Template;
@@ -56,7 +56,7 @@ public class Main {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		server.run();
+		server.start();
 	}
 	
 	private static void searcher(){
