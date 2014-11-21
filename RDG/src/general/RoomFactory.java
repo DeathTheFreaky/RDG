@@ -6,14 +6,14 @@ import java.util.Map;
 
 import org.newdawn.slick.SlickException;
 
-import configLoader.ArmamentTemplate;
 import configLoader.RoomTemplate;
 import elements.Element;
 import elements.Equipment;
-import elements.Monster;
+import elements.Item;
 import elements.Room;
 import gameEssentials.Game;
 import general.Enums.Armor;
+import general.Enums.ItemClasses;
 import general.Enums.Levels;
 import general.Enums.RoomTypes;
 
@@ -50,18 +50,11 @@ public class RoomFactory {
 				overlay[i][j] = null;
 			}
 		}
-
+		
+		/* fill the room */
 		overlay = addMonster(type, overlay, tempTemplate);
-		overlay = addItems(type, overlay, resources);
+		overlay = addItems(type, overlay, tempTemplate);
 		background = fillGround(type, background, size);
-
-		overlay[1][1] = new Equipment("Plate Helmet",
-				resources.IMAGES.get("Plate Helmet"), Armor.HEAD);
-		// new Element("Plate Helmet", resources.IMAGES.get("Plate Helmet"),1,
-		// 1);
-
-		// return random values in arraylist
-		// http://stackoverflow.com/questions/12487592/randomly-select-an-item-from-a-list
 
 		return new Room(type, background, overlay);
 	}
@@ -82,9 +75,7 @@ public class RoomFactory {
 		
 		Map<Levels, Float> monsterProbabilities = tempTemplate.getMonster();
 		int monsterCount = tempTemplate.getMonsterCount();
-		
-		System.out.println("monsterCount: " + monsterCount);
-				
+						
 		/* place monsters on random, free fields in the room */
 		for (int i = 0; i < monsterCount; i++) {
 			
@@ -93,17 +84,14 @@ public class RoomFactory {
 			
 			if (randPoint != null) { //no free field was found 
 				
-				System.out.println("x: " + randPoint.x + ", y: " + randPoint.y);
-				
 				/* get a random Monster, according to the monster levels allowed in this Room's definition*/ 
 				String monsterName = Chances.randomMonster(monsterProbabilities);
-				
+								
 				if (monsterName != null) { //no monster shall be placed
 					overlay[randPoint.x][randPoint.y] = MonsterFactory.createMonster(monsterName);
 				}
 			}
 			else {
-				System.out.println("null");
 				break;
 			}
 		}
@@ -120,9 +108,34 @@ public class RoomFactory {
 	 * @param overlay
 	 * @param resources
 	 * @return an overlay with randomly chosen items
+	 * @throws SlickException 
 	 */
-	private static Element[][] addItems(RoomTypes type, Element[][] overlay, ResourceManager resources) {
+	private static Element[][] addItems(RoomTypes type, Element[][] overlay, RoomTemplate tempTemplate) throws SlickException {
 
+		Map<ItemClasses, Float> itemProbabilities = tempTemplate.getFind_probabilities();
+		int itemCount = tempTemplate.getItemCount();
+		
+		/* place items on random, free fields in the room */
+		for (int i = 0; i < itemCount; i++) {
+			
+			/* first find a free field, return null if no free field is found after 15 rounds */
+			Point randPoint = Chances.randomFreeField(overlay);
+			
+			if (randPoint != null) { //no free field was found 
+				
+				/* get a random Item, according to the item levels allowed in this Room's definition*/ 
+				Item itemName = Chances.randomItem(itemProbabilities);
+								
+				if (itemName != null) { //no item shall be placed
+					//use itemMultiplier
+					overlay[randPoint.x][randPoint.y] = ItemFactory.createItem(itemName, tempTemplate.getItemMultiplier());
+				}
+			}
+			else {
+				break;
+			}
+		}
+		
 		return overlay;
 	}
 

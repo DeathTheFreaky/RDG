@@ -26,7 +26,6 @@ public class Equipment extends Element {
 		this.armorType = armorType;
 	}
 	
-	
 	/**
 	 * @return armorType of an Equipment
 	 */

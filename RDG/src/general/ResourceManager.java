@@ -1,7 +1,9 @@
 package general;
 
+import elements.Item;
 import gameEssentials.Game;
 import general.Enums.ItemClasses;
+import general.Enums.ItemType;
 import general.Enums.Levels;
 import general.Enums.RoomTypes;
 
@@ -56,11 +58,11 @@ public class ResourceManager {
 	public Map<String, MonsterTemplate> MONSTER_TEMPLATES;
 	public Map<RoomTypes, RoomTemplate> ROOM_TEMPLATES;
 
-	/* lists of all item names */
-	public List<String> ITEMS;
-
+	/* lists of all item names and types */
+	public List<Item> ITEMS;
+	
 	/* map of lists of items grouped by item class */
-	public Map<ItemClasses, List<String>> ITEMCLASSLIST = null;
+	public Map<ItemClasses, List<Item>> ITEMCLASSLIST = null;
 
 	/* lists for armament, portion, weapon and monster names */
 	public List<String> ARMAMENTS;
@@ -108,9 +110,14 @@ public class ResourceManager {
 		/* load images */
 		loadImages();
 
+		/* create item list and classed item list  */
+		ITEMS = new ArrayList<Item>();
+		ITEMCLASSLIST = new HashMap<ItemClasses, List<Item>>();
+		ITEMCLASSLIST.put(ItemClasses.WEAK, new ArrayList<Item>());
+		ITEMCLASSLIST.put(ItemClasses.MEDIUM, new ArrayList<Item>());
+		ITEMCLASSLIST.put(ItemClasses.STRONG, new ArrayList<Item>());
+		
 		/* load items */
-		ITEMS = new ArrayList<String>();
-		ITEMCLASSLIST = new HashMap<ItemClasses, List<String>>();
 		loadArmaments();
 		loadPotions();
 		loadWeapons();
@@ -183,7 +190,7 @@ public class ResourceManager {
 		List<String> weaklist = new ArrayList<String>();
 		List<String> mediumlist = new ArrayList<String>();
 		List<String> stronglist = new ArrayList<String>();
-
+		
 		ARMAMENT_TEMPLATES = configloader.getArmamentTemplates();
 
 		/* create lists of items corresponding to their item classes */
@@ -191,24 +198,23 @@ public class ResourceManager {
 				.entrySet()) {
 			
 			ARMAMENTS.add(entry.getKey());
-			ITEMS.add(entry.getKey());
+			ITEMS.add(new Item(entry.getKey(), ItemType.ARMAMENT));
 			
 			if (entry.getValue().getItem_class() == ItemClasses.WEAK) {
 				weaklist.add(entry.getKey());
+				ITEMCLASSLIST.get(ItemClasses.WEAK).add(new Item(entry.getKey(), ItemType.ARMAMENT));
 			} else if (entry.getValue().getItem_class() == ItemClasses.MEDIUM) {
 				mediumlist.add(entry.getKey());
+				ITEMCLASSLIST.get(ItemClasses.MEDIUM).add(new Item(entry.getKey(), ItemType.ARMAMENT));
 			} else if (entry.getValue().getItem_class() == ItemClasses.STRONG) {
 				stronglist.add(entry.getKey());
+				ITEMCLASSLIST.get(ItemClasses.STRONG).add(new Item(entry.getKey(), ItemType.ARMAMENT));
 			}
 		}
 
 		ARMAMENTS_CLASSIFIED.put(ItemClasses.WEAK, weaklist);
 		ARMAMENTS_CLASSIFIED.put(ItemClasses.MEDIUM, mediumlist);
 		ARMAMENTS_CLASSIFIED.put(ItemClasses.STRONG, stronglist);
-		
-		ITEMCLASSLIST.put(ItemClasses.WEAK, weaklist);
-		ITEMCLASSLIST.put(ItemClasses.MEDIUM, mediumlist);
-		ITEMCLASSLIST.put(ItemClasses.STRONG, stronglist);
 	}
 
 	/**
@@ -229,24 +235,23 @@ public class ResourceManager {
 		for (Entry<String, PotionTemplate> entry : POTION_TEMPLATES.entrySet()) {
 			
 			POTIONS.add(entry.getKey());
-			ITEMS.add(entry.getKey());
+			ITEMS.add(new Item(entry.getKey(), ItemType.POTION));
 			
 			if (entry.getValue().getItem_class() == ItemClasses.WEAK) {
 				weaklist.add(entry.getKey());
+				ITEMCLASSLIST.get(ItemClasses.WEAK).add(new Item(entry.getKey(), ItemType.POTION));
 			} else if (entry.getValue().getItem_class() == ItemClasses.MEDIUM) {
 				mediumlist.add(entry.getKey());
+				ITEMCLASSLIST.get(ItemClasses.MEDIUM).add(new Item(entry.getKey(), ItemType.POTION));
 			} else if (entry.getValue().getItem_class() == ItemClasses.STRONG) {
 				stronglist.add(entry.getKey());
+				ITEMCLASSLIST.get(ItemClasses.STRONG).add(new Item(entry.getKey(), ItemType.POTION));
 			}
 		}
 
 		POTIONS_CLASSIFIED.put(ItemClasses.WEAK, weaklist);
 		POTIONS_CLASSIFIED.put(ItemClasses.MEDIUM, mediumlist);
 		POTIONS_CLASSIFIED.put(ItemClasses.STRONG, stronglist);
-		
-		ITEMCLASSLIST.put(ItemClasses.WEAK, weaklist);
-		ITEMCLASSLIST.put(ItemClasses.MEDIUM, mediumlist);
-		ITEMCLASSLIST.put(ItemClasses.STRONG, stronglist);
 	}
 
 	/**
@@ -267,24 +272,23 @@ public class ResourceManager {
 		for (Entry<String, WeaponTemplate> entry : WEAPON_TEMPLATES.entrySet()) {
 			
 			WEAPONS.add(entry.getKey());
-			ITEMS.add(entry.getKey());
+			ITEMS.add(new Item(entry.getKey(), ItemType.WEAPON));
 			
 			if (entry.getValue().getItem_class() == ItemClasses.WEAK) {
 				weaklist.add(entry.getKey());
+				ITEMCLASSLIST.get(ItemClasses.WEAK).add(new Item(entry.getKey(), ItemType.WEAPON));
 			} else if (entry.getValue().getItem_class() == ItemClasses.MEDIUM) {
 				mediumlist.add(entry.getKey());
+				ITEMCLASSLIST.get(ItemClasses.MEDIUM).add(new Item(entry.getKey(), ItemType.WEAPON));
 			} else if (entry.getValue().getItem_class() == ItemClasses.STRONG) {
 				stronglist.add(entry.getKey());
+				ITEMCLASSLIST.get(ItemClasses.STRONG).add(new Item(entry.getKey(), ItemType.WEAPON));
 			}
 		}
 
 		WEAPONS_CLASSIFIED.put(ItemClasses.WEAK, weaklist);
 		WEAPONS_CLASSIFIED.put(ItemClasses.MEDIUM, mediumlist);
 		WEAPONS_CLASSIFIED.put(ItemClasses.STRONG, stronglist);
-		
-		ITEMCLASSLIST.put(ItemClasses.WEAK, weaklist);
-		ITEMCLASSLIST.put(ItemClasses.MEDIUM, mediumlist);
-		ITEMCLASSLIST.put(ItemClasses.STRONG, stronglist);
 	}
 	
 	/**

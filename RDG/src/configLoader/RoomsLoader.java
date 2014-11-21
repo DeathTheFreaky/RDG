@@ -147,14 +147,14 @@ public class RoomsLoader {
 								
 							String itemProbability = find_prob_node.getNodeName();
 							ItemClasses itemLevel = null;
-							
-							if (itemProbability.equals("no")) {
+														
+							if (itemProbability.equals("none")) {
 								itemLevel = ItemClasses.NONE;
-							} else if (itemProbability.equals("easy")) {
+							} else if (itemProbability.equals("weak")) {
 								itemLevel = ItemClasses.WEAK;
-							} else if (itemProbability.equals("normal")) {
+							} else if (itemProbability.equals("medium")) {
 								itemLevel = ItemClasses.MEDIUM;
-							} else if (itemProbability.equals("hard")) {
+							} else if (itemProbability.equals("strong")) {
 								itemLevel = ItemClasses.STRONG;
 							}
 							

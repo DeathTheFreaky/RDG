@@ -7,11 +7,14 @@ import configLoader.ArmamentTemplate;
 import configLoader.PotionTemplate;
 import configLoader.WeaponTemplate;
 import elements.Armament;
+import elements.Element;
+import elements.Item;
 import elements.Potion;
 import elements.Weapon;
 import general.Enums.Armor;
 import general.Enums.Attributes;
 import general.Enums.ItemClasses;
+import general.Enums.ItemType;
 import general.Enums.Modes;
 import general.Enums.Targets;
 import general.Enums.WeaponTypes;
@@ -23,6 +26,28 @@ import general.Enums.WeaponTypes;
  * which lies within statsLowMultiplier and statsHighMultiplier and is then multiplied with classMultiplier.
  */
 public class ItemFactory {
+	
+	public static Element createItem(Item item, float itemMultiplier) throws SlickException {
+		
+		Element newItem = null;
+				
+		switch (item.itemType) {
+			
+			case ARMAMENT:
+				newItem = createArmament(item.itemName, itemMultiplier);
+				break;
+				
+			case POTION:
+				newItem = createPotion(item.itemName, itemMultiplier);
+				break;
+			
+			case WEAPON:
+				newItem = createWeapon(item.itemName, itemMultiplier);
+				break;	
+		}
+		
+		return newItem;
+	}
 	
 	/**Creates new Armament with randomized stats.
 	 * 

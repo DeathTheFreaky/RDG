@@ -1,7 +1,9 @@
 package general;
 
 import elements.Element;
+import elements.Item;
 import gameEssentials.Game;
+import general.Enums.ItemClasses;
 import general.Enums.Levels;
 
 import java.awt.Point;
@@ -28,7 +30,7 @@ public class Chances {
 	}
 
 	/**
-	 * Takes an array of Integers describing the probability for each type of
+	 * Takes a Map of MonsterLevel - Float pairs describing the probability for each type of
 	 * Monster.<br>
 	 * Returns the name of a random Monster.
 	 * 
@@ -41,7 +43,7 @@ public class Chances {
 
 		ResourceManager resources = new ResourceManager().getInstance();
 
-		/* used to sum up all single possibility values form configloader */
+		/* used to sum up all single possibility values from configloader */
 		float sum = 0;
 
 		/* used to determine which level the determined monster shall be of */
@@ -70,7 +72,8 @@ public class Chances {
 				+ monsterProbabilities.get(Levels.NORMAL);
 		Float hardThreshold = normalThreshold
 				+ monsterProbabilities.get(Levels.HARD);
-
+		
+		/* determine the random monster level */
 		if (randomFloat > 0 && randomFloat <= noneThreshold) {
 			monsterLevel = Levels.NONE;
 		} else if (randomFloat > noneThreshold && randomFloat <= easyThreshold) {
@@ -82,8 +85,9 @@ public class Chances {
 		}
 
 		/* no monster shall be placed in this room */
-		if (monsterLevel == Levels.NONE)
+		if (monsterLevel == Levels.NONE) {
 			return null;
+		}
 
 		/* get the appriopriate list of monsters within the determined level */
 		List<String> monsterLeveledList = resources.MONSTERS_LEVELED
@@ -97,6 +101,78 @@ public class Chances {
 				.nextInt(monsterLeveledList.size()));
 
 		return randomMonster;
+	}
+	
+	/**Takes a Map of ItemClass - Float pairs describing the probability for each type of
+	 * Item.<br>
+	 * Returns name and type of a random Item.
+	 * 
+	 * @param overlay
+	 * @return a random Item
+	 * @throws SlickException 
+	 */
+	public static Item randomItem(Map<ItemClasses, Float> itemClassProbabilities) throws SlickException {
+		
+		ResourceManager resources = new ResourceManager().getInstance();
+
+		/* used to sum up all single possibility values for all items from configloader */
+		float sum = 0;
+
+		/* used to determine which itemClass the determined item shall be of */
+		float randomFloat = 0;
+
+		/* the determined, random monster level */
+		ItemClasses itemClass = null;
+
+		/* calculate total some to determine random interval */
+		for (Entry<ItemClasses, Float> entry : itemClassProbabilities.entrySet()) {
+			sum += entry.getValue();
+		}
+		
+		/*
+		 * get a random value within the determined interval = sum of all
+		 * probability values
+		 */
+		Random r = new Random();
+		randomFloat = r.nextFloat() * (sum);
+		
+		/* set thresholds for itemClass probabilities */
+		Float noneThreshold = itemClassProbabilities.get(ItemClasses.NONE);
+		Float weakThreshold = noneThreshold
+				+ itemClassProbabilities.get(ItemClasses.WEAK);
+		Float mediumThreshold = weakThreshold
+				+ itemClassProbabilities.get(ItemClasses.MEDIUM);
+		Float strongThreshold = mediumThreshold
+				+ itemClassProbabilities.get(ItemClasses.STRONG);
+
+		/* determine the random itemClass */
+		if (randomFloat > 0 && randomFloat <= noneThreshold) {
+			itemClass = ItemClasses.NONE;
+		} else if (randomFloat > noneThreshold && randomFloat <= weakThreshold) {
+			itemClass = ItemClasses.WEAK;
+		} else if (randomFloat > weakThreshold && randomFloat <= mediumThreshold) {
+			itemClass = ItemClasses.MEDIUM;
+		} else if (randomFloat > mediumThreshold && randomFloat <= strongThreshold) {
+			itemClass = ItemClasses.STRONG;
+		}
+				
+		/* no item shall be placed in this room */
+		if (itemClass == ItemClasses.NONE) {
+			return null;
+		}
+		
+		/* get the appriopriate list of items within the determined level */
+		List<Item> itemClassedList = resources.ITEMCLASSLIST
+				.get(itemClass);
+		
+		/*
+		 * return the name of a random item within the list of leveled
+		 * items
+		 */
+		Item randomItem = itemClassedList.get(r
+				.nextInt(itemClassedList.size()));
+		
+		return randomItem;
 	}
 	
 	/**Finds a random free field in a room.<br>
