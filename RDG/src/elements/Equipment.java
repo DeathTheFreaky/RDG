@@ -32,5 +32,22 @@ public class Equipment extends Element {
 	public Armor getArmorType() {
 		return armorType;
 	}
+	
+	/**Sets a Main Weapon to Sub Weapon.
+	 * 
+	 */
+	public void setAsSubWeapon() {
+		if (armorType == Armor.MAIN_WEAPON) {
+			armorType = Armor.SUB_WEAPON;
+		}
+	}
+	
+	/**Sets a Sub Weapon to Main Weapon.
+	 */
+	public void setAsMainWeapon() {
+		if (armorType == Armor.SUB_WEAPON) {
+			armorType = Armor.MAIN_WEAPON;
+		}
+	}
 
 }
