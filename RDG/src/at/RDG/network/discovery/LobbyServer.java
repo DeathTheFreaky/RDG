@@ -31,6 +31,7 @@ public class LobbyServer extends Thread {
 			//socket = new MulticastSocket(new InetSocketAddress(NetworkStatics.IP, this.port));
 			socket = new MulticastSocket(this.port);
 			socket.setBroadcast(true);
+			socket.setTimeToLive(10);
 			/*
 			group = InetAddress.getByName(NetworkStatics.GROUPNAME);
 			socket.joinGroup(group);
@@ -58,6 +59,8 @@ public class LobbyServer extends Thread {
 			}
 		    if(packet.getData()[0] == 7){
 		    	System.out.println("recved");
+		    	System.out.println(packet.getAddress());
+		    	System.out.println(packet.getPort());
 		    	DatagramPacket sendPacket = new DatagramPacket(this.lobbyName.getBytes(), this.lobbyName.getBytes().length, packet.getAddress(), packet.getPort());
 		    	try {
 					socket.send(sendPacket);

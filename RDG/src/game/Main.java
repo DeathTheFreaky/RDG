@@ -66,17 +66,7 @@ public class Main {
 				LinkedList<Serverinfo> lobbyList = new LinkedList<Serverinfo>();
 				LobbySearcher search = new LobbySearcher(1025, lobbyList);
 				search.start();
-				Serverinfo info = null, lastInfo = null;
 				while(true){
-					try {
-						info = lobbyList.getLast();
-					} catch (NoSuchElementException e){
-						
-					}
-					if(info != lastInfo){
-						System.out.println("Lobbyserver: " + info.lobbyName);
-						lastInfo = info;
-					}
 					try {
 						synchronized(search){
 							search.wait();
@@ -85,6 +75,9 @@ public class Main {
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+					}
+					for(Serverinfo info : lobbyList){
+						System.out.println("Lobbyserver: " + info.lobbyName);
 					}
 				}
 			}

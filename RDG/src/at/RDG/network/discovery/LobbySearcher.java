@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
+import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -25,18 +26,22 @@ public class LobbySearcher extends Thread {
 
 	@Override
 	public void run() {
-		DatagramSocket socket = null;
+		MulticastSocket socket = null;
 		InetAddress group = null;
 		try {
 			// socket = new DatagramSocket(new
 			// InetSocketAddress(NetworkStatics.IP, this.port));
-			socket = new DatagramSocket(this.port);
+			socket = new MulticastSocket(this.port);
 			socket.setBroadcast(true);
+			socket.setTimeToLive(10);
 
 			/*
 			 * group = InetAddress.getByName(NetworkStatics.GROUPNAME);
 			 */
 		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
