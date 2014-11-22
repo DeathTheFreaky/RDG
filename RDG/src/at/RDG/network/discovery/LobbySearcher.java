@@ -1,8 +1,9 @@
 package at.RDG.network.discovery;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.MulticastSocket;
@@ -27,17 +28,10 @@ public class LobbySearcher extends Thread {
 	@Override
 	public void run() {
 		MulticastSocket socket = null;
-		InetAddress group = null;
 		try {
-			// socket = new DatagramSocket(new
-			// InetSocketAddress(NetworkStatics.IP, this.port));
 			socket = new MulticastSocket(this.port);
 			socket.setBroadcast(true);
 			socket.setTimeToLive(10);
-
-			/*
-			 * group = InetAddress.getByName(NetworkStatics.GROUPNAME);
-			 */
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -82,9 +76,9 @@ public class LobbySearcher extends Thread {
 					continue; // Don't want to broadcast to the loopback
 								// interface
 				}
-			} catch (SocketException e1) {
+			} catch (SocketException e) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				e.printStackTrace();
 			}
 
 			for (InterfaceAddress interfaceAddress : networkInterface
@@ -111,7 +105,7 @@ public class LobbySearcher extends Thread {
 
 		DatagramPacket packet;
 		while (!Thread.interrupted()) {
-			byte[] buf = new byte[NetworkStatics.LOBBYNAMEMAXLENGTH];
+			byte[] buf = new byte[NetworkStatics.LOBBYNAMEMAXLENGTH*2];
 			packet = new DatagramPacket(buf, buf.length);
 			try {
 				socket.receive(packet);
@@ -119,11 +113,28 @@ public class LobbySearcher extends Thread {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			this.lobbyList.add(new Serverinfo(packet.getAddress(), new String(
-					packet.getData())));
-			synchronized (this) {
-				this.notify();
+
+			ByteArrayInputStream bis = new ByteArrayInputStream(packet.getData());
+			ObjectInputStream ios = null;
+			Object obj = null;
+			try {
+				ios = new ObjectInputStream(bis);
+				obj = ios.readObject();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+			
+			if(!(obj instanceof Serverinfo)){
+				continue;
+			}
+			Serverinfo info = (Serverinfo)obj;
+			info.setAddress(packet.getAddress());
+			
+			this.lobbyList.add(info);
 		}
 
 		socket.close();
