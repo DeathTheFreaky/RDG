@@ -1,6 +1,7 @@
 package general;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -46,7 +47,10 @@ public class AttackFactory {
 	 */
 	public AttackFactory() {
 		
+		attacks = new HashMap<Attacks, Attack>();
+		
 		try {
+			
 			attackTemplates = new Configloader().getInstance().getAttackTemplates();
 			
 			for (Entry<Attacks, AttackTemplate> entry : attackTemplates.entrySet()) {
