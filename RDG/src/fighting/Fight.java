@@ -15,6 +15,7 @@ import elements.Creature;
 import elements.Potion;
 import gameEssentials.Player;
 import general.AttackFactory;
+import general.Chances;
 import general.Enums.Attacks;
 import general.Enums.Attributes;
 import general.Enums.Modes;
@@ -66,14 +67,17 @@ public class Fight extends View {
 	/* The Player Himself */
 	private Player player;
 
-	public Fight(Point origin, Dimension size, GameEnvironment ge)
+	public Fight(Point origin, Dimension size, GameEnvironment ge, Player player, Creature enemy)
 			throws SlickException {
 		super("Fight", origin, size);
 
 		this.gameEnvironment = ge;
 		
-		/*this.healthEnemy = 100 * (enemy.getHp() / enemy.getOrHp());
-		this.healthSelf = 100 * (player.getHp() / player.getOrHp());*/
+		this.player = player;
+		this.enemy = enemy;
+	
+		this.healthEnemy = 100 * (enemy.getHp() / enemy.getOrHp());
+		this.healthSelf = 100 * (player.getHp() / player.getOrHp());
 		
 		attacks = new AttackFactory().getInstance().getAllAttacks();
 		
@@ -267,7 +271,7 @@ public class Fight extends View {
 	public float calcDamage() {
 		float damage = 0.0f;
 		
-		damage = player.getStrength() * 1 /* weapon damage */ - 0 /* armor values */ * parryMultiplier;
+		damage = player.getStrength() * 1 /* weapon damage */ * Chances.randomFloat(activeAttack.statsLowMultiplier, activeAttack.statsHighMultiplier) - 0 /* armor values */ * parryMultiplier;
 		
 		return damage;
 	}
@@ -275,16 +279,27 @@ public class Fight extends View {
 	public void updateAttributes(Creature enemy) {
 		switch(activeAttack.effect) {
 		case HP:
-			enemy.setHp(enemy.getHp() * activeAttack.attributeDamageMultiplier);
+			enemy.setHp(enemy.getHp()
+					* activeAttack.attributeDamageMultiplier
+					* Chances.randomFloat(activeAttack.statsLowMultiplier, activeAttack.statsHighMultiplier));
 			break;
 		case ACCURACY:
-			enemy.setAccuracy(enemy.getAccuracy() * activeAttack.attributeDamageMultiplier);
+			enemy.setAccuracy(enemy.getAccuracy()
+					* activeAttack.attributeDamageMultiplier
+					* Chances.randomFloat(activeAttack.statsLowMultiplier,
+							activeAttack.statsHighMultiplier));
 			break;
 		case STRENGTH:
-			enemy.setStrength(enemy.getStrength() * activeAttack.attributeDamageMultiplier);
+			enemy.setStrength(enemy.getStrength()
+					* activeAttack.attributeDamageMultiplier
+					* Chances.randomFloat(activeAttack.statsLowMultiplier,
+							activeAttack.statsHighMultiplier));
 			break;
 		case SPEED:
-			enemy.setSpeed(enemy.getSpeed() * activeAttack.attributeDamageMultiplier);
+			enemy.setSpeed(enemy.getSpeed()
+					* activeAttack.attributeDamageMultiplier
+					* Chances.randomFloat(activeAttack.statsLowMultiplier,
+							activeAttack.statsHighMultiplier));
 			break;
 		default:
 			break;

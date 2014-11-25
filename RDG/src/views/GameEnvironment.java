@@ -9,9 +9,11 @@ import org.newdawn.slick.SlickException;
 
 import elements.Creature;
 import elements.Element;
+import elements.Monster;
 import fighting.Fight;
 import gameEssentials.Player;
 import general.Enums.ImageSize;
+import general.MonsterFactory;
 
 /**
  * GameEnvironment extends a View in the GameEnvironment context.
@@ -115,7 +117,8 @@ public class GameEnvironment extends View {
 		super(contextName, origin, size);
 		this.player = player;
 		
-		fightInstance = new Fight(origin, size, this);
+		Monster testenemy = MonsterFactory.createMonster("Bat");
+		fightInstance = new Fight(origin, size, this, player, testenemy); //added arguments player and enemy by Flo
 
 		if (size.width % BLOCK_SIZE != 0) {
 			System.out.println("WATCH OUT! GameEnvironment only works well, "
