@@ -2,14 +2,23 @@ package fighting;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.util.List;
+import java.util.Map;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
+import elements.Attack;
 import elements.Creature;
+import elements.Potion;
 import gameEssentials.Player;
+import general.AttackFactory;
+import general.Enums.Attacks;
+import general.Enums.Attributes;
+import general.Enums.Modes;
+import general.Enums.Targets;
 import views.GameEnvironment;
 import views.View;
 
@@ -39,6 +48,12 @@ public class Fight extends View {
 	private final int barBorder = 3;
 	private float healthEnemy = 1.0f;
 	private float healthSelf = 1.0f;
+	
+	// Instances of all available attacks
+	Map<Attacks, Attack> attacks = null;
+	
+	Attack activeAttack = null;
+	float parryMultiplier = 1.0f;
 
 	int ende = 1;
 
@@ -57,8 +72,11 @@ public class Fight extends View {
 
 		this.gameEnvironment = ge;
 		
-		this.healthEnemy = 100 * (enemy.getHp() / enemy.getOrHp());
-		this.healthSelf = 100 * (player.getHp() / player.getOrHp());
+		/*this.healthEnemy = 100 * (enemy.getHp() / enemy.getOrHp());
+		this.healthSelf = 100 * (player.getHp() / player.getOrHp());*/
+		
+		attacks = new AttackFactory().getInstance().getAllAttacks();
+		
 	}
 
 	/**
@@ -143,19 +161,60 @@ public class Fight extends View {
 			
 		}
 		
+		
 		while (player.getHp() > 0 && creature.getHp() > 0) { // as long as nobody died
+			activeAttack = null;
+			parryMultiplier = 1.0f;
 			if (faster) {
+				/* player chooses what to do */
+				switch(getCommand()) {
+				case TORSO:
+					activeAttack = attacks.get(Attacks.TORSO);
+					break;
+				case HEAD:
+					activeAttack = attacks.get(Attacks.HEAD);
+					break;
+				case ARMS:
+					activeAttack = attacks.get(Attacks.ARMS);
+					break;
+				case LEGS:
+					activeAttack = attacks.get(Attacks.LEGS);
+					break;
+				case SET:
+					/* change weapon-set */
+					break;
+				case POTION:
+					/* bla bla bla, select potion, bla bla bla */
+					Potion selected = null;
+					usePotion(player, enemy, selected);
+					break;
+				case PARRY:
+					/*  */
+					parryMultiplier = 2.0f;
+					if (parrySuccess() == true) {
+						activeAttack = attacks.get(Attacks.TORSO);	// muss man noch rausfinden was am besten is (ich war ja für head aber flo für torso xD)
+						break;
+					}
+					break;
+				default:
+					break;
+				}
+				
+				/* potion effects */
+				potionEffects(player);
+				
+			} else {
+				/* potion effects */
+				potionEffects(enemy);
 				
 			}
 		}
 		
+		
 		if (player.getHp() == 0) {	// player died
 			
 		} else {					// enemy died, Player gets his attributes resetted
-			player.setHp(player.getOrHp());
-			player.setAccuracy(player.getOrAccuracy());
-			player.setSpeed(player.getOrSpeed());
-			player.setStrength(player.getOrStrength());
+			player.resetOriginals();
 		}
 	}
 	
@@ -164,11 +223,16 @@ public class Fight extends View {
 	 * 
 	 * @param creature
 	 */
-	public void attack(Creature creature) {
+	public void attack(Player player, Creature creature) {
+		if (activeAttack == null) return;
+		
 		if (calcHitSuccess() == true) {
-			float heal = calcHeal();		// could be used to display Heal on Screen
+			
+			
+			
 			float damage = calcDamage();	// could be used to display Damage on Screen
-			updateHealth(creature, heal, damage);
+			updateHealth(creature, damage);
+			updateAttributes(creature);
 		}
 	}
 	
@@ -178,8 +242,21 @@ public class Fight extends View {
 	 * @return true if Attack is successful
 	 */
 	public boolean calcHitSuccess() {
-
-		return true;
+		if ((player.getAccuracy() * 1/*weapon accuracy*/ * activeAttack.hitProbability) - (enemy.getOrSpeed() * 1) >= 0.5) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * calculates if attack can be parried
+	 * 
+	 * @return true if a parry will be successful
+	 */
+	public boolean parrySuccess() {
+		
+		return false;
 	}
 
 	/**
@@ -190,18 +267,28 @@ public class Fight extends View {
 	public float calcDamage() {
 		float damage = 0.0f;
 		
+		damage = player.getStrength() * 1 /* weapon damage */ - 0 /* armor values */ * parryMultiplier;
+		
 		return damage;
 	}
 	
-	/**
-	 * Calculates healing
-	 * 
-	 * @return amount of healed HP
-	 */
-	public float calcHeal() {
-		float heal = 0.0f;
-		
-		return heal;
+	public void updateAttributes(Creature enemy) {
+		switch(activeAttack.effect) {
+		case HP:
+			enemy.setHp(enemy.getHp() * activeAttack.attributeDamageMultiplier);
+			break;
+		case ACCURACY:
+			enemy.setAccuracy(enemy.getAccuracy() * activeAttack.attributeDamageMultiplier);
+			break;
+		case STRENGTH:
+			enemy.setStrength(enemy.getStrength() * activeAttack.attributeDamageMultiplier);
+			break;
+		case SPEED:
+			enemy.setSpeed(enemy.getSpeed() * activeAttack.attributeDamageMultiplier);
+			break;
+		default:
+			break;
+		}
 	}
 	
 	/**
@@ -211,8 +298,144 @@ public class Fight extends View {
 	 * @param heal
 	 * @param damage
 	 */
-	public void updateHealth(Creature player, float heal, float damage) {
-		float hp = player.getHp() - damage + heal;
+	public void updateHealth(Creature player, float damage) {
+		float hp = player.getHp() - damage;
 		player.setHp(hp);
+	}
+	
+	/**
+	 * called every time the player uses a potion (directly or indirectly)
+	 */
+	public void usePotion(Creature player, Creature creature, Potion potion) {
+		// if player uses antidote / removes the first poison in the list
+		if (potion.MODE == Modes.LIFT) {
+			for (Potion _potion : creature.getActivePotions()) {
+				if (_potion.EFFECT == Attributes.HP && _potion.MODE == Modes.DECR) {
+					creature.removeActivePotions(_potion);
+				}
+				break;
+			}
+		} else {		// if player uses other potion
+			if (potion.TARGET == Targets.SELF) {	// if player uses good potion for himself
+				player.addActivePotions(potion);
+				if (potion.MODE == Modes.TINCR) {
+					increase(player, potion);
+				}
+			} else {		// if player uses bad potion for enemy
+				creature.addActivePotions(potion);
+				if (potion.MODE == Modes.TDECR) {
+					decrease(creature, potion);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * calculates Potions Effects' on a specific every round
+	 * Potions whith mode TINCR or TDECR are not applied in this method but in method usePotion()
+	 */
+	public void potionEffects(Creature creature) {		
+		// apply all non temporary potion effects
+		for (Potion potion : creature.getActivePotions()) {
+			potion.DURATION--;
+			switch(potion.MODE) {
+			case INCR: 
+				increase(creature, potion);
+				break;
+			case DECR:
+				decrease(creature, potion);
+				break;
+			default:
+				break;
+			}
+			if (potion.DURATION <= 0) {
+				revertEffect(creature, potion);
+				creature.removeActivePotions(potion);
+			}
+		}
+		for (Potion potion : creature.getActivePotions()) {
+			potion.DURATION--;
+			if (potion.DURATION <= 0) {
+				creature.removeActivePotions(potion);
+			}
+		}
+	}
+	
+	/**
+	 * reverts effect of temporary potions
+	 * 
+	 * @param creature
+	 * @param potion
+	 */
+	public void revertEffect(Creature creature, Potion potion) {
+		if (potion.MODE == Modes.TINCR) {
+			decrease(creature, potion);
+		} else if (potion.MODE == Modes.TDECR) {
+			increase(creature, potion);
+		}
+	}
+	
+	/**
+	 * decreases attributes
+	 * 
+	 * @param creature
+	 * @param potion
+	 */
+	public void decrease(Creature creature, Potion potion) {
+		switch(potion.EFFECT) {
+		case HP:
+			player.setHp(player.getHp() - potion.POWER);
+			break;
+		case SPEED:
+			player.setSpeed(player.getSpeed() - potion.POWER);
+			break;
+		case ACCURACY:
+			player.setAccuracy(player.getAccuracy() - potion.POWER);
+			break;
+		case STRENGTH:
+			player.setStrength(player.getStrength() - potion.POWER);
+			break;
+		default:
+			break;
+		}
+	}
+	
+	/**
+	 * increases attributes
+	 * 
+	 * @param creature
+	 * @param potion
+	 */
+	public void increase(Creature creature, Potion potion) {
+		switch(potion.EFFECT) {
+		case HP:
+			player.setHp(player.getHp() + potion.POWER);
+			break;
+		case SPEED:
+			player.setSpeed(player.getSpeed() + potion.POWER);
+			break;
+		case ACCURACY:
+			player.setAccuracy(player.getAccuracy() + potion.POWER);
+			break;
+		case STRENGTH:
+			player.setStrength(player.getStrength() + potion.POWER);
+			break;
+		default:
+			break;
+		}
+	}
+	
+	/**
+	 * including weapon-set change and potions!
+	 * because this method is used by ALL creatures, <br>
+	 * NPCs have to use a randomly selected attack or parry (no weapon change or potions)
+	 * 
+	 * @return enum of player's choice
+	 */
+	public Attacks getCommand() {
+		/* checks which option was selected, returns enum */
+		
+		
+		return null;
 	}
 }

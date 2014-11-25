@@ -25,7 +25,7 @@ public class Enums {
 	 */
 	public enum Modes {INCR, DECR, TINCR, TDECR, LIFT} 
 	public enum WeaponTypes {SINGLEHAND, TWOHAND}
-	public enum Attacks {TORSO, HEAD, ARMS, LEGS}
+	public enum Attacks {TORSO, HEAD, ARMS, LEGS, PARRY, SET, POTION}
 	public enum RoomTypes {DEADEND, HALLWAY, TURN, TJUNCTION, JUNCTION, TREASURECHAMBER}
 	public enum Directions {UP, RIGHT, DOWN, LEFT}
 	public enum Updates {KEY_PRESSED, KEY_RELEASED}

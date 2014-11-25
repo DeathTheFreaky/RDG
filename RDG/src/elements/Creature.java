@@ -1,5 +1,7 @@
 package elements;
 
+import java.util.List;
+
 import general.Enums.CreatureType;
 
 import org.newdawn.slick.Image;
@@ -26,6 +28,8 @@ public class Creature extends Element{
 	private float orStrength;
 	private float orSpeed;
 	private float orAccuracy;
+	
+	private List<Potion> activePotions;
 
 	/**Constructs a Creature (Player or Monster).<br>
 	 * 
@@ -181,5 +185,17 @@ public class Creature extends Element{
 		speed = orSpeed;
 		strength = orStrength;
 		hp = orHp;
+	}
+	
+	public void addActivePotions(Potion potion) {
+		activePotions.add(potion);
+	}
+	
+	public void removeActivePotions(Potion potion) {
+		activePotions.remove(potion);
+	}
+	
+	public List<Potion> getActivePotions() {
+		return activePotions;
 	}
 }

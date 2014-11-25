@@ -36,10 +36,10 @@ public class Potion extends Element {
 	public final Modes MODE;
 	
 	/* status change (how much a value in- or decreases */
-	private final float POWER;
+	public final float POWER;
 	
 	/* states how many rounds this potion will take effect */
-	private final int DURATION;
+	public int DURATION;
 	
 	/* Potion's total Effect is made up of EFFECT (Attributes),
 	 * TARGET, MODE, POWER and DURATION */
