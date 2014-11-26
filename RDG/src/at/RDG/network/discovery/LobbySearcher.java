@@ -11,17 +11,15 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
-import java.util.LinkedList;
+import java.util.Map;
 
 import at.RDG.network.NetworkStatics;
 
 public class LobbySearcher extends Thread {
 
-	private int port;
-	private LinkedList<Serverinfo> lobbyList;
+	private Map<String, Serverinfo> lobbyList;
 
-	public LobbySearcher(int port, LinkedList<Serverinfo> lobbyList) {
-		this.port = port;
+	public LobbySearcher(int port, Map<String, Serverinfo> lobbyList) {
 		this.lobbyList = lobbyList;
 	}
 
@@ -29,7 +27,7 @@ public class LobbySearcher extends Thread {
 	public void run() {
 		MulticastSocket socket = null;
 		try {
-			socket = new MulticastSocket(this.port);
+			socket = new MulticastSocket();
 			socket.setBroadcast(true);
 			socket.setTimeToLive(10);
 		} catch (SocketException e) {
@@ -46,66 +44,71 @@ public class LobbySearcher extends Thread {
 		}
 
 		DatagramPacket sendPacket = null;
-		try {
-			sendPacket = new DatagramPacket(new byte[] { (byte) 7 }, 1,
-					InetAddress.getByName("255.255.255.255"), 1024);
-		} catch (UnknownHostException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		try {
-			socket.send(sendPacket);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		// Broadcast the message over all the network interfaces
-		Enumeration<NetworkInterface> interfaces = null;
-		try {
-			interfaces = NetworkInterface.getNetworkInterfaces();
-		} catch (SocketException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		while (interfaces.hasMoreElements()) {
-			NetworkInterface networkInterface = interfaces.nextElement();
-
+		for (int i = 0; i < NetworkStatics.SERVERPORTS.length; i++) {
 			try {
-				if (networkInterface.isLoopback() || !networkInterface.isUp()) {
-					continue; // Don't want to broadcast to the loopback
-								// interface
-				}
-			} catch (SocketException e) {
+				sendPacket = new DatagramPacket(new byte[] { (byte) 7 }, 1,
+						InetAddress.getByName("255.255.255.255"),
+						NetworkStatics.SERVERPORTS[i]);
+			} catch (UnknownHostException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			try {
+				socket.send(sendPacket);
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-			for (InterfaceAddress interfaceAddress : networkInterface
-					.getInterfaceAddresses()) {
-				InetAddress broadcast = interfaceAddress.getBroadcast();
-				if (broadcast == null) {
-					continue;
-				}
+			// Broadcast the message over all the network interfaces
+			Enumeration<NetworkInterface> interfaces = null;
+			try {
+				interfaces = NetworkInterface.getNetworkInterfaces();
+			} catch (SocketException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			while (interfaces.hasMoreElements()) {
+				NetworkInterface networkInterface = interfaces.nextElement();
 
-				// Send the broadcast package!
 				try {
-					sendPacket = new DatagramPacket(new byte[] { (byte) 7 }, 1,
-							broadcast, 1024);
-					socket.send(sendPacket);
-				} catch (Exception e) {
+					if (networkInterface.isLoopback()
+							|| !networkInterface.isUp()) {
+						continue; // Don't want to broadcast to the loopback
+									// interface
+					}
+				} catch (SocketException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 
-				System.out.println(getClass().getName()
-						+ ">>> Request packet sent to: "
-						+ broadcast.getHostAddress() + "; Interface: "
-						+ networkInterface.getDisplayName());
+				for (InterfaceAddress interfaceAddress : networkInterface
+						.getInterfaceAddresses()) {
+					InetAddress broadcast = interfaceAddress.getBroadcast();
+					if (broadcast == null) {
+						continue;
+					}
+
+					// Send the broadcast package!
+					try {
+						sendPacket = new DatagramPacket(
+								new byte[] { (byte) 7 }, 1, broadcast,
+								NetworkStatics.SERVERPORTS[i]);
+						socket.send(sendPacket);
+					} catch (Exception e) {
+					}
+
+					System.out.println(getClass().getName()
+							+ ">>> Request packet sent to: "
+							+ broadcast.getHostAddress() + "; Interface: "
+							+ networkInterface.getDisplayName());
+				}
 			}
 		}
 
 		DatagramPacket packet;
 		while (!Thread.interrupted()) {
-			byte[] buf = new byte[NetworkStatics.LOBBYNAMEMAXLENGTH*2];
+			byte[] buf = new byte[NetworkStatics.LOBBYNAMEMAXLENGTH * 2];
 			packet = new DatagramPacket(buf, buf.length);
 			try {
 				socket.receive(packet);
@@ -114,7 +117,8 @@ public class LobbySearcher extends Thread {
 				e.printStackTrace();
 			}
 
-			ByteArrayInputStream bis = new ByteArrayInputStream(packet.getData());
+			ByteArrayInputStream bis = new ByteArrayInputStream(
+					packet.getData());
 			ObjectInputStream ios = null;
 			Object obj = null;
 			try {
@@ -127,14 +131,14 @@ public class LobbySearcher extends Thread {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			if(!(obj instanceof Serverinfo)){
+
+			if (!(obj instanceof Serverinfo)) {
 				continue;
 			}
-			Serverinfo info = (Serverinfo)obj;
+			Serverinfo info = (Serverinfo) obj;
 			info.setAddress(packet.getAddress());
-			
-			this.lobbyList.add(info);
+
+			this.lobbyList.put(info.getUID(), info);
 		}
 
 		socket.close();

@@ -11,12 +11,14 @@ public class Serverinfo implements Serializable{
 	
 	private static final long serialVersionUID = 2153567303370864667L;
 	private InetAddress address;
+	private int port;
 	private String lobbyName;
 	private String UID;
 	
-	Serverinfo(InetAddress address, String lobbyName){
-		this.setAddress(address);
+	Serverinfo(InetAddress address,int port, String lobbyName){
+		this.address = address;
 		this.lobbyName = lobbyName;
+		this.port = port;
 		MessageDigest md = null;
 		byte[] thedigest = null;
 		try {
@@ -30,18 +32,22 @@ public class Serverinfo implements Serializable{
 	}
 
 	public InetAddress getAddress() {
-		return address;
+		return this.address;
 	}
 
 	void setAddress(InetAddress address) {
 		this.address = address;
 	}
 	
+	public int getPort(){
+		return this.port;
+	}
+	
 	public String getLobbyName() {
-		return lobbyName;
+		return this.lobbyName;
 	}
 
 	public String getUID() {
-		return UID;
+		return this.UID;
 	}
 }

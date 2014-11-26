@@ -13,16 +13,15 @@ import at.RDG.network.NetworkStatics;
 
 public class LobbyServer extends Thread {
 
-	private int port;
 	private final String lobbyName;
 
-	public LobbyServer(int port, String lobbyName)
-			throws ArgumentOutOfRangeException {
+	public LobbyServer(String lobbyName) throws ArgumentOutOfRangeException {
 		if (lobbyName.length() > NetworkStatics.LOBBYNAMEMAXLENGTH) {
 			throw new ArgumentOutOfRangeException(
-					"lobbyName cannot be more then " + NetworkStatics.LOBBYNAMEMAXLENGTH + " characters long!");
+					"lobbyName cannot be more then "
+							+ NetworkStatics.LOBBYNAMEMAXLENGTH
+							+ " characters long!");
 		}
-		this.port = port;
 		this.lobbyName = lobbyName;
 	}
 
@@ -31,14 +30,22 @@ public class LobbyServer extends Thread {
 		// open MulticastSocket (UDP)
 		MulticastSocket socket = null;
 		try {
-			socket = new MulticastSocket(this.port);
+			socket = new MulticastSocket(NetworkStatics.SERVERPORTS[0]);
+			if (!socket.isBound()) {
+				socket.close();
+				socket = new MulticastSocket(NetworkStatics.SERVERPORTS[1]);
+				if (!socket.isBound()) {
+					socket.close();
+					socket = new MulticastSocket(NetworkStatics.SERVERPORTS[2]);
+				}
+			}
 			socket.setBroadcast(true);
 			socket.setTimeToLive(10);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
-			if (!socket.isBound()/* || group == null */) {
+			if (!socket.isBound()) {
 				Thread.currentThread().interrupt();
 				// TODO error msg and logging
 			}
@@ -57,7 +64,7 @@ public class LobbyServer extends Thread {
 			}
 			if (packet.getData()[0] == 7) {
 				System.out.println("recved");
-				Serverinfo server = new Serverinfo(null, this.lobbyName);
+				Serverinfo server = new Serverinfo(null, socket.getPort(), this.lobbyName);
 				ByteArrayOutputStream bos = new ByteArrayOutputStream(2048);
 				ObjectOutputStream oos = null;
 				try {
