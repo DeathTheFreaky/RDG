@@ -1,24 +1,11 @@
 package game;
 
-import java.io.IOException;
 import java.util.LinkedList;
-import java.util.Map.Entry;
-import java.util.NoSuchElementException;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.xml.sax.SAXException;
 
 import at.RDG.network.ArgumentOutOfRangeException;
 import at.RDG.network.discovery.LobbySearcher;
 import at.RDG.network.discovery.LobbyServer;
 import at.RDG.network.discovery.Serverinfo;
-import config_templates.Armament_Template;
-import config_templates.Attack_Template;
-import config_templates.Monster_Template;
-import config_templates.Potion_Template;
-import config_templates.Room_Template;
-import config_templates.Weapon_Template;
 
 public class Main {
 

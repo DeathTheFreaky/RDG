@@ -11,20 +11,36 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import at.RDG.network.NetworkStatics;
 
 public class LobbySearcher extends Thread {
 
-	private Map<String, Serverinfo> lobbyList;
+	private List<Serverinfo> lobbyList;
+	private Map<String, Object> serverMap;
 
-	public LobbySearcher(int port, Map<String, Serverinfo> lobbyList) {
+	/**
+	 * LobbySearcher searches for a open Lobbies in the local network and writes
+	 * them into the provided List.
+	 * 
+	 * @param lobbyList
+	 */
+	public LobbySearcher(List<Serverinfo> lobbyList) {
 		this.lobbyList = lobbyList;
+		this.serverMap = new HashMap<String, Object>();
 	}
 
+	/**
+	 * The method is started if the thread is started and searches for Lobbies
+	 * in the local network.
+	 */
 	@Override
 	public void run() {
+		// opens a new Multicast Socket on any open port, activates Broadcast
+		// Messages and sets the Time to Live of the Packet to 10.
 		MulticastSocket socket = null;
 		try {
 			socket = new MulticastSocket();
@@ -37,14 +53,18 @@ public class LobbySearcher extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
+			// if the Socket was not bound the thread stops
 			if (!socket.isBound()/* || group == null */) {
 				Thread.currentThread().interrupt();
 				// TODO error msg and logging
 			}
 		}
 
+		// sends DatagramPackets to all Broadcast Addresses in the Network on
+		// all defined ports
 		DatagramPacket sendPacket = null;
 		for (int i = 0; i < NetworkStatics.SERVERPORTS.length; i++) {
+			// send to global broadcast
 			try {
 				sendPacket = new DatagramPacket(new byte[] { (byte) 7 }, 1,
 						InetAddress.getByName("255.255.255.255"),
@@ -106,6 +126,7 @@ public class LobbySearcher extends Thread {
 			}
 		}
 
+		// Receives all packets send back by an open Lobby
 		DatagramPacket packet;
 		while (!Thread.interrupted()) {
 			byte[] buf = new byte[NetworkStatics.LOBBYNAMEMAXLENGTH * 2];
@@ -117,6 +138,8 @@ public class LobbySearcher extends Thread {
 				e.printStackTrace();
 			}
 
+			// read the received object and check if it is an instance of
+			// Serverinfo
 			ByteArrayInputStream bis = new ByteArrayInputStream(
 					packet.getData());
 			ObjectInputStream ios = null;
@@ -135,10 +158,15 @@ public class LobbySearcher extends Thread {
 			if (!(obj instanceof Serverinfo)) {
 				continue;
 			}
+			// prepare the received Object for foreigner use and right it into
+			// the list of open Lobbies if it isn't in there already.
 			Serverinfo info = (Serverinfo) obj;
 			info.setAddress(packet.getAddress());
 
-			this.lobbyList.put(info.getUID(), info);
+			if (!this.serverMap.containsKey(info.getUID())) {
+				this.serverMap.put(info.getUID(), null);
+				this.lobbyList.add(info);
+			}
 		}
 
 		socket.close();
