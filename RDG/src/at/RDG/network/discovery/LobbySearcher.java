@@ -15,27 +15,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import at.RDG.network.NetworkStatics;
-
+/**
+ * The LobbySearcher searches for open Lobbies in the local network and writes
+ * them into the provided List.
+ * 
+ * @author Clemens
+ */
 public class LobbySearcher extends Thread {
 
 	private List<Serverinfo> lobbyList;
 	private Map<String, Object> serverMap;
 
 	/**
-	 * LobbySearcher searches for a open Lobbies in the local network and writes
-	 * them into the provided List.
-	 * 
+	 * @see LobbySearcher
 	 * @param lobbyList
+	 *            A List where to put the information about all found Lobbies.
 	 */
 	public LobbySearcher(List<Serverinfo> lobbyList) {
+		if(lobbyList == null)
+			throw new NullPointerException("lobbyList cannot be null");
 		this.lobbyList = lobbyList;
 		this.serverMap = new HashMap<String, Object>();
 	}
 
 	/**
 	 * The method is started if the thread is started and searches for Lobbies
-	 * in the local network.
+	 * in the local network.</br> (Don't start this directly! Use Thread.start()
+	 * instead.)
 	 */
 	@Override
 	public void run() {
@@ -63,12 +69,12 @@ public class LobbySearcher extends Thread {
 		// sends DatagramPackets to all Broadcast Addresses in the Network on
 		// all defined ports
 		DatagramPacket sendPacket = null;
-		for (int i = 0; i < NetworkStatics.SERVERPORTS.length; i++) {
+		for (int i = 0; i < LobbyStatics.SERVERPORTS.length; i++) {
 			// send to global broadcast
 			try {
 				sendPacket = new DatagramPacket(new byte[] { (byte) 7 }, 1,
 						InetAddress.getByName("255.255.255.255"),
-						NetworkStatics.SERVERPORTS[i]);
+						LobbyStatics.SERVERPORTS[i]);
 			} catch (UnknownHostException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -113,7 +119,7 @@ public class LobbySearcher extends Thread {
 					try {
 						sendPacket = new DatagramPacket(
 								new byte[] { (byte) 7 }, 1, broadcast,
-								NetworkStatics.SERVERPORTS[i]);
+								LobbyStatics.SERVERPORTS[i]);
 						socket.send(sendPacket);
 					} catch (Exception e) {
 					}
@@ -129,7 +135,7 @@ public class LobbySearcher extends Thread {
 		// Receives all packets send back by an open Lobby
 		DatagramPacket packet;
 		while (!Thread.interrupted()) {
-			byte[] buf = new byte[NetworkStatics.LOBBYNAMEMAXLENGTH * 2];
+			byte[] buf = new byte[LobbyStatics.LOBBYNAMEMAXLENGTH * 2];
 			packet = new DatagramPacket(buf, buf.length);
 			try {
 				socket.receive(packet);

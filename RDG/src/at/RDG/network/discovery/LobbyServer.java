@@ -4,39 +4,82 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
-import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Date;
+import java.util.UUID;
 
 import at.RDG.network.ArgumentOutOfRangeException;
-import at.RDG.network.NetworkStatics;
 
+/**
+ * The LobbyServer is listening for incoming discovery requests and sends back
+ * informations about him self.
+ * 
+ * @author Clemens
+ */
 public class LobbyServer extends Thread {
 
-	private final String lobbyName;
+	private final String lobbyName; // the name of the lobby
+	private final String UID; // the UID of the server
 
+	/**
+	 * @see LobbyServer
+	 * @param lobbyName
+	 *            The name the lobby should show up with. Should not be greater
+	 *            then 256 characters.
+	 * @throws ArgumentOutOfRangeException
+	 *             is thrown if the passed lobby name is greater then 256
+	 *             characters.
+	 */
 	public LobbyServer(String lobbyName) throws ArgumentOutOfRangeException {
-		if (lobbyName.length() > NetworkStatics.LOBBYNAMEMAXLENGTH) {
+		if (lobbyName == null) {
+			throw new NullPointerException("lobbyName cannot be null.");
+		} else if (lobbyName.equals("")) {
+			throw new ArgumentOutOfRangeException(
+					"lobbyName must at least be one character!");
+		} else if (lobbyName.length() > LobbyStatics.LOBBYNAMEMAXLENGTH) {
 			throw new ArgumentOutOfRangeException(
 					"lobbyName cannot be more then "
-							+ NetworkStatics.LOBBYNAMEMAXLENGTH
+							+ LobbyStatics.LOBBYNAMEMAXLENGTH
 							+ " characters long!");
 		}
 		this.lobbyName = lobbyName;
+
+		// creates a UID for the server so if the server responses on two
+		// different ips it can be identified as on.
+		MessageDigest md = null;
+		byte[] thedigest = null;
+		try {
+			Date date = new Date();
+			md = MessageDigest.getInstance("MD5");
+			thedigest = md.digest((this.lobbyName + UUID.randomUUID() + date
+					.toString()).getBytes(StandardCharsets.UTF_8));
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.UID = new String(thedigest);
 	}
 
+	/**
+	 * The method is started if the thread is started and responses to every
+	 * discovery request it receives.</br> (Don't start this directly! Use
+	 * Thread.start() instead.)
+	 */
 	@Override
 	public void run() {
-		// open MulticastSocket (UDP)
+		// open MulticastSocket and bound it to one of three free ports.
 		MulticastSocket socket = null;
 		try {
-			socket = new MulticastSocket(NetworkStatics.SERVERPORTS[0]);
+			socket = new MulticastSocket(LobbyStatics.SERVERPORTS[0]);
 			if (!socket.isBound()) {
 				socket.close();
-				socket = new MulticastSocket(NetworkStatics.SERVERPORTS[1]);
+				socket = new MulticastSocket(LobbyStatics.SERVERPORTS[1]);
 				if (!socket.isBound()) {
 					socket.close();
-					socket = new MulticastSocket(NetworkStatics.SERVERPORTS[2]);
+					socket = new MulticastSocket(LobbyStatics.SERVERPORTS[2]);
 				}
 			}
 			socket.setBroadcast(true);
@@ -45,6 +88,7 @@ public class LobbyServer extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
+			// If its not successfully bound it stops the process.
 			if (!socket.isBound()) {
 				Thread.currentThread().interrupt();
 				// TODO error msg and logging
@@ -62,9 +106,13 @@ public class LobbyServer extends Thread {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			// check if the request is a valid one
 			if (packet.getData()[0] == 7) {
 				System.out.println("recved");
-				Serverinfo server = new Serverinfo(null, socket.getPort(), this.lobbyName);
+
+				// prepare the answer and send lobby informations back
+				Serverinfo server = new Serverinfo(null, socket.getPort(),
+						this.lobbyName, this.UID);
 				ByteArrayOutputStream bos = new ByteArrayOutputStream(2048);
 				ObjectOutputStream oos = null;
 				try {
