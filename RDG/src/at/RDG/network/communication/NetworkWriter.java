@@ -9,11 +9,9 @@ public class NetworkWriter extends Thread{
 	
 	private ObjectOutputStream oos;
 	private Queue<NetworkMessage> writeQueue;
-	private Socket socket;
 	
 	public NetworkWriter(Socket s, Queue<NetworkMessage> writeQueue) throws IOException{
-		this.socket = s;
-		this.oos = new ObjectOutputStream(this.socket.getOutputStream());
+		this.oos = new ObjectOutputStream(s.getOutputStream());
 		this.writeQueue = writeQueue;
 	}
 	
@@ -23,10 +21,17 @@ public class NetworkWriter extends Thread{
 			while(!writeQueue.isEmpty()){
 				try {
 					this.oos.writeObject(this.writeQueue.poll());
+					this.oos.flush();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+			}
+			try {
+				this.wait();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}
