@@ -32,8 +32,12 @@ public class LobbyServer extends Thread {
 	 * @throws ArgumentOutOfRangeException
 	 *             is thrown if the passed lobby name is greater then 256
 	 *             characters.
+	 * @throws NoSuchAlgorithmException
+	 *             is thrown if the LobbyServer class is unable to launch the
+	 *             MD5 algorithm to create his UID.
 	 */
-	public LobbyServer(String lobbyName) throws ArgumentOutOfRangeException {
+	public LobbyServer(String lobbyName) throws ArgumentOutOfRangeException,
+			NoSuchAlgorithmException {
 		if (lobbyName == null) {
 			throw new NullPointerException("lobbyName cannot be null.");
 		} else if (lobbyName.equals("")) {
@@ -51,15 +55,10 @@ public class LobbyServer extends Thread {
 		// different ips it can be identified as on.
 		MessageDigest md = null;
 		byte[] thedigest = null;
-		try {
-			Date date = new Date();
-			md = MessageDigest.getInstance("MD5");
-			thedigest = md.digest((this.lobbyName + UUID.randomUUID() + date
-					.toString()).getBytes(StandardCharsets.UTF_8));
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Date date = new Date();
+		md = MessageDigest.getInstance("MD5");
+		thedigest = md.digest((this.lobbyName + UUID.randomUUID() + date
+				.toString()).getBytes(StandardCharsets.UTF_8));
 		this.UID = new String(thedigest);
 	}
 
@@ -74,6 +73,8 @@ public class LobbyServer extends Thread {
 		MulticastSocket socket = null;
 		try {
 			socket = new MulticastSocket(LobbyStatics.SERVERPORTS[0]);
+			System.out.println(LobbyStatics.SERVERPORTS[0]);
+			System.out.println(socket.getPort());
 			if (!socket.isBound()) {
 				socket.close();
 				socket = new MulticastSocket(LobbyStatics.SERVERPORTS[1]);
@@ -94,6 +95,7 @@ public class LobbyServer extends Thread {
 				// TODO error msg and logging
 			}
 		}
+		System.out.println(socket.getPort());
 
 		// receive and answer Requests
 		DatagramPacket packet;

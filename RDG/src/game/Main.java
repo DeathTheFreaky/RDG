@@ -1,5 +1,6 @@
 package game;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 
 import at.RDG.network.ArgumentOutOfRangeException;
@@ -10,8 +11,8 @@ import at.RDG.network.discovery.Serverinfo;
 public class Main {
 
 	public static void main(String[] args) {
-		//server(Integer.parseInt(args[0]));
-		searcher();
+		server(Integer.parseInt(args[0]));
+		//searcher();
 
 		/*
 		 * //path to config files String configpath = "config/Results/";
@@ -36,6 +37,9 @@ public class Main {
 		try {
 			server = new LobbyServer("Neue Lobby " + count);
 		} catch (ArgumentOutOfRangeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

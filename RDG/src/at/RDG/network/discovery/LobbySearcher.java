@@ -135,7 +135,7 @@ public class LobbySearcher extends Thread {
 		// Receives all packets send back by an open Lobby
 		DatagramPacket packet;
 		while (!Thread.interrupted()) {
-			byte[] buf = new byte[LobbyStatics.LOBBYNAMEMAXLENGTH * 2];
+			byte[] buf = new byte[LobbyStatics.LOBBYNAMEMAXLENGTH * 3];
 			packet = new DatagramPacket(buf, buf.length);
 			try {
 				socket.receive(packet);
