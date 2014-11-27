@@ -10,6 +10,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import at.RDG.network.ArgumentOutOfRangeException;
 
@@ -72,30 +74,27 @@ public class LobbyServer extends Thread {
 		// open MulticastSocket and bound it to one of three free ports.
 		MulticastSocket socket = null;
 		try {
-			socket = new MulticastSocket(LobbyStatics.SERVERPORTS[0]);
-			System.out.println(LobbyStatics.SERVERPORTS[0]);
-			System.out.println(socket.getPort());
-			if (!socket.isBound()) {
-				socket.close();
-				socket = new MulticastSocket(LobbyStatics.SERVERPORTS[1]);
-				if (!socket.isBound()) {
-					socket.close();
-					socket = new MulticastSocket(LobbyStatics.SERVERPORTS[2]);
-				}
+			for (int i = 0; i < LobbyStatics.SERVERPORTS.length; i++) {
+				socket = new MulticastSocket(LobbyStatics.SERVERPORTS[i]);
+				System.out.println(LobbyStatics.SERVERPORTS[i]);
+				System.out.println(socket.getPort());
+				if (socket.isBound())
+					break;
 			}
 			socket.setBroadcast(true);
 			socket.setTimeToLive(10);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getLogger(LobbyServer.class.getName()).log(Level.SEVERE,
+					"IOExeption while creating the MulticastSocket.", e);
+			Thread.currentThread().interrupt();
 		} finally {
 			// If its not successfully bound it stops the process.
 			if (!socket.isBound()) {
+				Logger.getLogger(LobbyServer.class.getName()).log(Level.SEVERE,
+						"Unable to bind the MulticastSocket.");
 				Thread.currentThread().interrupt();
-				// TODO error msg and logging
 			}
 		}
-		System.out.println(socket.getPort());
 
 		// receive and answer Requests
 		DatagramPacket packet;
@@ -105,13 +104,12 @@ public class LobbyServer extends Thread {
 			try {
 				socket.receive(packet);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Logger.getLogger(LobbyServer.class.getName()).log(Level.SEVERE,
+						"Unable to receive a packet. SKIPPING", e);
+				continue;
 			}
 			// check if the request is a valid one
 			if (packet.getData()[0] == 7) {
-				System.out.println("recved");
-
 				// prepare the answer and send lobby informations back
 				Serverinfo server = new Serverinfo(null, socket.getPort(),
 						this.lobbyName, this.UID);
@@ -121,20 +119,23 @@ public class LobbyServer extends Thread {
 					oos = new ObjectOutputStream(bos);
 					oos.writeObject(server);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Logger.getLogger(LobbyServer.class.getName()).log(
+							Level.SEVERE,
+							"Unable to write to ObjectOutputStream. SKIPPING",
+							e);
+					continue;
 				}
 
 				DatagramPacket sendPacket = new DatagramPacket(
 						bos.toByteArray(), bos.size(), packet.getAddress(),
 						packet.getPort());
-				System.out.println(bos.size());
 				try {
 					socket.send(sendPacket);
-					System.out.println("sended");
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Logger.getLogger(LobbyServer.class.getName()).log(
+							Level.SEVERE,
+							"Unable to send the packet. SKIPPING", e);
+					continue;
 				}
 			}
 		}
