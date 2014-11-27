@@ -9,6 +9,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.tests.GraphicsTest;
 
 import elements.Attack;
 import elements.Creature;
@@ -33,6 +34,7 @@ public class Fight extends View {
 	Color optionsColor = new Color(1f, 0.5f, 0.8f);
 	Color healthColor = new Color(1f, 0.0f, 0.0f);
 	Color black = new Color(0.0f, 0.0f, 0.0f);
+	Color gray = new Color(0.65f, 0.65f, 0.65f);
 
 	/* positioning values */
 	private final int border = 5;
@@ -44,7 +46,7 @@ public class Fight extends View {
 
 	// Used for health Bars
 	private final int barWidth = fightWindowWidth / 3;
-	private final int barHeight = 25;
+	private final int barHeight = 13;
 	private final int barGap = 30;
 	private final int barBorder = 3;
 	private float healthEnemy = 1.0f;
@@ -76,8 +78,8 @@ public class Fight extends View {
 		this.player = player;
 		this.enemy = enemy;
 	
-		this.healthEnemy = 100 * (enemy.getHp() / enemy.getOrHp());
-		this.healthSelf = 100 * (player.getHp() / player.getOrHp());
+		this.healthEnemy = (enemy.getHp() / enemy.getOrHp());
+		this.healthSelf = (player.getHp() / player.getOrHp());
 		
 		attacks = new AttackFactory().getInstance().getAllAttacks();
 		
@@ -109,40 +111,51 @@ public class Fight extends View {
 	@Override
 	public void draw(GameContainer container, Graphics graphics) {
 
+		//BACKGROUND
 		graphics.setColor(borderColor);
 		graphics.fillRect(origin.x, origin.y, size.width, size.height);
-
+		
+		// Fight screen
 		graphics.setColor(new Color(1f, 1f, 1f));
 		graphics.fillRect(origin.x + border, origin.y + border,
 				fightWindowWidth, fightWindowHeight);
-
+		
+		// Fight Option Selection
 		graphics.setColor(optionsColor);
 		graphics.fillRect(origin.x + border, size.height - 100 + border,
 				size.width - 2 * border, size.height - 100 - 2 * border);
-
 		
 		// Enemy Health Bar
 		// Black border around Health bar
 		graphics.setColor(black);
-		graphics.drawRect(origin.x + border + barGap - barBorder, origin.y
-				+ border + barGap - barBorder, barWidth + 2 * barBorder,
-				barHeight + 2 * barHeight);
+		graphics.drawRect(origin.x + border + barGap - 1, origin.y
+				+ border + barGap - 1, barWidth + 1,
+				barHeight + 1);
+		// Gray background bar
+		graphics.setColor(gray);
+		graphics.fillRect(origin.x + border + barGap, origin.y + border
+				+ barGap, barWidth, barHeight);
 		// Actual Bar
 		graphics.setColor(healthColor);
 		graphics.fillRect(origin.x + border + barGap, origin.y + border
-				+ barGap, barWidth * healthEnemy, barHeight);
+				+ barGap, barWidth * healthEnemy * 0.5f, barHeight);
 
 		// Own Health Bar
 		// Black border around health bar
 		graphics.setColor(black);
-		graphics.drawRect(fightWindowWidth - border - barGap - barWidth - barBorder,
-				fightWindowHeight - border - barGap - barHeight - barBorder,
-				barWidth + 2 * barWidth, barHeight + 2 * barBorder);
+		graphics.drawRect(fightWindowWidth - border - barGap - barWidth - 1,
+				fightWindowHeight - border - barGap - barHeight - 1,
+				barWidth + 1, barHeight + 1);
+		// gray background bar
+		graphics.setColor(gray);
+		graphics.fillRect(fightWindowWidth - border - barGap - barWidth,
+				fightWindowHeight - border - barGap - barHeight,
+				barWidth, barHeight);
 		// Actual bar
 		graphics.setColor(healthColor);
 		graphics.fillRect(fightWindowWidth - border - barGap - barWidth,
 				fightWindowHeight - border - barGap - barHeight,
-				barWidth * healthSelf, barHeight);
+				barWidth * healthSelf * 0.8f, barHeight);
 	}
 
 	@Override
