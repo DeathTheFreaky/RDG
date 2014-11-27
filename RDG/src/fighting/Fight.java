@@ -23,6 +23,7 @@ import general.Enums.Modes;
 import general.Enums.Targets;
 import views.GameEnvironment;
 import views.View;
+import views.chat.Message;
 
 public class Fight extends View {
 
@@ -30,25 +31,25 @@ public class Fight extends View {
 	private boolean activeFight = false;
 
 	/* different Colors */
-	Color borderColor = new Color(0.2f, 0.2f, 0.2f);
-	Color optionsColor = new Color(1f, 0.5f, 0.8f);
-	Color healthColor = new Color(1f, 0.0f, 0.0f);
 	Color black = new Color(0.0f, 0.0f, 0.0f);
-	Color gray = new Color(0.65f, 0.65f, 0.65f);
+	Color gray = new Color(0.2f, 0.2f, 0.2f);
+	Color lightGray = new Color(0.65f, 0.65f, 0.65f);
+	Color white = new Color(1.0f, 1.0f, 1.0f);
+	Color pink = new Color(1f, 0.5f, 0.8f);
+	Color red = new Color(1f, 0.0f, 0.0f);
 
 	/* positioning values */
 	private final int border = 5;
 	private final int optionsWidth = size.width - 2 * border;
 	private final int optionsHeight = 100;
 	private final int fightWindowWidth = size.width - 2 * border;
-	private final int fightWindowHeight = size.height - 2 * border
+	private final int fightWindowHeight = size.height - border
 			- optionsHeight;
 
 	// Used for health Bars
 	private final int barWidth = fightWindowWidth / 3;
 	private final int barHeight = 13;
 	private final int barGap = 30;
-	private final int barBorder = 3;
 	private float healthEnemy = 1.0f;
 	private float healthSelf = 1.0f;
 	
@@ -112,7 +113,7 @@ public class Fight extends View {
 	public void draw(GameContainer container, Graphics graphics) {
 
 		//BACKGROUND
-		graphics.setColor(borderColor);
+		graphics.setColor(gray);
 		graphics.fillRect(origin.x, origin.y, size.width, size.height);
 		
 		// Fight screen
@@ -121,7 +122,7 @@ public class Fight extends View {
 				fightWindowWidth, fightWindowHeight);
 		
 		// Fight Option Selection
-		graphics.setColor(optionsColor);
+		graphics.setColor(pink);
 		graphics.fillRect(origin.x + border, size.height - 100 + border,
 				size.width - 2 * border, size.height - 100 - 2 * border);
 		
@@ -132,11 +133,11 @@ public class Fight extends View {
 				+ border + barGap - 1, barWidth + 1,
 				barHeight + 1);
 		// Gray background bar
-		graphics.setColor(gray);
+		graphics.setColor(lightGray);
 		graphics.fillRect(origin.x + border + barGap, origin.y + border
 				+ barGap, barWidth, barHeight);
 		// Actual Bar
-		graphics.setColor(healthColor);
+		graphics.setColor(red);
 		graphics.fillRect(origin.x + border + barGap, origin.y + border
 				+ barGap, barWidth * healthEnemy * 0.5f, barHeight);
 
@@ -144,18 +145,25 @@ public class Fight extends View {
 		// Black border around health bar
 		graphics.setColor(black);
 		graphics.drawRect(fightWindowWidth - border - barGap - barWidth - 1,
-				fightWindowHeight - border - barGap - barHeight - 1,
+				fightWindowHeight - barGap - barHeight - 1,
 				barWidth + 1, barHeight + 1);
 		// gray background bar
-		graphics.setColor(gray);
+		graphics.setColor(lightGray);
 		graphics.fillRect(fightWindowWidth - border - barGap - barWidth,
-				fightWindowHeight - border - barGap - barHeight,
+				fightWindowHeight - barGap - barHeight,
 				barWidth, barHeight);
 		// Actual bar
-		graphics.setColor(healthColor);
+		graphics.setColor(red);
 		graphics.fillRect(fightWindowWidth - border - barGap - barWidth,
-				fightWindowHeight - border - barGap - barHeight,
+				fightWindowHeight - barGap - barHeight,
 				barWidth * healthSelf * 0.8f, barHeight);
+		
+		// Fight Options
+		graphics.setColor(black);
+		graphics.drawString("Head", optionsWidth / 4 - 20, fightWindowHeight + optionsHeight / 4);
+		graphics.drawString("Chest", optionsWidth / 4 * 3 - 20, fightWindowHeight + optionsHeight / 4);
+		graphics.drawString("Arms", optionsWidth / 4 - 20, fightWindowHeight + optionsHeight / 4 * 3);
+		graphics.drawString("Legs", optionsWidth / 4 * 3 - 20, fightWindowHeight + optionsHeight / 4 * 3);
 	}
 
 	@Override
@@ -233,6 +241,7 @@ public class Fight extends View {
 		} else {					// enemy died, Player gets his attributes resetted
 			player.resetOriginals();
 		}
+		reset();
 	}
 	
 	/**
