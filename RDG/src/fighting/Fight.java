@@ -2,7 +2,6 @@ package fighting;
 
 import java.awt.Dimension;
 import java.awt.Point;
-import java.util.List;
 import java.util.Map;
 
 import org.newdawn.slick.Color;
