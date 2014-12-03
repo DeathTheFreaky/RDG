@@ -11,6 +11,7 @@ import elements.Element;
 import elements.Equipment;
 import elements.Item;
 import elements.Room;
+import elements.Weapon;
 import gameEssentials.Game;
 import general.Enums.Armor;
 import general.Enums.ItemClasses;
@@ -56,6 +57,10 @@ public class RoomFactory {
 		overlay = addItems(type, overlay, tempTemplate);
 		background = fillGround(type, background, size);
 
+		//for testing only
+		overlay[0][0] = ItemFactory.createWeapon("Longsword", 1);
+		overlay[0][1] = ItemFactory.createWeapon("Shield", 1);
+		
 		return new Room(type, background, overlay);
 	}
 

@@ -24,6 +24,8 @@ public class Element {
 	protected boolean visible = true;
 	/* saves the Name of the element */
 	public String NAME = null;
+	/* an Element's unique ID (if needed) */
+	public String ID = null;
 	
 	
 
@@ -73,7 +75,8 @@ public class Element {
 	 */
 	public Element(String shapeName, Image image, Point position,
 			boolean visible) {
-		this.NAME = shapeName +  "Random UUID";
+		this.NAME = shapeName;
+		this.ID = shapeName + "Random UUID";
 		this.image = image;
 		this.position = position;
 		this.visible = visible;

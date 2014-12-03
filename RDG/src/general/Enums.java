@@ -34,6 +34,7 @@ public class Enums {
 	public enum Armor {HEAD, CHEST, ARMS, LEGS, FEET, MAIN_WEAPON, SUB_WEAPON}
 	public enum CreatureType {PLAYER1, PLAYER2, MONSTER}
 	public enum ItemType {ARMAMENT, POTION, WEAPON}
+	public enum UsedClasses{Element, Weapon, Armament, Potion, Equipment, Monster, Creature};
 	
 	public enum ImageSize {d32x32, d20x20}
 }

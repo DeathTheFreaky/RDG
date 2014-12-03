@@ -5,9 +5,12 @@ import java.awt.Point;
 
 import org.newdawn.slick.SlickException;
 
+import elements.Armament;
 import elements.Element;
 import elements.Equipment;
+import elements.Potion;
 import elements.Room;
+import elements.Weapon;
 import general.Enums.RoomTypes;
 import general.GroundFactory;
 import general.RoomFactory;
@@ -261,41 +264,37 @@ public class Map {
 	 * 
 	 * @return Equipment or null
 	 */
-	public Equipment getItemInFrontOfPlayer() {
-		Equipment e = null;
+	public Element getItemInFrontOfPlayer() {
+		Element e = null;
 		int x = player.getPosition().x;
 		int y = player.getPosition().y;
 
 		switch (player.getDirectionOfView()) {
 		case NORTH:
-			if (/*
-				 * overlay[x][y - 1] instanceof Potion ||
-				 */overlay[x][y - 1] instanceof Equipment) {
-				e = (Equipment) overlay[x][y - 1];
+			if ((overlay[x][y - 1] instanceof Potion) ||
+				  (overlay[x][y - 1] instanceof Equipment)) {
+				e = overlay[x][y - 1];
 				overlay[x][y - 1] = null;
 			}
 			break;
 		case EAST:
-			if (/*
-				 * overlay[x][y - 1] instanceof Potion ||
-				 */overlay[x + 1][y] instanceof Equipment) {
-				e = (Equipment) overlay[x + 1][y];
+			if ((overlay[x + 1][y] instanceof Potion) ||
+				  (overlay[x + 1][y] instanceof Equipment)) {
+				e = overlay[x + 1][y];
 				overlay[x + 1][y] = null;
 			}
 			break;
 		case SOUTH:
-			if (/*
-				 * overlay[x][y - 1] instanceof Potion ||
-				 */overlay[x][y + 1] instanceof Equipment) {
-				e = (Equipment) overlay[x][y + 1];
+			if ((overlay[x][y + 1] instanceof Potion) ||
+				  (overlay[x][y + 1] instanceof Equipment)) {
+				e = overlay[x][y + 1];
 				overlay[x][y + 1] = null;
 			}
 			break;
 		case WEST:
-			if (/*
-				 * overlay[x][y - 1] instanceof Potion ||
-				 */overlay[x - 1][y] instanceof Equipment) {
-				e = (Equipment) overlay[x - 1][y];
+			if ((overlay[x - 1][y] instanceof Potion) ||
+				  (overlay[x - 1][y] instanceof Equipment)) {
+				e = overlay[x - 1][y];
 				overlay[x - 1][y] = null;
 			}
 			break;

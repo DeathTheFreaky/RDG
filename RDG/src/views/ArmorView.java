@@ -11,7 +11,9 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
 import elements.Equipment;
+import elements.Weapon;
 import general.Enums.ImageSize;
+import general.Enums.WeaponTypes;
 import general.ResourceManager;
 import general.Enums.Armor;
 
@@ -50,6 +52,13 @@ public class ArmorView extends View {
 	/* Collection for the armor, is used for iterating through all armor */
 	Collection<Equipment> equipment1;
 	Collection<Equipment> equipment2;
+	
+	/* stores previously equipped weapons to determine if weapon is dragged 
+	 * from armory or from inventory */
+	Weapon prevWeaponMainSet1 = null;
+	Weapon prevWeaponSubSet1 = null;
+	Weapon prevWeaponMainSet2 = null;
+	Weapon prevWeaponSubSet2 = null;
 
 	/* Factory and Resource Classes */
 	private ResourceManager resources;
@@ -313,20 +322,162 @@ public class ArmorView extends View {
 	}
 
 	/**
-	 * equips the Equipment in a Set
+	 * Equips the Equipment in a Set.
 	 * 
 	 * @param equipment - Element
 	 * @param x - MousePosition
 	 * @param y - MousePosition
 	 * @return null or the Equipment that has to be stored in the Inventory
 	 */
-	public Equipment equipArmor(Equipment equipment, int x, int y) {
+	public Equipment equipArmor(Equipment equipment, int x, int y, InventoryView inventory) {
 		Equipment e = null;
 		if (equipment == null) {
 			return e;
 		}
 		if (x > ORIGIN_X && x < ORIGIN_X + size.width && y > ORIGIN_Y
 				&& y < ORIGIN_Y + size.height) {
+			
+			/* in case of weapons, detect which weapon shall be replaced */
+			if (equipment instanceof Weapon) {
+				
+				Weapon thisweapon = (Weapon) equipment;
+				
+				Weapon weapon1 = null;
+				Weapon weapon2 = null;
+				
+				boolean returnImmediatlyNull = false;
+				boolean returnImmediatly = false;
+				boolean fromInsideArmor = false;
+				
+				/* decide on which side to drop the weapon -> main or sub */
+				if ((x - ORIGIN_X) > size.width/2) {
+					equipment.setAsSubWeapon();
+				}
+				else {
+					equipment.setAsMainWeapon();
+				}
+				
+				/* check if weapon is dragged from inside Armor */
+				if (set) {
+					if (thisweapon == prevWeaponMainSet1 || thisweapon == prevWeaponSubSet1) {
+						fromInsideArmor = true;
+					}
+					weapon1 = (Weapon) armor1.get(Armor.MAIN_WEAPON);
+					weapon2 = (Weapon) armor1.get(Armor.SUB_WEAPON);
+				} else {
+					if (thisweapon == prevWeaponMainSet2 || thisweapon == prevWeaponSubSet2) {
+						fromInsideArmor = true;
+					}
+					weapon1 = (Weapon) armor2.get(Armor.MAIN_WEAPON);
+					weapon2 = (Weapon) armor2.get(Armor.SUB_WEAPON);
+				}
+								
+				/* return both weapons to inventory if a twohand is added */
+				if (thisweapon.TYPE == WeaponTypes.TWOHAND) {
+					
+					if (set) {
+						armor1.remove(Armor.MAIN_WEAPON);
+						armor1.remove(Armor.SUB_WEAPON);
+					} else {
+						armor2.remove(Armor.MAIN_WEAPON);
+						armor2.remove(Armor.SUB_WEAPON);
+					}		
+					
+					if (weapon1 != null) {
+						inventory.storeItem(weapon1);
+					}
+					if (weapon2 != null) {
+						inventory.storeItem(weapon2);
+					}
+					
+				} else {
+					
+					/* exchange two single hand weapons, handle twohands, handle max 1 weapons */
+					if (weapon1 != null) {
+						
+						/* check for two-hand weapons or weapons with maximum of 1 */
+						if (weapon1.TYPE == WeaponTypes.TWOHAND || 
+								(weapon1.MAX == 1 && weapon1.NAME == thisweapon.NAME)) {
+							if (equipment.getArmorType() == Armor.SUB_WEAPON) {
+								returnImmediatly = true;
+								e = equipment;
+							}
+						}
+						
+						/* exchange weapons inside of armory */
+						else if (equipment.getArmorType() == Armor.MAIN_WEAPON 
+								&& fromInsideArmor == true) {
+							
+							Equipment tempWeapon;
+							
+							if (set) {
+								tempWeapon = armor1.get(Armor.MAIN_WEAPON);
+								tempWeapon.setAsSubWeapon();
+								armor1.put(Armor.SUB_WEAPON, tempWeapon);
+								armor1.put(Armor.MAIN_WEAPON, equipment);
+							} else {
+								tempWeapon = armor2.get(Armor.MAIN_WEAPON);
+								tempWeapon.setAsSubWeapon();
+								armor2.put(Armor.SUB_WEAPON, tempWeapon);
+								armor2.put(Armor.MAIN_WEAPON, equipment);
+							}
+							if (weapon2 == null) {
+								returnImmediatlyNull = true;
+							}
+						}
+					}
+					if (weapon2 != null) {
+						
+						/* check for two-hand weapons or weapons with maximum of 1 */
+						if (weapon2.TYPE == WeaponTypes.TWOHAND || 
+								(weapon2.MAX == 1 && weapon2.NAME == thisweapon.NAME)) {
+							if (equipment.getArmorType() == Armor.MAIN_WEAPON) {
+								returnImmediatly = true;
+								e = equipment;
+							}
+						}
+						
+						/* exchange weapons inside of armory */
+						else if (equipment.getArmorType() == Armor.SUB_WEAPON 
+								&& fromInsideArmor == true) {
+							
+							Equipment tempWeapon;
+							
+							if (set) {
+								tempWeapon = armor1.get(Armor.SUB_WEAPON);
+								tempWeapon.setAsMainWeapon();
+								armor1.put(Armor.MAIN_WEAPON, tempWeapon);
+								armor1.put(Armor.SUB_WEAPON, equipment);
+							} else {
+								tempWeapon = armor2.get(Armor.SUB_WEAPON);
+								tempWeapon.setAsMainWeapon();
+								armor2.put(Armor.MAIN_WEAPON, tempWeapon);
+								armor2.put(Armor.SUB_WEAPON, equipment);
+							}
+							if (weapon1 == null) {
+								returnImmediatlyNull = true;
+							}
+						}
+					}
+				}
+				
+				/* store current weapons to check for future weapon drop ->
+				 * is new weapon from inventory or from armorview? */
+				prevWeaponMainSet1 = (Weapon) armor1.get(Armor.MAIN_WEAPON);
+				prevWeaponSubSet1 = (Weapon) armor1.get(Armor.SUB_WEAPON);
+				prevWeaponMainSet2 = (Weapon) armor2.get(Armor.MAIN_WEAPON);
+				prevWeaponSubSet2 = (Weapon) armor2.get(Armor.SUB_WEAPON);
+				
+				/* do not allow adding another weapon when a twohand is equipped or max of weapon is 1 */
+				if (returnImmediatly) {
+					return e;
+				}
+				/* do not allow adding another weapon when a twohand is equipped or max of weapon is 1 */
+				if (returnImmediatlyNull) {
+					return null;
+				}
+			}
+			
 			if (set) {
 				if(armor1.containsKey(equipment.getArmorType())) {
 					e = armor1.get(equipment.getArmorType());
@@ -338,6 +489,14 @@ public class ArmorView extends View {
 				}
 				armor2.put(equipment.getArmorType(), equipment);
 			}
+			
+			/* store current weapons to check for future weapon drop ->
+			 * is new weapon from inventory or from armorview? */
+			prevWeaponMainSet1 = (Weapon) armor1.get(Armor.MAIN_WEAPON);
+			prevWeaponSubSet1 = (Weapon) armor1.get(Armor.SUB_WEAPON);
+			prevWeaponMainSet2 = (Weapon) armor2.get(Armor.MAIN_WEAPON);
+			prevWeaponSubSet2 = (Weapon) armor2.get(Armor.SUB_WEAPON);
+			
 			return e;
 		}else {
 			e = equipment;
@@ -345,6 +504,12 @@ public class ArmorView extends View {
 		return e;
 	}
 
+	/**Returns an equipped item (weapon or armament) as Equipment. 
+	 * 
+	 * @param mouseX
+	 * @param mouseY
+	 * @return
+	 */
 	public Equipment getEquipment(int mouseX, int mouseY) {
 		if (mouseX > ORIGIN_X && mouseX < ORIGIN_X + size.width
 				&& mouseY > ORIGIN_Y && mouseY < ORIGIN_Y + size.height) {

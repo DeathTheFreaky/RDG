@@ -13,6 +13,7 @@ import org.newdawn.slick.SlickException;
 import org.xml.sax.SAXException;
 
 import configLoader.Configloader;
+import elements.Element;
 import elements.Equipment;
 import views.ArmorView;
 import views.Chat;
@@ -20,6 +21,7 @@ import views.GameEnvironment;
 import views.InventoryView;
 import general.Enums.CreatureType;
 import general.Enums.ImageSize;
+import general.Enums.UsedClasses;
 import general.ResourceManager;
 import general.Enums.Updates;
 
@@ -75,7 +77,7 @@ public class Game extends BasicGame {
 	/* flag, if the mouse is currently moving an item */
 	boolean dragging = false;
 	/* Equippment that is dragged */
-	Equipment draggedEquipment;
+	Element draggedItem;
 	/* For positioning the dragged Item */
 	int draggedX = 0;
 	int draggedY = 0;
@@ -215,8 +217,8 @@ public class Game extends BasicGame {
 		armorView.draw(container, g);
 		inventoryView.draw(container, g);
 
-		if (dragging && draggedEquipment != null) {
-			g.drawImage(draggedEquipment.getImage(ImageSize.d20x20), draggedX,
+		if (dragging && draggedItem != null) {
+			g.drawImage(draggedItem.getImage(ImageSize.d20x20), draggedX,
 					draggedY);
 		}
 	}
@@ -235,9 +237,10 @@ public class Game extends BasicGame {
 				chat.setFocus(true);
 			}
 		} else if (key == 18) {
-			Equipment e = map.getItemInFrontOfPlayer();
+			Element e = map.getItemInFrontOfPlayer();
 			if (e != null) {
-				inventoryView.storeEquipment(e);
+				//inventoryView.storeEquipment((Equipment) e);
+				inventoryView.storeItem(e);
 			}
 		}
 		System.out.println("Key: " + key + ", Char: " + c);
@@ -245,6 +248,7 @@ public class Game extends BasicGame {
 
 	@Override
 	public void keyReleased(int key, char c) {
+		
 		/* Key Values for Players Movement! (a,s,d,w) */
 		if ((key == 30 || key == 31 || key == 32 || key == 17)
 				&& !gameEnvironment.isFightActive()) {
@@ -257,11 +261,17 @@ public class Game extends BasicGame {
 		if (button == 0) { // linke Maustaste
 			armorView.changeTab(x, y);
 		}
-
 	}
 
 	@Override
 	public void mouseDragged(int oldx, int oldy, int newx, int newy) {
+		
+		/* add potion check -> potion may be activated only during a fight 
+		 * and after that the next round continues -> use variable to 
+		 * determine when potion taking is possiple*/
+		
+		/* pulls a weapon or armament from the inventory to armor set and vice versa
+		 *  -> equip and unequip weapon */
 		if (!dragging) {
 			if (gameEnvironment.isFightActive()) {
 				System.out
@@ -269,29 +279,34 @@ public class Game extends BasicGame {
 				dragging = true;
 				return;
 			}
-			this.draggedEquipment = inventoryView.getEquipment(oldx, oldy);
-			if (draggedEquipment == null) {
-				this.draggedEquipment = armorView.getEquipment(oldx, oldy);
+			
+			this.draggedItem = inventoryView.getItem(oldx, oldy, UsedClasses.Equipment);
+			if (draggedItem == null) {
+				this.draggedItem = armorView.getEquipment(oldx, oldy);
 			}
-			if (draggedEquipment != null) {
-				dragging = true;
-			}
+			dragging = true;
 		}
 		draggedX = newx;
 		draggedY = newy;
-
 	}
 
 	@Override
 	public void mouseReleased(int button, int x, int y) {
+		
+		/* add potion check -> potion may be activated only during a fight 
+		 * and after that the next round continues -> use variable to 
+		 * determine when potion taking is possiple*/
+		
+		/* drops a weapon or armament from the inventory to armor set and vice versa
+		 *  -> equip and unequip weapon */
 		if (button == 0) { // linke Maustaste
 			if (dragging) {
 				Equipment e;
-				if ((e = armorView.equipArmor(draggedEquipment, x, y)) != null) {
-					inventoryView.storeEquipment(e);
+				if ((e = armorView.equipArmor((Equipment) draggedItem, x, y, inventoryView)) != null) {
+					inventoryView.storeItem((Element) e);
 				}
 				dragging = false;
-				draggedEquipment = null;
+				draggedItem = null;
 			}
 		}
 	}
