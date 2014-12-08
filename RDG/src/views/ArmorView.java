@@ -14,6 +14,7 @@ import elements.Element;
 import elements.Equipment;
 import elements.Potion;
 import elements.Weapon;
+import fighting.Fight;
 import general.Enums.ImageSize;
 import general.Enums.Potions;
 import general.Enums.WeaponTypes;
@@ -47,7 +48,7 @@ public class ArmorView extends View {
 
 	/* Represents Set1 or Set2 */
 	private boolean set = true;
-
+	
 	/* HashMap for all equipped Armor */
 	HashMap<Armor, Equipment> armor1;
 	HashMap<Armor, Equipment> armor2;
@@ -363,16 +364,15 @@ public class ArmorView extends View {
 	}*/
 
 	/**
-	 * DEPRECATED!!!<br>
 	 * Switches between sets 1 and 2.
 	 * 
 	 * @param set
 	 */
-	public void switchToSet(int set) {
-		if (set == 1) {
-			this.set = true;
-		} else if (set == 2) {
+	public void switchSet() {
+		if (set) {
 			this.set = false;
+		} else {
+			this.set = true;
 		}
 	}
 
@@ -406,8 +406,8 @@ public class ArmorView extends View {
 		if (potion == null) {
 			return p;
 		}
-		if (x > ORIGIN_X && x < ORIGIN_X + size.width && y > ORIGIN_Y
-				&& y < ORIGIN_Y + size.height) {
+		if (x > ORIGIN_X && x < ORIGIN_X + size.width && y > ORIGIN_Y + tabHeight + 5 
+				&& y < ORIGIN_Y + size.height - tabHeight - 5) {
 			System.out.println("potion taken");
 			
 			//add potion to list of active potions in fight
@@ -607,20 +607,14 @@ public class ArmorView extends View {
 													
 			/* decide if potion is dragged to potion 1,2,3 */
 			if (x > ORIGIN_X + size.width/2 - tabWidth/2 - 2 && x < ORIGIN_X + size.width/2 + tabWidth/2 + 2) {
-				((Potion) element).POTION_TYPE = Potions.POTION2;
-				System.out.println("potion2");
-			}
+				((Potion) element).POTION_TYPE = Potions.POTION2;			}
 			else if (x > ORIGIN_X + size.width/2 - tabWidth - 2 - tabWidth/2 - 2 && x < ORIGIN_X + size.width/2 - tabWidth/2 - 2) {
 				((Potion) element).POTION_TYPE = Potions.POTION1;
-				System.out.println("potion1");
 			}
 			else if (x > ORIGIN_X + size.width/2 + tabWidth/2 + 2 && x < ORIGIN_X + size.width/2 + tabWidth/2 + 2 + tabWidth + 2){
 				((Potion) element).POTION_TYPE = Potions.POTION3;
-				System.out.println("potion3");
 			}
-			
-			System.out.println(((Potion) element).POTION_TYPE);
-			
+						
 			Potion potion1 = null;
 			Potion potion2 = null;
 			Potion potion3 = null;
@@ -740,7 +734,7 @@ public class ArmorView extends View {
 	 * @return
 	 */
 	public Element getItem(int mouseX, int mouseY) {
-		
+				
 		if (mouseX > ORIGIN_X && mouseX < ORIGIN_X + size.width
 				&& mouseY > ORIGIN_Y && mouseY < ORIGIN_Y + size.height - tabHeight - 5) {
 			
@@ -877,5 +871,17 @@ public class ArmorView extends View {
 		} 
 		
 		return null;
+	}
+
+	/**Return potions to armorView if dropped at wrong location.
+	 * @param potion
+	 */
+	public void backPotion(Potion potion) {
+		
+		if (set) {
+			potion1_types.put(potion.POTION_TYPE, potion);
+		} else {
+			potion2_types.put(potion.POTION_TYPE, potion);
+		}
 	}
 }

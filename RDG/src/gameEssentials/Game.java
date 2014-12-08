@@ -16,10 +16,12 @@ import configLoader.Configloader;
 import elements.Element;
 import elements.Equipment;
 import elements.Potion;
+import fighting.Fight;
 import views.ArmorView;
 import views.Chat;
 import views.GameEnvironment;
 import views.InventoryView;
+import general.Enums.AttackScreens;
 import general.Enums.CreatureType;
 import general.Enums.ImageSize;
 import general.Enums.UsedClasses;
@@ -104,6 +106,9 @@ public class Game extends BasicGame {
 
 	// create instance of configloader
 	private Configloader configloader = null;
+	
+	/* fight Instance of game Environment */
+	private Fight fightInstance = null;
 
 	/* Declare all classes, we need for the game (Factory, Resourceloader) */
 	// private ResourceManager resourceManager;
@@ -117,7 +122,8 @@ public class Game extends BasicGame {
 	 * @see Game
 	 */
 	public Game(String title) {
-		this(title, "Find out if its Player1 or Player2");
+		/* Find out if its is player1 or player2 */
+		this(title, "Testplayername");
 	}
 
 	/**
@@ -174,13 +180,13 @@ public class Game extends BasicGame {
 		}
 		
 		/* Load Views - Dimension is specified in pixels */
+		armorView = new ArmorView("ArmorInventory", armorViewOrigin,
+				new Dimension(ARMOR_WIDTH, ARMOR_HEIGHT));
+		
 		gameEnvironment = new GameEnvironment("GameEnvironment",
 
 		gameEnvironmentOrigin, new Dimension(GAME_ENVIRONMENT_WIDTH,
-				GAME_ENVIRONMENT_HEIGHT), player);
-		
-		armorView = new ArmorView("ArmorInventory", armorViewOrigin,
-				new Dimension(ARMOR_WIDTH, ARMOR_HEIGHT));
+				GAME_ENVIRONMENT_HEIGHT), player, armorView);
 
 		inventoryView = new InventoryView("Inventory", inventoryViewOrigin,
 				new Dimension(INVENTORY_WIDTH, INVENTORY_HEIGHT));
@@ -194,6 +200,9 @@ public class Game extends BasicGame {
 		map.setPlayer(player);
 		map.setGameEnvironment(gameEnvironment);
 		// map.fillMap();
+		
+		/* Obtain the fight Instance of gameEnvironment for manipulating and querying fight data */
+		fightInstance = gameEnvironment.getFightInstance();
 	}
 
 	@Override
@@ -232,7 +241,7 @@ public class Game extends BasicGame {
 
 		/* Key Values for Players Movement! (a,s,d,w) */
 		if ((key == 30 || key == 31 || key == 32 || key == 17)
-				&& !gameEnvironment.isFightActive()) {
+				&& !fightInstance.isInFight()) {
 			player.update(key, Updates.KEY_PRESSED);
 		} else if (key == 15) {
 			if (chat.hasFocus()) {
@@ -246,6 +255,13 @@ public class Game extends BasicGame {
 				//inventoryView.storeEquipment((Equipment) e);
 				inventoryView.storeItem(e);
 			}
+		} else if (key == 1) {
+			//set attackScreen in Fight.java to MAIN
+			if (fightInstance.isInFight()) {
+				fightInstance.setAttackScreen(AttackScreens.MAIN);
+				fightInstance.setChangeTabActive(false);
+				fightInstance.setPotionTakingActive(false);
+			}
 		}
 		System.out.println("Key: " + key + ", Char: " + c);
 	}
@@ -255,15 +271,27 @@ public class Game extends BasicGame {
 		
 		/* Key Values for Players Movement! (a,s,d,w) */
 		if ((key == 30 || key == 31 || key == 32 || key == 17)
-				&& !gameEnvironment.isFightActive()) {
+				&& !fightInstance.isInFight()) {
 			player.update(key, Updates.KEY_RELEASED);
 		}
 	}
 
 	@Override
 	public void mouseClicked(int button, int x, int y, int clickCount) {
+				
+		/* All views' mouse click implementation are called.
+		 * Wrong ones do nothing */
 		if (button == 0) { // linke Maustaste
-			armorView.changeTab(x, y);
+			
+			if (fightInstance.isInFight()) {
+				fightInstance.handleFightOptions(x, y);
+			}
+			else if (fightInstance.isChangeTabActive()) {
+				armorView.changeTab(x, y);
+			}
+			else {
+				armorView.changeTab(x, y);
+			}
 		}
 	}
 
@@ -277,11 +305,11 @@ public class Game extends BasicGame {
 		/* pulls a weapon or armament from the inventory to armor set and vice versa
 		 *  -> equip and unequip weapon */
 		if (!dragging) {
-			if (gameEnvironment.isFightActive()) {
-				/*System.out
-						.println("You cannot change your Equipment during fight");*/
-				this.draggedItem = inventoryView.getItem(oldx, oldy, UsedClasses.Potion);
-				dragging = true;
+			if (fightInstance.isInFight()) {
+				if (fightInstance.isPotionTakingActive()) {
+					this.draggedItem = armorView.getItem(oldx, oldy);
+					dragging = true;
+				}
 				return;
 			}
 			this.draggedItem = inventoryView.getItem(oldx, oldy, UsedClasses.Element);
@@ -307,9 +335,14 @@ public class Game extends BasicGame {
 		if (button == 0) { // linke Maustaste
 			if (dragging) {
 				Element e;
-				if (gameEnvironment.isFightActive()) {
-					if ((e = armorView.drinkPotion((Potion) draggedItem, x, y, inventoryView)) != null) {
-						inventoryView.storeItem(e);
+				if (fightInstance.isInFight()) {
+					// only allow when potionTaking is active 
+					if (fightInstance.isPotionTakingActive()) {
+						if ((e = armorView.drinkPotion((Potion) draggedItem, x, y, inventoryView)) != null) {
+							armorView.backPotion((Potion) e);
+						} else {
+							fightInstance.setPotionTakingActive(false);
+						}
 					}
 				} else {
 					if ((e = armorView.equipItem(draggedItem, x, y, inventoryView)) != null) {

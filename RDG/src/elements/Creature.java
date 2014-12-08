@@ -45,7 +45,7 @@ public class Creature extends Element{
 	public Creature(String creatureName, Image image, CreatureType type, float hp, float strength, float speed, float accuracy) {
 		
 		super(creatureName, image);
-		
+				
 		this.type = type;
 		this.hp = hp;
 		this.strength = strength;

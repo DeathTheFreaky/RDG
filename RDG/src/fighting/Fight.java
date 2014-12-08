@@ -16,10 +16,13 @@ import elements.Potion;
 import gameEssentials.Player;
 import general.AttackFactory;
 import general.Chances;
+import general.Enums.AttackOptions;
+import general.Enums.AttackScreens;
 import general.Enums.Attacks;
 import general.Enums.Attributes;
 import general.Enums.Modes;
 import general.Enums.Targets;
+import views.ArmorView;
 import views.GameEnvironment;
 import views.View;
 import views.chat.Message;
@@ -51,6 +54,8 @@ public class Fight extends View {
 	private final int barGap = 30;
 	private float healthEnemy = 1.0f;
 	private float healthSelf = 1.0f;
+	private float healthEnemyOr;
+	private float healthSelfOr;
 	
 	// Instances of all available attacks
 	Map<Attacks, Attack> attacks = null;
@@ -68,20 +73,28 @@ public class Fight extends View {
 	
 	/* The Player Himself */
 	private Player player;
+	
+	/* Variables to check which options were selected */
+	private boolean changeTabActive = false;
+	private boolean potionTakingActive = false;
+	
+	/* ArmorView is needed to interact with armory items */
+	ArmorView armorView = null;
+	
+	/* Determine type of attack screen */
+	private AttackScreens attackScreen = AttackScreens.MAIN;
 
-	public Fight(Point origin, Dimension size, GameEnvironment ge, Player player, Creature enemy)
+	public Fight(Point origin, Dimension size, GameEnvironment ge, Player player, ArmorView armorView)
 			throws SlickException {
 		super("Fight", origin, size);
 
 		this.gameEnvironment = ge;
 		
 		this.player = player;
-		this.enemy = enemy;
 	
-		this.healthEnemy = (enemy.getHp() / enemy.getOrHp());
-		this.healthSelf = (player.getHp() / player.getOrHp());
-		
 		attacks = new AttackFactory().getInstance().getAllAttacks();
+		
+		this.armorView = armorView;
 		
 	}
 
@@ -99,9 +112,14 @@ public class Fight extends View {
 		}
 		else {
 			activeFight = true;
+			System.out.println("fight is now active");
 		}
 
 		this.enemy = creature;
+		this.healthEnemyOr = creature.getOrHp();
+		this.healthSelfOr = player.getOrHp();
+		this.healthEnemy = creature.getHp();
+		this.healthSelf = player.getHp();
 
 		return true;
 	}
@@ -109,6 +127,7 @@ public class Fight extends View {
 	private void reset() {
 		this.activeFight = false;
 		this.enemy = null;
+		this.attackScreen = AttackScreens.MAIN;
 	}
 
 	@Override
@@ -141,8 +160,8 @@ public class Fight extends View {
 		// Actual Bar
 		graphics.setColor(red);
 		graphics.fillRect(origin.x + border + barGap, origin.y + border
-				+ barGap, barWidth * healthEnemy * 0.5f, barHeight);
-
+				+ barGap, barWidth * healthEnemy / healthEnemyOr, barHeight);
+		
 		// Own Health Bar
 		// Black border around health bar
 		graphics.setColor(black);
@@ -158,14 +177,40 @@ public class Fight extends View {
 		graphics.setColor(red);
 		graphics.fillRect(fightWindowWidth - border - barGap - barWidth,
 				fightWindowHeight - barGap - barHeight,
-				barWidth * healthSelf * 0.8f, barHeight);
+				barWidth * healthSelf / healthSelfOr, barHeight);
+		
+		/* Print Names of Enemy and Player */
+		/* Enemy name */
+		graphics.setColor(black);
+		graphics.drawString(this.enemy.NAME, origin.x + border + barGap + 1 , origin.y
+				+ border + barGap - 25);
+		graphics.drawString(this.player.NAME, fightWindowWidth - border - barGap - barWidth , 
+				fightWindowHeight - barGap + 10);
 		
 		// Fight Options
-		graphics.setColor(black);
-		graphics.drawString("Head", optionsWidth / 4 - 20, fightWindowHeight + optionsHeight / 4);
-		graphics.drawString("Chest", optionsWidth / 4 * 3 - 20, fightWindowHeight + optionsHeight / 4);
-		graphics.drawString("Arms", optionsWidth / 4 - 20, fightWindowHeight + optionsHeight / 4 * 3);
-		graphics.drawString("Legs", optionsWidth / 4 * 3 - 20, fightWindowHeight + optionsHeight / 4 * 3);
+		if (attackScreen == AttackScreens.MAIN) {
+			graphics.setColor(black);
+			graphics.drawString("Attack", optionsWidth / 4 - 25, fightWindowHeight + optionsHeight / 4);
+			graphics.drawString("Parry", optionsWidth / 4 * 3 - 20, fightWindowHeight + optionsHeight / 4);
+			graphics.drawString("Change Set", optionsWidth / 4 - 45, fightWindowHeight + optionsHeight / 4 * 3);
+			graphics.drawString("Use Potion", optionsWidth / 4 * 3 - 42, fightWindowHeight + optionsHeight / 4 * 3);
+		}
+			
+		// Attack Options
+		if (attackScreen == AttackScreens.ATTACK) {
+			graphics.setColor(black);
+			graphics.drawString("Chest", optionsWidth / 4 - 20, fightWindowHeight + optionsHeight / 4);
+			graphics.drawString("Head", optionsWidth / 4 * 3 - 15, fightWindowHeight + optionsHeight / 4);
+			graphics.drawString("Arms", optionsWidth / 4 - 15, fightWindowHeight + optionsHeight / 4 * 3);
+			graphics.drawString("Legs", optionsWidth / 4 * 3 - 15, fightWindowHeight + optionsHeight / 4 * 3);
+		}
+		
+		/* Draw lines between the different attack options */
+		graphics.setColor(gray);
+		graphics.fillRect(origin.x + border, size.height - optionsHeight/2 - 2 + border,
+				size.width - 2 * border, 4); // horizontal
+		graphics.fillRect(origin.x + size.width/2 - border - 2, size.height - optionsHeight + border,
+				4, size.height - optionsHeight); // vertical
 	}
 
 	@Override
@@ -174,8 +219,94 @@ public class Fight extends View {
 
 	}
 
+	/**Indicates if a fight is currently active.
+	 * @return if fight is active
+	 */
 	public boolean isInFight() {
 		return this.activeFight;
+	}
+	
+	/**
+	 * 
+	 */
+	public void resetStatusVariables() {
+		this.changeTabActive = false;
+		this.potionTakingActive = false;
+	}
+	
+	/**Sets the current attackScreen in a fight (main menu, sub menu).
+	 * @param attackScreen
+	 */
+	public void setAttackScreen(AttackScreens attackScreen) {
+		this.attackScreen = attackScreen;
+	}
+	
+	/**
+	 * @return the current attackScreen in a fight (main menu, sub menu)
+	 */
+	public AttackScreens getAttackScreens() {
+		return this.attackScreen;
+	}
+	
+	/**Checks which option was selected in Fight menu.
+	 * @param x
+	 * @param y
+	 */
+	public void handleFightOptions(int x, int y) {
+		
+		AttackOptions attackOption = null;
+		
+		this.potionTakingActive = false;
+		
+		if (x > origin.x + border && x < origin.x + border + optionsWidth / 2 - 2
+				&& y > size.height - optionsHeight + border && y < size.height - optionsHeight/2 - 2 + border) {
+			attackOption = AttackOptions.OPTION1;
+		}
+		else if (x > origin.x + border && x < origin.x + border + optionsWidth / 2 - 2
+				&& y > size.height - optionsHeight/2 + 2 && y < size.height) {
+			attackOption = AttackOptions.OPTION3;
+		}
+		else if (x > origin.x + size.width/2 - border + 2 && x < origin.x + size.width - border 
+				&& y > size.height - optionsHeight + border && y < size.height - optionsHeight/2 - 2 + border) {
+			attackOption = AttackOptions.OPTION2;
+		}
+		else if (x > origin.x + size.width/2 - border + 2 && x < origin.x + size.width - border 
+				&& y > size.height - optionsHeight/2 + 2 && y < size.height) {
+			attackOption = AttackOptions.OPTION4;
+		}
+		
+		if (attackOption != null) {
+			
+			if (attackScreen == AttackScreens.MAIN) {
+				
+				switch (attackOption) {
+					case OPTION1: System.out.println("Attack");
+						attackScreen = AttackScreens.ATTACK;
+						break;
+					case OPTION2: System.out.println("Parry");
+						break;
+					case OPTION3: System.out.println("Change Set");
+						armorView.switchSet();
+						break;
+					case OPTION4: System.out.println("Potion");
+							this.potionTakingActive = true;
+						break;
+				}
+				
+			} else if (attackScreen == AttackScreens.ATTACK) {
+				
+				switch (attackOption) {
+					case OPTION1: System.out.println("Chest");
+						break;
+					case OPTION2: System.out.println("Head");
+						break;
+					case OPTION3: System.out.println("Arms");
+						break;
+					case OPTION4: System.out.println("Legs");
+						break;
+				}
+			}
+		}
 	}
 
 	public void fight(Player player, Creature creature) {
@@ -187,7 +318,6 @@ public class Fight extends View {
 		} else {	// random decision?
 			
 		}
-		
 		
 		while (player.getHp() > 0 && creature.getHp() > 0) { // as long as nobody died
 			activeAttack = null;
@@ -465,7 +595,7 @@ public class Fight extends View {
 	}
 	
 	/**
-	 * including weapon-set change and potions!
+	 * Including weapon-set change and potions!
 	 * because this method is used by ALL creatures, <br>
 	 * NPCs have to use a randomly selected attack or parry (no weapon change or potions)
 	 * 
@@ -476,5 +606,30 @@ public class Fight extends View {
 		
 		
 		return null;
+	}
+	
+	/**Sets the active status of ChangeTab to allow or disallow changing Weapon Sets.
+	 * @param activeStatus
+	 */
+	public void setChangeTabActive(Boolean activeStatus) {
+		this.changeTabActive = activeStatus;
+	}
+
+	/**Only allow changing set when option was chosen from fight menu.
+	 * @return if set changing is active
+	 */
+	public boolean isChangeTabActive() {
+		return this.changeTabActive;
+	}
+
+	/**Sets the active status of PotionTaking to allow or disallow taking a potion.
+	 * @param activeStatus
+	 */
+	public void setPotionTakingActive(boolean activeStatus) {
+		this.potionTakingActive = activeStatus;
+	}
+	
+	public boolean isPotionTakingActive() {
+		return this.potionTakingActive;
 	}
 }

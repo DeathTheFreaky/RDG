@@ -40,6 +40,9 @@ public class GameEnvironment extends View {
 	
 	/* Kind of View/Instance where the Fight takes place/is shown */
 	private Fight fightInstance;
+	
+	/* ArmorView is needed to interact with armory items */
+	ArmorView armorView = null;
 
 	/**
 	 * Constructs a GameEnvironment passing its origin as single x and y
@@ -56,8 +59,8 @@ public class GameEnvironment extends View {
 	 * @see GameEnvironment
 	 */
 	public GameEnvironment(String contextName, int originX, int originY,
-			Player player) throws SlickException {
-		this(contextName, new Point(originX, originY), player);
+			Player player, ArmorView armorView) throws SlickException {
+		this(contextName, new Point(originX, originY), player, armorView);
 	}
 
 	/**
@@ -73,9 +76,9 @@ public class GameEnvironment extends View {
 	 * @throws SlickException
 	 * @see GameEnvironment
 	 */
-	public GameEnvironment(String contextName, Point origin, Player player)
+	public GameEnvironment(String contextName, Point origin, Player player, ArmorView armorView)
 			throws SlickException {
-		this(contextName, origin, new Dimension(640, 480), player);
+		this(contextName, origin, new Dimension(640, 480), player, armorView);
 	}
 
 	/**
@@ -94,9 +97,9 @@ public class GameEnvironment extends View {
 	 * @see GameEnvironment
 	 */
 	public GameEnvironment(String contextName, int originX, int originY,
-			int width, int height, Player player) throws SlickException {
+			int width, int height, Player player, ArmorView armorView) throws SlickException {
 		this(contextName, new Point(originX, originY), new Dimension(width,
-				height), player);
+				height), player, armorView);
 	}
 
 	/**
@@ -113,12 +116,11 @@ public class GameEnvironment extends View {
 	 * @see GameEnvironment
 	 */
 	public GameEnvironment(String contextName, Point origin, Dimension size,
-			Player player) throws SlickException {
+			Player player, ArmorView armorView) throws SlickException {
 		super(contextName, origin, size);
 		this.player = player;
 		
-		Monster testenemy = MonsterFactory.createMonster("Bat");
-		fightInstance = new Fight(origin, size, this, player, testenemy); //added arguments player and enemy by Flo
+		fightInstance = new Fight(origin, size, this, player, armorView); //added arguments player and enemy by Flo
 
 		if (size.width % BLOCK_SIZE != 0) {
 			System.out.println("WATCH OUT! GameEnvironment only works well, "
@@ -134,6 +136,8 @@ public class GameEnvironment extends View {
 		downright.x = (int) size.width / BLOCK_SIZE;
 		downright.y = (int) size.height / BLOCK_SIZE;
 
+		this.armorView = armorView;
+		
 		update();
 	}
 
@@ -181,7 +185,6 @@ public class GameEnvironment extends View {
 		}else {	// show Fight
 			fightInstance.draw(container, graphics);
 		}
-
 	}
 
 	@Override
@@ -202,13 +205,10 @@ public class GameEnvironment extends View {
 		fightInstance.newFight(creature);
 	}
 	
-	/**
-	 * Looks if player is currently in a fight
-	 * 
-	 * @return true - in a fight
+	/**Returns the GameEnvironment's Fight Instance for obtaining fight data etc.
+	 * @return fight Instance
 	 */
-	public boolean isFightActive() {
-		return fightInstance.isInFight();
+	public Fight getFightInstance() {
+		return fightInstance;
 	}
-
 }

@@ -289,7 +289,7 @@ public class Map {
 				e = overlay[x][y - 1];
 				overlay[x][y - 1] = null;
 			} else if (overlay[x][y - 1] instanceof Creature) {
-				gameEnvironment.startFight(this.player);
+				gameEnvironment.startFight((Creature) overlay[x][y - 1]);
 			}
 			break;
 		case EAST:
@@ -298,7 +298,7 @@ public class Map {
 				e = overlay[x + 1][y];
 				overlay[x + 1][y] = null;
 			} else if (overlay[x + 1][y] instanceof Creature) {
-				gameEnvironment.startFight(this.player);
+				gameEnvironment.startFight((Creature) overlay[x + 1][y]);
 			}
 			break;
 		case SOUTH:
@@ -307,7 +307,7 @@ public class Map {
 				e = overlay[x][y + 1];
 				overlay[x][y + 1] = null;
 			} else if (overlay[x][y + 1] instanceof Creature) {
-				gameEnvironment.startFight(this.player);
+				gameEnvironment.startFight((Creature) overlay[x][y + 1]);
 			}
 			break;
 		case WEST:
@@ -316,7 +316,7 @@ public class Map {
 				e = overlay[x - 1][y];
 				overlay[x - 1][y] = null;
 			} else if (overlay[x - 1][y] instanceof Creature) {
-				gameEnvironment.startFight(this.player);
+				gameEnvironment.startFight((Creature) overlay[x - 1][y]);
 			}
 			break;
 		default:
