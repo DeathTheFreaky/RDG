@@ -97,6 +97,9 @@ public class Fight extends View {
 		if (activeFight) {
 			return false;
 		}
+		else {
+			activeFight = true;
+		}
 
 		this.enemy = creature;
 

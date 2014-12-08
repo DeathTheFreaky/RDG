@@ -15,6 +15,7 @@ import org.xml.sax.SAXException;
 import configLoader.Configloader;
 import elements.Element;
 import elements.Equipment;
+import elements.Potion;
 import views.ArmorView;
 import views.Chat;
 import views.GameEnvironment;
@@ -171,25 +172,28 @@ public class Game extends BasicGame {
 					new ResourceManager().getInstance().IMAGES.get("Player2"),
 					gameEnvironmentOrigin, playerType);
 		}
-
-		map = new Map().getInstance();
-		map.setPlayer(player);
-		// map.fillMap();
-
-		/* Dimension is specified in pixels */
+		
+		/* Load Views - Dimension is specified in pixels */
 		gameEnvironment = new GameEnvironment("GameEnvironment",
 
 		gameEnvironmentOrigin, new Dimension(GAME_ENVIRONMENT_WIDTH,
 				GAME_ENVIRONMENT_HEIGHT), player);
-
-		chat = new Chat("Chat", chatOrigin, new Dimension(CHAT_WIDTH,
-				CHAT_HEIGHT), container);
-
+		
 		armorView = new ArmorView("ArmorInventory", armorViewOrigin,
 				new Dimension(ARMOR_WIDTH, ARMOR_HEIGHT));
 
 		inventoryView = new InventoryView("Inventory", inventoryViewOrigin,
 				new Dimension(INVENTORY_WIDTH, INVENTORY_HEIGHT));
+
+		/* Load the chat */
+		chat = new Chat("Chat", chatOrigin, new Dimension(CHAT_WIDTH,
+				CHAT_HEIGHT), container);
+		
+		/* Load Map and place the player */
+		map = new Map().getInstance();
+		map.setPlayer(player);
+		map.setGameEnvironment(gameEnvironment);
+		// map.fillMap();
 	}
 
 	@Override
@@ -237,7 +241,7 @@ public class Game extends BasicGame {
 				chat.setFocus(true);
 			}
 		} else if (key == 18) {
-			Element e = map.getItemInFrontOfPlayer();
+			Element e = map.checkInFrontOfPlayer();
 			if (e != null) {
 				//inventoryView.storeEquipment((Equipment) e);
 				inventoryView.storeItem(e);
@@ -274,15 +278,16 @@ public class Game extends BasicGame {
 		 *  -> equip and unequip weapon */
 		if (!dragging) {
 			if (gameEnvironment.isFightActive()) {
-				System.out
-						.println("You cannot change your Equipment during fight");
+				/*System.out
+						.println("You cannot change your Equipment during fight");*/
+				this.draggedItem = inventoryView.getItem(oldx, oldy, UsedClasses.Potion);
 				dragging = true;
 				return;
 			}
+			this.draggedItem = inventoryView.getItem(oldx, oldy, UsedClasses.Element);
 			
-			this.draggedItem = inventoryView.getItem(oldx, oldy, UsedClasses.Equipment);
 			if (draggedItem == null) {
-				this.draggedItem = armorView.getEquipment(oldx, oldy);
+				this.draggedItem = armorView.getItem(oldx, oldy);
 			}
 			dragging = true;
 		}
@@ -301,9 +306,15 @@ public class Game extends BasicGame {
 		 *  -> equip and unequip weapon */
 		if (button == 0) { // linke Maustaste
 			if (dragging) {
-				Equipment e;
-				if ((e = armorView.equipArmor((Equipment) draggedItem, x, y, inventoryView)) != null) {
-					inventoryView.storeItem((Element) e);
+				Element e;
+				if (gameEnvironment.isFightActive()) {
+					if ((e = armorView.drinkPotion((Potion) draggedItem, x, y, inventoryView)) != null) {
+						inventoryView.storeItem(e);
+					}
+				} else {
+					if ((e = armorView.equipItem(draggedItem, x, y, inventoryView)) != null) {
+						inventoryView.storeItem(e);
+					}
 				}
 				dragging = false;
 				draggedItem = null;

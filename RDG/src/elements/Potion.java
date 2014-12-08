@@ -3,6 +3,7 @@ package elements;
 import general.Enums.Attributes;
 import general.Enums.ItemClasses;
 import general.Enums.Modes;
+import general.Enums.Potions;
 import general.Enums.Targets;
 import general.Enums.WeaponTypes;
 
@@ -39,7 +40,10 @@ public class Potion extends Element {
 	public final float POWER;
 	
 	/* states how many rounds this potion will take effect */
-	public int DURATION;
+	public int DURATION; 
+	
+	/* needed to determine a potions position in armor view */
+	public Potions POTION_TYPE;
 	
 	/* Potion's total Effect is made up of EFFECT (Attributes),
 	 * TARGET, MODE, POWER and DURATION */
@@ -76,5 +80,6 @@ public class Potion extends Element {
 		this.MODE = mode;
 		this.POWER = power;
 		this.DURATION = duration;
+		this.POTION_TYPE = Potions.POTION1;
 	}
 }

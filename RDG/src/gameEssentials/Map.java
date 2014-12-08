@@ -5,7 +5,9 @@ import java.awt.Point;
 
 import org.newdawn.slick.SlickException;
 
+import views.GameEnvironment;
 import elements.Armament;
+import elements.Creature;
 import elements.Element;
 import elements.Equipment;
 import elements.Potion;
@@ -51,7 +53,10 @@ public class Map {
 
 	/* Multidimensional Array storing all Rooms */
 	private Room[][] rooms = null;
-
+	
+	/* */
+	private GameEnvironment gameEnvironment = null;
+	
 	/**
 	 * Constructs a Map.
 	 * 
@@ -238,6 +243,13 @@ public class Map {
 			this.opponent = opponent;
 		}
 	}
+	
+	/**Sets the GameEnvironment for this Map.
+	 * @param gameEnvironment
+	 */
+	public void setGameEnvironment(GameEnvironment gameEnvironment) {
+		this.gameEnvironment = gameEnvironment;
+	}
 
 	/**
 	 * Checks in the passable array if the headed field is passable (not a wall
@@ -259,12 +271,13 @@ public class Map {
 	}
 
 	/**
-	 * Checks if there is an Item in front of the player. If there is, it
-	 * returns the item, else it returns null.
+	 * Checks if there is an Item or a Monster in front of the player.<br>
+	 * If there is an item, pick up the item.<br>
+	 * If there is a monster, start a fight.<br>
 	 * 
 	 * @return Equipment or null
 	 */
-	public Element getItemInFrontOfPlayer() {
+	public Element checkInFrontOfPlayer() {
 		Element e = null;
 		int x = player.getPosition().x;
 		int y = player.getPosition().y;
@@ -275,6 +288,8 @@ public class Map {
 				  (overlay[x][y - 1] instanceof Equipment)) {
 				e = overlay[x][y - 1];
 				overlay[x][y - 1] = null;
+			} else if (overlay[x][y - 1] instanceof Creature) {
+				gameEnvironment.startFight(this.player);
 			}
 			break;
 		case EAST:
@@ -282,6 +297,8 @@ public class Map {
 				  (overlay[x + 1][y] instanceof Equipment)) {
 				e = overlay[x + 1][y];
 				overlay[x + 1][y] = null;
+			} else if (overlay[x + 1][y] instanceof Creature) {
+				gameEnvironment.startFight(this.player);
 			}
 			break;
 		case SOUTH:
@@ -289,6 +306,8 @@ public class Map {
 				  (overlay[x][y + 1] instanceof Equipment)) {
 				e = overlay[x][y + 1];
 				overlay[x][y + 1] = null;
+			} else if (overlay[x][y + 1] instanceof Creature) {
+				gameEnvironment.startFight(this.player);
 			}
 			break;
 		case WEST:
@@ -296,6 +315,8 @@ public class Map {
 				  (overlay[x - 1][y] instanceof Equipment)) {
 				e = overlay[x - 1][y];
 				overlay[x - 1][y] = null;
+			} else if (overlay[x - 1][y] instanceof Creature) {
+				gameEnvironment.startFight(this.player);
 			}
 			break;
 		default:
@@ -306,7 +327,7 @@ public class Map {
 	}
 
 	/**
-	 * update the map - load rooms' overlays and backgrounds
+	 * Update the map - load rooms' overlays and backgrounds.
 	 * 
 	 */
 	public void update() {

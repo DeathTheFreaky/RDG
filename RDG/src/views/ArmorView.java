@@ -10,9 +10,12 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
+import elements.Element;
 import elements.Equipment;
+import elements.Potion;
 import elements.Weapon;
 import general.Enums.ImageSize;
+import general.Enums.Potions;
 import general.Enums.WeaponTypes;
 import general.ResourceManager;
 import general.Enums.Armor;
@@ -48,10 +51,14 @@ public class ArmorView extends View {
 	/* HashMap for all equipped Armor */
 	HashMap<Armor, Equipment> armor1;
 	HashMap<Armor, Equipment> armor2;
+	HashMap<Potions, Potion> potion1_types;
+	HashMap<Potions, Potion> potion2_types;
 
 	/* Collection for the armor, is used for iterating through all armor */
 	Collection<Equipment> equipment1;
 	Collection<Equipment> equipment2;
+	Collection<Potion> potions1;
+	Collection<Potion> potions2;
 	
 	/* stores previously equipped weapons to determine if weapon is dragged 
 	 * from armory or from inventory */
@@ -59,6 +66,15 @@ public class ArmorView extends View {
 	Weapon prevWeaponSubSet1 = null;
 	Weapon prevWeaponMainSet2 = null;
 	Weapon prevWeaponSubSet2 = null;
+	
+	/* stores previously equipped potions to determine if potion is dragged 
+	 * from armory or from inventory */
+	Potion prevPotion1Set1 = null;
+	Potion prevPotion2Set1 = null;
+	Potion prevPotion3Set1 = null;
+	Potion prevPotion1Set2 = null;
+	Potion prevPotion2Set2 = null;
+	Potion prevPotion3Set2 = null;
 
 	/* Factory and Resource Classes */
 	private ResourceManager resources;
@@ -151,10 +167,16 @@ public class ArmorView extends View {
 		equipment1 = armor1.values();
 		armor2 = new HashMap<Armor, Equipment>(7);
 		equipment2 = armor2.values();
+		potion1_types = new HashMap<Potions, Potion>(3);
+		potions1 = potion1_types.values();
+		potion2_types = new HashMap<Potions, Potion>(3);
+		potions2 = potion2_types.values();
 	}
 
 	@Override
 	public void draw(GameContainer container, Graphics graphics) {
+		
+		/* grey background */
 		graphics.setColor(new Color(0.5f, 0.5f, 0.5f));
 		graphics.fillRect(ORIGIN_X, ORIGIN_Y, size.width, tabHeight + 5);
 
@@ -171,7 +193,8 @@ public class ArmorView extends View {
 			graphics.setColor(new Color(0f, 0f, 0f));
 			graphics.drawString("SET 2", textPositionX, textPositionY);
 		}
-
+		
+		/* red field */
 		graphics.setColor(new Color(1f, 0f, 0f));
 		graphics.fillRect(ORIGIN_X, ORIGIN_Y + 30, size.width, size.height - 2
 				* (tabHeight - 5));
@@ -179,8 +202,26 @@ public class ArmorView extends View {
 		/* draw warrior image */
 		graphics.drawImage(resources.IMAGES.get("Armor_Background"), ORIGIN_X,
 				ORIGIN_Y + tabHeight + 10);
+		
+		/* potion section */
+		graphics.setColor(new Color(0.5f, 0.5f, 0.5f));
+		graphics.fillRect(ORIGIN_X, ORIGIN_Y + size.height - tabHeight - 5,
+				size.width, tabHeight + 5);
+		
+		/* test potion section */
+		graphics.setColor(new Color(0.25f, 0.25f, 0.25f));
+		graphics.fillRect(ORIGIN_X + size.width/2 - tabWidth/2, ORIGIN_Y + size.height - tabHeight - 3,
+				tabWidth, tabHeight);
+		
+		graphics.setColor(new Color(0.25f, 0.25f, 0.25f));
+		graphics.fillRect(ORIGIN_X + size.width/2 - tabWidth/2 - tabWidth - 2, ORIGIN_Y + size.height - tabHeight - 3,
+				tabWidth, tabHeight);
+		
+		graphics.setColor(new Color(0.25f, 0.25f, 0.25f));
+		graphics.fillRect(ORIGIN_X + size.width/2 + tabWidth/2 + 2, ORIGIN_Y + size.height - tabHeight - 3,
+				tabWidth, tabHeight);
 
-		/* draw equipment */
+		/* draw equipment and potions */
 		if (set) {
 			for (Equipment e : equipment1) {
 				switch (e.getArmorType()) {
@@ -212,6 +253,23 @@ public class ArmorView extends View {
 					graphics.drawImage(e.getImage(ImageSize.d20x20), ORIGIN_X + 35, ORIGIN_Y
 							+ 115 + tabHeight + 10);
 					break;
+				}
+			}
+			for (Potion p : potions1) {
+				switch (p.POTION_TYPE) {
+				
+					case POTION1:
+						graphics.drawImage(p.getImage(ImageSize.d20x20), ORIGIN_X + size.width/2 - tabWidth - 2 - tabWidth/2 + 6, 
+								ORIGIN_Y + size.height - tabHeight - 5 + 5);
+						break;
+					case POTION2:
+						graphics.drawImage(p.getImage(ImageSize.d20x20), ORIGIN_X + size.width/2 - tabWidth/2 + 6, 
+								ORIGIN_Y + size.height - tabHeight - 5 + 5);
+						break;
+					case POTION3:
+						graphics.drawImage(p.getImage(ImageSize.d20x20), ORIGIN_X + size.width/2 + tabWidth/2 + 2 + 6, 
+								ORIGIN_Y + size.height - tabHeight - 5 + 5);
+						break;
 				}
 			}
 		} else {
@@ -247,11 +305,24 @@ public class ArmorView extends View {
 					break;
 				}
 			}
+			for (Potion p : potions2) {
+				switch (p.POTION_TYPE) {
+				
+					case POTION1:
+						graphics.drawImage(p.getImage(ImageSize.d20x20), ORIGIN_X + size.width/2 - tabWidth - 2 - tabWidth/2 + 6, 
+								ORIGIN_Y + size.height - tabHeight - 5 + 5);
+						break;
+					case POTION2:
+						graphics.drawImage(p.getImage(ImageSize.d20x20), ORIGIN_X + size.width/2 - tabWidth/2 + 6, 
+								ORIGIN_Y + size.height - tabHeight - 5 + 5);
+						break;
+					case POTION3:
+						graphics.drawImage(p.getImage(ImageSize.d20x20), ORIGIN_X + size.width/2 + tabWidth/2 + 2 + 6, 
+								ORIGIN_Y + size.height - tabHeight - 5 + 5);
+						break;
+				}
+			}
 		}
-
-		graphics.setColor(new Color(0.5f, 0.5f, 0.5f));
-		graphics.fillRect(ORIGIN_X, ORIGIN_Y + size.height - tabHeight - 5,
-				size.width, tabHeight + 5);
 	}
 
 	@Override
@@ -320,27 +391,56 @@ public class ArmorView extends View {
 			this.set = false;
 		}
 	}
-
+	
 	/**
-	 * Equips the Equipment in a Set.
+	 * Player drinks a potion.
 	 * 
-	 * @param equipment - Element
+	 * @param potion - Element
+	 * @param x - MousePosition
+	 * @param y - MousePosition
+	 * @return null or the Potion that has to be stored in the Inventory 
+	 * 			(if max number of potions already reached during a fight)
+	 */
+	public Potion drinkPotion(Potion potion, int x, int y, InventoryView inventory) {
+		Potion p = potion;
+		if (potion == null) {
+			return p;
+		}
+		if (x > ORIGIN_X && x < ORIGIN_X + size.width && y > ORIGIN_Y
+				&& y < ORIGIN_Y + size.height) {
+			System.out.println("potion taken");
+			
+			//add potion to list of active potions in fight
+			
+			
+			p = null; //only for testing purposes
+		}
+		
+		return p;
+	}
+	
+	/**
+	 * Equips the Item in a Set.
+	 * 
+	 * @param element - Element
 	 * @param x - MousePosition
 	 * @param y - MousePosition
 	 * @return null or the Equipment that has to be stored in the Inventory
 	 */
-	public Equipment equipArmor(Equipment equipment, int x, int y, InventoryView inventory) {
-		Equipment e = null;
-		if (equipment == null) {
+	public Element equipItem(Element element, int x, int y, InventoryView inventory) {
+		Element e = null;
+		if (element == null) {
 			return e;
 		}
-		if (x > ORIGIN_X && x < ORIGIN_X + size.width && y > ORIGIN_Y
-				&& y < ORIGIN_Y + size.height) {
-			
-			/* in case of weapons, detect which weapon shall be replaced */
-			if (equipment instanceof Weapon) {
+		
+		/* check if dragged item is dragged to armor section */
+		if (x > ORIGIN_X && x < ORIGIN_X + size.width && y > ORIGIN_Y + tabHeight + 5 
+				&& y < ORIGIN_Y + size.height - tabHeight - 5 && element instanceof Equipment) {
 				
-				Weapon thisweapon = (Weapon) equipment;
+			/* in case of weapons, detect which weapon shall be replaced */
+			if (element instanceof Weapon) {
+				
+				Weapon thisweapon = (Weapon) element;
 				
 				Weapon weapon1 = null;
 				Weapon weapon2 = null;
@@ -351,10 +451,10 @@ public class ArmorView extends View {
 				
 				/* decide on which side to drop the weapon -> main or sub */
 				if ((x - ORIGIN_X) > size.width/2) {
-					equipment.setAsSubWeapon();
+					((Equipment) element).setAsSubWeapon();
 				}
 				else {
-					equipment.setAsMainWeapon();
+					((Equipment) element).setAsMainWeapon();
 				}
 				
 				/* check if weapon is dragged from inside Armor */
@@ -398,14 +498,14 @@ public class ArmorView extends View {
 						/* check for two-hand weapons or weapons with maximum of 1 */
 						if (weapon1.TYPE == WeaponTypes.TWOHAND || 
 								(weapon1.MAX == 1 && weapon1.NAME == thisweapon.NAME)) {
-							if (equipment.getArmorType() == Armor.SUB_WEAPON) {
+							if (((Equipment) element).getArmorType() == Armor.SUB_WEAPON) {
 								returnImmediatly = true;
-								e = equipment;
+								e = ((Equipment) element);
 							}
 						}
 						
 						/* exchange weapons inside of armory */
-						else if (equipment.getArmorType() == Armor.MAIN_WEAPON 
+						else if (((Equipment) element).getArmorType() == Armor.MAIN_WEAPON 
 								&& fromInsideArmor == true) {
 							
 							Equipment tempWeapon;
@@ -414,12 +514,12 @@ public class ArmorView extends View {
 								tempWeapon = armor1.get(Armor.MAIN_WEAPON);
 								tempWeapon.setAsSubWeapon();
 								armor1.put(Armor.SUB_WEAPON, tempWeapon);
-								armor1.put(Armor.MAIN_WEAPON, equipment);
+								armor1.put(Armor.MAIN_WEAPON, ((Equipment) element));
 							} else {
 								tempWeapon = armor2.get(Armor.MAIN_WEAPON);
 								tempWeapon.setAsSubWeapon();
 								armor2.put(Armor.SUB_WEAPON, tempWeapon);
-								armor2.put(Armor.MAIN_WEAPON, equipment);
+								armor2.put(Armor.MAIN_WEAPON, ((Equipment) element));
 							}
 							if (weapon2 == null) {
 								returnImmediatlyNull = true;
@@ -431,14 +531,14 @@ public class ArmorView extends View {
 						/* check for two-hand weapons or weapons with maximum of 1 */
 						if (weapon2.TYPE == WeaponTypes.TWOHAND || 
 								(weapon2.MAX == 1 && weapon2.NAME == thisweapon.NAME)) {
-							if (equipment.getArmorType() == Armor.MAIN_WEAPON) {
+							if (((Equipment) element).getArmorType() == Armor.MAIN_WEAPON) {
 								returnImmediatly = true;
-								e = equipment;
+								e = ((Equipment) element);
 							}
 						}
 						
 						/* exchange weapons inside of armory */
-						else if (equipment.getArmorType() == Armor.SUB_WEAPON 
+						else if (((Equipment) element).getArmorType() == Armor.SUB_WEAPON 
 								&& fromInsideArmor == true) {
 							
 							Equipment tempWeapon;
@@ -447,12 +547,12 @@ public class ArmorView extends View {
 								tempWeapon = armor1.get(Armor.SUB_WEAPON);
 								tempWeapon.setAsMainWeapon();
 								armor1.put(Armor.MAIN_WEAPON, tempWeapon);
-								armor1.put(Armor.SUB_WEAPON, equipment);
+								armor1.put(Armor.SUB_WEAPON, ((Equipment) element));
 							} else {
 								tempWeapon = armor2.get(Armor.SUB_WEAPON);
 								tempWeapon.setAsMainWeapon();
 								armor2.put(Armor.MAIN_WEAPON, tempWeapon);
-								armor2.put(Armor.SUB_WEAPON, equipment);
+								armor2.put(Armor.SUB_WEAPON, ((Equipment) element));
 							}
 							if (weapon1 == null) {
 								returnImmediatlyNull = true;
@@ -479,15 +579,15 @@ public class ArmorView extends View {
 			}
 			
 			if (set) {
-				if(armor1.containsKey(equipment.getArmorType())) {
-					e = armor1.get(equipment.getArmorType());
+				if(armor1.containsKey(((Equipment) element).getArmorType())) {
+					e = armor1.get(((Equipment) element).getArmorType());
 				}
-				armor1.put(equipment.getArmorType(), equipment);
+				armor1.put(((Equipment) element).getArmorType(), ((Equipment) element));
 			} else {
-				if(armor2.containsKey(equipment.getArmorType())) {
-					e = armor2.get(equipment.getArmorType());
+				if(armor2.containsKey(((Equipment) element).getArmorType())) {
+					e = armor2.get(((Equipment) element).getArmorType());
 				}
-				armor2.put(equipment.getArmorType(), equipment);
+				armor2.put(((Equipment) element).getArmorType(), ((Equipment) element));
 			}
 			
 			/* store current weapons to check for future weapon drop ->
@@ -498,22 +598,152 @@ public class ArmorView extends View {
 			prevWeaponSubSet2 = (Weapon) armor2.get(Armor.SUB_WEAPON);
 			
 			return e;
-		}else {
-			e = equipment;
+		
+		/* check if item is dragged to potion section */
+		} else if (x > ORIGIN_X && x < ORIGIN_X + size.width && y > ORIGIN_Y + size.height - tabHeight - 5
+				&& y < ORIGIN_Y + size.height && element instanceof Potion) {
+			
+			Potion thispotion = (Potion) element;
+													
+			/* decide if potion is dragged to potion 1,2,3 */
+			if (x > ORIGIN_X + size.width/2 - tabWidth/2 - 2 && x < ORIGIN_X + size.width/2 + tabWidth/2 + 2) {
+				((Potion) element).POTION_TYPE = Potions.POTION2;
+				System.out.println("potion2");
+			}
+			else if (x > ORIGIN_X + size.width/2 - tabWidth - 2 - tabWidth/2 - 2 && x < ORIGIN_X + size.width/2 - tabWidth/2 - 2) {
+				((Potion) element).POTION_TYPE = Potions.POTION1;
+				System.out.println("potion1");
+			}
+			else if (x > ORIGIN_X + size.width/2 + tabWidth/2 + 2 && x < ORIGIN_X + size.width/2 + tabWidth/2 + 2 + tabWidth + 2){
+				((Potion) element).POTION_TYPE = Potions.POTION3;
+				System.out.println("potion3");
+			}
+			
+			System.out.println(((Potion) element).POTION_TYPE);
+			
+			Potion potion1 = null;
+			Potion potion2 = null;
+			Potion potion3 = null;
+			
+			boolean fromInsideArmor = false;
+			
+			/* check if potion is dragged from inside Armor */
+			if (set) {
+				if (thispotion == prevPotion1Set1 || thispotion == prevPotion2Set1 || 
+						thispotion == prevPotion3Set1) {
+					fromInsideArmor = true;
+					
+					if (thispotion == prevPotion1Set1) {
+						if (thispotion.POTION_TYPE == Potions.POTION2 && prevPotion2Set1 != null) {
+							prevPotion2Set1.POTION_TYPE = Potions.POTION1;
+							potion1_types.put(Potions.POTION1, prevPotion2Set1);
+						}
+						if (thispotion.POTION_TYPE == Potions.POTION3 && prevPotion3Set1 != null) {
+							prevPotion3Set1.POTION_TYPE = Potions.POTION1;
+							potion1_types.put(Potions.POTION1, prevPotion3Set1);
+						}
+					}
+					else if (thispotion == prevPotion2Set1) {
+						if (thispotion.POTION_TYPE == Potions.POTION1 && prevPotion1Set1 != null) {
+							prevPotion1Set1.POTION_TYPE = Potions.POTION2;
+							potion1_types.put(Potions.POTION2, prevPotion1Set1);
+						}
+						if (thispotion.POTION_TYPE == Potions.POTION3 && prevPotion3Set1 != null) {
+							prevPotion3Set1.POTION_TYPE = Potions.POTION2;
+							potion1_types.put(Potions.POTION2, prevPotion3Set1);
+						}
+					}
+					else if (thispotion == prevPotion3Set1) {
+						if (thispotion.POTION_TYPE == Potions.POTION1 && prevPotion1Set1 != null) {
+							prevPotion1Set1.POTION_TYPE = Potions.POTION3;
+							potion1_types.put(Potions.POTION3, prevPotion1Set1);
+						}
+						if (thispotion.POTION_TYPE == Potions.POTION2 && prevPotion2Set1 != null) {
+							prevPotion2Set1.POTION_TYPE = Potions.POTION3;
+							potion1_types.put(Potions.POTION3, prevPotion2Set1);
+						}
+					}
+				}
+			} else {
+				if (thispotion == prevPotion1Set2 || thispotion == prevPotion2Set2 || 
+						thispotion == prevPotion3Set2) {
+					fromInsideArmor = true;
+					
+					if (thispotion == prevPotion1Set2) {
+						if (thispotion.POTION_TYPE == Potions.POTION2 && prevPotion2Set2 != null) {
+							prevPotion2Set2.POTION_TYPE = Potions.POTION1;
+							potion2_types.put(Potions.POTION1, prevPotion2Set2);
+						}
+						if (thispotion.POTION_TYPE == Potions.POTION3 && prevPotion3Set2 != null) {
+							prevPotion3Set2.POTION_TYPE = Potions.POTION1;
+							potion2_types.put(Potions.POTION1, prevPotion3Set2);
+						}
+					}
+					else if (thispotion == prevPotion2Set2) {
+						if (thispotion.POTION_TYPE == Potions.POTION1 && prevPotion1Set2 != null) {
+							prevPotion1Set2.POTION_TYPE = Potions.POTION2;
+							potion2_types.put(Potions.POTION2, prevPotion1Set2);
+						}
+						if (thispotion.POTION_TYPE == Potions.POTION3 && prevPotion3Set2 != null) {
+							prevPotion3Set2.POTION_TYPE = Potions.POTION2;
+							potion2_types.put(Potions.POTION2, prevPotion3Set2);
+						}
+					}
+					else if (thispotion == prevPotion3Set2) {
+						if (thispotion.POTION_TYPE == Potions.POTION1 && prevPotion1Set2 != null) {
+							prevPotion1Set2.POTION_TYPE = Potions.POTION3;
+							potion2_types.put(Potions.POTION3, prevPotion1Set2);
+						}
+						if (thispotion.POTION_TYPE == Potions.POTION2 && prevPotion2Set2 != null) {
+							prevPotion2Set2.POTION_TYPE = Potions.POTION3;
+							potion2_types.put(Potions.POTION3, prevPotion2Set2);
+						}
+					}
+				}
+			}
+			
+			if (set) {
+				if(potion1_types.containsKey(((Potion) element).POTION_TYPE)) {
+					e = potion1_types.get(((Potion) element).POTION_TYPE);
+				}
+				potion1_types.put(((Potion) element).POTION_TYPE, ((Potion) element));
+			} else {
+				if(potion2_types.containsKey(((Potion) element).POTION_TYPE)) {
+					e = potion2_types.get(((Potion) element).POTION_TYPE);
+				}
+				potion2_types.put(((Potion) element).POTION_TYPE, ((Potion) element));
+			}
+			
+			if (fromInsideArmor) {
+				e = null;
+			}
+			
+			/* store current potions to check for future potion drop ->
+			 * is new potion from inventory or from armorview? */
+			prevPotion1Set1 = (Potion) potion1_types.get(Potions.POTION1);
+			prevPotion2Set1 = (Potion) potion1_types.get(Potions.POTION2);
+			prevPotion3Set1 = (Potion) potion1_types.get(Potions.POTION3);
+			prevPotion1Set2 = (Potion) potion2_types.get(Potions.POTION1);
+			prevPotion2Set2 = (Potion) potion2_types.get(Potions.POTION2);
+			prevPotion3Set2 = (Potion) potion2_types.get(Potions.POTION3);
+			
+		} else {
+			e = element;
 		}
 		return e;
 	}
 
-	/**Returns an equipped item (weapon or armament) as Equipment. 
+	/**Returns an equipped item. 
 	 * 
 	 * @param mouseX
 	 * @param mouseY
 	 * @return
 	 */
-	public Equipment getEquipment(int mouseX, int mouseY) {
+	public Element getItem(int mouseX, int mouseY) {
+		
 		if (mouseX > ORIGIN_X && mouseX < ORIGIN_X + size.width
-				&& mouseY > ORIGIN_Y && mouseY < ORIGIN_Y + size.height) {
-
+				&& mouseY > ORIGIN_Y && mouseY < ORIGIN_Y + size.height - tabHeight - 5) {
+			
 			Equipment e = null;
 
 			/* HEAD */
@@ -608,7 +838,44 @@ public class ArmorView extends View {
 			}
 
 			return e;
-		}
+			
+		} else if (mouseX > ORIGIN_X && mouseX < ORIGIN_X + size.width && mouseY > ORIGIN_Y + size.height - tabHeight - 5
+				&& mouseY < ORIGIN_Y + size.height) {
+						
+			Potion e = null;
+													
+			/* decide if potion is dragged from potion 1,2,3 */
+			if (mouseX > ORIGIN_X + size.width/2 - tabWidth/2 - 2 && mouseX < ORIGIN_X + size.width/2 + tabWidth/2 + 2) {
+				if(set) {
+					e = potion1_types.get(Potions.POTION2);
+					potion1_types.remove(Potions.POTION2);
+				}else {
+					e = potion2_types.get(Potions.POTION2);
+					potion2_types.remove(Potions.POTION2);
+				}
+			}
+			else if (mouseX > ORIGIN_X + size.width/2 - tabWidth - 2 - tabWidth/2 - 2 && mouseX < ORIGIN_X + size.width/2 - tabWidth/2 - 2) {
+				if(set) {
+					e = potion1_types.get(Potions.POTION1);
+					potion1_types.remove(Potions.POTION1);
+				}else {
+					e = potion2_types.get(Potions.POTION1);
+					potion2_types.remove(Potions.POTION1);
+				}
+			}
+			else if (mouseX > ORIGIN_X + size.width/2 + tabWidth/2 + 2 && mouseX < ORIGIN_X + size.width/2 + tabWidth/2 + 2 + tabWidth + 2){
+				if(set) {
+					e = potion1_types.get(Potions.POTION3);
+					potion1_types.remove(Potions.POTION3);
+				}else {
+					e = potion2_types.get(Potions.POTION3);
+					potion2_types.remove(Potions.POTION3);
+				}
+			}		
+			
+			return e;
+		} 
+		
 		return null;
 	}
 }
