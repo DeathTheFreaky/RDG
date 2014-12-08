@@ -8,7 +8,6 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.tests.GraphicsTest;
 
 import elements.Attack;
 import elements.Creature;
@@ -25,7 +24,6 @@ import general.Enums.Targets;
 import views.ArmorView;
 import views.GameEnvironment;
 import views.View;
-import views.chat.Message;
 
 public class Fight extends View {
 
@@ -133,7 +131,7 @@ public class Fight extends View {
 	@Override
 	public void draw(GameContainer container, Graphics graphics) {
 
-		//BACKGROUND
+		/* BACKGROUND */
 		graphics.setColor(gray);
 		graphics.fillRect(origin.x, origin.y, size.width, size.height);
 		
@@ -146,8 +144,11 @@ public class Fight extends View {
 		graphics.setColor(pink);
 		graphics.fillRect(origin.x + border, size.height - 100 + border,
 				size.width - 2 * border, size.height - 100 - 2 * border);
+		/* BACKGROUND */
 		
-		// Enemy Health Bar
+		
+		/* FOREGROUND */
+		/* Enemy Health Bar */
 		// Black border around Health bar
 		graphics.setColor(black);
 		graphics.drawRect(origin.x + border + barGap - 1, origin.y
@@ -186,7 +187,7 @@ public class Fight extends View {
 				+ border + barGap - 25);
 		graphics.drawString(this.player.NAME, fightWindowWidth - border - barGap - barWidth , 
 				fightWindowHeight - barGap + 10);
-		
+
 		// Fight Options
 		if (attackScreen == AttackScreens.MAIN) {
 			graphics.setColor(black);
@@ -216,7 +217,6 @@ public class Fight extends View {
 	@Override
 	public void update() {
 		// TODO Auto-generated method stub
-
 	}
 
 	/**Indicates if a fight is currently active.
@@ -309,20 +309,112 @@ public class Fight extends View {
 		}
 	}
 
-	public void fight(Player player, Creature creature) {
+	/**
+	 * This method manages the process of fighting
+	 * 
+	 * @param player
+	 * @param enemy
+	 */
+	public void fight(Player player, Creature enemy) {
 		boolean faster = false;
-		if (player.getSpeed() > creature.getSpeed()) {
+		if (player.getSpeed() > enemy.getSpeed()) {
 			faster = true;
-		} else if (player.getSpeed() < creature.getSpeed()) {
+		} else if (player.getSpeed() < enemy.getSpeed()) {
 			faster = false;
-		} else {	// random decision?
-			
+		} else {
+			// random decision
+			if (Math.random() >= 0.5) {
+				faster = true;
+			} else {
+				faster = false;
+			}
 		}
 		
-		while (player.getHp() > 0 && creature.getHp() > 0) { // as long as nobody died
+		while (player.getHp() > 0 && enemy.getHp() > 0) { // as long as nobody died
+
 			activeAttack = null;
 			parryMultiplier = 1.0f;
-			if (faster) {
+			
+			if (faster) {	// player is faster than enemy
+				/* player actions */
+				/* player chooses what to do */
+				switch(getCommand()) {
+				case TORSO:
+					activeAttack = attacks.get(Attacks.TORSO);
+					break;
+				case HEAD:
+					activeAttack = attacks.get(Attacks.HEAD);
+					break;
+				case ARMS:
+					activeAttack = attacks.get(Attacks.ARMS);
+					break;
+				case LEGS:
+					activeAttack = attacks.get(Attacks.LEGS);
+					break;
+				case SET:
+					/* change weapon-set */
+					break;
+				case POTION:
+					/* select potion */
+					Potion selected = null;
+					// select potion|how?
+					usePotion(player, enemy, selected);
+					break;
+				case PARRY:
+					/*  */
+					parryMultiplier = 2.0f;
+					if (parrySuccess(player, enemy) == true) {
+						activeAttack = attacks.get(Attacks.TORSO);	// muss man noch rausfinden was am besten is (ich war ja für head aber flo für torso xD)
+						break;
+					}
+					break;
+				default:
+					break;
+				}
+				/* actual attack */
+				attack(player, enemy);
+				parryMultiplier = 1.0f;	// multiplier zurücksetzen
+				
+				/* check if enemy died */
+				if (enemy.getHp() == 0) {	// enemy is dead -> leave switch
+					break;
+				}
+				
+				/* potion effects player*/
+				potionEffects(player);
+				
+				
+				/* enemy actions */
+				/*
+				 *  random decision what kind of attack the enemy will do
+				 *  random decision: torso weil ausprobieren!
+				 */
+				activeAttack = attacks.get(Attacks.TORSO);
+				attack(enemy, player);
+				
+				/* potion effects enemy */
+				potionEffects(enemy);
+				
+			} else {	// enemy is faster
+				/* enemy actions */
+				/*
+				 *  random decision what kind of attack the enemy will do
+				 *  random decision: torso weil ausprobieren!
+				 */
+				activeAttack = attacks.get(Attacks.TORSO);
+				attack(enemy, player);
+				parryMultiplier = 1.0f;	// multiplier zurücksetzen
+				
+				/* check if player died */
+				if (player.getHp() == 0) {	// player is dead --> leave switch
+					break;
+				}
+				
+				/* potion effects enemy */
+				potionEffects(enemy);
+				
+				
+				/* player actions */
 				/* player chooses what to do */
 				switch(getCommand()) {
 				case TORSO:
@@ -343,12 +435,13 @@ public class Fight extends View {
 				case POTION:
 					/* bla bla bla, select potion, bla bla bla */
 					Potion selected = null;
+					// select potion|how?
 					usePotion(player, enemy, selected);
 					break;
 				case PARRY:
 					/*  */
 					parryMultiplier = 2.0f;
-					if (parrySuccess() == true) {
+					if (parrySuccess(player, enemy) == true) {
 						activeAttack = attacks.get(Attacks.TORSO);	// muss man noch rausfinden was am besten is (ich war ja für head aber flo für torso xD)
 						break;
 					}
@@ -357,15 +450,12 @@ public class Fight extends View {
 					break;
 				}
 				
-				/* potion effects */
+				/* potion effects player*/
 				potionEffects(player);
 				
-			} else {
-				/* potion effects */
-				potionEffects(enemy);
-				
-			}
-		}
+			} // else end
+			
+		}	// while end
 		
 		
 		if (player.getHp() == 0) {	// player died
@@ -381,16 +471,16 @@ public class Fight extends View {
 	 * 
 	 * @param creature
 	 */
-	public void attack(Player player, Creature creature) {
+	public void attack(Creature attacker, Creature defender) {
 		if (activeAttack == null) return;
 		
-		if (calcHitSuccess() == true) {
+		if (calcHitSuccess(attacker, defender) == true) {
 			
 			
 			
-			float damage = calcDamage();	// could be used to display Damage on Screen
-			updateHealth(creature, damage);
-			updateAttributes(creature);
+			float damage = calcDamage(attacker, defender);	// could be used to display Damage on Screen
+			updateHealth(defender, damage);
+			updateAttributes(defender);
 		}
 	}
 	
@@ -399,8 +489,8 @@ public class Fight extends View {
 	 * 
 	 * @return true if Attack is successful
 	 */
-	public boolean calcHitSuccess() {
-		if ((player.getAccuracy() * 1/*weapon accuracy*/ * activeAttack.hitProbability) - (enemy.getOrSpeed() * 1) >= 0.5) {
+	public boolean calcHitSuccess(Creature attacker, Creature defender) {
+		if ((attacker.getAccuracy() * 1/*weapon accuracy*/ * activeAttack.hitProbability) - (defender.getOrSpeed() * 1) >= 0.5) {
 			return true;
 		} else {
 			return false;
@@ -412,7 +502,7 @@ public class Fight extends View {
 	 * 
 	 * @return true if a parry will be successful
 	 */
-	public boolean parrySuccess() {
+	public boolean parrySuccess(Creature attacker, Creature defender) {
 		
 		return false;
 	}
@@ -422,35 +512,35 @@ public class Fight extends View {
 	 * 
 	 * @return amount of dealt damage
 	 */
-	public float calcDamage() {
+	public float calcDamage(Creature attacker, Creature defender) {
 		float damage = 0.0f;
 		
-		damage = player.getStrength() * 1 /* weapon damage */ * Chances.randomFloat(activeAttack.statsLowMultiplier, activeAttack.statsHighMultiplier) - 0 /* armor values */ * parryMultiplier;
+		damage = attacker.getStrength() * 1 /* weapon damage */ * Chances.randomFloat(activeAttack.statsLowMultiplier, activeAttack.statsHighMultiplier) - 0 /* armor values: defender */ * parryMultiplier;
 		
 		return damage;
 	}
 	
-	public void updateAttributes(Creature enemy) {
+	public void updateAttributes(Creature creature) {
 		switch(activeAttack.effect) {
 		case HP:
-			enemy.setHp(enemy.getHp()
+			creature.setHp(creature.getHp()
 					* activeAttack.attributeDamageMultiplier
 					* Chances.randomFloat(activeAttack.statsLowMultiplier, activeAttack.statsHighMultiplier));
 			break;
 		case ACCURACY:
-			enemy.setAccuracy(enemy.getAccuracy()
+			creature.setAccuracy(creature.getAccuracy()
 					* activeAttack.attributeDamageMultiplier
 					* Chances.randomFloat(activeAttack.statsLowMultiplier,
 							activeAttack.statsHighMultiplier));
 			break;
 		case STRENGTH:
-			enemy.setStrength(enemy.getStrength()
+			creature.setStrength(creature.getStrength()
 					* activeAttack.attributeDamageMultiplier
 					* Chances.randomFloat(activeAttack.statsLowMultiplier,
 							activeAttack.statsHighMultiplier));
 			break;
 		case SPEED:
-			enemy.setSpeed(enemy.getSpeed()
+			creature.setSpeed(creature.getSpeed()
 					* activeAttack.attributeDamageMultiplier
 					* Chances.randomFloat(activeAttack.statsLowMultiplier,
 							activeAttack.statsHighMultiplier));
@@ -467,33 +557,33 @@ public class Fight extends View {
 	 * @param heal
 	 * @param damage
 	 */
-	public void updateHealth(Creature player, float damage) {
-		float hp = player.getHp() - damage;
-		player.setHp(hp);
+	public void updateHealth(Creature creature, float damage) {
+		float hp = creature.getHp() - damage;
+		creature.setHp(hp);
 	}
 	
 	/**
 	 * called every time the player uses a potion (directly or indirectly)
 	 */
-	public void usePotion(Creature player, Creature creature, Potion potion) {
+	public void usePotion(Creature attacker, Creature defender, Potion potion) {
 		// if player uses antidote / removes the first poison in the list
 		if (potion.MODE == Modes.LIFT) {
-			for (Potion _potion : creature.getActivePotions()) {
+			for (Potion _potion : defender.getActivePotions()) {
 				if (_potion.EFFECT == Attributes.HP && _potion.MODE == Modes.DECR) {
-					creature.removeActivePotions(_potion);
+					defender.removeActivePotions(_potion);
 				}
 				break;
 			}
 		} else {		// if player uses other potion
 			if (potion.TARGET == Targets.SELF) {	// if player uses good potion for himself
-				player.addActivePotions(potion);
+				attacker.addActivePotions(potion);
 				if (potion.MODE == Modes.TINCR) {
-					increase(player, potion);
+					increase(attacker, potion);
 				}
 			} else {		// if player uses bad potion for enemy
-				creature.addActivePotions(potion);
+				defender.addActivePotions(potion);
 				if (potion.MODE == Modes.TDECR) {
-					decrease(creature, potion);
+					decrease(defender, potion);
 				}
 			}
 		}
