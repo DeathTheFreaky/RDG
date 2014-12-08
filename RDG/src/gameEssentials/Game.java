@@ -258,9 +258,11 @@ public class Game extends BasicGame {
 		} else if (key == 1) {
 			//set attackScreen in Fight.java to MAIN
 			if (fightInstance.isInFight()) {
-				fightInstance.setAttackScreen(AttackScreens.MAIN);
-				fightInstance.setChangeTabActive(false);
-				fightInstance.setPotionTakingActive(false);
+				if (fightInstance.getAttackScreens() != AttackScreens.WAITING) {
+					fightInstance.setAttackScreen(AttackScreens.MAIN);
+					fightInstance.setChangeTabActive(false);
+					fightInstance.setPotionTakingActive(false);
+				}
 			}
 		}
 		System.out.println("Key: " + key + ", Char: " + c);
@@ -342,6 +344,7 @@ public class Game extends BasicGame {
 							armorView.backPotion((Potion) e);
 						} else {
 							fightInstance.setPotionTakingActive(false);
+							fightInstance.setAttackScreen(AttackScreens.WAITING);
 						}
 					}
 				} else {

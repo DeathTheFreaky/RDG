@@ -36,7 +36,7 @@ public class Enums {
 	public enum ItemType {ARMAMENT, POTION, WEAPON}
 	public enum UsedClasses{Element, Weapon, Armament, Potion, Equipment, Monster, Creature};
 	public enum Potions{POTION1, POTION2, POTION3};
-	public enum AttackScreens{MAIN, ATTACK};
+	public enum AttackScreens{MAIN, ATTACK, WAITING};
 	public enum AttackOptions{OPTION1, OPTION2, OPTION3, OPTION4};
 	
 	public enum ImageSize {d32x32, d20x20}

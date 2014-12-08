@@ -206,12 +206,20 @@ public class Fight extends View {
 			graphics.drawString("Legs", optionsWidth / 4 * 3 - 15, fightWindowHeight + optionsHeight / 4 * 3);
 		}
 		
-		/* Draw lines between the different attack options */
-		graphics.setColor(gray);
-		graphics.fillRect(origin.x + border, size.height - optionsHeight/2 - 2 + border,
-				size.width - 2 * border, 4); // horizontal
-		graphics.fillRect(origin.x + size.width/2 - border - 2, size.height - optionsHeight + border,
-				4, size.height - optionsHeight); // vertical
+		// Waiting Screen
+		if (attackScreen == AttackScreens.WAITING) {
+			graphics.setColor(black);
+			graphics.drawString("Waiting for oponent's action... ", optionsWidth / 4 - 20, fightWindowHeight + optionsHeight / 2);
+		}
+		
+		if (attackScreen != AttackScreens.WAITING) {
+			/* Draw lines between the different attack options */
+			graphics.setColor(gray);
+			graphics.fillRect(origin.x + border, size.height - optionsHeight/2 - 4 + border,
+					size.width - 2 * border, 4); // horizontal
+			graphics.fillRect(origin.x + size.width/2 - border - 2, size.height - optionsHeight + border,
+					4, size.height - optionsHeight); // vertical
+		}
 	}
 
 	@Override
@@ -259,19 +267,19 @@ public class Fight extends View {
 		this.potionTakingActive = false;
 		
 		if (x > origin.x + border && x < origin.x + border + optionsWidth / 2 - 2
-				&& y > size.height - optionsHeight + border && y < size.height - optionsHeight/2 - 2 + border) {
+				&& y > size.height - optionsHeight + border && y < size.height - optionsHeight/2 - 4 + border) {
 			attackOption = AttackOptions.OPTION1;
 		}
 		else if (x > origin.x + border && x < origin.x + border + optionsWidth / 2 - 2
-				&& y > size.height - optionsHeight/2 + 2 && y < size.height) {
+				&& y > size.height - optionsHeight/2 && y < size.height) {
 			attackOption = AttackOptions.OPTION3;
 		}
 		else if (x > origin.x + size.width/2 - border + 2 && x < origin.x + size.width - border 
-				&& y > size.height - optionsHeight + border && y < size.height - optionsHeight/2 - 2 + border) {
+				&& y > size.height - optionsHeight + border && y < size.height - optionsHeight/2 - 4 + border) {
 			attackOption = AttackOptions.OPTION2;
 		}
 		else if (x > origin.x + size.width/2 - border + 2 && x < origin.x + size.width - border 
-				&& y > size.height - optionsHeight/2 + 2 && y < size.height) {
+				&& y > size.height - optionsHeight/2 && y < size.height) {
 			attackOption = AttackOptions.OPTION4;
 		}
 		
@@ -284,9 +292,11 @@ public class Fight extends View {
 						attackScreen = AttackScreens.ATTACK;
 						break;
 					case OPTION2: System.out.println("Parry");
+						this.attackScreen = AttackScreens.WAITING;
 						break;
 					case OPTION3: System.out.println("Change Set");
 						armorView.switchSet();
+						this.attackScreen = AttackScreens.WAITING;
 						break;
 					case OPTION4: System.out.println("Potion");
 							this.potionTakingActive = true;
@@ -297,12 +307,16 @@ public class Fight extends View {
 				
 				switch (attackOption) {
 					case OPTION1: System.out.println("Chest");
+						this.attackScreen = AttackScreens.WAITING;
 						break;
 					case OPTION2: System.out.println("Head");
+						this.attackScreen = AttackScreens.WAITING;
 						break;
 					case OPTION3: System.out.println("Arms");
+						this.attackScreen = AttackScreens.WAITING;
 						break;
 					case OPTION4: System.out.println("Legs");
+						this.attackScreen = AttackScreens.WAITING;
 						break;
 				}
 			}
