@@ -22,6 +22,7 @@ import views.Chat;
 import views.GameEnvironment;
 import views.InventoryView;
 import general.Enums.AttackScreens;
+import general.Enums.Attacks;
 import general.Enums.CreatureType;
 import general.Enums.ImageSize;
 import general.Enums.UsedClasses;
@@ -343,6 +344,7 @@ public class Game extends BasicGame {
 						if ((e = armorView.drinkPotion((Potion) draggedItem, x, y, inventoryView)) != null) {
 							armorView.backPotion((Potion) e);
 						} else {
+							fightInstance.setActiveAttackType(Attacks.POTION);
 							fightInstance.setPotionTakingActive(false);
 							fightInstance.setAttackScreen(AttackScreens.WAITING);
 						}

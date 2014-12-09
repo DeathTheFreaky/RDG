@@ -3,6 +3,7 @@ package general;
 import elements.Element;
 import elements.Item;
 import gameEssentials.Game;
+import general.Enums.Attacks;
 import general.Enums.ItemClasses;
 import general.Enums.Levels;
 
@@ -195,5 +196,30 @@ public class Chances {
 		}
 		
 		return null;
+	}
+
+	/**Returns a random monster attack.
+	 * @return a random monster attack
+	 */
+	public static Attacks randomAttackType() {
+
+		Random r = new Random();
+		Attacks randAttackType = null;
+		
+		float randFloat = r.nextFloat();
+		
+		if (randFloat < 0.2) {
+			randAttackType = Attacks.TORSO;
+		} else if (randFloat >= 0.2 && randFloat < 0.4) {
+			randAttackType = Attacks.HEAD;
+		} else if (randFloat >= 0.4 && randFloat < 0.6) {
+			randAttackType = Attacks.ARMS;
+		} else if (randFloat >= 0.6 && randFloat < 0.8) {
+			randAttackType = Attacks.LEGS;
+		} else if (randFloat >= 0.8 && randFloat < 1) {
+			randAttackType = Attacks.PARRY;
+		}
+		
+		return randAttackType;
 	}
 }

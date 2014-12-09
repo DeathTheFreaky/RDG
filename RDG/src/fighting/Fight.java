@@ -15,6 +15,10 @@ import elements.Potion;
 import gameEssentials.Player;
 import general.AttackFactory;
 import general.Chances;
+import general.Enums.ArmorStats;
+import general.Enums.ArmorStatsAttributes;
+import general.Enums.ArmorStatsMode;
+import general.Enums.ArmorStatsTypes;
 import general.Enums.AttackOptions;
 import general.Enums.AttackScreens;
 import general.Enums.Attacks;
@@ -58,10 +62,19 @@ public class Fight extends View {
 	// Instances of all available attacks
 	Map<Attacks, Attack> attacks = null;
 	
+	/* Selected Attack option from Fight menu - used for both player and enemy 
+	 * - needs to be set to null in between */
+	Attacks activeAttackType = null;
+	
+	/* actual instance of an attack (ARMS, HEAD, CHEST, LEGS) - used for both player and enemy 
+	 * - needs to be set to null in between  */
 	Attack activeAttack = null;
+	
+	/* balancing of parrying */
 	float parryMultiplier = 1.0f;
 
-	int ende = 1;
+	/* end of a fight */
+	int end = 1;
 
 	/* Reference to the Game, where this Fight belongs to */
 	private GameEnvironment gameEnvironment;
@@ -81,7 +94,23 @@ public class Fight extends View {
 	
 	/* Determine type of attack screen */
 	private AttackScreens attackScreen = AttackScreens.MAIN;
+	
+	/* player vs player host */
+	private Boolean humanFightHost = false;
+	private Boolean humanFightSlave = false;
+	private Boolean humanFight = false; 
+	
+	/* used in human fight to determine which player gets first attack */
+	int thisPlayerisFirst = 0;
 
+	/**Constructs a Fight Instance, which will provide an environment for all fights a player engages in.
+	 * @param origin
+	 * @param size
+	 * @param ge
+	 * @param player
+	 * @param armorView
+	 * @throws SlickException
+	 */
 	public Fight(Point origin, Dimension size, GameEnvironment ge, Player player, ArmorView armorView)
 			throws SlickException {
 		super("Fight", origin, size);
@@ -95,39 +124,7 @@ public class Fight extends View {
 		this.armorView = armorView;
 		
 	}
-
-	/**
-	 * Starts a new Fight
-	 * 
-	 * @param creature
-	 *            - handsover the enemy
-	 * @return true or false, if a fight already has started
-	 */
-	public boolean newFight(Creature creature) {
-		/* if a fight already is started, return */
-		if (activeFight) {
-			return false;
-		}
-		else {
-			activeFight = true;
-			System.out.println("fight is now active");
-		}
-
-		this.enemy = creature;
-		this.healthEnemyOr = creature.getOrHp();
-		this.healthSelfOr = player.getOrHp();
-		this.healthEnemy = creature.getHp();
-		this.healthSelf = player.getHp();
-
-		return true;
-	}
-
-	private void reset() {
-		this.activeFight = false;
-		this.enemy = null;
-		this.attackScreen = AttackScreens.MAIN;
-	}
-
+	
 	@Override
 	public void draw(GameContainer container, Graphics graphics) {
 
@@ -226,35 +223,6 @@ public class Fight extends View {
 	public void update() {
 		// TODO Auto-generated method stub
 	}
-
-	/**Indicates if a fight is currently active.
-	 * @return if fight is active
-	 */
-	public boolean isInFight() {
-		return this.activeFight;
-	}
-	
-	/**
-	 * 
-	 */
-	public void resetStatusVariables() {
-		this.changeTabActive = false;
-		this.potionTakingActive = false;
-	}
-	
-	/**Sets the current attackScreen in a fight (main menu, sub menu).
-	 * @param attackScreen
-	 */
-	public void setAttackScreen(AttackScreens attackScreen) {
-		this.attackScreen = attackScreen;
-	}
-	
-	/**
-	 * @return the current attackScreen in a fight (main menu, sub menu)
-	 */
-	public AttackScreens getAttackScreens() {
-		return this.attackScreen;
-	}
 	
 	/**Checks which option was selected in Fight menu.
 	 * @param x
@@ -292,14 +260,16 @@ public class Fight extends View {
 						attackScreen = AttackScreens.ATTACK;
 						break;
 					case OPTION2: System.out.println("Parry");
+						this.activeAttackType = Attacks.PARRY;
 						this.attackScreen = AttackScreens.WAITING;
 						break;
 					case OPTION3: System.out.println("Change Set");
-						armorView.switchSet();
+						this.activeAttackType = Attacks.SET;
 						this.attackScreen = AttackScreens.WAITING;
 						break;
 					case OPTION4: System.out.println("Potion");
-							this.potionTakingActive = true;
+						//activeAttackType is set in Armor View -> drinkPotion()
+						this.potionTakingActive = true;
 						break;
 				}
 				
@@ -307,20 +277,76 @@ public class Fight extends View {
 				
 				switch (attackOption) {
 					case OPTION1: System.out.println("Chest");
+						this.activeAttackType = Attacks.TORSO;
 						this.attackScreen = AttackScreens.WAITING;
 						break;
 					case OPTION2: System.out.println("Head");
+						this.activeAttackType = Attacks.HEAD;
 						this.attackScreen = AttackScreens.WAITING;
 						break;
 					case OPTION3: System.out.println("Arms");
+						this.activeAttackType = Attacks.ARMS;
 						this.attackScreen = AttackScreens.WAITING;
 						break;
 					case OPTION4: System.out.println("Legs");
+						this.activeAttackType = Attacks.LEGS;
 						this.attackScreen = AttackScreens.WAITING;
 						break;
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Starts a new Fight
+	 * 
+	 * @param creature
+	 *            - handsover the enemy
+	 * @return true or false, if a fight already has started
+	 */
+	public boolean newFight(Creature creature) {
+		
+		/* if a fight already is started, return */
+		if (activeFight) {
+			return false;
+		}
+		else {
+			activeFight = true;
+		}
+
+		this.enemy = creature;
+		this.healthEnemyOr = creature.getOrHp();
+		this.healthSelfOr = player.getOrHp();
+		this.healthEnemy = creature.getHp();
+		this.healthSelf = player.getHp();
+		this.humanFight = false; //reset to false before checking if it is a human fight
+		
+		fight();
+
+		return true;
+	}
+
+	/**Reset fight variables to default values.
+	 */
+	private void reset() {
+		this.activeFight = false;
+		this.enemy = null;
+		this.attackScreen = AttackScreens.MAIN;
+		this.changeTabActive = false;
+		this.potionTakingActive = false;
+		this.thisPlayerisFirst = 0;
+		this.activeAttackType = null;
+		this.activeAttack = null;
+	}
+	
+	/**Reset variables that need to be resetted each round in a fight.
+	 */
+	public void resetRoundVariables() {
+		this.changeTabActive = false;
+		this.potionTakingActive = false;
+		this.thisPlayerisFirst = 0;
+		this.activeAttackType = null;
+		this.activeAttack = null;
 	}
 
 	/**
@@ -329,25 +355,38 @@ public class Fight extends View {
 	 * @param player
 	 * @param enemy
 	 */
-	public void fight(Player player, Creature enemy) {
-		boolean faster = false;
-		if (player.getSpeed() > enemy.getSpeed()) {
-			faster = true;
-		} else if (player.getSpeed() < enemy.getSpeed()) {
-			faster = false;
-		} else {
-			// random decision
-			if (Math.random() >= 0.5) {
-				faster = true;
-			} else {
-				faster = false;
-			}
-		}
+	public void fight() {
 		
+		/* Determine if this is a human fight. */
+		this.humanFight = humanFightInitialization();
+		
+		/* Main fight loop */
 		while (player.getHp() > 0 && enemy.getHp() > 0) { // as long as nobody died
-
+			
+			Creature creature1 = null; //player1 comes first in a round
+			Creature creature2 = null;
+			
+			/* Determine which creature gets the first Attack in a fight. */
+			int firstAttackTemp =  determineFirstAttack();
+			
+			if (firstAttackTemp == 1) {
+				creature1 = this.player;
+				creature2 = this.enemy;
+			}
+			else if (firstAttackTemp == 2) {
+				creature1 = this.enemy;
+				creature2 = this.player;
+			}
+			
+			/* perform Attack of creature first in round */
+			attackControl(creature1);
+			
+			/* set to null between attacks of player and enemy to determine if attack was already chosen */
 			activeAttack = null;
-			parryMultiplier = 1.0f;
+			activeAttackType = null;
+			
+			/* perform Attack of creature first in round */
+			attackControl(creature2);
 			
 			if (faster) {	// player is faster than enemy
 				/* player actions */
@@ -367,6 +406,7 @@ public class Fight extends View {
 					break;
 				case SET:
 					/* change weapon-set */
+					armorView.switchSet();
 					break;
 				case POTION:
 					/* select potion */
@@ -444,7 +484,7 @@ public class Fight extends View {
 					activeAttack = attacks.get(Attacks.LEGS);
 					break;
 				case SET:
-					/* change weapon-set */
+					armorView.switchSet();
 					break;
 				case POTION:
 					/* bla bla bla, select potion, bla bla bla */
@@ -480,6 +520,237 @@ public class Fight extends View {
 		reset();
 	}
 	
+	/**Controls which Actions to perform when an attack has been chosen by a creature.
+	 * @param creature
+	 */
+	private void attackControl(Creature creature) {
+		
+		/* player chooses what to do */
+		switch(getCommand(creature)) {
+		case TORSO:
+			activeAttack = attacks.get(Attacks.TORSO);
+			break;
+		case HEAD:
+			activeAttack = attacks.get(Attacks.HEAD);
+			break;
+		case ARMS:
+			activeAttack = attacks.get(Attacks.ARMS);
+			break;
+		case LEGS:
+			activeAttack = attacks.get(Attacks.LEGS);
+			break;
+		case SET:
+			armorView.switchSet();
+			break;
+		case POTION:
+			/* select potion */
+			
+			// PROBLEMS HERE -> ARMORVIEW MUST ADD POTION TO LIST OF POTIONS - OR HERE
+			
+			
+			
+			
+			
+			
+			Potion selected = null;
+			// select potion|how?
+			usePotion(player, enemy, selected);
+			break;
+		case PARRY:
+			/*  */
+			parryMultiplier = 2.0f;
+			if (parrySuccess(player, enemy) == true) {
+				activeAttack = attacks.get(Attacks.TORSO);	// muss man noch rausfinden was am besten is (ich war ja für head aber flo für torso xD)
+				break;
+			}
+			break;
+		default:
+			break;
+		}
+		
+		/* actual attack */
+		attack(player, enemy);
+		parryMultiplier = 1.0f;	// multiplier zurücksetzen
+		
+		/* check if enemy died */
+		if (enemy.getHp() == 0) {	// enemy is dead -> leave switch
+			break;
+		}
+		
+		/* potion effects player*/
+		potionEffects(player);
+		
+		
+		/* enemy actions */
+		/*
+		 *  random decision what kind of attack the enemy will do
+		 *  random decision: torso weil ausprobieren!
+		 */
+		activeAttack = attacks.get(Attacks.TORSO);
+		attack(enemy, player);
+		
+		/* potion effects enemy */
+		potionEffects(enemy);
+	}
+
+	/**Determine which creature comes first in a round.
+	 * @return 1 if thisPlayer comes first, 2 if enemy comes first
+	 */
+	private int determineFirstAttack() {
+		
+		if (humanFightSlave == false) {
+			
+			/* balancing values */
+			float playerSpeedRandLow = 0.0f;
+			float playerSpeedRandHigh = 1.0f;
+			float enemySpeedRandLow = 0.0f;
+			float enemySpeedRandHigh = 1.0f;
+			
+			/* equipped armament causes a malus on first attack chances */
+			float playerArmorSpeedMalusSum = armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.SPEED);
+			float enemyArmorSpeedMalusSum = 0;
+			float ArmorSpeedMalusMultiplier = 0.5f;
+			
+			/* Some methods must be implemented to communicate with other computer about enemie's attribute values and potions and equipment */
+			if (this.enemy instanceof Player) {
+				enemyArmorSpeedMalusSum = armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.SPEED);
+			}
+			
+			/* actual calculated malus from equipped armament substracted from Player's speed */
+			float playerArmorSpeedMalus;
+			float enemyArmorSpeedMalus;
+			
+			if (playerArmorSpeedMalusSum >= 1) {
+				playerArmorSpeedMalus = player.getSpeed() / (ArmorSpeedMalusMultiplier * playerArmorSpeedMalusSum);
+			}
+			else {
+				playerArmorSpeedMalus = 0;
+			}
+			if (enemyArmorSpeedMalusSum >= 1) {
+				enemyArmorSpeedMalus = enemy.getSpeed() / (ArmorSpeedMalusMultiplier * enemyArmorSpeedMalusSum);
+			}
+			else {
+				enemyArmorSpeedMalus = 0;
+			}
+			
+			/* the initial speed - momentum  - does not consider armor -> armor is considered for hit probability */
+			float playerSpeed = (player.getSpeed() - playerArmorSpeedMalus) * Chances.randomFloat(playerSpeedRandLow, playerSpeedRandHigh);
+			float enemySpeed = (enemy.getSpeed() - enemyArmorSpeedMalus) * Chances.randomFloat(enemySpeedRandLow, enemySpeedRandHigh);
+			
+			if (playerSpeed > enemySpeed) {
+				thisPlayerisFirst = 1;
+			} else if (playerSpeed < enemySpeed) {
+				thisPlayerisFirst = 2;
+			} else {
+				// random decision
+				if (Math.random() >= 0.5) {
+					thisPlayerisFirst = 1;
+				} else {
+					thisPlayerisFirst = 2;
+				}
+			}
+			
+			if (humanFightHost == true) {
+				// SEND RESULT OF CALCULATION TO SLAVE
+			}
+		}
+		else {
+			
+			int timeoutctr = 0;
+			boolean successfulCommunication  = false;
+			
+			/* wait for fight host to set needed information */
+			while (this.thisPlayerisFirst == 0) {
+				
+				if (this.thisPlayerisFirst != 0) {
+					successfulCommunication  = true;
+					break;
+				}
+				
+				if (timeoutctr == 10) {
+					break;
+				}
+				
+				timeoutctr++;
+				Thread.sleep(100);
+			}
+			
+			if (successfulCommunication == false) {
+				System.err.println("Calculation of initial attack timed out...");
+				new Exception("Calculation of initial attack failed");
+			}
+		}	
+	}
+
+	/**Waits for and manages humanFightInitialization.
+	 * @return true if it is a humenFight
+	 */
+	private boolean humanFightInitialization() {
+		
+		if (this.enemy instanceof Player) {
+			
+			int timeoutctr = 0;
+			boolean successfulCommunication = false;
+			
+			/* wait for fight host to set needed information */
+			while (humanFightHost == false && humanFightSlave == false) {
+				
+				if ((humanFightHost == true && humanFightSlave == false) || 
+						(humanFightHost == false && humanFightSlave == true)) {
+					successfulCommunication = true;
+					break;
+				}
+				
+				if (timeoutctr == 10) {
+					break;
+				}
+				
+				timeoutctr++;
+				Thread.sleep(100);
+			}
+			
+			if (successfulCommunication == false) {
+				System.err.println("Distribution of Human Fight Roles timed out...");
+				new Exception("Distribution of Human Fight Roles failed");
+			}
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Including weapon-set change and potions!
+	 * because this method is used by ALL creatures, <br>
+	 * NPCs have to use a randomly selected attack or parry (no weapon change or potions). <br>
+	 * Not called for human enemies.
+	 * 
+	 * @return enum of player's choice
+	 */
+	public Attacks getCommand(Creature creature) {
+				
+		/* checks which option was selected, returns enum */
+		Attacks chosenAttackType = null;
+		
+		if (creature instanceof Player) {
+			/* wait for player to chose an attack */
+			while (this.activeAttackType == null) {
+				
+				if (this.activeAttackType != null) {
+					chosenAttackType = this.activeAttackType;
+				}
+				
+				Thread.sleep(100);
+			}
+		}
+		else {
+			chosenAttackType = Chances.randomAttackType();
+		}
+		
+		return chosenAttackType;
+	}
+
 	/**
 	 * This method is used whenever someone is attacked
 	 * 
@@ -534,6 +805,9 @@ public class Fight extends View {
 		return damage;
 	}
 	
+	/**Update an opponent's attributes in reaction to an attack.
+	 * @param creature
+	 */
 	public void updateAttributes(Creature creature) {
 		switch(activeAttack.effect) {
 		case HP:
@@ -577,7 +851,7 @@ public class Fight extends View {
 	}
 	
 	/**
-	 * called every time the player uses a potion (directly or indirectly)
+	 * Is called every time the player uses a potion (directly or indirectly).
 	 */
 	public void usePotion(Creature attacker, Creature defender, Potion potion) {
 		// if player uses antidote / removes the first poison in the list
@@ -698,18 +972,25 @@ public class Fight extends View {
 		}
 	}
 	
-	/**
-	 * Including weapon-set change and potions!
-	 * because this method is used by ALL creatures, <br>
-	 * NPCs have to use a randomly selected attack or parry (no weapon change or potions)
-	 * 
-	 * @return enum of player's choice
+	/**Indicates if a fight is currently active.
+	 * @return if fight is active
 	 */
-	public Attacks getCommand() {
-		/* checks which option was selected, returns enum */
-		
-		
-		return null;
+	public boolean isInFight() {
+		return this.activeFight;
+	}
+	
+	/**Sets the current attackScreen in a fight (main menu, sub menu).
+	 * @param attackScreen
+	 */
+	public void setAttackScreen(AttackScreens attackScreen) {
+		this.attackScreen = attackScreen;
+	}
+	
+	/**
+	 * @return the current attackScreen in a fight (main menu, sub menu)
+	 */
+	public AttackScreens getAttackScreens() {
+		return this.attackScreen;
 	}
 	
 	/**Sets the active status of ChangeTab to allow or disallow changing Weapon Sets.
@@ -733,7 +1014,44 @@ public class Fight extends View {
 		this.potionTakingActive = activeStatus;
 	}
 	
+	/**Allows a player to drink a potion when set to true.
+	 * @return if a player may drink a potion
+	 */
 	public boolean isPotionTakingActive() {
 		return this.potionTakingActive;
+	}
+	
+	/**Only the fight's host calculates the "first attack" in a round.
+	 * 
+	 * @param host
+	 * @param slave
+	 */
+	public synchronized void setHumanFightParties(Creature host, Creature slave) {
+		if (host == this.player) {
+			this.humanFightHost = true;
+		}
+		else {
+			this.humanFightSlave = true;
+		}
+	}
+	
+	/**Called by a networking class to set result of FirstAttacker calculation at fight host.
+	 * @param firstAttacker
+	 */
+	public synchronized void setFirstAttacker(Boolean firstAttacker) {
+		
+		if (firstAttacker) {
+			this.thisPlayerisFirst = 1;
+		}
+		else {
+			this.thisPlayerisFirst = 2;
+		}
+	}
+	
+	/**Sets the acitveAttackType - called by Game.java for Use of Potions.
+	 * 
+	 */
+	public void setActiveAttackType(Attacks attackType) {
+		this.activeAttackType = attackType;
 	}
 }

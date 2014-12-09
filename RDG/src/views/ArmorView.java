@@ -10,11 +10,14 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
+import elements.Armament;
 import elements.Element;
 import elements.Equipment;
 import elements.Potion;
 import elements.Weapon;
-import fighting.Fight;
+import general.Enums.ArmorStatsAttributes;
+import general.Enums.ArmorStatsMode;
+import general.Enums.ArmorStatsTypes;
 import general.Enums.ImageSize;
 import general.Enums.Potions;
 import general.Enums.WeaponTypes;
@@ -410,9 +413,9 @@ public class ArmorView extends View {
 				&& y < ORIGIN_Y + size.height - tabHeight - 5) {
 			System.out.println("potion taken");
 			
+			//Send info about taken potion to enemy ? -> only if potion effects enemy?
+			
 			//add potion to list of active potions in fight
-			
-			
 			p = null; //only for testing purposes
 		}
 		
@@ -883,5 +886,35 @@ public class ArmorView extends View {
 		} else {
 			potion2_types.put(potion.POTION_TYPE, potion);
 		}
+	}
+
+	/**Returns sum of all values for a specific armament attribute of all equipped armaments.
+	 * @param speed
+	 * @return
+	 */
+	public float getStats(ArmorStatsTypes type, ArmorStatsMode mode, ArmorStatsAttributes att) {
+		
+		float value = 0f;
+		Collection<Equipment> myEquipment = null;
+		
+		if (set) {
+			myEquipment = equipment1;
+		} else {
+			myEquipment = equipment2;
+		}
+		
+		for (Equipment e : myEquipment) {
+			if (type == ArmorStatsTypes.ARMAMENT) {
+				if (e instanceof Armament) {
+					if (mode == ArmorStatsMode.SUM) {
+						if (att == ArmorStatsAttributes.SPEED) {
+							value += ((Armament) e).SPEED;
+						}
+					}
+				}
+			}
+		}
+		
+		return value;
 	}
 }

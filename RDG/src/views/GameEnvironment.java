@@ -201,7 +201,6 @@ public class GameEnvironment extends View {
 	 * @param creature - the enemy
 	 */
 	public void startFight(Creature creature) {
-		System.out.println("started fight");
 		fightInstance.newFight(creature);
 	}
 	
