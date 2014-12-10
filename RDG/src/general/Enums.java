@@ -38,7 +38,7 @@ public class Enums {
 	public enum Potions{POTION1, POTION2, POTION3};
 	public enum AttackScreens{MAIN, ATTACK, WAITING};
 	public enum AttackOptions{OPTION1, OPTION2, OPTION3, OPTION4};
-	public enum ArmorStatsAttributes{ARMOR, SPEED};
+	public enum ArmorStatsAttributes{ARMOR, SPEED, ACCURACY};
 	public enum ArmorStatsTypes{ARMAMENT, WEAPONS};
 	public enum ArmorStatsMode{SUM, AVERAGE, MIN};
 	

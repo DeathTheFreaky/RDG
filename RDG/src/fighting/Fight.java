@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.util.Map;
 
+import javax.xml.crypto.dsig.spec.HMACParameterSpec;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -11,6 +13,7 @@ import org.newdawn.slick.SlickException;
 
 import elements.Attack;
 import elements.Creature;
+import elements.Monster;
 import elements.Potion;
 import gameEssentials.Player;
 import general.AttackFactory;
@@ -115,6 +118,18 @@ public class Fight extends View {
 		/* the enemy calculates if a parry was successful */
 		boolean enemyParrySuccess = false;
 		boolean enemyParrySuccessSet = false;
+		
+		/* speed and armor stats are needed to calculate the attack damages */
+		float enemyArmorSum = 0;
+		float enemySpeed = 0;
+		float enemyAccuracy = 0;
+		boolean enemyStatsSet = false;
+		
+		/* the enemy calculates the health and attribute damage of its attack */
+		float enemyAttackHealthDamage = 0;
+		float enemyAttackAttributeDamage = 0;
+		float enemyAttackHitProbability = 0;
+		boolean enemyAttackSet = false;
 
 	/**Constructs a Fight Instance, which will provide an environment for all fights a player engages in.
 	 * @param origin
@@ -345,16 +360,12 @@ public class Fight extends View {
 		this.activeFight = false;
 		this.enemy = null;
 		this.attackScreen = AttackScreens.MAIN;
-		this.changeTabActive = false;
-		this.potionTakingActive = false;
-		this.thisPlayerisFirst = 0;
-		this.activeAttackType = null;
-		this.activeAttack = null;
+		resetRoundVariables();
 	}
 	
 	/**Reset variables that need to be resetted each round in a fight.
 	 */
-	public void resetRoundVariables() {
+	private void resetRoundVariables() {
 		this.changeTabActive = false;
 		this.potionTakingActive = false;
 		this.thisPlayerisFirst = 0;
@@ -365,6 +376,14 @@ public class Fight extends View {
 		this.selectedPotion = null;
 		this.enemyParrySuccess = false;
 		this.enemyParrySuccessSet = false;
+		this.enemyAttackHealthDamage = 0;
+		this.enemyAttackAttributeDamage = 0;
+		this.enemyAttackHitProbability = 0;
+		this.enemyAttackSet = false;
+		this.enemyArmorSum = 0;
+		this.enemySpeed = 0;
+		this.enemyStatsSet = false;
+		this.enemyAccuracy = 0;
 	}
 
 	/**
@@ -373,7 +392,7 @@ public class Fight extends View {
 	 * @return the looser of a fight
 	 * @throws InterruptedException 
 	 */
-	public Creature fight() throws InterruptedException {
+	private Creature fight() throws InterruptedException {
 		
 		/* Determine if this is a human fight. */
 		this.humanFight = humanFightInitialization();
@@ -535,14 +554,8 @@ public class Fight extends View {
 		
 		if (humanFightSlave == false) {
 			
-			Boolean waitForOtherPlayer = false;
-			
-			if (this.enemy instanceof Player) {
-				waitForOtherPlayer = true;
-			}
-			
 			/* calculate which player comes first */
-			if (speedBasedSuccess(this.player, this.enemy, waitForOtherPlayer) == true) {
+			if (speedBasedSuccess(this.player, this.enemy) == true) {
 				thisPlayerisFirst = 1;
 			} else {
 				thisPlayerisFirst = 2;
@@ -633,7 +646,7 @@ public class Fight extends View {
 	 * @return enum of player's choice
 	 * @throws InterruptedException 
 	 */
-	public Attacks getCommand(Creature creature) throws InterruptedException {
+	private Attacks getCommand(Creature creature) throws InterruptedException {
 				
 		/* checks which option was selected, returns enum */
 		Attacks chosenAttackType = null;
@@ -662,57 +675,166 @@ public class Fight extends View {
 	 * obtain the result value from the other player.
 	 * 
 	 * @param attacker, defender
+	 * @throws InterruptedException 
 	 */
-	public void attack(Creature attacker, Creature defender) {
+	private void attack(Creature attacker, Creature defender) throws InterruptedException {
+		
+		/* Attacks are designed to be calculated on each host knowing 
+		 * the raw healthDamage, attributeDamage and HitProbability of the attacker. 
+		 * Strength, accuracy and weapon damage are already included in these values.
+		 * Beforehand, the defender must provide its armor and speed values 
+		 * for to the attacker to calculate all necessary information. */
+		
+		/* if this is a human fight, wait for other party to send relevant data */
+		if (attacker == this.player && humanFight) {
+			
+			/* Wait for enemie's stats for attack calculation */
+			int timeoutctr = 0;
+			boolean successfulCommunication = false;
+			
+			/* wait for fight host to set needed information */
+			while (timeoutctr <= 10) {
+				
+				if (enemyStatsSet == true) {
+					successfulCommunication = true;
+					break;
+				}
+				
+				if (timeoutctr == 10) {
+					break;
+				}
+				
+				timeoutctr++;
+				Thread.sleep(100);
+			}
+			
+			if (successfulCommunication == false) {
+				System.err.println("Waiting for enemyStats timed out...");
+				new Exception("Waiting for enemyStats failed");
+			}
+		}
+		else if (attacker != this.player && humanFight) {
+			
+			float armorSum = armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.ARMOR);
+			float speed = calcCreatureSpeed(this.player);
+			
+			//TELL THE ATTACKER OUR OWN SPEED AND AMORSUM VALUES -> message(speed, value); message(armorsum, value)
+			
+			/* Wait for enemie's attack calculation */
+			int timeoutctr = 0;
+			boolean successfulCommunication = false;
+			
+			/* wait for fight host to set needed information */
+			while (timeoutctr <= 10) {
+				
+				if (enemyAttackSet == true) {
+					successfulCommunication = true;
+					break;
+				}
+				
+				if (timeoutctr == 10) {
+					break;
+				}
+				
+				timeoutctr++;
+				Thread.sleep(100);
+			}
+			
+			if (successfulCommunication == false) {
+				System.err.println("Waiting for enemyAttackDamage timed out...");
+				new Exception("Waiting for enemyAttackDamage failed");
+			}
+		}
+		
+		/* finished retrieving necessary data */
 		
 		if (activeAttack == null) return;
 		
+		/* now calculate the actual attacks */
 		if (calcHitSuccess(attacker, defender) == true) {
 			
 			float damage = calcDamage(attacker, defender);	// could be used to display Damage on Screen
 			updateHealth(defender, damage);
 			updateAttributes(defender);
-		}
-	}
-	
-	/**
-	 * Calculates if Attack is successful
-	 * 
-	 * @return true if Attack is successful
-	 */
-	public boolean calcHitSuccess(Creature attacker, Creature defender) {
-		if ((attacker.getAccuracy() * 1/*weapon accuracy*/ * activeAttack.hitProbability) - (defender.getOrSpeed() * 1) >= 0.5) {
-			return true;
 		} else {
-			return false;
+			if (attacker == this.player && humanFight) {
+				
+				//SEND 0 as ATTACK DAMAGE VALUES TO OTHER PARTIE -> in updateHealth, updateAttributes
+			}
 		}
+		
+		/* reset values */
+		this.enemyArmorSum = 0;
+		this.enemySpeed = 0;
+		this.enemyAccuracy = 0;
+		this.enemyStatsSet = false;
+		this.enemyAttackHealthDamage = 0;
+		this.enemyAttackAttributeDamage = 0;
+		this.enemyAttackSet = false;
 	}
 	
-	/**Calculates the faster creature for initial attack and parry success.<br>
-	 * Creature speed, armor speed malus value and weapon speed are taken into account.<br>
-	 * @param attacker
-	 * @param defender
-	 * @param waitForOtherPlayer
-	 * @return true if the attacker succeeds, false if the defender succeeds
-	 * @throws InterruptedException
+	/**Calculate the accuracy of a creature, taking into account the multipliers from a player's weapons.
+	 * @param creature
+	 * @return
 	 */
-	public boolean speedBasedSuccess(Creature attacker, Creature defender, Boolean waitForOtherPlayer) throws InterruptedException {
+	private float calcCreatureAccuracy(Creature creature) {
 		
-		boolean attackerSucceeds = false;
+		float accuracy = 0;
 		
-		/* balancing values */
-		float attackerSpeedRandLow = 0.0f;
-		float attackerSpeedRandHigh = 1.0f;
-		float defenderSpeedRandLow = 0.0f;
-		float defenderSpeedRandHigh = 1.0f;
+		/* get accuracy of a monster */
+		if (creature instanceof Monster) {
+			return creature.getAccuracy();
+		}
 		
-		float attackerArmorSpeedMalusSum = armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.SPEED);
-		float attackerWeaponSpeedMalusMax = armorView.getStats(ArmorStatsTypes.WEAPONS, ArmorStatsMode.MIN, ArmorStatsAttributes.SPEED);
-		float defenderArmorSpeedMalusSum = 0;
-		float defenderWeaponSpeedMalusMax = 0;
+		/* get accuracy of local player */
+		if (creature == this.player) {
+			accuracy = creature.getAccuracy() + ...;
+		} 
+		
+		/* get the accuracy of the other player */
+		else {
+			
+		}
+		
+		
+		return accuracy;
+	}
+	
+	/**Calculate the speed of a creature, taking into account mali from armament and weapons of a player.
+	 * @param creature
+	 * @return
+	 * @throws InterruptedException 
+	 */
+	private float calcCreatureSpeed(Creature creature) throws InterruptedException {
+		
+		float speed = 0;
+		
+		/* actual calculated malus from equipped armaments to be substracted from Player's speed */
+		float playerArmorSpeedMalus;
 		float armorSpeedMalusMultiplier = 0.5f;
 		
-		if (waitForOtherPlayer) {
+		/* actual calculated malus multiplier from equipped weapons to be substracted from Player's speed */
+		float playerWeaponSpeedMalusMult;
+		float weaponSpeedMult = 0.5f; // for balancing
+		
+		/* calculated from armor view */
+		float playerArmorSpeedMalusSum = 0;
+		float playerWeaponSpeedMalusMax = 0;
+		
+		/* get speed of a monster */
+		if (creature instanceof Monster) {
+			return creature.getSpeed();
+		}
+		
+		/* get speed of local player */
+		if (creature == this.player) {
+			
+			playerArmorSpeedMalusSum = armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.SPEED);
+			playerWeaponSpeedMalusMax = armorView.getStats(ArmorStatsTypes.WEAPONS, ArmorStatsMode.MIN, ArmorStatsAttributes.SPEED);
+		}
+		
+		/* get speed of other player */
+		else {
 			
 			int timeoutctr = 0;
 			boolean successfulCommunication = false;
@@ -721,8 +843,8 @@ public class Fight extends View {
 			while (timeoutctr <= 10) {
 				
 				if (enemySpeedMalusSumSet == true) {
-					defenderArmorSpeedMalusSum = enemyArmorSpeedMalusSum;
-					defenderWeaponSpeedMalusMax = enemyWeaponSpeedMalusMax;
+					playerArmorSpeedMalusSum = enemyArmorSpeedMalusSum;
+					playerWeaponSpeedMalusMax = enemyWeaponSpeedMalusMax;
 					successfulCommunication = true;
 					break;
 				}
@@ -745,45 +867,46 @@ public class Fight extends View {
 			this.enemyArmorSpeedMalusSum = 0;
 		}
 		
-		/* actual calculated malus from equipped armament to be substracted from Player's speed */
-		float attackerArmorSpeedMalus;
-		float defenderArmorSpeedMalus;
-		
-		if (attackerArmorSpeedMalusSum >= 1) {
-			attackerArmorSpeedMalus = attacker.getSpeed() / (armorSpeedMalusMultiplier * attackerArmorSpeedMalusSum);
+		if (playerArmorSpeedMalusSum >= 1) {
+			playerArmorSpeedMalus = creature.getSpeed() / (armorSpeedMalusMultiplier * playerArmorSpeedMalusSum);
 		}
 		else {
-			attackerArmorSpeedMalus = 0;
-		}
-		if (defenderArmorSpeedMalusSum >= 1) {
-			defenderArmorSpeedMalus = defender.getSpeed() / (armorSpeedMalusMultiplier * defenderArmorSpeedMalusSum);
-		}
-		else {
-			defenderArmorSpeedMalus = 0;
+			playerArmorSpeedMalus = 0;
 		}
 		
-		/* actual calculated malus from equipped weapons to be substracted from Player's speed */
-		float attackerWeaponSpeedMalusMult;
-		float defenderWeaponSpeedMalusMult;
-		float weaponSpeedMult = 0.5f; // for balancing
-		
-		/* attackerWeaponSpeedMalusMax means that the lower the speed value of a weapon, the higher the malus */
-		if (attackerWeaponSpeedMalusMax >= 1) {
-			attackerWeaponSpeedMalusMult = attacker.getSpeed() * attackerWeaponSpeedMalusMax/100 * weaponSpeedMult;
+		/* playerWeaponSpeedMalusMax means that the lower the speed value of a weapon, the higher the malus */
+		if (playerWeaponSpeedMalusMax >= 1) {
+			playerWeaponSpeedMalusMult = creature.getSpeed() * playerWeaponSpeedMalusMax/100 * weaponSpeedMult;
 		}
 		else {
-			attackerWeaponSpeedMalusMult = attacker.getSpeed() * 80/100 * weaponSpeedMult; //80 -> fists: not sure if those are actually equipped
-		}
-		if (defenderWeaponSpeedMalusMax >= 1) {
-			defenderWeaponSpeedMalusMult = defender.getSpeed() * defenderWeaponSpeedMalusMax/100 * weaponSpeedMult;
-		}
-		else {
-			defenderWeaponSpeedMalusMult = defender.getSpeed() * 80/100 * weaponSpeedMult; //80 -> fists: not sure if those are actually equipped
+			playerWeaponSpeedMalusMult = creature.getSpeed() * 80/100 * weaponSpeedMult; //80 -> fists: not sure if those are actually equipped
 		}
 		
 		/* the initial speed - momentum  - does not consider armor -> armor is considered for hit probability */
-		float attackerSpeed = (attacker.getSpeed() - attackerArmorSpeedMalus) * attackerWeaponSpeedMalusMult * Chances.randomFloat(attackerSpeedRandLow, attackerSpeedRandHigh);
-		float defenderSpeed = (defender.getSpeed() - defenderArmorSpeedMalus) * defenderWeaponSpeedMalusMult * Chances.randomFloat(defenderSpeedRandLow, defenderSpeedRandHigh);
+		speed = (creature.getSpeed() - playerArmorSpeedMalus) * playerWeaponSpeedMalusMult;
+		
+		return speed;
+	}
+	
+	/**Calculates the faster creature for initial attack and parry success.<br>
+	 * Creature speed, armor speed malus value and weapon speed are taken into account.<br>
+	 * @param attacker
+	 * @param defender
+	 * @param waitForOtherPlayer
+	 * @return true if the attacker succeeds, false if the defender succeeds
+	 * @throws InterruptedException
+	 */
+	private boolean speedBasedSuccess(Creature attacker, Creature defender) throws InterruptedException {
+		
+		boolean attackerSucceeds = false;
+		
+		/* balancing values */
+		float speedRandLow = 0.0f;
+		float speedRandHigh = 1.0f;
+		
+		/* the initial speed - momentum  - does not consider armor -> armor is considered for hit probability */
+		float attackerSpeed = calcCreatureSpeed(attacker) * Chances.randomFloat(speedRandLow, speedRandHigh);
+		float defenderSpeed = calcCreatureSpeed(defender) * Chances.randomFloat(speedRandLow, speedRandHigh);
 		
 		if (attackerSpeed > defenderSpeed) {
 			attackerSucceeds = true;
@@ -808,28 +931,37 @@ public class Fight extends View {
 	 * @return true if a parry will be successful
 	 * @throws InterruptedException 
 	 */
-	public boolean parrySuccess(Creature attacker, Creature defender) throws InterruptedException {
+	private boolean parrySuccess(Creature attacker, Creature defender) throws InterruptedException {
 		
 		boolean parrySuccess = false;
-		
-		boolean waitForOtherPlayer = false;
-		
+				
 		/* enemy computer shall carry out calculation and tell us the result */
 		if (humanFight && attacker != this.player) {
 			
 			float defenderArmorSpeedMalusSum = armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.SPEED);
 			
-			//SEND OUR OWN ARMOR_SPEED_MALUS_SUM -> message(defenderArmorSpeedMalusSum, value);
-			
-			waitForOtherPlayer = true;
+			//SEND OUR OWN ARMOR_SPEED_MALUS_SUM -> message(defenderArmorSpeedMalusSum, value);			
 		}
 		
 		/* check if defender succeeded with his parry */
-		if ((speedBasedSuccess(attacker, defender, waitForOtherPlayer)) == false) {
+		if ((speedBasedSuccess(attacker, defender)) == false) {
 			parrySuccess = true;
 		} 
 			
 		return parrySuccess;
+	}
+	
+	/**
+	 * Calculates if Attack is successful
+	 * 
+	 * @return true if Attack is successful
+	 */
+	private boolean calcHitSuccess(Creature attacker, Creature defender) {
+		if ((attacker.getAccuracy() * 1/*weapon accuracy*/ * activeAttack.hitProbability) - (defender.getOrSpeed() * 1) >= 0.5) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -837,7 +969,7 @@ public class Fight extends View {
 	 * 
 	 * @return amount of dealt damage
 	 */
-	public float calcDamage(Creature attacker, Creature defender) {
+	private float calcDamage(Creature attacker, Creature defender) {
 		float damage = 0.0f;
 		
 		damage = attacker.getStrength() * 1 /* weapon damage */ * Chances.randomFloat(activeAttack.statsLowMultiplier, activeAttack.statsHighMultiplier) - 0 /* armor values: defender */ * parryMultiplier;
@@ -848,7 +980,7 @@ public class Fight extends View {
 	/**Update an opponent's attributes in reaction to an attack.
 	 * @param creature
 	 */
-	public void updateAttributes(Creature creature) {
+	private void updateAttributes(Creature creature) {
 		switch(activeAttack.effect) {
 		case HP:
 			creature.setHp(creature.getHp()
@@ -876,6 +1008,11 @@ public class Fight extends View {
 		default:
 			break;
 		}
+		
+		if (creature == this.player && humanFight) {
+			
+			//SEND OUR CALCULATED ATTACK DAMAGE VALUES TO OTHER PARTIE -> in updateHealth, updateAttributes
+		}
 	}
 	
 	/**
@@ -885,15 +1022,20 @@ public class Fight extends View {
 	 * @param heal
 	 * @param damage
 	 */
-	public void updateHealth(Creature creature, float damage) {
+	private void updateHealth(Creature creature, float damage) {
 		float hp = creature.getHp() - damage;
 		creature.setHp(hp);
+		
+		if (creature == this.player && humanFight) {
+			
+			//SEND OUR CALCULATED ATTACK DAMAGE VALUES TO OTHER PARTIE -> in updateHealth, updateAttributes
+		}
 	}
 	
 	/**
 	 * Is called every time the player uses a potion (directly or indirectly).
 	 */
-	public void usePotion(Creature potionTaker, Creature opponent, Potion potion) {
+	private void usePotion(Creature potionTaker, Creature opponent, Potion potion) {
 			
 		/* if player uses antidote / removes the first poison in the list */
 		if (potion.MODE == Modes.LIFT) {
@@ -924,7 +1066,7 @@ public class Fight extends View {
 	 * Calculates Potions Effects' on a creature every round.<br>
 	 * Potions whith mode TINCR or TDECR are not applied in this method but in method usePotion().
 	 */
-	public void potionEffects(Creature creature) {	
+	private void potionEffects(Creature creature) {	
 		
 		/* apply all non temporary potion effects */
 		for (Potion potion : creature.getActivePotions()) {
@@ -958,7 +1100,7 @@ public class Fight extends View {
 	 * @param creature
 	 * @param potion
 	 */
-	public void revertEffect(Creature creature, Potion potion) {
+	private void revertEffect(Creature creature, Potion potion) {
 		if (potion.MODE == Modes.TINCR) {
 			potionDecrease(creature, potion);
 		} else if (potion.MODE == Modes.TDECR) {
@@ -972,7 +1114,7 @@ public class Fight extends View {
 	 * @param creature
 	 * @param potion
 	 */
-	public void potionDecrease(Creature creature, Potion potion) {
+	private void potionDecrease(Creature creature, Potion potion) {
 		switch(potion.EFFECT) {
 			case HP:
 				creature.setHp(creature.getHp() - potion.POWER);
@@ -997,7 +1139,7 @@ public class Fight extends View {
 	 * @param creature
 	 * @param potion
 	 */
-	public void potionIncrease(Creature creature, Potion potion) {
+	private void potionIncrease(Creature creature, Potion potion) {
 		switch(potion.EFFECT) {
 			case HP:
 				creature.setHp(creature.getHp() + potion.POWER);
@@ -1117,6 +1259,24 @@ public class Fight extends View {
 		
 		this.enemyParrySuccess = enemyParrySuccess;
 		this.enemyParrySuccessSet = true;
+	}
+	
+	/**Called by a networking class to set the calculated attack damages.
+	 * @param healthDamage
+	 * @param attributeDamage
+	 * @param hitProbability
+	 */
+	public synchronized void setEnemyAttack (float healthDamage, float attributeDamage, float hitProbability) {
+		this.enemyAttackHealthDamage = healthDamage;
+		this.enemyAttackAttributeDamage = attributeDamage;
+		this.enemyAttackHitProbability = hitProbability;
+		this.enemyAttackSet = true;
+	}
+	
+	public synchronized void setEnemyStats (float armorSum, float speed) {
+		this.enemyArmorSum = armorSum;
+		this.enemySpeed = speed;
+		this.enemyStatsSet = true;
 	}
 	
 	/**Sets the acitveAttackType - called by Game.java for Use of Potions.

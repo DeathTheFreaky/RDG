@@ -908,6 +908,60 @@ public class ArmorView extends View {
 		}
 	}
 
+	/**Bonus is added when wearing a full set of armor.
+	 * @return the bonus for a full set of armor or 1
+	 */
+	private float armamentBonus(){
+		
+		float bonus = 1f;
+		
+		/* get one armament material */
+		Equipment exampleItem = null;
+		String armamentMaterial = null;
+		
+		if (set) {
+			exampleItem = armor1.get(Armor.CHEST);
+		} else {
+			exampleItem = armor2.get(Armor.CHEST);
+		}
+		
+		/* if one part in set is missing, bonus will not be applied */
+		if (exampleItem == null) {
+			return 1.0f;
+		}
+		else {
+			
+			armamentMaterial = ((Armament) exampleItem).TYPE;
+			
+			int sameCtr = 0; //must be five for a set bonus
+			
+			if (set) {
+				//loop through all equipment in set and increase sameCtr if the types match
+				for (Equipment e : equipment1) {
+					if (e instanceof Armament) {
+						if (((Armament) e).TYPE.equals(armamentMaterial)) {
+							sameCtr++;
+						}
+					}
+				}
+			} else {
+				for (Equipment e : equipment2) {
+					if (e instanceof Armament) {
+						if (((Armament) e).TYPE.equals(armamentMaterial)) {
+							sameCtr++;
+						}
+					}
+				}
+			}
+			
+			if (sameCtr == 5) {
+				bonus = ((Armament) exampleItem).BONUS;
+			}
+		}
+		
+		return bonus;	
+	}
+	
 	/**Returns sum of all values for a specific armament attribute of all equipped armaments.<br>
 	 * NOT YET COMPLETELY IMPLEMENTED!
 	 * 
@@ -917,6 +971,7 @@ public class ArmorView extends View {
 	public float getStats(ArmorStatsTypes type, ArmorStatsMode mode, ArmorStatsAttributes att) {
 		
 		float value = 0f;
+		int itemCtr = 1; //needed for average calculation
 		Collection<Equipment> myEquipment = null;
 		
 		if (set) {
@@ -932,6 +987,9 @@ public class ArmorView extends View {
 						if (att == ArmorStatsAttributes.SPEED) {
 							value += ((Armament) e).SPEED;
 						}
+						if (att == ArmorStatsAttributes.ARMOR) {
+							value += ((Armament) e).ARMOR;
+						}
 					}
 				}
 			}
@@ -944,6 +1002,21 @@ public class ArmorView extends View {
 							}
 						}
 					}
+					if (mode == ArmorStatsMode.AVERAGE) {
+						if (att == ArmorStatsAttributes.ACCURACY) {
+							value = (value + ((Weapon) e).ACCURACY)/itemCtr;
+							itemCtr++;
+						}
+					}
+				}
+			}
+		}
+		
+		/* add armament bonus for a full set of armor */
+		if (type == ArmorStatsTypes.ARMAMENT) {
+			if (mode == ArmorStatsMode.SUM) {
+				if (att == ArmorStatsAttributes.ARMOR) {
+					value = value * armamentBonus();
 				}
 			}
 		}
