@@ -29,6 +29,10 @@ import general.Enums.Armor;
  * 
  * @see View
  */
+/**
+ * @author Flo
+ *
+ */
 public class ArmorView extends View {
 
 	/* Values for Positioning of the View */
@@ -82,6 +86,9 @@ public class ArmorView extends View {
 
 	/* Factory and Resource Classes */
 	private ResourceManager resources;
+	
+	/* a potion drunk by a player and set in armorView.drinkPotion() */
+	Potion selectedPotion = null;
 
 	/**
 	 * Constructs an ArmorView passing its origin as single x and y coordinates
@@ -415,11 +422,24 @@ public class ArmorView extends View {
 			
 			//Send info about taken potion to enemy ? -> only if potion effects enemy?
 			
-			//add potion to list of active potions in fight
+			//set taken potion to be later obtained by fight.java
+			this.selectedPotion = p;
+			
 			p = null; //only for testing purposes
 		}
 		
 		return p;
+	}
+	
+	/**Used by Fight.java to obtain the latest taken potion by the player.
+	 * @return the potion taken by a player
+	 */
+	public Potion getSelectedPotion() {
+		
+		Potion tempPotion = selectedPotion;
+		selectedPotion = null;
+		
+		return tempPotion;
 	}
 	
 	/**
@@ -888,7 +908,9 @@ public class ArmorView extends View {
 		}
 	}
 
-	/**Returns sum of all values for a specific armament attribute of all equipped armaments.
+	/**Returns sum of all values for a specific armament attribute of all equipped armaments.<br>
+	 * NOT YET COMPLETELY IMPLEMENTED!
+	 * 
 	 * @param speed
 	 * @return
 	 */
@@ -909,6 +931,17 @@ public class ArmorView extends View {
 					if (mode == ArmorStatsMode.SUM) {
 						if (att == ArmorStatsAttributes.SPEED) {
 							value += ((Armament) e).SPEED;
+						}
+					}
+				}
+			}
+			if (type == ArmorStatsTypes.WEAPONS) {
+				if (e instanceof Weapon) {
+					if (mode == ArmorStatsMode.MIN) {
+						if (att == ArmorStatsAttributes.SPEED) {
+							if (((Weapon) e).SPEED < value && ((Weapon) e).SPEED > 0) {
+								value = ((Weapon) e).SPEED;
+							}
 						}
 					}
 				}

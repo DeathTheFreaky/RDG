@@ -196,12 +196,20 @@ public class GameEnvironment extends View {
 	
 	
 	/**
-	 * starts a Fight with the set creature as enemy
+	 * Starts a Fight with the set creature as enemy.
 	 * 
 	 * @param creature - the enemy
+	 * @return the looser of a fight
+	 * @throws InterruptedException 
 	 */
-	public void startFight(Creature creature) {
-		fightInstance.newFight(creature);
+	public Creature startFight(Creature creature) {
+		try {
+			return fightInstance.newFight(creature);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			System.err.println("Fight was interrupted");
+		}
+		return null;
 	}
 	
 	/**Returns the GameEnvironment's Fight Instance for obtaining fight data etc.

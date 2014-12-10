@@ -274,13 +274,19 @@ public class Map {
 	 * Checks if there is an Item or a Monster in front of the player.<br>
 	 * If there is an item, pick up the item.<br>
 	 * If there is a monster, start a fight.<br>
+	 * If the monster looses the fight, delete it from map.<br>
+	 * Resets player to start, if he loses a fight.<br>
 	 * 
 	 * @return Equipment or null
+	 * @throws InterruptedException 
 	 */
 	public Element checkInFrontOfPlayer() {
 		Element e = null;
 		int x = player.getPosition().x;
 		int y = player.getPosition().y;
+		
+		/* Needed if player engages in a fight. */
+		Creature loser = null;
 
 		switch (player.getDirectionOfView()) {
 		case NORTH:
@@ -289,7 +295,10 @@ public class Map {
 				e = overlay[x][y - 1];
 				overlay[x][y - 1] = null;
 			} else if (overlay[x][y - 1] instanceof Creature) {
-				gameEnvironment.startFight((Creature) overlay[x][y - 1]);
+				loser = gameEnvironment.startFight((Creature) overlay[x][y - 1]);
+				if (loser instanceof Player) {
+					overlay[x][y - 1] = null;
+				}
 			}
 			break;
 		case EAST:
@@ -298,7 +307,10 @@ public class Map {
 				e = overlay[x + 1][y];
 				overlay[x + 1][y] = null;
 			} else if (overlay[x + 1][y] instanceof Creature) {
-				gameEnvironment.startFight((Creature) overlay[x + 1][y]);
+				loser = gameEnvironment.startFight((Creature) overlay[x + 1][y]);
+				if (loser instanceof Player) {
+					overlay[x + 1][y] = null;
+				}
 			}
 			break;
 		case SOUTH:
@@ -307,7 +319,10 @@ public class Map {
 				e = overlay[x][y + 1];
 				overlay[x][y + 1] = null;
 			} else if (overlay[x][y + 1] instanceof Creature) {
-				gameEnvironment.startFight((Creature) overlay[x][y + 1]);
+				loser = gameEnvironment.startFight((Creature) overlay[x][y + 1]);
+				if (loser instanceof Player) {
+					overlay[x][y + 1] = null;
+				}
 			}
 			break;
 		case WEST:
@@ -316,11 +331,24 @@ public class Map {
 				e = overlay[x - 1][y];
 				overlay[x - 1][y] = null;
 			} else if (overlay[x - 1][y] instanceof Creature) {
-				gameEnvironment.startFight((Creature) overlay[x - 1][y]);
+				loser = gameEnvironment.startFight((Creature) overlay[x - 1][y]);
+				if (loser instanceof Player) {
+					overlay[x - 1][y] = null;
+				}
 			}
 			break;
 		default:
 			break;
+		}
+		
+		/* Check if player has lost a fight - reset to start! Victory and Game Over or triggered in Fight directly */
+		// PROBABLY MORE MODIFICATION IS NECESSARY SINCE PLAYER POSITIONING IS HANDLED IN PLAYER CLASS TOO.
+		if (loser != null) {
+			if (loser instanceof Player) {
+				/* IMPLEMENTING RESETTING PLAYER TO START */
+				// resetPlayerToStart(overlay[x][y]);
+				overlay[x][y] = null;
+			}
 		}
 
 		return e;
