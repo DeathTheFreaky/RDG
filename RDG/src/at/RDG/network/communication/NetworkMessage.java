@@ -1,6 +1,6 @@
 package at.RDG.network.communication;
 
-import enums.MessageType;
+import general.Enums.MessageType;
 
 public class NetworkMessage {
 	

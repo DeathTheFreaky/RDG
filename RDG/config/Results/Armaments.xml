@@ -10,8 +10,7 @@
 		<Speed>13.3333333333333</Speed>
 		<Type>leather</Type>
 		<Bonus>0.1</Bonus>
-		<Image_Big>armaments/leather_helmet_big.png</Image_Big>
-		<Image_Small>armaments/leather_helmet_small.png</Image_Small>
+		<Image>armaments/leather_helmet.png</Image>
 	</Armament>
 	<Armament>
 		<Name>Leather Harness</Name>
@@ -23,8 +22,7 @@
 		<Speed>20</Speed>
 		<Type>leather</Type>
 		<Bonus>0.1</Bonus>
-		<Image_Big>armaments/leather_harness_big.png</Image_Big>
-		<Image_Small>armaments/leather_harness_small.png</Image_Small>
+		<Image>armaments/leather_harness.png</Image>
 	</Armament>
 	<Armament>
 		<Name>Leather Gauntlets</Name>
@@ -36,8 +34,7 @@
 		<Speed>6.66666666666667</Speed>
 		<Type>leather</Type>
 		<Bonus>0.1</Bonus>
-		<Image_Big>armaments/leather_gauntlets_big.png</Image_Big>
-		<Image_Small>armaments/leather_gauntlets_small.png</Image_Small>
+		<Image>armaments/leather_gauntlets.png</Image>
 	</Armament>
 	<Armament>
 		<Name>Leather Cuisse</Name>
@@ -49,8 +46,7 @@
 		<Speed>10</Speed>
 		<Type>leather</Type>
 		<Bonus>0.1</Bonus>
-		<Image_Big>armaments/leather_cuisse_big.png</Image_Big>
-		<Image_Small>armaments/leather_cuisse_small.png</Image_Small>
+		<Image>armaments/leather_cuisse.png</Image>
 	</Armament>
 	<Armament>
 		<Name>Leather Boots</Name>
@@ -62,8 +58,7 @@
 		<Speed>6.66666666666667</Speed>
 		<Type>leather</Type>
 		<Bonus>0.1</Bonus>
-		<Image_Big>armaments/leather_boots_big.png</Image_Big>
-		<Image_Small>armaments/leather_boots_small.png</Image_Small>
+		<Image>armaments/leather_boots.png</Image>
 	</Armament>
 	<Armament>
 		<Name>Habergeon Helmet</Name>
@@ -75,8 +70,7 @@
 		<Speed>16.6666666666667</Speed>
 		<Type>habergeon</Type>
 		<Bonus>0.15</Bonus>
-		<Image_Big>armaments/habergeon_helmet_big.png</Image_Big>
-		<Image_Small>armaments/habergeon_helmet_small.png</Image_Small>
+		<Image>armaments/habergeon_helmet.png</Image>
 	</Armament>
 	<Armament>
 		<Name>Habergeon Harness</Name>
@@ -88,8 +82,7 @@
 		<Speed>25</Speed>
 		<Type>habergeon</Type>
 		<Bonus>0.15</Bonus>
-		<Image_Big>armaments/habergeon_harness_big.png</Image_Big>
-		<Image_Small>armaments/habergeon_harness_small.png</Image_Small>
+		<Image>armaments/habergeon_harness.png</Image>
 	</Armament>
 	<Armament>
 		<Name>Habergeon Gauntlets</Name>
@@ -101,8 +94,7 @@
 		<Speed>8.33333333333333</Speed>
 		<Type>habergeon</Type>
 		<Bonus>0.15</Bonus>
-		<Image_Big>armaments/habergeon_gauntlets_big.png</Image_Big>
-		<Image_Small>armaments/habergeon_gauntlets_small.png</Image_Small>
+		<Image>armaments/habergeon_gauntlets.png</Image>
 	</Armament>
 	<Armament>
 		<Name>Habergeon Cuisse</Name>
@@ -114,8 +106,7 @@
 		<Speed>12.5</Speed>
 		<Type>habergeon</Type>
 		<Bonus>0.15</Bonus>
-		<Image_Big>armaments/habergeon_cuisse_big.png</Image_Big>
-		<Image_Small>armaments/habergeon_cuisse_small.png</Image_Small>
+		<Image>armaments/habergeon_cuisse.png</Image>
 	</Armament>
 	<Armament>
 		<Name>Habergeon Boots</Name>
@@ -127,8 +118,7 @@
 		<Speed>8.33333333333333</Speed>
 		<Type>habergeon</Type>
 		<Bonus>0.15</Bonus>
-		<Image_Big>armaments/habergeon_boots_big.png</Image_Big>
-		<Image_Small>armaments/habergeon_boots_small.png</Image_Small>
+		<Image>armaments/habergeon_boots.png</Image>
 	</Armament>
 	<Armament>
 		<Name>Plate Helmet</Name>
@@ -140,8 +130,7 @@
 		<Speed>20</Speed>
 		<Type>plate</Type>
 		<Bonus>0.2</Bonus>
-		<Image_Big>armaments/plate_helmet_big.png</Image_Big>
-		<Image_Small>armaments/plate_helmet_small.png</Image_Small>
+		<Image>armaments/plate_helmet.png</Image>
 	</Armament>
 	<Armament>
 		<Name>Plate Harness</Name>
@@ -153,8 +142,7 @@
 		<Speed>30</Speed>
 		<Type>plate</Type>
 		<Bonus>0.2</Bonus>
-		<Image_Big>armaments/plate_harness_big.png</Image_Big>
-		<Image_Small>armaments/plate_harness_small.png</Image_Small>
+		<Image>armaments/plate_harness.png</Image>
 	</Armament>
 	<Armament>
 		<Name>Plate Gauntlets</Name>
@@ -166,8 +154,7 @@
 		<Speed>10</Speed>
 		<Type>plate</Type>
 		<Bonus>0.2</Bonus>
-		<Image_Big>armaments/plate_gauntlets_big.png</Image_Big>
-		<Image_Small>armaments/plate_gauntlets_small.png</Image_Small>
+		<Image>armaments/plate_gauntlets.png</Image>
 	</Armament>
 	<Armament>
 		<Name>Plate Cuisse</Name>
@@ -179,8 +166,7 @@
 		<Speed>15</Speed>
 		<Type>plate</Type>
 		<Bonus>0.2</Bonus>
-		<Image_Big>armaments/plate_cuisse_big.png</Image_Big>
-		<Image_Small>armaments/plate_cuisse_small.png</Image_Small>
+		<Image>armaments/plate_cuisse.png</Image>
 	</Armament>
 	<Armament>
 		<Name>Plate Boots</Name>
@@ -192,7 +178,6 @@
 		<Speed>10</Speed>
 		<Type>plate</Type>
 		<Bonus>0.2</Bonus>
-		<Image_Big>armaments/plate_boots_big.png</Image_Big>
-		<Image_Small>armaments/plate_boots_small.png</Image_Small>
+		<Image>armaments/plate_boots.png</Image>
 	</Armament>
 </Armaments>

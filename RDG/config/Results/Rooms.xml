@@ -15,6 +15,7 @@
 			<normal>67</normal>
 			<hard>0</hard>
 		</Monster>
+		<Monster_Count>1</Monster_Count>
 		<Item_Multiplier>1.5</Item_Multiplier>
 		<Find_Probabilities>
 			<none>0</none>
@@ -23,7 +24,7 @@
 			<strong>20</strong>
 		</Find_Probabilities>
 		<Item_Count>3</Item_Count>
-		<Image>rooms/deadend.png</Image>
+		<Image>rooms/tileset.png</Image>
 	</Room>
 	<Room>
 		<Name>Hallway</Name>
@@ -40,6 +41,7 @@
 			<normal>17</normal>
 			<hard>0</hard>
 		</Monster>
+		<Monster_Count>1</Monster_Count>
 		<Item_Multiplier>1.25</Item_Multiplier>
 		<Find_Probabilities>
 			<none>30</none>
@@ -48,7 +50,7 @@
 			<strong>0</strong>
 		</Find_Probabilities>
 		<Item_Count>2</Item_Count>
-		<Image>rooms/hallway.png</Image>
+		<Image>rooms/tileset.png</Image>
 	</Room>
 	<Room>
 		<Name>Turn</Name>
@@ -65,6 +67,7 @@
 			<normal>17</normal>
 			<hard>0</hard>
 		</Monster>
+		<Monster_Count>1</Monster_Count>
 		<Item_Multiplier>1.25</Item_Multiplier>
 		<Find_Probabilities>
 			<none>30</none>
@@ -73,7 +76,7 @@
 			<strong>0</strong>
 		</Find_Probabilities>
 		<Item_Count>2</Item_Count>
-		<Image>rooms/turn.png</Image>
+		<Image>rooms/tileset.png</Image>
 	</Room>
 	<Room>
 		<Name>T-Junction</Name>
@@ -90,6 +93,7 @@
 			<normal>33</normal>
 			<hard>0</hard>
 		</Monster>
+		<Monster_Count>1</Monster_Count>
 		<Item_Multiplier>1.1</Item_Multiplier>
 		<Find_Probabilities>
 			<none>25</none>
@@ -98,7 +102,7 @@
 			<strong>0</strong>
 		</Find_Probabilities>
 		<Item_Count>1</Item_Count>
-		<Image>rooms/t-junction.png</Image>
+		<Image>rooms/tileset.png</Image>
 	</Room>
 	<Room>
 		<Name>Junction</Name>
@@ -115,6 +119,7 @@
 			<normal>33</normal>
 			<hard>0</hard>
 		</Monster>
+		<Monster_Count>1</Monster_Count>
 		<Item_Multiplier>1</Item_Multiplier>
 		<Find_Probabilities>
 			<none>50</none>
@@ -123,7 +128,7 @@
 			<strong>0</strong>
 		</Find_Probabilities>
 		<Item_Count>1</Item_Count>
-		<Image>rooms/junction.png</Image>
+		<Image>rooms/tileset.png</Image>
 	</Room>
 	<Room>
 		<Name>Treasure Chamber</Name>
@@ -140,6 +145,7 @@
 			<normal>0</normal>
 			<hard>1</hard>
 		</Monster>
+		<Monster_Count>1</Monster_Count>
 		<Item_Multiplier>2</Item_Multiplier>
 		<Find_Probabilities>
 			<none>0</none>
@@ -148,6 +154,6 @@
 			<strong>70</strong>
 		</Find_Probabilities>
 		<Item_Count>5</Item_Count>
-		<Image>rooms/treasure_chamber.png</Image>
+		<Image>rooms/tileset.png</Image>
 	</Room>
 </Rooms>

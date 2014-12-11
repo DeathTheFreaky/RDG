@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc access="public" author="true" classpath="libraries/slick.jar;libraries/jar/jinput.jar;libraries/jar/lwjgl.jar" destdir="doc" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" source="1.8" sourcefiles="src/worthy/Game.java" sourcepath="src" splitindex="true" use="true" version="true">
+            <link href="http://docs.oracle.com/javase/8/docs/api/"/>
+            <link href="doc/lwjgl"/>
+        </javadoc>
+    </target>
+</project>
