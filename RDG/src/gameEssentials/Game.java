@@ -110,6 +110,9 @@ public class Game extends BasicGame {
 	
 	/* fight Instance of game Environment */
 	private Fight fightInstance = null;
+	
+	/* needed for human fights - set to true if this is the lobby HOSTER */
+	private Boolean humanFightHost = false;
 
 	/* Declare all classes, we need for the game (Factory, Resourceloader) */
 	// private ResourceManager resourceManager;

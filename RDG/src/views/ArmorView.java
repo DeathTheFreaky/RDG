@@ -1153,6 +1153,11 @@ public class ArmorView extends View {
 							itemCtr++;
 						}
 					}
+					if (mode == ArmorStatsMode.SUM) {
+						if (att == ArmorStatsAttributes.ATTACK) {
+							value += (value + ((Weapon) e).ATTACK);
+						}
+					}
 				}
 			}
 		}
@@ -1167,5 +1172,5 @@ public class ArmorView extends View {
 		}
 		
 		return value;
-	}
+	}	
 }

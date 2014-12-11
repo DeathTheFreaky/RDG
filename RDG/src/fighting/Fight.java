@@ -64,10 +64,6 @@ public class Fight extends View {
 	// Instances of all available attacks
 	Map<Attacks, Attack> attacks = null;
 	
-	/* Selected Attack option from Fight menu - used for both player and enemy 
-	 * - needs to be set to null in between */
-	Attacks activeAttackType = null;
-	
 	/* actual instance of an attack (ARMS, HEAD, CHEST, LEGS) - used for both player and enemy 
 	 * - needs to be set to null in between  */
 	Attack activeAttack = null;
@@ -104,31 +100,35 @@ public class Fight extends View {
 	
 	/* values manipulated by networking class */
 	
-		/* used in human fight to determine which player gets first attack */
+		/* Selected Attack option from Fight menu - used for both player and enemy 
+		 * - needs to be set to null in between */
+		Attacks activeAttackType = null;
+	
+		/* used in human fight to determine which player gets first attack - set in determineFirstAttack() for each round */
 		int thisPlayerisFirst = 0;
 		
-		/* a potion drunk by a player and set in armorView.drinkPotion() */
+		/* a potion drunk by a player and set in armorView.drinkPotion() - set when drinking a potion -> both by player and enemy */
 		Potion selectedPotion = null;
 		
-		/* needed to determine which player starts a round in a fight */
+		/* the enemy calculates if a parry was successful - set on each Parry */
+		boolean enemyParrySuccess = false;
+		boolean enemyParrySuccessSet = false;
+		
+		/* needed to determine which player starts a round in a fight - 
+		   set on humanFightInitialization() and when enemyStats changes by SetSwitch */
 		float enemyArmorSpeedMalusSum = 0;
 		float enemyWeaponSpeedMalusMax = 0;
 		boolean enemySpeedMalusSumSet = false;
 		
-		/* the enemy calculates if a parry was successful */
-		boolean enemyParrySuccess = false;
-		boolean enemyParrySuccessSet = false;
-		
-		/* speed and armor stats are needed to calculate the attack damages */
+		/* speed and armor stats are needed to calculate the attack damages - 
+		 * set on humanFightInitialization() and when enemyStats changes by SetSwitch */
 		float enemyArmorSum = 0;
 		float enemySpeed = 0;
-		float enemyAccuracy = 0;
 		boolean enemyStatsSet = false;
 		
-		/* the enemy calculates the health and attribute damage of its attack */
+		/* the enemy calculates the health and attribute damage of its attack - set on each attack */
 		float enemyAttackHealthDamage = 0;
 		float enemyAttackAttributeDamage = 0;
-		float enemyAttackHitProbability = 0;
 		boolean enemyAttackSet = false;
 
 	/**Constructs a Fight Instance, which will provide an environment for all fights a player engages in.
@@ -334,6 +334,8 @@ public class Fight extends View {
 	 */
 	public Creature newFight(Creature creature) throws InterruptedException {
 		
+		System.out.println(("New Fight"));
+		
 		/* if a fight already is started, return */
 		if (activeFight) {
 			return null;
@@ -357,33 +359,40 @@ public class Fight extends View {
 	/**Reset fight variables to default values.
 	 */
 	private void reset() {
+		
+		System.out.println(("Resetting values"));
+		
 		this.activeFight = false;
 		this.enemy = null;
 		this.attackScreen = AttackScreens.MAIN;
+		/* only send these values at begin of a fight and when necessary */
+		this.enemySpeedMalusSumSet = false;
+		this.enemyArmorSpeedMalusSum = 0;
+		
+		this.enemyStatsSet = false;
+		this.enemySpeed = 0;
+		this.enemyArmorSum = 0;
 		resetRoundVariables();
 	}
 	
 	/**Reset variables that need to be resetted each round in a fight.
 	 */
 	private void resetRoundVariables() {
+		
+		System.out.println(("Round resetting values"));
+		
 		this.changeTabActive = false;
 		this.potionTakingActive = false;
 		this.thisPlayerisFirst = 0;
+		this.enemyAttackSet = false;
 		this.activeAttackType = null;
 		this.activeAttack = null;
-		this.enemySpeedMalusSumSet = false;
-		this.enemyArmorSpeedMalusSum = 0;
 		this.selectedPotion = null;
-		this.enemyParrySuccess = false;
 		this.enemyParrySuccessSet = false;
+		this.enemyParrySuccess = false;
+		this.enemyAttackSet = false;
 		this.enemyAttackHealthDamage = 0;
 		this.enemyAttackAttributeDamage = 0;
-		this.enemyAttackHitProbability = 0;
-		this.enemyAttackSet = false;
-		this.enemyArmorSum = 0;
-		this.enemySpeed = 0;
-		this.enemyStatsSet = false;
-		this.enemyAccuracy = 0;
 	}
 
 	/**
@@ -393,6 +402,8 @@ public class Fight extends View {
 	 * @throws InterruptedException 
 	 */
 	private Creature fight() throws InterruptedException {
+		
+		System.out.println(("Starting fight"));
 		
 		/* Determine if this is a human fight. */
 		this.humanFight = humanFightInitialization();
@@ -435,6 +446,8 @@ public class Fight extends View {
 			resetRoundVariables();
 		}
 		
+		//give attribute bonus to winner of the fight
+		
 		/* after a fight, reset the fighting instance's variables */
 		reset();
 		
@@ -453,50 +466,53 @@ public class Fight extends View {
 	 */
 	private void attackControl(Creature creature1, Creature creature2) throws InterruptedException {
 		
+		System.out.println(("attack Control"));
+		
 		/* player chooses what to do */
 		switch(getCommand(creature1)) {
-		case TORSO:
-			activeAttack = attacks.get(Attacks.TORSO);
-			break;
-		case HEAD:
-			activeAttack = attacks.get(Attacks.HEAD);
-			break;
-		case ARMS:
-			activeAttack = attacks.get(Attacks.ARMS);
-			break;
-		case LEGS:
-			activeAttack = attacks.get(Attacks.LEGS);
-			break;
-		case SET:
-			
-			/* only switch sets if this is the player's turn */
-			if (creature1 == this.player) {
-				armorView.switchSet();
-			}
-			break;
-		case POTION:
-			
-			/* select potion */	
-			selectedPotion = getSelectedPotion(creature1);	
-			
-			/* manage the handling of a drunk potion */
-			usePotion(creature1, creature2, selectedPotion);
-			
-			/* reset selectedPotion */
-			selectedPotion = null;
-			
-			break;
-		case PARRY:
-			
-			/* when a player decides to parry, if successful, he deals x times the damage of a normal torso attack */
-			parryMultiplier = 2.0f;
-			if (parrySuccess(creature1, creature2) == true) {
-				activeAttack = attacks.get(Attacks.TORSO);	// muss man noch rausfinden was am besten is (ich war ja für head aber flo für torso xD)
+			case TORSO:
+				activeAttack = attacks.get(Attacks.TORSO);
 				break;
-			}
-			break;
-		default:
-			break;
+			case HEAD:
+				activeAttack = attacks.get(Attacks.HEAD);
+				break;
+			case ARMS:
+				activeAttack = attacks.get(Attacks.ARMS);
+				break;
+			case LEGS:
+				activeAttack = attacks.get(Attacks.LEGS);
+				break;
+			case SET:
+				
+				/* only switch sets if this is the player's turn */
+				if (creature1 == this.player) {
+					armorView.switchSet();
+					sendStats();
+				}
+				break;
+			case POTION:
+				
+				/* select potion */	
+				selectedPotion = getSelectedPotion(creature1);	
+				
+				/* manage the handling of a drunk potion */
+				usePotion(creature1, creature2, selectedPotion);
+				
+				/* reset selectedPotion */
+				selectedPotion = null;
+				
+				break;
+			case PARRY:
+				
+				/* when a player decides to parry, if successful, he deals x times the damage of a normal torso attack */
+				parryMultiplier = 2.0f;
+				if (parrySuccess(creature1, creature2) == true) {
+					activeAttack = attacks.get(Attacks.TORSO);	// muss man noch rausfinden was am besten is (ich war ja für head aber flo für torso xD)
+					break;
+				}
+				break;
+			default:
+				break;
 		}
 		
 		/* actual attack */
@@ -508,12 +524,42 @@ public class Fight extends View {
 		
 	}
 
+	/**Send changed Stats when player's armor set changes.
+	 * @throws InterruptedException 
+	 * 
+	 */
+	private void sendStats() throws InterruptedException {
+		
+		System.out.println("Sending Stats");
+
+		/* needed to determine which player starts a round in a fight - 
+		   set on humanFightInitialization() and when enemyStats changes by SetSwitch */
+		float playerArmorSpeedMalusSum = armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.SPEED);
+		float playerWeaponSpeedMalusMax = armorView.getStats(ArmorStatsTypes.WEAPONS, ArmorStatsMode.MIN, ArmorStatsAttributes.SPEED);
+		
+		//send message(playerArmorSpeedMalusSum, value)
+		//send message(playerWeaponSpeedMalusMax, value)
+		
+		/* speed and armor stats are needed to calculate the attack damages - 
+		 * set on humanFightInitialization() and when enemyStats changes by SetSwitch */
+		
+		float playerArmorSum = armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.ARMOR);
+		float playerSpeed = calcCreatureSpeed(this.player);
+		float playerAccuracy = calcCreatureAccuracy(this.player);
+		
+		//send message(playerArmorSum, value)
+		//send message(playerSpeed, value)
+		//send message(playerAccuracy, value)
+	}
+
 	/**Obtain the selectedPotion -> either from armorView or via network from another player.
 	 * @param creature1
 	 * @return the selected potion
 	 * @throws InterruptedException 
 	 */
 	private Potion getSelectedPotion(Creature creature1) throws InterruptedException {
+		
+		System.out.println("getSelectedPotion");
 				
 		if ((!humanFight) || (creature1 == this.player)) {
 			this.selectedPotion = armorView.getSelectedPotion();
@@ -552,6 +598,8 @@ public class Fight extends View {
 	 */
 	private int determineFirstAttack() throws InterruptedException {
 		
+		System.out.println("determineFirstAttack");
+		
 		if (humanFightSlave == false) {
 			
 			/* calculate which player comes first */
@@ -562,6 +610,7 @@ public class Fight extends View {
 			}
 			
 			if (humanFightHost == true) {
+				
 				// SEND RESULT OF CALCULATION TO SLAVE -> message(thisPlayerisFirst, value is opposite of local value)
 			}
 		}
@@ -592,9 +641,6 @@ public class Fight extends View {
 			}
 		}
 		
-		/* reset to default values */
-		enemyArmorSpeedMalusSum = 0;
-		
 		return thisPlayerisFirst;	
 	}
 
@@ -604,6 +650,8 @@ public class Fight extends View {
 	 */
 	private boolean humanFightInitialization() throws InterruptedException {
 		
+		System.out.println(("human Fight initialization"));
+		
 		if (this.enemy instanceof Player) {
 			
 			int timeoutctr = 0;
@@ -612,8 +660,11 @@ public class Fight extends View {
 			/* wait for fight host to set needed information */
 			while (timeoutctr <= 10) {
 				
-				if ((humanFightHost == true && humanFightSlave == false) || 
-						(humanFightHost == false && humanFightSlave == true)) {
+				if (((humanFightHost == true && humanFightSlave == false) 
+						|| (humanFightHost == false && humanFightSlave == true))
+						&& enemySpeedMalusSumSet == true 
+						&& enemyStatsSet == true) {
+					
 					successfulCommunication = true;
 					break;
 				}
@@ -627,8 +678,8 @@ public class Fight extends View {
 			}
 			
 			if (successfulCommunication == false) {
-				System.err.println("Distribution of Human Fight Roles timed out...");
-				new Exception("Distribution of Human Fight Roles failed");
+				System.err.println("Initialization of human fight timed out...");
+				new Exception("Initialization of human fight failed");
 			}
 			
 			return true;
@@ -647,6 +698,8 @@ public class Fight extends View {
 	 * @throws InterruptedException 
 	 */
 	private Attacks getCommand(Creature creature) throws InterruptedException {
+		
+		System.out.println("getCommand");
 				
 		/* checks which option was selected, returns enum */
 		Attacks chosenAttackType = null;
@@ -679,6 +732,8 @@ public class Fight extends View {
 	 */
 	private void attack(Creature attacker, Creature defender) throws InterruptedException {
 		
+		System.out.println("attack");
+		
 		/* Attacks are designed to be calculated on each host knowing 
 		 * the raw healthDamage, attributeDamage and HitProbability of the attacker. 
 		 * Strength, accuracy and weapon damage are already included in these values.
@@ -688,30 +743,7 @@ public class Fight extends View {
 		/* if this is a human fight, wait for other party to send relevant data */
 		if (attacker == this.player && humanFight) {
 			
-			/* Wait for enemie's stats for attack calculation */
-			int timeoutctr = 0;
-			boolean successfulCommunication = false;
-			
-			/* wait for fight host to set needed information */
-			while (timeoutctr <= 10) {
-				
-				if (enemyStatsSet == true) {
-					successfulCommunication = true;
-					break;
-				}
-				
-				if (timeoutctr == 10) {
-					break;
-				}
-				
-				timeoutctr++;
-				Thread.sleep(100);
-			}
-			
-			if (successfulCommunication == false) {
-				System.err.println("Waiting for enemyStats timed out...");
-				new Exception("Waiting for enemyStats failed");
-			}
+			//enemyStats are set when starting a fight and also sent when enemyStats change
 		}
 		else if (attacker != this.player && humanFight) {
 			
@@ -750,36 +782,89 @@ public class Fight extends View {
 		
 		if (activeAttack == null) return;
 		
-		/* now calculate the actual attacks */
-		if (calcHitSuccess(attacker, defender) == true) {
+		float healthDamage = 0;
+		float attributeDamage = 0;
+		
+		if ((attacker instanceof Monster) || attacker == this.player) {
 			
-			float damage = calcDamage(attacker, defender);	// could be used to display Damage on Screen
-			updateHealth(defender, damage);
-			updateAttributes(defender);
-		} else {
-			if (attacker == this.player && humanFight) {
+			/* now calculate the actual attacks */
+			if (calcHitSuccess(attacker, defender) == true) {
 				
-				//SEND 0 as ATTACK DAMAGE VALUES TO OTHER PARTIE -> in updateHealth, updateAttributes
+				healthDamage = calcHealthDamage(attacker, defender);	// could be used to display Damage on Screen
+				attributeDamage = calcAttributeDamage(defender);
+			} 
+			if (humanFight) {
+				
+				//Send healthDamage, attributeDamage to enemy 
+				//message(healthDamage, value)
+				//message(attributeDamage, value)
 			}
+		} else {
+			
+			healthDamage = enemyAttackHealthDamage;
+			attributeDamage = enemyAttackAttributeDamage;
 		}
+		
+		/* update attributes with calculated Damages */
+		updateHealth(defender, healthDamage);
+		updateAttributes(defender, attributeDamage);
 		
 		/* reset values */
 		this.enemyArmorSum = 0;
 		this.enemySpeed = 0;
-		this.enemyAccuracy = 0;
 		this.enemyStatsSet = false;
 		this.enemyAttackHealthDamage = 0;
 		this.enemyAttackAttributeDamage = 0;
 		this.enemyAttackSet = false;
 	}
 	
+	/**Calculates the damage on the affected attribute of an attack.
+	 * 
+	 * @param defender
+	 * @return
+	 */
+	private float calcAttributeDamage(Creature defender) {
+
+		System.out.println("calcAttributeDamage");
+
+		float attributeDamage = 0;
+		float defenderAttributeResult = 0;
+		
+		/* get enemies current attribute value */
+		switch(activeAttack.effect) {
+			case HP:
+				defenderAttributeResult = defender.getHp();		
+				break;
+			case ACCURACY:
+				defenderAttributeResult = defender.getAccuracy();
+				break;
+			case STRENGTH:
+				defenderAttributeResult = defender.getStrength();
+				break;
+			case SPEED:
+				defenderAttributeResult = defender.getSpeed();
+				break;
+			default:
+				break;
+		}
+		
+		attributeDamage = defenderAttributeResult - 
+				(defenderAttributeResult 
+				* activeAttack.attributeDamageMultiplier
+				* Chances.randomFloat(activeAttack.statsLowMultiplier, activeAttack.statsHighMultiplier));
+		
+		return attributeDamage;
+	}
+
 	/**Calculate the accuracy of a creature, taking into account the multipliers from a player's weapons.
 	 * @param creature
 	 * @return
 	 * @throws InterruptedException 
 	 */
 	private float calcCreatureAccuracy(Creature creature) throws InterruptedException {
-		
+
+		System.out.println("calcCreatureAccuracy");
+
 		float accuracy = 0;
 		float accuracyMultiplier = 0.5f;
 		
@@ -796,30 +881,7 @@ public class Fight extends View {
 		/* get the accuracy of the other player */
 		else {
 			
-			int timeoutctr = 0;
-			boolean successfulCommunication = false;
-			
-			/* wait for fight host to set needed information */
-			while (timeoutctr <= 10) {
-				
-				if (enemyStatsSet == true) {
-					accuracy = enemyAccuracy;
-					successfulCommunication = true;
-					break;
-				}
-				
-				if (timeoutctr == 10) {
-					break;
-				}
-				
-				timeoutctr++;
-				Thread.sleep(100);
-			}
-			
-			if (successfulCommunication == false) {
-				System.err.println("Waiting for enemyAccuracy timed out...");
-				new Exception("Waiting for enemyAccuracy failed");
-			}
+			//enemyStats are set on humanFightInitialization and sent when enemyStats change
 		}
 		
 		/* do not reset values here - could be used later on */
@@ -833,7 +895,9 @@ public class Fight extends View {
 	 * @throws InterruptedException 
 	 */
 	private float calcCreatureSpeed(Creature creature) throws InterruptedException {
-		
+
+		System.out.println("calcCreatureSpeed");
+
 		float speed = 0;
 		
 		/* actual calculated malus from equipped armaments to be substracted from Player's speed */
@@ -863,31 +927,10 @@ public class Fight extends View {
 		/* get speed of other player */
 		else {
 			
-			int timeoutctr = 0;
-			boolean successfulCommunication = false;
+			//enemyStats are set on humanFightInitialization and sent when enemyStats change
 			
-			/* wait for fight host to set needed information */
-			while (timeoutctr <= 10) {
-				
-				if (enemySpeedMalusSumSet == true) {
-					playerArmorSpeedMalusSum = enemyArmorSpeedMalusSum;
-					playerWeaponSpeedMalusMax = enemyWeaponSpeedMalusMax;
-					successfulCommunication = true;
-					break;
-				}
-				
-				if (timeoutctr == 10) {
-					break;
-				}
-				
-				timeoutctr++;
-				Thread.sleep(100);
-			}
-			
-			if (successfulCommunication == false) {
-				System.err.println("Waiting for enemyArmorSpeedMalusSum timed out...");
-				new Exception("Waiting for enemyArmorSpeedMalusSum failed");
-			}
+			playerArmorSpeedMalusSum = enemyArmorSpeedMalusSum;
+			playerWeaponSpeedMalusMax = enemyWeaponSpeedMalusMax;
 			
 			/* do not reset values here - could be used later on */
 		}
@@ -922,7 +965,9 @@ public class Fight extends View {
 	 * @throws InterruptedException
 	 */
 	private boolean speedBasedSuccess(Creature attacker, Creature defender) throws InterruptedException {
-		
+
+		System.out.println("speedBasedSuccess");
+
 		boolean attackerSucceeds = false;
 		
 		/* balancing values */
@@ -957,7 +1002,9 @@ public class Fight extends View {
 	 * @throws InterruptedException 
 	 */
 	private boolean parrySuccess(Creature attacker, Creature defender) throws InterruptedException {
-		
+
+		System.out.println("parrySuccess");
+
 		boolean parrySuccess = false;
 				
 		/* enemy computer shall carry out calculation and tell us the result */
@@ -986,6 +1033,8 @@ public class Fight extends View {
 	 */
 	private boolean calcHitSuccess(Creature attacker, Creature defender) throws InterruptedException {
 		
+		System.out.println("calcHitSuccess");
+
 		float randAccuracyLow = 0.2f;
 		float randAccuracyHigh = 0.7f;
 		
@@ -1013,74 +1062,114 @@ public class Fight extends View {
 	 * 
 	 * @return amount of dealt damage
 	 */
-	private float calcDamage(Creature attacker, Creature defender) {
-		float damage = 0.0f;
+	private float calcHealthDamage(Creature attacker, Creature defender) {
+
+		System.out.println("calcHealthDamage");
+
+		float damage = 0;
 		
-		damage = attacker.getStrength() * 1 /* weapon damage */ * Chances.randomFloat(activeAttack.statsLowMultiplier, activeAttack.statsHighMultiplier) - 0 /* armor values: defender */ * parryMultiplier;
+		float weaponDamage = armorView.getStats(ArmorStatsTypes.WEAPONS, ArmorStatsMode.SUM, ArmorStatsAttributes.ATTACK);
+		
+		float baseDefense = 50;
+		float armorDefender;
+		float defense;
+		float defenseDivisor;
+		
+		float baseStrength = 25;
+		float baseDamage = 25;
+		float strength;
+		float strengthMult;
+		float weaponDamageMult;
+		float attack;
+		
+		/* calculate a multiplier for the attacker's strength */
+		strength = attacker.getStrength() + baseStrength;
+		strengthMult = strength/baseStrength;
+		
+		/* calculate a multiplier for the weapon damage */
+		if (attacker == this.player) {
+			weaponDamage = armorView.getStats(ArmorStatsTypes.WEAPONS, ArmorStatsMode.SUM, ArmorStatsAttributes.ATTACK);
+			weaponDamageMult = (weaponDamage + baseDamage)/baseDamage;
+		}
+		/* else must be monster, because this function is only called for active player host which performs attack */
+		else {
+			weaponDamageMult = 1;
+		}
+		
+		/* calculate an attack value based on strength as base value, attack.hpDamageMultiplier and strength multiplier */
+		attack = activeAttack.hpDamageMultiplier * weaponDamageMult * strengthMult * strength;
+		
+		/* calculate a divisor for the attack damage to be lowered */
+		if (defender instanceof Monster) {
+			defenseDivisor = 1;
+		}
+		else if (defender == this.player){
+			defense = armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.ARMOR) + baseDefense;
+			defenseDivisor = defense/baseDefense;
+		}
+		/* defender is the other player */
+		else {
+			defense = enemyArmorSum + baseDefense;
+			defenseDivisor = defense/baseDefense;
+		}
+		
+		float rawDamage = attack/defenseDivisor;
+				
+		damage = parryMultiplier * rawDamage * Chances.randomFloat(activeAttack.statsLowMultiplier, activeAttack.statsHighMultiplier);
 		
 		return damage;
 	}
 	
 	/**Update an opponent's attributes in reaction to an attack.
 	 * @param creature
+	 * @param attributeDamageMult
 	 */
-	private void updateAttributes(Creature creature) {
+	private void updateAttributes(Creature defender, float attributeDamage) {
+
+		System.out.println("updateAttributes");
+
 		switch(activeAttack.effect) {
-		case HP:
-			creature.setHp(creature.getHp()
-					* activeAttack.attributeDamageMultiplier
-					* Chances.randomFloat(activeAttack.statsLowMultiplier, activeAttack.statsHighMultiplier));
-			break;
-		case ACCURACY:
-			creature.setAccuracy(creature.getAccuracy()
-					* activeAttack.attributeDamageMultiplier
-					* Chances.randomFloat(activeAttack.statsLowMultiplier,
-							activeAttack.statsHighMultiplier));
-			break;
-		case STRENGTH:
-			creature.setStrength(creature.getStrength()
-					* activeAttack.attributeDamageMultiplier
-					* Chances.randomFloat(activeAttack.statsLowMultiplier,
-							activeAttack.statsHighMultiplier));
-			break;
-		case SPEED:
-			creature.setSpeed(creature.getSpeed()
-					* activeAttack.attributeDamageMultiplier
-					* Chances.randomFloat(activeAttack.statsLowMultiplier,
-							activeAttack.statsHighMultiplier));
-			break;
-		default:
-			break;
+			case HP:
+				defender.setHp(defender.getHp() - attributeDamage);
+				break;
+			case ACCURACY:
+				defender.setAccuracy(defender.getAccuracy() - attributeDamage);
+				break;
+			case STRENGTH:
+				defender.setStrength(defender.getStrength() - attributeDamage);
+				break;
+			case SPEED:
+				defender.setSpeed(defender.getSpeed() - attributeDamage);
+				break;
+			default:
+				break;
 		}
 		
-		if (creature == this.player && humanFight) {
+		if (defender == this.player && humanFight) {
 			
-			//SEND OUR CALCULATED ATTACK DAMAGE VALUES TO OTHER PARTIE -> in updateHealth, updateAttributes
+			//SEND OUR CALCULATED ATTACK DAMAGE VALUES TO OTHER PARTIE -> message(attributeDamage, value)
 		}
 	}
 	
-	/**
-	 * This method updates Health of attacked Player or Enemy
-	 * 
-	 * @param player
-	 * @param heal
+	/**This method updates the health of attacked opponent.
+	 * @param creature
 	 * @param damage
 	 */
-	private void updateHealth(Creature creature, float damage) {
-		float hp = creature.getHp() - damage;
-		creature.setHp(hp);
-		
-		if (creature == this.player && humanFight) {
-			
-			//SEND OUR CALCULATED ATTACK DAMAGE VALUES TO OTHER PARTIE -> in updateHealth, updateAttributes
-		}
+	private void updateHealth(Creature defender, float healthDamage) {
+
+		System.out.println("updateHealth");
+
+		float hp  = defender.getHp() - healthDamage;
+		defender.setHp(hp);
 	}
 	
 	/**
 	 * Is called every time the player uses a potion (directly or indirectly).
 	 */
 	private void usePotion(Creature potionTaker, Creature opponent, Potion potion) {
-			
+
+		System.out.println("usePotion");
+
 		/* if player uses antidote / removes the first poison in the list */
 		if (potion.MODE == Modes.LIFT) {
 			for (Potion _potion : potionTaker.getActivePotions()) {
@@ -1111,7 +1200,9 @@ public class Fight extends View {
 	 * Potions whith mode TINCR or TDECR are not applied in this method but in method usePotion().
 	 */
 	private void potionEffects(Creature creature) {	
-		
+
+		System.out.println("potionEffects");
+
 		/* apply all non temporary potion effects */
 		for (Potion potion : creature.getActivePotions()) {
 			potion.DURATION--;
@@ -1145,6 +1236,9 @@ public class Fight extends View {
 	 * @param potion
 	 */
 	private void revertEffect(Creature creature, Potion potion) {
+		
+		System.out.println("revertEffect");
+
 		if (potion.MODE == Modes.TINCR) {
 			potionDecrease(creature, potion);
 		} else if (potion.MODE == Modes.TDECR) {
@@ -1159,6 +1253,9 @@ public class Fight extends View {
 	 * @param potion
 	 */
 	private void potionDecrease(Creature creature, Potion potion) {
+		
+		System.out.println("potionDecrease");
+
 		switch(potion.EFFECT) {
 			case HP:
 				creature.setHp(creature.getHp() - potion.POWER);
@@ -1184,6 +1281,9 @@ public class Fight extends View {
 	 * @param potion
 	 */
 	private void potionIncrease(Creature creature, Potion potion) {
+		
+		System.out.println("potionIncrease");
+
 		switch(potion.EFFECT) {
 			case HP:
 				creature.setHp(creature.getHp() + potion.POWER);
@@ -1213,6 +1313,9 @@ public class Fight extends View {
 	 * @param attackScreen
 	 */
 	public void setAttackScreen(AttackScreens attackScreen) {
+		
+		System.out.println("setAttackScreen");
+
 		this.attackScreen = attackScreen;
 	}
 	
@@ -1220,6 +1323,9 @@ public class Fight extends View {
 	 * @return the current attackScreen in a fight (main menu, sub menu)
 	 */
 	public AttackScreens getAttackScreens() {
+
+		System.out.println("getAttackScreens");
+
 		return this.attackScreen;
 	}
 	
@@ -1227,6 +1333,9 @@ public class Fight extends View {
 	 * @param activeStatus
 	 */
 	public void setChangeTabActive(Boolean activeStatus) {
+		
+		System.out.println("setChangeTabActive");
+
 		this.changeTabActive = activeStatus;
 	}
 
@@ -1234,6 +1343,9 @@ public class Fight extends View {
 	 * @return if set changing is active
 	 */
 	public boolean isChangeTabActive() {
+		
+		System.out.println("isChangeTabActive");
+
 		return this.changeTabActive;
 	}
 
@@ -1241,6 +1353,9 @@ public class Fight extends View {
 	 * @param activeStatus
 	 */
 	public void setPotionTakingActive(boolean activeStatus) {
+		
+		System.out.println("setPotionTakingActive");
+
 		this.potionTakingActive = activeStatus;
 	}
 	
@@ -1248,6 +1363,9 @@ public class Fight extends View {
 	 * @return if a player may drink a potion
 	 */
 	public boolean isPotionTakingActive() {
+		
+		System.out.println("isPotionTakingActive");
+
 		return this.potionTakingActive;
 	}
 	
@@ -1257,6 +1375,9 @@ public class Fight extends View {
 	 * @param slave
 	 */
 	public synchronized void setHumanFightParties(Creature host, Creature slave) {
+		
+		System.out.println("setHumanFightParties");
+
 		if (host == this.player) {
 			this.humanFightHost = true;
 		}
@@ -1269,6 +1390,8 @@ public class Fight extends View {
 	 * @param firstAttacker
 	 */
 	public synchronized void setFirstAttacker(Boolean firstAttacker) {
+		
+		System.out.println("setFirstAttacker");
 		
 		if (firstAttacker) {
 			this.thisPlayerisFirst = 1;
@@ -1283,6 +1406,8 @@ public class Fight extends View {
 	 */
 	public synchronized void setSelectedPotion(Potion selectedPotion) {
 		
+		System.out.println("setSelectedPotion");
+
 		this.selectedPotion = selectedPotion;
 	}
 	
@@ -1290,7 +1415,9 @@ public class Fight extends View {
 	 * @param enemyArmorSpeedMalusSum
 	 */
 	public synchronized void setEnemyArmorSpeedMalusSum(float enemyArmorSpeedMalusSum, float enemyWeaponSpeedMalusMax) {
-		
+
+		System.out.println("setEnemyArmorSpeedMalusSum");
+
 		this.enemyArmorSpeedMalusSum = enemyArmorSpeedMalusSum;
 		this.enemyWeaponSpeedMalusMax = enemyWeaponSpeedMalusMax;
 		this.enemySpeedMalusSumSet = true;
@@ -1300,6 +1427,8 @@ public class Fight extends View {
 	 * @param enemyParrySuccess
 	 */
 	public synchronized void setEnemyParrySuccess (boolean enemyParrySuccess) {
+		
+		System.out.println("setEnemyParrySuccess");
 		
 		this.enemyParrySuccess = enemyParrySuccess;
 		this.enemyParrySuccessSet = true;
@@ -1311,22 +1440,34 @@ public class Fight extends View {
 	 * @param hitProbability
 	 */
 	public synchronized void setEnemyAttack (float healthDamage, float attributeDamage, float hitProbability) {
+		
+		System.out.println("setEnemyAttack");
+
 		this.enemyAttackHealthDamage = healthDamage;
 		this.enemyAttackAttributeDamage = attributeDamage;
-		this.enemyAttackHitProbability = hitProbability;
 		this.enemyAttackSet = true;
 	}
 	
+	/**Called by a networking class to set the enemies attributes.
+	 * @param armorSum
+	 * @param speed
+	 */
 	public synchronized void setEnemyStats (float armorSum, float speed) {
+		
+		System.out.println("setEnemyStats");
+
 		this.enemyArmorSum = armorSum;
 		this.enemySpeed = speed;
 		this.enemyStatsSet = true;
 	}
 	
-	/**Sets the acitveAttackType - called by Game.java for Use of Potions.
+	/**Sets the activeAttackType - called by Game.java and opponent host.
 	 * 
 	 */
 	public void setActiveAttackType(Attacks attackType) {
+		
+		System.out.println("setActiveAttackType");
+
 		this.activeAttackType = attackType;
 	}
 }

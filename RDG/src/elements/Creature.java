@@ -1,5 +1,6 @@
 package elements;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import general.Enums.CreatureType;
@@ -55,6 +56,8 @@ public class Creature extends Element{
 		this.orStrength = strength;
 		this.orAccuracy = accuracy;
 		this.orSpeed = speed;
+		
+		this.activePotions = new LinkedList<Potion>();
 	}
 
 	/**
