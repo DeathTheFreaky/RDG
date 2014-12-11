@@ -245,7 +245,9 @@ public class InventoryView extends View {
 		if (item instanceof Weapon) {
 			/*weapons.add((Weapon) item);
 			armor.add((Equipment) item);*/
-			items.add(item);
+			if (!(item.NAME.equals("Fists"))) {
+				items.add(item);
+			}
 		}
 		else if (item instanceof Armament) {
 			/*armaments.add((Armament) item);

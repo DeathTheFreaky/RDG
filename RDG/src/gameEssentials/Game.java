@@ -356,6 +356,7 @@ public class Game extends BasicGame {
 				}
 				dragging = false;
 				draggedItem = null;
+				//armorView.addFists();
 			}
 		}
 	}

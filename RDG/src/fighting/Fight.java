@@ -776,10 +776,12 @@ public class Fight extends View {
 	/**Calculate the accuracy of a creature, taking into account the multipliers from a player's weapons.
 	 * @param creature
 	 * @return
+	 * @throws InterruptedException 
 	 */
-	private float calcCreatureAccuracy(Creature creature) {
+	private float calcCreatureAccuracy(Creature creature) throws InterruptedException {
 		
 		float accuracy = 0;
+		float accuracyMultiplier = 0.5f;
 		
 		/* get accuracy of a monster */
 		if (creature instanceof Monster) {
@@ -788,14 +790,39 @@ public class Fight extends View {
 		
 		/* get accuracy of local player */
 		if (creature == this.player) {
-			accuracy = creature.getAccuracy() + ...;
+			accuracy = creature.getAccuracy() + accuracyMultiplier * armorView.getStats(ArmorStatsTypes.WEAPONS, ArmorStatsMode.AVERAGE, ArmorStatsAttributes.ACCURACY);
 		} 
 		
 		/* get the accuracy of the other player */
 		else {
 			
+			int timeoutctr = 0;
+			boolean successfulCommunication = false;
+			
+			/* wait for fight host to set needed information */
+			while (timeoutctr <= 10) {
+				
+				if (enemyStatsSet == true) {
+					accuracy = enemyAccuracy;
+					successfulCommunication = true;
+					break;
+				}
+				
+				if (timeoutctr == 10) {
+					break;
+				}
+				
+				timeoutctr++;
+				Thread.sleep(100);
+			}
+			
+			if (successfulCommunication == false) {
+				System.err.println("Waiting for enemyAccuracy timed out...");
+				new Exception("Waiting for enemyAccuracy failed");
+			}
 		}
 		
+		/* do not reset values here - could be used later on */
 		
 		return accuracy;
 	}
@@ -862,9 +889,7 @@ public class Fight extends View {
 				new Exception("Waiting for enemyArmorSpeedMalusSum failed");
 			}
 			
-			/* reset values */
-			this.enemySpeedMalusSumSet = false;
-			this.enemyArmorSpeedMalusSum = 0;
+			/* do not reset values here - could be used later on */
 		}
 		
 		if (playerArmorSpeedMalusSum >= 1) {
@@ -952,12 +977,31 @@ public class Fight extends View {
 	}
 	
 	/**
-	 * Calculates if Attack is successful
+	 * Calculates if an Attack hits the enemy, taking into account <br>
+	 * a creature's accuracy, the accuracy of equipped weapons, <br>
+	 * and the speed of the defender. <br>
 	 * 
-	 * @return true if Attack is successful
+	 * @return true if Attack hits the enemy
+	 * @throws InterruptedException 
 	 */
-	private boolean calcHitSuccess(Creature attacker, Creature defender) {
-		if ((attacker.getAccuracy() * 1/*weapon accuracy*/ * activeAttack.hitProbability) - (defender.getOrSpeed() * 1) >= 0.5) {
+	private boolean calcHitSuccess(Creature attacker, Creature defender) throws InterruptedException {
+		
+		float randAccuracyLow = 0.2f;
+		float randAccuracyHigh = 0.7f;
+		
+		/* speed value will probably be quite a lot lower than accuracy, because for accuracy,
+		 * the average of equipped weapons accuracy adds to the player's accuracy whereas for speed,
+		 * the armor's speed malus is substracted from the player's speed on a proportional base. */
+		float randSpeedLow = 0.5f;
+		float randSpeedHigh = 1.0f;
+		
+		float randAttackerAccuracy = calcCreatureAccuracy(attacker) * activeAttack.hitProbability;
+		float randDefenderSpeed = calcCreatureSpeed(defender);
+		
+		float randAccuracy = randAttackerAccuracy * Chances.randomFloat(randAccuracyLow, randAccuracyHigh);
+		float randSpeed = randDefenderSpeed * Chances.randomFloat(randSpeedLow, randSpeedHigh);
+		
+		if (randAccuracy > randSpeed) {
 			return true;
 		} else {
 			return false;

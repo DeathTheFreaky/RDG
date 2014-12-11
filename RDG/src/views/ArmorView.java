@@ -21,6 +21,7 @@ import general.Enums.ArmorStatsTypes;
 import general.Enums.ImageSize;
 import general.Enums.Potions;
 import general.Enums.WeaponTypes;
+import general.ItemFactory;
 import general.ResourceManager;
 import general.Enums.Armor;
 
@@ -89,6 +90,10 @@ public class ArmorView extends View {
 	
 	/* a potion drunk by a player and set in armorView.drinkPotion() */
 	Potion selectedPotion = null;
+	
+	/* fallback weapon: fists */
+	Weapon fists1 = null;
+	Weapon fists2 = null;
 
 	/**
 	 * Constructs an ArmorView passing its origin as single x and y coordinates
@@ -182,6 +187,17 @@ public class ArmorView extends View {
 		potions1 = potion1_types.values();
 		potion2_types = new HashMap<Potions, Potion>(3);
 		potions2 = potion2_types.values();
+		
+		/* create fists as fallback weapons */
+		fists1 = ItemFactory.createWeapon("Fists", 1);
+		fists2= ItemFactory.createWeapon("Fists", 1);
+		
+		fists2.setAsSubWeapon();
+		
+		armor1.put(Armor.MAIN_WEAPON, fists1);
+		armor1.put(Armor.SUB_WEAPON, fists2);
+		armor2.put(Armor.MAIN_WEAPON, fists1);
+		armor2.put(Armor.SUB_WEAPON, fists2);
 	}
 
 	@Override
@@ -475,18 +491,28 @@ public class ArmorView extends View {
 				/* decide on which side to drop the weapon -> main or sub */
 				if ((x - ORIGIN_X) > size.width/2) {
 					((Equipment) element).setAsSubWeapon();
+					if (thisweapon == fists1) {
+						thisweapon = fists2;
+					}
 				}
 				else {
 					((Equipment) element).setAsMainWeapon();
+					if (thisweapon == fists2) {
+						thisweapon = fists1;
+					}
 				}
 				
 				/* check if weapon is dragged from inside Armor */
 				if (set) {
+					System.out.println("dragged from inside");
 					if (thisweapon == prevWeaponMainSet1 || thisweapon == prevWeaponSubSet1) {
 						fromInsideArmor = true;
 					}
+					System.out.println("from inside armor");
 					weapon1 = (Weapon) armor1.get(Armor.MAIN_WEAPON);
 					weapon2 = (Weapon) armor1.get(Armor.SUB_WEAPON);
+					System.out.println("weapon1: " + weapon1);
+					System.out.println("weapon2: " + weapon2);
 				} else {
 					if (thisweapon == prevWeaponMainSet2 || thisweapon == prevWeaponSubSet2) {
 						fromInsideArmor = true;
@@ -536,11 +562,13 @@ public class ArmorView extends View {
 							if (set) {
 								tempWeapon = armor1.get(Armor.MAIN_WEAPON);
 								tempWeapon.setAsSubWeapon();
+								System.out.println("tempWeapon: " + tempWeapon);
 								armor1.put(Armor.SUB_WEAPON, tempWeapon);
 								armor1.put(Armor.MAIN_WEAPON, ((Equipment) element));
 							} else {
 								tempWeapon = armor2.get(Armor.MAIN_WEAPON);
 								tempWeapon.setAsSubWeapon();
+								System.out.println("tempWeapon: " + tempWeapon);
 								armor2.put(Armor.SUB_WEAPON, tempWeapon);
 								armor2.put(Armor.MAIN_WEAPON, ((Equipment) element));
 							}
@@ -593,10 +621,15 @@ public class ArmorView extends View {
 				
 				/* do not allow adding another weapon when a twohand is equipped or max of weapon is 1 */
 				if (returnImmediatly) {
+					//addFists();
+					System.out.println("returns " + e);
+					if (e != null) System.out.println("return " + e.NAME);
 					return e;
 				}
 				/* do not allow adding another weapon when a twohand is equipped or max of weapon is 1 */
 				if (returnImmediatlyNull) {
+					//addFists();
+					System.out.println("returns " + e);
 					return null;
 				}
 			}
@@ -620,6 +653,9 @@ public class ArmorView extends View {
 			prevWeaponMainSet2 = (Weapon) armor2.get(Armor.MAIN_WEAPON);
 			prevWeaponSubSet2 = (Weapon) armor2.get(Armor.SUB_WEAPON);
 			
+			//addFists();
+			System.out.println("returns " + e);
+			if (e != null) System.out.println("return " + e.NAME);
 			return e;
 		
 		/* check if item is dragged to potion section */
@@ -749,6 +785,123 @@ public class ArmorView extends View {
 		}
 		return e;
 	}
+	
+	/**Always add Fist as fallback weapon when there are still free slots.
+	 * 
+	 */
+	public void addFists() {
+		
+		Weapon equippedWeaponMain = null;
+		Weapon equippedWeaponSub = null;
+		int slotSum = 0;
+		
+		/* get the equipped weapons */
+		if (set) {	
+			equippedWeaponMain = (Weapon) armor1.get(Armor.MAIN_WEAPON);
+			equippedWeaponSub = (Weapon) armor1.get(Armor.SUB_WEAPON);
+			
+			/*if (equippedWeaponMain == fistsSub) {
+				fistsSub.setAsSubWeapon();
+				//armor1.remove(Armor.MAIN_WEAPON);
+			} else if (equippedWeaponSub == fistsMain) {
+				fistsMain.setAsMainWeapon();
+				//armor1.remove(Armor.SUB_WEAPON);
+			}*/
+		} else {
+			equippedWeaponMain = (Weapon) armor2.get(Armor.MAIN_WEAPON);
+			equippedWeaponSub = (Weapon) armor2.get(Armor.SUB_WEAPON);
+			/*if (equippedWeaponMain == fistsSub) {
+				fistsSub.setAsSubWeapon();
+				//armor2.remove(Armor.MAIN_WEAPON);
+			} else if (equippedWeaponSub == fistsMain) {
+				fistsMain.setAsMainWeapon();
+				//armor2.remove(Armor.SUB_WEAPON);
+			}*/
+		}
+		
+		System.out.println("fistsMain: " + ((Equipment)fists1).getArmorType());
+		System.out.println("fistsSub: " + ((Equipment)fists2).getArmorType());
+		
+		
+		System.out.println("equippedWeaponMain: " + equippedWeaponMain);
+		System.out.println("equippedWeaponSub: " + equippedWeaponSub);
+		
+		
+		/* reset fists */
+		if (equippedWeaponMain != null) {
+			if (equippedWeaponMain.NAME.equals("Fists")) {
+				equippedWeaponMain = null;
+			}
+		}
+		if (equippedWeaponSub != null) {
+			if (equippedWeaponSub.NAME.equals("Fists")) {
+				equippedWeaponSub = null;
+			}
+		} 
+		fists1.setAsMainWeapon();
+		fists2.setAsSubWeapon();
+		
+		
+		/* calculate how many slots they need */
+		if (equippedWeaponMain != null) {
+			if (equippedWeaponMain.TYPE == WeaponTypes.SINGLEHAND) {
+				slotSum += 1;
+			}
+			else if (equippedWeaponMain.TYPE == WeaponTypes.TWOHAND) {
+				slotSum += 2;
+			}
+		}
+		if (equippedWeaponSub != null) {
+			if (equippedWeaponSub.TYPE == WeaponTypes.SINGLEHAND) {
+				slotSum += 1;
+			}
+			else if (equippedWeaponSub.TYPE == WeaponTypes.TWOHAND) {
+				slotSum += 2;
+			}
+		}
+		
+		System.out.println("slotSum: " + slotSum);
+		
+		/* if not 2 slots are used, fill up with fists */
+		if (slotSum == 0) {
+			if (set) {
+				fists1.setAsMainWeapon();
+				armor1.put(Armor.MAIN_WEAPON, fists1);
+				fists2.setAsSubWeapon();
+				armor1.put(Armor.SUB_WEAPON, fists2);
+			} else {
+				armor2.put(Armor.MAIN_WEAPON, fists1);
+				armor2.put(Armor.SUB_WEAPON, fists2);
+			}
+		}
+		else if (slotSum == 1) {
+			if (equippedWeaponMain == null) {
+				if (set) {
+					fists1.setAsMainWeapon();
+					armor1.put(Armor.MAIN_WEAPON, fists1);
+				} else {
+					fists2.setAsMainWeapon();
+					armor2.put(Armor.MAIN_WEAPON, fists1);
+				}
+			} else if (equippedWeaponSub == null) {
+				if (set) {
+					fists1.setAsSubWeapon();
+					armor1.put(Armor.SUB_WEAPON, fists2);
+				} else {
+					fists2.setAsSubWeapon();
+					armor2.put(Armor.SUB_WEAPON, fists2);
+				}
+			}
+		}
+		
+		if (set) {
+			System.out.println("equippedMain1: " + ((Equipment)armor1.get(Armor.MAIN_WEAPON)).getArmorType());
+			System.out.println("equippedSub1: " + ((Equipment)armor1.get(Armor.SUB_WEAPON)).getArmorType());
+		} else {
+			System.out.println("equippedMain2: " + ((Equipment)armor2.get(Armor.MAIN_WEAPON)).getArmorType());
+			System.out.println("equippedSub2: " + ((Equipment)armor2.get(Armor.SUB_WEAPON)).getArmorType());
+		}
+	}
 
 	/**Returns an equipped item. 
 	 * 
@@ -757,7 +910,7 @@ public class ArmorView extends View {
 	 * @return
 	 */
 	public Element getItem(int mouseX, int mouseY) {
-				
+						
 		if (mouseX > ORIGIN_X && mouseX < ORIGIN_X + size.width
 				&& mouseY > ORIGIN_Y && mouseY < ORIGIN_Y + size.height - tabHeight - 5) {
 			
@@ -835,7 +988,7 @@ public class ArmorView extends View {
 				if(set) {
 					e = armor1.get(Armor.MAIN_WEAPON);
 					armor1.remove(Armor.MAIN_WEAPON);
-				}else {
+				} else {
 					e = armor2.get(Armor.MAIN_WEAPON);
 					armor2.remove(Armor.MAIN_WEAPON);
 				}
@@ -853,7 +1006,7 @@ public class ArmorView extends View {
 					armor2.remove(Armor.SUB_WEAPON);
 				}
 			}
-
+			
 			return e;
 			
 		} else if (mouseX > ORIGIN_X && mouseX < ORIGIN_X + size.width && mouseY > ORIGIN_Y + size.height - tabHeight - 5
