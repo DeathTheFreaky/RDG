@@ -16,7 +16,10 @@ import java.util.Random;
 import org.newdawn.slick.SlickException;
 
 public class Chances {
-
+	
+	private static Random r = new Random();
+	private static ResourceManager resources = null;
+	
 	/**
 	 * Return a random float between two float barriers.
 	 * 
@@ -26,7 +29,6 @@ public class Chances {
 	 */
 	public static float randomFloat(float low, float high) {
 
-		Random r = new Random();
 		return r.nextFloat() * (high - low) + low;
 	}
 
@@ -42,7 +44,9 @@ public class Chances {
 	public static String randomMonster(Map<Levels, Float> monsterProbabilities)
 			throws SlickException {
 
-		ResourceManager resources = new ResourceManager().getInstance();
+		if (resources == null) {
+			resources = new ResourceManager().getInstance();
+		}
 
 		/* used to sum up all single possibility values from configloader */
 		float sum = 0;
@@ -62,7 +66,6 @@ public class Chances {
 		 * get a random value within the determined interval = sum of all
 		 * probability values
 		 */
-		Random r = new Random();
 		randomFloat = r.nextFloat() * (sum);
 
 		/* set thresholds for level probabilities */
@@ -114,8 +117,9 @@ public class Chances {
 	 */
 	public static Item randomItem(Map<ItemClasses, Float> itemClassProbabilities) throws SlickException {
 		
-		ResourceManager resources = new ResourceManager().getInstance();
-
+		if (resources == null) {
+			resources = new ResourceManager().getInstance();
+		}
 		/* used to sum up all single possibility values for all items from configloader */
 		float sum = 0;
 
@@ -134,7 +138,6 @@ public class Chances {
 		 * get a random value within the determined interval = sum of all
 		 * probability values
 		 */
-		Random r = new Random();
 		randomFloat = r.nextFloat() * (sum);
 		
 		/* set thresholds for itemClass probabilities */
@@ -181,9 +184,7 @@ public class Chances {
 	 * @return a free field or null if none is found
 	 */
 	public static Point randomFreeField(Element[][] overlay) {
-		
-		Random r = new Random();
-		
+				
 		for (int i = 0; i < Game.MAXTRIES; i++) {
 			
 			/* if ROOMWIDTH == 8: values will be between 0 and 7 */
@@ -203,7 +204,6 @@ public class Chances {
 	 */
 	public static Attacks randomAttackType() {
 
-		Random r = new Random();
 		Attacks randAttackType = null;
 		
 		float randFloat = r.nextFloat();

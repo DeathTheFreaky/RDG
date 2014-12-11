@@ -254,7 +254,7 @@ public class Game extends BasicGame {
 			Element e = map.checkInFrontOfPlayer();
 			if (e != null) {
 				//inventoryView.storeEquipment((Equipment) e);
-				inventoryView.storeItem(e);
+				inventoryView.storeItem(e, armorView);
 			}
 		} else if (key == 1) {
 			//set attackScreen in Fight.java to MAIN
@@ -351,7 +351,7 @@ public class Game extends BasicGame {
 					}
 				} else {
 					if ((e = armorView.equipItem(draggedItem, x, y, inventoryView)) != null) {
-						inventoryView.storeItem(e);
+						inventoryView.storeItem(e, armorView);
 					}
 				}
 				dragging = false;

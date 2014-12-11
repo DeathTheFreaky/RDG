@@ -240,7 +240,7 @@ public class InventoryView extends View {
 	/**Add items to lists of items, weapons, armaments, potions, armor.
 	 * @param item
 	 */
-	public void storeItem(Element item) {
+	public void storeItem(Element item, ArmorView armorView) {
 		
 		if (item instanceof Weapon) {
 			/*weapons.add((Weapon) item);
@@ -248,6 +248,7 @@ public class InventoryView extends View {
 			if (!(item.NAME.equals("Fists"))) {
 				items.add(item);
 			}
+			armorView.addFists();
 		}
 		else if (item instanceof Armament) {
 			/*armaments.add((Armament) item);

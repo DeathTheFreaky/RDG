@@ -37,12 +37,12 @@ public class Fight extends View {
 	private boolean activeFight = false;
 
 	/* different Colors */
-	Color black = new Color(0.0f, 0.0f, 0.0f);
-	Color gray = new Color(0.2f, 0.2f, 0.2f);
-	Color lightGray = new Color(0.65f, 0.65f, 0.65f);
-	Color white = new Color(1.0f, 1.0f, 1.0f);
-	Color pink = new Color(1f, 0.5f, 0.8f);
-	Color red = new Color(1f, 0.0f, 0.0f);
+	private final Color BLACK = new Color(0.0f, 0.0f, 0.0f);
+	private final Color GRAY = new Color(0.2f, 0.2f, 0.2f);
+	private final Color LIGHTGRAY = new Color(0.65f, 0.65f, 0.65f);
+	private final Color WHITE = new Color(1.0f, 1.0f, 1.0f);
+	private final Color PINK = new Color(1f, 0.5f, 0.8f);
+	private final Color RED = new Color(1f, 0.0f, 0.0f);
 
 	/* positioning values */
 	private final int border = 5;
@@ -157,16 +157,16 @@ public class Fight extends View {
 	public void draw(GameContainer container, Graphics graphics) {
 
 		/* BACKGROUND */
-		graphics.setColor(gray);
+		graphics.setColor(GRAY);
 		graphics.fillRect(origin.x, origin.y, size.width, size.height);
 		
 		// Fight screen
-		graphics.setColor(new Color(1f, 1f, 1f));
+		graphics.setColor(BLACK);
 		graphics.fillRect(origin.x + border, origin.y + border,
 				fightWindowWidth, fightWindowHeight);
 		
 		// Fight Option Selection
-		graphics.setColor(pink);
+		graphics.setColor(PINK);
 		graphics.fillRect(origin.x + border, size.height - 100 + border,
 				size.width - 2 * border, size.height - 100 - 2 * border);
 		/* BACKGROUND */
@@ -175,39 +175,39 @@ public class Fight extends View {
 		/* FOREGROUND */
 		/* Enemy Health Bar */
 		// Black border around Health bar
-		graphics.setColor(black);
+		graphics.setColor(BLACK);
 		graphics.drawRect(origin.x + border + barGap - 1, origin.y
 				+ border + barGap - 1, barWidth + 1,
 				barHeight + 1);
 		// Gray background bar
-		graphics.setColor(lightGray);
+		graphics.setColor(LIGHTGRAY);
 		graphics.fillRect(origin.x + border + barGap, origin.y + border
 				+ barGap, barWidth, barHeight);
 		// Actual Bar
-		graphics.setColor(red);
+		graphics.setColor(RED);
 		graphics.fillRect(origin.x + border + barGap, origin.y + border
 				+ barGap, barWidth * healthEnemy / healthEnemyOr, barHeight);
 		
 		// Own Health Bar
 		// Black border around health bar
-		graphics.setColor(black);
+		graphics.setColor(BLACK);
 		graphics.drawRect(fightWindowWidth - border - barGap - barWidth - 1,
 				fightWindowHeight - barGap - barHeight - 1,
 				barWidth + 1, barHeight + 1);
 		// gray background bar
-		graphics.setColor(lightGray);
+		graphics.setColor(LIGHTGRAY);
 		graphics.fillRect(fightWindowWidth - border - barGap - barWidth,
 				fightWindowHeight - barGap - barHeight,
 				barWidth, barHeight);
 		// Actual bar
-		graphics.setColor(red);
+		graphics.setColor(RED);
 		graphics.fillRect(fightWindowWidth - border - barGap - barWidth,
 				fightWindowHeight - barGap - barHeight,
 				barWidth * healthSelf / healthSelfOr, barHeight);
 		
 		/* Print Names of Enemy and Player */
 		/* Enemy name */
-		graphics.setColor(black);
+		graphics.setColor(BLACK);
 		graphics.drawString(this.enemy.NAME, origin.x + border + barGap + 1 , origin.y
 				+ border + barGap - 25);
 		graphics.drawString(this.player.NAME, fightWindowWidth - border - barGap - barWidth , 
@@ -215,7 +215,7 @@ public class Fight extends View {
 
 		// Fight Options
 		if (attackScreen == AttackScreens.MAIN) {
-			graphics.setColor(black);
+			graphics.setColor(BLACK);
 			graphics.drawString("Attack", optionsWidth / 4 - 25, fightWindowHeight + optionsHeight / 4);
 			graphics.drawString("Parry", optionsWidth / 4 * 3 - 20, fightWindowHeight + optionsHeight / 4);
 			graphics.drawString("Change Set", optionsWidth / 4 - 45, fightWindowHeight + optionsHeight / 4 * 3);
@@ -224,7 +224,7 @@ public class Fight extends View {
 			
 		// Attack Options
 		if (attackScreen == AttackScreens.ATTACK) {
-			graphics.setColor(black);
+			graphics.setColor(BLACK);
 			graphics.drawString("Chest", optionsWidth / 4 - 20, fightWindowHeight + optionsHeight / 4);
 			graphics.drawString("Head", optionsWidth / 4 * 3 - 15, fightWindowHeight + optionsHeight / 4);
 			graphics.drawString("Arms", optionsWidth / 4 - 15, fightWindowHeight + optionsHeight / 4 * 3);
@@ -233,13 +233,13 @@ public class Fight extends View {
 		
 		// Waiting Screen
 		if (attackScreen == AttackScreens.WAITING) {
-			graphics.setColor(black);
+			graphics.setColor(BLACK);
 			graphics.drawString("Waiting for oponent's action... ", optionsWidth / 4 - 20, fightWindowHeight + optionsHeight / 2);
 		}
 		
 		if (attackScreen != AttackScreens.WAITING) {
 			/* Draw lines between the different attack options */
-			graphics.setColor(gray);
+			graphics.setColor(GRAY);
 			graphics.fillRect(origin.x + border, size.height - optionsHeight/2 - 4 + border,
 					size.width - 2 * border, 4); // horizontal
 			graphics.fillRect(origin.x + size.width/2 - border - 2, size.height - optionsHeight + border,

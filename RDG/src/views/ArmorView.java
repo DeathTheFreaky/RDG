@@ -434,7 +434,6 @@ public class ArmorView extends View {
 		}
 		if (x > ORIGIN_X && x < ORIGIN_X + size.width && y > ORIGIN_Y + tabHeight + 5 
 				&& y < ORIGIN_Y + size.height - tabHeight - 5) {
-			System.out.println("potion taken");
 			
 			//Send info about taken potion to enemy ? -> only if potion effects enemy?
 			
@@ -504,23 +503,28 @@ public class ArmorView extends View {
 				
 				/* check if weapon is dragged from inside Armor */
 				if (set) {
-					System.out.println("dragged from inside");
+					
+					/* check if dragged weapon is stored inside armor */
+					
 					if (thisweapon == prevWeaponMainSet1 || thisweapon == prevWeaponSubSet1) {
 						fromInsideArmor = true;
 					}
-					System.out.println("from inside armor");
+					if (thisweapon.NAME.equals("Fists")) {
+						fromInsideArmor = true;
+					} 
 					weapon1 = (Weapon) armor1.get(Armor.MAIN_WEAPON);
 					weapon2 = (Weapon) armor1.get(Armor.SUB_WEAPON);
-					System.out.println("weapon1: " + weapon1);
-					System.out.println("weapon2: " + weapon2);
 				} else {
 					if (thisweapon == prevWeaponMainSet2 || thisweapon == prevWeaponSubSet2) {
+						fromInsideArmor = true;
+					}
+					if (thisweapon.NAME.equals("Fists")) {
 						fromInsideArmor = true;
 					}
 					weapon1 = (Weapon) armor2.get(Armor.MAIN_WEAPON);
 					weapon2 = (Weapon) armor2.get(Armor.SUB_WEAPON);
 				}
-								
+												
 				/* return both weapons to inventory if a twohand is added */
 				if (thisweapon.TYPE == WeaponTypes.TWOHAND) {
 					
@@ -533,10 +537,10 @@ public class ArmorView extends View {
 					}		
 					
 					if (weapon1 != null) {
-						inventory.storeItem(weapon1);
+						inventory.storeItem(weapon1, this);
 					}
 					if (weapon2 != null) {
-						inventory.storeItem(weapon2);
+						inventory.storeItem(weapon2, this);
 					}
 					
 				} else {
@@ -562,13 +566,11 @@ public class ArmorView extends View {
 							if (set) {
 								tempWeapon = armor1.get(Armor.MAIN_WEAPON);
 								tempWeapon.setAsSubWeapon();
-								System.out.println("tempWeapon: " + tempWeapon);
 								armor1.put(Armor.SUB_WEAPON, tempWeapon);
 								armor1.put(Armor.MAIN_WEAPON, ((Equipment) element));
 							} else {
 								tempWeapon = armor2.get(Armor.MAIN_WEAPON);
 								tempWeapon.setAsSubWeapon();
-								System.out.println("tempWeapon: " + tempWeapon);
 								armor2.put(Armor.SUB_WEAPON, tempWeapon);
 								armor2.put(Armor.MAIN_WEAPON, ((Equipment) element));
 							}
@@ -622,14 +624,11 @@ public class ArmorView extends View {
 				/* do not allow adding another weapon when a twohand is equipped or max of weapon is 1 */
 				if (returnImmediatly) {
 					//addFists();
-					System.out.println("returns " + e);
-					if (e != null) System.out.println("return " + e.NAME);
 					return e;
 				}
 				/* do not allow adding another weapon when a twohand is equipped or max of weapon is 1 */
 				if (returnImmediatlyNull) {
 					//addFists();
-					System.out.println("returns " + e);
 					return null;
 				}
 			}
@@ -654,8 +653,6 @@ public class ArmorView extends View {
 			prevWeaponSubSet2 = (Weapon) armor2.get(Armor.SUB_WEAPON);
 			
 			//addFists();
-			System.out.println("returns " + e);
-			if (e != null) System.out.println("return " + e.NAME);
 			return e;
 		
 		/* check if item is dragged to potion section */
@@ -799,41 +796,38 @@ public class ArmorView extends View {
 		if (set) {	
 			equippedWeaponMain = (Weapon) armor1.get(Armor.MAIN_WEAPON);
 			equippedWeaponSub = (Weapon) armor1.get(Armor.SUB_WEAPON);
-			
-			/*if (equippedWeaponMain == fistsSub) {
-				fistsSub.setAsSubWeapon();
-				//armor1.remove(Armor.MAIN_WEAPON);
-			} else if (equippedWeaponSub == fistsMain) {
-				fistsMain.setAsMainWeapon();
-				//armor1.remove(Armor.SUB_WEAPON);
-			}*/
 		} else {
 			equippedWeaponMain = (Weapon) armor2.get(Armor.MAIN_WEAPON);
 			equippedWeaponSub = (Weapon) armor2.get(Armor.SUB_WEAPON);
-			/*if (equippedWeaponMain == fistsSub) {
-				fistsSub.setAsSubWeapon();
-				//armor2.remove(Armor.MAIN_WEAPON);
-			} else if (equippedWeaponSub == fistsMain) {
-				fistsMain.setAsMainWeapon();
-				//armor2.remove(Armor.SUB_WEAPON);
-			}*/
 		}
-		
-		System.out.println("fistsMain: " + ((Equipment)fists1).getArmorType());
-		System.out.println("fistsSub: " + ((Equipment)fists2).getArmorType());
-		
-		
-		System.out.println("equippedWeaponMain: " + equippedWeaponMain);
-		System.out.println("equippedWeaponSub: " + equippedWeaponSub);
-		
 		
 		/* reset fists */
 		if (equippedWeaponMain != null) {
+			/* delete fists if equipping two-hand */
+			if (set) {
+				if (equippedWeaponMain.NAME.equals(("Fists"))) {
+					armor1.remove(Armor.MAIN_WEAPON);
+				}
+			} else {
+				if (equippedWeaponMain.NAME.equals(("Fists"))) {
+					armor2.remove(Armor.MAIN_WEAPON);
+				}
+			}
 			if (equippedWeaponMain.NAME.equals("Fists")) {
 				equippedWeaponMain = null;
 			}
 		}
 		if (equippedWeaponSub != null) {
+			/* delete fists if equipping two-hand */
+			if (set) {
+				if (equippedWeaponSub.NAME.equals(("Fists"))) {
+					armor1.remove(Armor.SUB_WEAPON);
+				}
+			} else {
+				if (equippedWeaponSub.NAME.equals(("Fists"))) {
+					armor2.remove(Armor.SUB_WEAPON);
+				}
+			}
 			if (equippedWeaponSub.NAME.equals("Fists")) {
 				equippedWeaponSub = null;
 			}
@@ -859,19 +853,21 @@ public class ArmorView extends View {
 				slotSum += 2;
 			}
 		}
-		
-		System.out.println("slotSum: " + slotSum);
-		
+				
 		/* if not 2 slots are used, fill up with fists */
 		if (slotSum == 0) {
+			fists1.setAsMainWeapon();
+			fists2.setAsSubWeapon();
 			if (set) {
-				fists1.setAsMainWeapon();
 				armor1.put(Armor.MAIN_WEAPON, fists1);
-				fists2.setAsSubWeapon();
+				prevWeaponMainSet1 = null;
 				armor1.put(Armor.SUB_WEAPON, fists2);
+				prevWeaponSubSet1 = null;
 			} else {
 				armor2.put(Armor.MAIN_WEAPON, fists1);
+				prevWeaponMainSet2 = null;
 				armor2.put(Armor.SUB_WEAPON, fists2);
+				prevWeaponSubSet2 = null;
 			}
 		}
 		else if (slotSum == 1) {
@@ -879,27 +875,23 @@ public class ArmorView extends View {
 				if (set) {
 					fists1.setAsMainWeapon();
 					armor1.put(Armor.MAIN_WEAPON, fists1);
+					prevWeaponMainSet1 = null;
 				} else {
 					fists2.setAsMainWeapon();
 					armor2.put(Armor.MAIN_WEAPON, fists1);
+					prevWeaponMainSet2 = null;
 				}
 			} else if (equippedWeaponSub == null) {
 				if (set) {
 					fists1.setAsSubWeapon();
 					armor1.put(Armor.SUB_WEAPON, fists2);
+					prevWeaponSubSet1 = null;
 				} else {
 					fists2.setAsSubWeapon();
 					armor2.put(Armor.SUB_WEAPON, fists2);
+					prevWeaponSubSet2 = null;
 				}
 			}
-		}
-		
-		if (set) {
-			System.out.println("equippedMain1: " + ((Equipment)armor1.get(Armor.MAIN_WEAPON)).getArmorType());
-			System.out.println("equippedSub1: " + ((Equipment)armor1.get(Armor.SUB_WEAPON)).getArmorType());
-		} else {
-			System.out.println("equippedMain2: " + ((Equipment)armor2.get(Armor.MAIN_WEAPON)).getArmorType());
-			System.out.println("equippedSub2: " + ((Equipment)armor2.get(Armor.SUB_WEAPON)).getArmorType());
 		}
 	}
 
@@ -910,7 +902,7 @@ public class ArmorView extends View {
 	 * @return
 	 */
 	public Element getItem(int mouseX, int mouseY) {
-						
+								
 		if (mouseX > ORIGIN_X && mouseX < ORIGIN_X + size.width
 				&& mouseY > ORIGIN_Y && mouseY < ORIGIN_Y + size.height - tabHeight - 5) {
 			
