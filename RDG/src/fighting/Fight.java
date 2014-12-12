@@ -31,7 +31,7 @@ import views.ArmorView;
 import views.GameEnvironment;
 import views.View;
 
-public class Fight extends View {
+public class Fight extends View implements Runnable {
 
 	/* If a fight currently takes place */
 	private boolean activeFight = false;
@@ -98,6 +98,8 @@ public class Fight extends View {
 	private Boolean humanFightSlave = false;
 	private Boolean humanFight = false; 
 	
+	/* since return type is not allowed */
+	
 	/* values manipulated by networking class */
 	
 		/* Selected Attack option from Fight menu - used for both player and enemy 
@@ -161,7 +163,7 @@ public class Fight extends View {
 		graphics.fillRect(origin.x, origin.y, size.width, size.height);
 		
 		// Fight screen
-		graphics.setColor(BLACK);
+		graphics.setColor(WHITE);
 		graphics.fillRect(origin.x + border, origin.y + border,
 				fightWindowWidth, fightWindowHeight);
 		
@@ -351,8 +353,10 @@ public class Fight extends View {
 		this.healthSelf = player.getHp();
 		this.humanFight = false; //reset to false before checking if it is a human fight
 		
-		Creature looser = fight();
+		//Creature looser = fight();
 
+		Creature looser = null;
+		
 		return looser;
 	}
 
@@ -394,19 +398,22 @@ public class Fight extends View {
 		this.enemyAttackHealthDamage = 0;
 		this.enemyAttackAttributeDamage = 0;
 	}
-
+	
 	/**
 	 * This method manages the process of fighting.
 	 * 
 	 * @return the looser of a fight
 	 * @throws InterruptedException 
 	 */
-	private Creature fight() throws InterruptedException {
+	@Override
+	public void run() {
 		
 		System.out.println(("Starting fight"));
 		
 		/* Determine if this is a human fight. */
 		this.humanFight = humanFightInitialization();
+		
+		System.out.println("humanFight: " + this.humanFight);
 		
 		/* Main fight loop */
 		while (player.getHp() > 0 && enemy.getHp() > 0) { // as long as nobody died

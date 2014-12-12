@@ -11,6 +11,7 @@ import elements.Creature;
 import elements.Element;
 import elements.Monster;
 import fighting.Fight;
+import gameEssentials.Game;
 import gameEssentials.Player;
 import general.Enums.ImageSize;
 import general.MonsterFactory;
@@ -38,11 +39,11 @@ public class GameEnvironment extends View {
 	/* Marks if the player is in a Fight (for displaying Fighting Screen) */
 	private boolean fight = true;
 	
-	/* Kind of View/Instance where the Fight takes place/is shown */
-	private Fight fightInstance;
-	
 	/* ArmorView is needed to interact with armory items */
 	ArmorView armorView = null;
+	
+	/* the base Game class */
+	Game game;
 
 	/**
 	 * Constructs a GameEnvironment passing its origin as single x and y
@@ -59,8 +60,8 @@ public class GameEnvironment extends View {
 	 * @see GameEnvironment
 	 */
 	public GameEnvironment(String contextName, int originX, int originY,
-			Player player, ArmorView armorView) throws SlickException {
-		this(contextName, new Point(originX, originY), player, armorView);
+			Player player, ArmorView armorView, Game game) throws SlickException {
+		this(contextName, new Point(originX, originY), player, armorView, game);
 	}
 
 	/**
@@ -76,9 +77,9 @@ public class GameEnvironment extends View {
 	 * @throws SlickException
 	 * @see GameEnvironment
 	 */
-	public GameEnvironment(String contextName, Point origin, Player player, ArmorView armorView)
+	public GameEnvironment(String contextName, Point origin, Player player, ArmorView armorView, Game game)
 			throws SlickException {
-		this(contextName, origin, new Dimension(640, 480), player, armorView);
+		this(contextName, origin, new Dimension(640, 480), player, armorView, game);
 	}
 
 	/**
@@ -97,9 +98,9 @@ public class GameEnvironment extends View {
 	 * @see GameEnvironment
 	 */
 	public GameEnvironment(String contextName, int originX, int originY,
-			int width, int height, Player player, ArmorView armorView) throws SlickException {
+			int width, int height, Player player, ArmorView armorView, Game game) throws SlickException {
 		this(contextName, new Point(originX, originY), new Dimension(width,
-				height), player, armorView);
+				height), player, armorView, game);
 	}
 
 	/**
@@ -116,12 +117,12 @@ public class GameEnvironment extends View {
 	 * @see GameEnvironment
 	 */
 	public GameEnvironment(String contextName, Point origin, Dimension size,
-			Player player, ArmorView armorView) throws SlickException {
+			Player player, ArmorView armorView, Game game) throws SlickException {
 		super(contextName, origin, size);
-		this.player = player;
 		
-		fightInstance = new Fight(origin, size, this, player, armorView); //added arguments player and enemy by Flo
-
+		this.game = game;
+		this.player = player;
+				
 		if (size.width % BLOCK_SIZE != 0) {
 			System.out.println("WATCH OUT! GameEnvironment only works well, "
 					+ "if the width is a multiple of " + BLOCK_SIZE + "!");
@@ -143,8 +144,9 @@ public class GameEnvironment extends View {
 
 	@Override
 	public void draw(GameContainer container, Graphics graphics) {
+		
 		/* if the player is not in a current fight */
-		if (!fightInstance.isInFight()) {
+		if (game.getFightInstance() != null) {
 			
 			/* downright is refered to in tile numbers */
 			for (int i = 0; i < downright.x; i++) {
@@ -183,7 +185,7 @@ public class GameEnvironment extends View {
 			player.draw(container, graphics);
 			
 		}else {	// show Fight
-			fightInstance.draw(container, graphics);
+			game.getFightInstance().draw(container, graphics);
 		}
 	}
 
@@ -204,18 +206,11 @@ public class GameEnvironment extends View {
 	 */
 	public Creature startFight(Creature creature) {
 		try {
-			return fightInstance.newFight(creature);
+			return game.getFightInstance().newFight(creature);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			System.err.println("Fight was interrupted");
 		}
 		return null;
-	}
-	
-	/**Returns the GameEnvironment's Fight Instance for obtaining fight data etc.
-	 * @return fight Instance
-	 */
-	public Fight getFightInstance() {
-		return fightInstance;
 	}
 }

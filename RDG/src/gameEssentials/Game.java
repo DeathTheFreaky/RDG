@@ -3,6 +3,8 @@ package gameEssentials;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -113,6 +115,9 @@ public class Game extends BasicGame {
 	
 	/* needed for human fights - set to true if this is the lobby HOSTER */
 	private Boolean humanFightHost = false;
+	
+	/* list holding child threads */
+	private List<Thread> threadList = new ArrayList<Thread>();
 
 	/* Declare all classes, we need for the game (Factory, Resourceloader) */
 	// private ResourceManager resourceManager;
@@ -190,7 +195,7 @@ public class Game extends BasicGame {
 		gameEnvironment = new GameEnvironment("GameEnvironment",
 
 		gameEnvironmentOrigin, new Dimension(GAME_ENVIRONMENT_WIDTH,
-				GAME_ENVIRONMENT_HEIGHT), player, armorView);
+				GAME_ENVIRONMENT_HEIGHT), player, armorView, this);
 
 		inventoryView = new InventoryView("Inventory", inventoryViewOrigin,
 				new Dimension(INVENTORY_WIDTH, INVENTORY_HEIGHT));
@@ -204,9 +209,6 @@ public class Game extends BasicGame {
 		map.setPlayer(player);
 		map.setGameEnvironment(gameEnvironment);
 		// map.fillMap();
-		
-		/* Obtain the fight Instance of gameEnvironment for manipulating and querying fight data */
-		fightInstance = gameEnvironment.getFightInstance();
 	}
 
 	@Override
@@ -386,5 +388,13 @@ public class Game extends BasicGame {
 		if (mouseOverChat) {
 			chat.scroll(scroll);
 		}
+	}
+	
+	/**Returns the currently active Fight Instance or null if no fight is active 
+	 * (thread that needs to be started more than once).
+	 * @return fight Instance
+	 */
+	public Fight getFightInstance() {
+		return fightInstance;
 	}
 }
