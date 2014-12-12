@@ -56,10 +56,6 @@ public class Fight extends View implements Runnable {
 	private final int barWidth = fightWindowWidth / 3;
 	private final int barHeight = 13;
 	private final int barGap = 30;
-	private float healthEnemy = 1.0f;
-	private float healthSelf = 1.0f;
-	private float healthEnemyOr;
-	private float healthSelfOr;
 	
 	// Instances of all available attacks
 	Map<Attacks, Attack> attacks = null;
@@ -188,7 +184,7 @@ public class Fight extends View implements Runnable {
 		// Actual Bar
 		graphics.setColor(RED);
 		graphics.fillRect(origin.x + border + barGap, origin.y + border
-				+ barGap, barWidth * healthEnemy / healthEnemyOr, barHeight);
+				+ barGap, barWidth * enemy.getHp()/enemy.getOrHp(), barHeight);
 		
 		// Own Health Bar
 		// Black border around health bar
@@ -205,7 +201,7 @@ public class Fight extends View implements Runnable {
 		graphics.setColor(RED);
 		graphics.fillRect(fightWindowWidth - border - barGap - barWidth,
 				fightWindowHeight - barGap - barHeight,
-				barWidth * healthSelf / healthSelfOr, barHeight);
+				barWidth * player.getHp()/player.getOrHp(), barHeight);
 		
 		/* Print Names of Enemy and Player */
 		/* Enemy name */
@@ -236,7 +232,7 @@ public class Fight extends View implements Runnable {
 		// Waiting Screen
 		if (attackScreen == AttackScreens.WAITING) {
 			graphics.setColor(BLACK);
-			graphics.drawString("Waiting for oponent's action... ", optionsWidth / 4 - 20, fightWindowHeight + optionsHeight / 2);
+			graphics.drawString("Waiting for opponent's action... ", optionsWidth / 4 - 20, fightWindowHeight + optionsHeight / 2);
 		}
 		
 		if (attackScreen != AttackScreens.WAITING) {
@@ -291,11 +287,9 @@ public class Fight extends View implements Runnable {
 						break;
 					case OPTION2: System.out.println("Parry");
 						this.activeAttackType = Attacks.PARRY;
-						this.attackScreen = AttackScreens.WAITING;
 						break;
 					case OPTION3: System.out.println("Change Set");
 						this.activeAttackType = Attacks.SET;
-						this.attackScreen = AttackScreens.WAITING;
 						break;
 					case OPTION4: System.out.println("Potion");
 						//activeAttackType is set in Armor View -> drinkPotion()
@@ -308,19 +302,15 @@ public class Fight extends View implements Runnable {
 				switch (attackOption) {
 					case OPTION1: System.out.println("Chest");
 						this.activeAttackType = Attacks.TORSO;
-						this.attackScreen = AttackScreens.WAITING;
 						break;
 					case OPTION2: System.out.println("Head");
 						this.activeAttackType = Attacks.HEAD;
-						this.attackScreen = AttackScreens.WAITING;
 						break;
 					case OPTION3: System.out.println("Arms");
 						this.activeAttackType = Attacks.ARMS;
-						this.attackScreen = AttackScreens.WAITING;
 						break;
 					case OPTION4: System.out.println("Legs");
 						this.activeAttackType = Attacks.LEGS;
-						this.attackScreen = AttackScreens.WAITING;
 						break;
 				}
 			}
@@ -344,26 +334,22 @@ public class Fight extends View implements Runnable {
 			//wait for enemy to be set
 		}
 
-		this.healthEnemyOr = enemy.getOrHp();
-		this.healthSelfOr = player.getOrHp();
-		this.healthEnemy = enemy.getHp();
-		this.healthSelf = player.getHp();
 		this.humanFight = false; //reset to false before checking if it is a human fight
 		
-		/*try {
+		try {
 			myLoser = fight();
 		} catch (InterruptedException e) {
 			System.err.println("Fight was interrupted");
 			e.printStackTrace();
-		}*/
+		}
 		
-		try {
+		/*try {
 			Thread.sleep(1000);
 			myLoser = this.enemy;
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		
 		/* after a fight, reset the fighting instance's variables */
 		reset();
@@ -427,6 +413,16 @@ public class Fight extends View implements Runnable {
 		
 		System.out.println(("Starting fight"));
 		
+		System.out.println("Player's health: " + this.player.getHp());
+		
+		System.out.println(this.player + " now has " + this.player.getHp() + " health,\n " + this.player.getAccuracy() + " accuracy,\n " 
+				+ this.player.getSpeed() + " speed,\n " + this.player.getStrength() + " strength" );
+		
+		System.out.println("Opponent's health: " + this.enemy.getHp());
+		
+		System.out.println(this.enemy + " now has " + this.enemy.getHp() + " health,\n " + this.enemy.getAccuracy() + " accuracy,\n " 
+				+ this.enemy.getSpeed() + " speed,\n " + this.enemy.getStrength() + " strength" );
+		
 		/* Determine if this is a human fight. */
 		this.humanFight = humanFightInitialization();
 		
@@ -444,11 +440,17 @@ public class Fight extends View implements Runnable {
 			if (firstAttackTemp == 1) {
 				creature1 = this.player;
 				creature2 = this.enemy;
+				this.attackScreen = AttackScreens.MAIN;
 			}
 			else if (firstAttackTemp == 2) {
 				creature1 = this.enemy;
 				creature2 = this.player;
+				this.attackScreen = AttackScreens.WAITING;
 			}
+			
+			System.out.println("firstAttack by " + creature1);
+			
+			Thread.sleep(1000);
 			
 			/* perform Attack of creature first in round */
 			attackControl(creature1, creature2);
@@ -456,12 +458,30 @@ public class Fight extends View implements Runnable {
 			/* potion effects for a creature are applied after its attack */
 			potionEffects(creature1);
 			
+			if (player.getHp() <= 0) {
+				break;
+			} else if (enemy.getHp() <= 0){
+				break;
+			}
+			
 			/* set to null between attacks of player and enemy to determine if attack was already chosen */
 			activeAttack = null;
 			activeAttackType = null;
 			
+			/* change attack screen */
+			if (firstAttackTemp == 1) {
+				this.attackScreen = AttackScreens.WAITING;
+			}
+			else if (firstAttackTemp == 2) {
+				this.attackScreen = AttackScreens.MAIN;
+			}
+			
+			Thread.sleep(1000);
+			
 			/* perform Attack of creature first in round */
 			attackControl(creature2, creature1);
+			
+			Thread.sleep(1000);
 			
 			/* potion effects for a creature are applied after its attack */
 			potionEffects(creature2);
@@ -474,14 +494,19 @@ public class Fight extends View implements Runnable {
 		Creature fightLoser = null;
 		
 		if (player.getHp() <= 0) {
+			player.resetOriginals();
 			fightLoser = player;
 		} else {
-			player.resetOriginals();
 			fightLoser = enemy;
-			
 			//give attribute bonus to winner of the fight
 			attributeBonusForWinner((Monster) fightLoser);
+			//set bonussed original values as new normal player values
+			player.resetOriginals(); 
 		}
+		
+		/* empty active potion lists */
+		player.emptyActivePotions();
+		enemy.emptyActivePotions();
 		
 		/* return the loser of a fight */
 		return fightLoser;
@@ -491,6 +516,8 @@ public class Fight extends View implements Runnable {
 	 * @param fightLoser
 	 */
 	private void attributeBonusForWinner(Monster fightLoser) {
+		
+		System.out.println("Granting player a bonus for defeated enemy: ");
 
 		switch(fightLoser.killBonusType) {
 			case HP: 
@@ -507,6 +534,9 @@ public class Fight extends View implements Runnable {
 				break;
 		}
 		
+		System.out.println(this.player + " now has " + this.player.getOrHp() + " health,\n " + this.player.getOrAccuracy() + " accuracy,\n " 
+				+ this.player.getOrSpeed() + " speed,\n " + this.player.getOrStrength() + " strength" );
+		
 		return;
 	}
 
@@ -517,6 +547,8 @@ public class Fight extends View implements Runnable {
 	private void attackControl(Creature creature1, Creature creature2) throws InterruptedException {
 		
 		System.out.println(("attack Control"));
+		
+		System.out.println("attacker: " + creature1 + ", defender: " + creature2);
 		
 		/* player chooses what to do */
 		switch(getCommand(creature1)) {
@@ -545,8 +577,12 @@ public class Fight extends View implements Runnable {
 				/* select potion */	
 				selectedPotion = getSelectedPotion(creature1);	
 				
-				/* manage the handling of a drunk potion */
-				usePotion(creature1, creature2, selectedPotion);
+				System.out.println("selected potion is " + selectedPotion);
+				
+				if (selectedPotion != null) {
+					/* manage the handling of a drunk potion */
+					usePotion(creature1, creature2, selectedPotion);
+				}
 				
 				/* reset selectedPotion */
 				selectedPotion = null;
@@ -557,6 +593,7 @@ public class Fight extends View implements Runnable {
 				/* when a player decides to parry, if successful, he deals x times the damage of a normal torso attack */
 				parryMultiplier = 2.0f;
 				if (parrySuccess(creature1, creature2) == true) {
+					System.out.println("CARRYING OUT AN ATTACK AFTER SUCCESSFUL PARRY");
 					activeAttack = attacks.get(Attacks.TORSO);	// muss man noch rausfinden was am besten is (ich war ja für head aber flo für torso xD)
 					break;
 				}
@@ -755,19 +792,24 @@ public class Fight extends View implements Runnable {
 		Attacks chosenAttackType = null;
 		
 		if (creature instanceof Player) {
+			
+			System.out.println("waiting for player's choice");
+						
 			/* wait for player to chose an attack */
 			while (this.activeAttackType == null) {
-				
-				if (this.activeAttackType != null) {
-					chosenAttackType = this.activeAttackType;
-				}
-				
 				Thread.sleep(100);
 			}
+			
+			chosenAttackType = this.activeAttackType;
 		}
 		else {
+			
+			System.out.println("waiting for opponent's coice");
+			
 			chosenAttackType = Chances.randomAttackType();
 		}
+		
+		System.out.println(creature + " chose command " + chosenAttackType);
 		
 		return chosenAttackType;
 	}
@@ -855,9 +897,16 @@ public class Fight extends View implements Runnable {
 			attributeDamage = enemyAttackAttributeDamage;
 		}
 		
+		System.out.println(attacker + " deals " + healthDamage + " healthDamage to " + defender);
+		System.out.println(attacker + " deals " + attributeDamage + " attributeDamage to " + defender);
+		
 		/* update attributes with calculated Damages */
-		updateHealth(defender, healthDamage);
-		updateAttributes(defender, attributeDamage);
+		if (healthDamage > 0) {
+			updateHealth(defender, healthDamage);
+		}
+		if (attributeDamage > 0) {
+			updateAttributes(defender, attributeDamage);
+		}
 		
 		/* reset values */
 		this.enemyArmorSum = 0;
@@ -1085,24 +1134,30 @@ public class Fight extends View implements Runnable {
 		
 		System.out.println("calcHitSuccess");
 
-		float randAccuracyLow = 0.2f;
-		float randAccuracyHigh = 0.7f;
+		float randAccuracyLow = 0.5f;
+		float randAccuracyHigh = 1.0f;
 		
 		/* speed value will probably be quite a lot lower than accuracy, because for accuracy,
 		 * the average of equipped weapons accuracy adds to the player's accuracy whereas for speed,
 		 * the armor's speed malus is substracted from the player's speed on a proportional base. */
-		float randSpeedLow = 0.5f;
-		float randSpeedHigh = 1.0f;
+		float randSpeedLow = 0.2f;
+		float randSpeedHigh = 0.5f;
 		
 		float randAttackerAccuracy = calcCreatureAccuracy(attacker) * activeAttack.hitProbability;
 		float randDefenderSpeed = calcCreatureSpeed(defender);
 		
+		System.out.println("randAttackerAccuracy: " + randAttackerAccuracy + ", randDefenderSpeed: " + randDefenderSpeed);
+		
 		float randAccuracy = randAttackerAccuracy * Chances.randomFloat(randAccuracyLow, randAccuracyHigh);
 		float randSpeed = randDefenderSpeed * Chances.randomFloat(randSpeedLow, randSpeedHigh);
 		
+		System.out.println("randAccuracy: " + randAccuracy + ", randSpeed: " + randSpeed);
+		
 		if (randAccuracy > randSpeed) {
+			System.out.println("Hit");
 			return true;
 		} else {
+			System.out.println("No hit");
 			return false;
 		}
 	}
@@ -1164,6 +1219,8 @@ public class Fight extends View implements Runnable {
 		}
 		
 		float rawDamage = attack/defenseDivisor;
+		
+		System.out.println("parry multiplier during attack is " + parryMultiplier);
 				
 		damage = parryMultiplier * rawDamage * Chances.randomFloat(activeAttack.statsLowMultiplier, activeAttack.statsHighMultiplier);
 		
@@ -1176,20 +1233,42 @@ public class Fight extends View implements Runnable {
 	 */
 	private void updateAttributes(Creature defender, float attributeDamage) {
 
-		System.out.println("updateAttributes");
+		System.out.println(defender + " now has " + defender.getHp() + " health,\n " + defender.getAccuracy() + " accuracy,\n " 
+				+ defender.getSpeed() + " speed,\n " + defender.getStrength() + " strength" );
+		
+		System.out.println("updateAttributes with " + attributeDamage + " attribute damage for effect " + activeAttack.effect);
 
 		switch(activeAttack.effect) {
 			case HP:
-				defender.setHp(defender.getHp() - attributeDamage);
+				float hp = defender.getHp() - attributeDamage;
+				if (hp < 0) {
+					hp = 0;
+				}
+				defender.setHp(hp);
 				break;
 			case ACCURACY:
-				defender.setAccuracy(defender.getAccuracy() - attributeDamage);
+				float accuracy = defender.getAccuracy() - attributeDamage;
+				if (accuracy < 0) {
+					accuracy = 0;
+				}
+				System.out.println("accuracy now: " + accuracy);
+				defender.setAccuracy(accuracy);
 				break;
 			case STRENGTH:
-				defender.setStrength(defender.getStrength() - attributeDamage);
+				float strength = defender.getStrength() - attributeDamage;
+				if (strength < 0) {
+					strength = 0;
+				}
+				System.out.println("strength now: " + strength);
+				defender.setStrength(strength);
 				break;
 			case SPEED:
-				defender.setSpeed(defender.getSpeed() - attributeDamage);
+				float speed = defender.getSpeed() - attributeDamage;
+				if (speed < 0) {
+					speed = 0;
+				}
+				System.out.println("speed now: " + speed);
+				defender.setSpeed(speed);
 				break;
 			default:
 				break;
@@ -1199,6 +1278,9 @@ public class Fight extends View implements Runnable {
 			
 			//SEND OUR CALCULATED ATTACK DAMAGE VALUES TO OTHER PARTIE -> message(attributeDamage, value)
 		}
+		
+		System.out.println(defender + " now has " + defender.getHp() + " health,\n " + defender.getAccuracy() + " accuracy,\n " 
+				+ defender.getSpeed() + " speed,\n " + defender.getStrength() + " strength" );
 	}
 	
 	/**This method updates the health of attacked opponent.
@@ -1210,7 +1292,12 @@ public class Fight extends View implements Runnable {
 		System.out.println("updateHealth");
 
 		float hp  = defender.getHp() - healthDamage;
+		if (hp < 0) {
+			hp = 0;
+		}
 		defender.setHp(hp);
+		
+		System.out.println(defender + " now has " + defender.getHp() + " health");
 	}
 	
 	/**
@@ -1224,6 +1311,7 @@ public class Fight extends View implements Runnable {
 		if (potion.MODE == Modes.LIFT) {
 			for (Potion _potion : potionTaker.getActivePotions()) {
 				if (_potion.EFFECT == Attributes.HP && _potion.MODE == Modes.DECR) {
+					System.out.println("Removing the antidote: " + _potion);
 					potionTaker.removeActivePotions(_potion);
 				}
 				break;
@@ -1233,11 +1321,13 @@ public class Fight extends View implements Runnable {
 			/* store potions to the creature that they affect */
 			if (potion.TARGET == Targets.SELF) {	// if player uses good potion for himself
 				potionTaker.addActivePotions(potion);
+				System.out.println("adding active Potion to potionTaker " + potion);
 				if (potion.MODE == Modes.TINCR) {
 					potionIncrease(potionTaker, potion);
 				}
 			} else {		// if player uses bad potion for enemy
 				opponent.addActivePotions(potion);
+				System.out.println("adding active Potion to opponent " + potion);
 				if (potion.MODE == Modes.TDECR) {
 					potionDecrease(opponent, potion);
 				}
@@ -1251,10 +1341,11 @@ public class Fight extends View implements Runnable {
 	 */
 	private void potionEffects(Creature creature) {	
 
-		System.out.println("potionEffects");
+		System.out.println("potionEffects for creature " + creature);
 
 		/* apply all non temporary potion effects */
 		for (Potion potion : creature.getActivePotions()) {
+			System.out.println("Decreasing duration for potion " + potion);
 			potion.DURATION--;
 			switch(potion.MODE) {
 			case INCR: 
@@ -1268,12 +1359,7 @@ public class Fight extends View implements Runnable {
 			}
 			if (potion.DURATION <= 0) {
 				revertEffect(creature, potion);
-				creature.removeActivePotions(potion);
-			}
-		}
-		for (Potion potion : creature.getActivePotions()) {
-			potion.DURATION--;
-			if (potion.DURATION <= 0) {
+				System.out.println("Removing active potion " + potion);
 				creature.removeActivePotions(potion);
 			}
 		}
@@ -1287,13 +1373,19 @@ public class Fight extends View implements Runnable {
 	 */
 	private void revertEffect(Creature creature, Potion potion) {
 		
-		System.out.println("revertEffect");
+		System.out.println("revertEffect for " + creature + " with potion " + potion);
+		
+		System.out.println(creature + " before reverting has " + creature.getHp() + " health,\n " + creature.getAccuracy() + " accuracy,\n " 
+				+ creature.getSpeed() + " speed,\n " + creature.getStrength() + " strength" );
 
 		if (potion.MODE == Modes.TINCR) {
 			potionDecrease(creature, potion);
 		} else if (potion.MODE == Modes.TDECR) {
 			potionIncrease(creature, potion);
 		}
+		
+		System.out.println(creature + " after reverting has " + creature.getHp() + " health,\n " + creature.getAccuracy() + " accuracy,\n " 
+				+ creature.getSpeed() + " speed,\n " + creature.getStrength() + " strength" );
 	}
 	
 	/**
@@ -1308,16 +1400,36 @@ public class Fight extends View implements Runnable {
 
 		switch(potion.EFFECT) {
 			case HP:
-				creature.setHp(creature.getHp() - potion.POWER);
+				float hp = creature.getHp() - potion.POWER;
+				if (hp < 0) {
+					hp = 0;
+				}
+				creature.setHp(hp);
+				System.out.println("Potion decreased health of " + creature + " by " + potion.POWER);
 				break;
 			case SPEED:
-				creature.setSpeed(creature.getSpeed() - potion.POWER);
+				float speed = creature.getSpeed() - potion.POWER;
+				if (speed < 0) {
+					speed = 0;
+				}
+				creature.setSpeed(speed);
+				System.out.println("Potion decreased speed of " + creature + " by " + potion.POWER);
 				break;
 			case ACCURACY:
-				creature.setAccuracy(creature.getAccuracy() - potion.POWER);
+				float accuracy = creature.getAccuracy() - potion.POWER;
+				if (accuracy < 0) {
+					accuracy = 0;
+				}
+				creature.setAccuracy(accuracy);
+				System.out.println("Potion decreased accuracy of " + creature + " by " + potion.POWER);
 				break;
 			case STRENGTH:
-				creature.setStrength(creature.getStrength() - potion.POWER);
+				float strength = creature.getStrength() - potion.POWER;
+				if (strength < 0) {
+					strength = 0;
+				}
+				creature.setStrength(strength);
+				System.out.println("Potion decreased strength of " + creature + " by " + potion.POWER);
 				break;
 			default:
 				break;
@@ -1336,16 +1448,24 @@ public class Fight extends View implements Runnable {
 
 		switch(potion.EFFECT) {
 			case HP:
-				creature.setHp(creature.getHp() + potion.POWER);
+				float hp = creature.getHp() + potion.POWER;
+				if (hp > creature.getOrHp()) {
+					hp = creature.getOrHp();
+				}
+				creature.setHp(hp);
+				System.out.println("Potion increased health of " + creature + " by " + potion.POWER);
 				break;
 			case SPEED:
 				creature.setSpeed(creature.getSpeed() + potion.POWER);
+				System.out.println("Potion increased speed of " + creature + " by " + potion.POWER);
 				break;
 			case ACCURACY:
 				creature.setAccuracy(creature.getAccuracy() + potion.POWER);
+				System.out.println("Potion increased accuracy of " + creature + " by " + potion.POWER);
 				break;
 			case STRENGTH:
 				creature.setStrength(creature.getStrength() + potion.POWER);
+				System.out.println("Potion increased strength of " + creature + " by " + potion.POWER);
 				break;
 			default:
 				break;

@@ -61,7 +61,7 @@ public class RoomFactory {
 		/*overlay[0][0] = ItemFactory.createWeapon("Longsword", 1);
 		overlay[0][1] = ItemFactory.createWeapon("Shield", 1);
 		overlay[0][0] = ItemFactory.createPotion("Poison", 1);
-		overlay[0][1] = ItemFactory.createPotion("Regeneration", 1);*/
+		overlay[0][1] = ItemFactory.createPotion("Slowness", 1);*/
 		
 		return new Room(type, background, overlay);
 	}
