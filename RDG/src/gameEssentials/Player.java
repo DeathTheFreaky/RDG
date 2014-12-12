@@ -351,9 +351,37 @@ public class Player extends Creature {
 	}
 	
 	/**
-	 * Returns the Direction of View of the player
+	 * Returns the Direction of View of the player.
 	 */
 	public ViewingDirections getDirectionOfView() {
 		return this.lastViewingDirection;
+	}
+	
+	/**Resets position of a player which has lost a fight.
+	 * 
+	 */
+	public void resetPlayerPosition() {
+		
+		/* set positions related to player and camera
+		   all points reference the number of tiles, starting from upper left corner */
+		if (playerNumber == 1) {
+			this.position = new Point(5, 4);
+			this.cameraPosition = new Point(0, 0);
+
+			/* where the player is "placed" in the scope of the camera */
+			playerPositionInCamera = new Point(5, 4);
+
+			map.setScopePositionForPlayer(0, 0);
+		} else {
+			this.position = new Point(map.getWidth() - 4, map.getHeight() - 3);
+			this.cameraPosition = new Point(map.getWidth() - 14,
+					map.getHeight() - 11);
+
+			/* where the player is "placed" in the scope of the camera */
+			playerPositionInCamera = new Point(9, 7);
+
+			map.setScopePositionForPlayer(map.getWidth() - 13,
+					map.getHeight() - 10);
+		}
 	}
 }

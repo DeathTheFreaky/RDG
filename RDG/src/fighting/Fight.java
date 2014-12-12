@@ -78,7 +78,7 @@ public class Fight extends View implements Runnable {
 	private GameEnvironment gameEnvironment;
 
 	/* Creature that the player is fighting against */
-	private Creature enemy;
+	private Creature enemy = null;
 	
 	/* The Player Himself */
 	private Player player;
@@ -331,33 +331,51 @@ public class Fight extends View implements Runnable {
 	 * Starts a new Fight.
 	 * 
 	 * @param creature - hands over the enemy
-	 * @return the Creature that died or null if fight is already active
-	 * @throws InterruptedException 
 	 */
-	public Creature newFight(Creature creature) throws InterruptedException {
+	@Override
+	public void run() {
 		
 		System.out.println(("New Fight"));
 		
-		/* if a fight already is started, return */
-		if (activeFight) {
-			return null;
-		}
-		else {
-			activeFight = true;
+		this.activeFight = true;
+		Creature myLoser = null;
+
+		while (this.enemy == null) {
+			//wait for enemy to be set
 		}
 
-		this.enemy = creature;
-		this.healthEnemyOr = creature.getOrHp();
+		this.healthEnemyOr = enemy.getOrHp();
 		this.healthSelfOr = player.getOrHp();
-		this.healthEnemy = creature.getHp();
+		this.healthEnemy = enemy.getHp();
 		this.healthSelf = player.getHp();
 		this.humanFight = false; //reset to false before checking if it is a human fight
 		
-		//Creature looser = fight();
-
-		Creature looser = null;
+		/*try {
+			myLoser = fight();
+		} catch (InterruptedException e) {
+			System.err.println("Fight was interrupted");
+			e.printStackTrace();
+		}*/
 		
-		return looser;
+		try {
+			Thread.sleep(1000);
+			myLoser = this.enemy;
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		/* after a fight, reset the fighting instance's variables */
+		reset();
+		
+		gameEnvironment.fightEnds(myLoser);
+	}
+	
+	/**Sets the enemy creature for a fight.
+	 * @param enemy
+	 */
+	public synchronized void setEnemy(Creature enemy) {
+		this.enemy = enemy;
 	}
 
 	/**Reset fight variables to default values.
@@ -405,8 +423,7 @@ public class Fight extends View implements Runnable {
 	 * @return the looser of a fight
 	 * @throws InterruptedException 
 	 */
-	@Override
-	public void run() {
+	private Creature fight() throws InterruptedException {
 		
 		System.out.println(("Starting fight"));
 		
@@ -453,20 +470,46 @@ public class Fight extends View implements Runnable {
 			resetRoundVariables();
 		}
 		
-		//give attribute bonus to winner of the fight
+		/* determine who lost the fight */
+		Creature fightLoser = null;
 		
-		/* after a fight, reset the fighting instance's variables */
-		reset();
-		
-		/* check which one of the fighting parties died and return the loser */
 		if (player.getHp() <= 0) {
-			return player;
+			fightLoser = player;
 		} else {
 			player.resetOriginals();
-			return enemy;
+			fightLoser = enemy;
+			
+			//give attribute bonus to winner of the fight
+			attributeBonusForWinner((Monster) fightLoser);
 		}
+		
+		/* return the loser of a fight */
+		return fightLoser;
 	}
 	
+	/**When a player defeats a monster, he gains a bonus on one if his attributes.
+	 * @param fightLoser
+	 */
+	private void attributeBonusForWinner(Monster fightLoser) {
+
+		switch(fightLoser.killBonusType) {
+			case HP: 
+					this.player.setOrHp(this.player.getOrHp() + fightLoser.killBonus);
+				break;
+			case ACCURACY: 
+					this.player.setOrAccuracy(this.player.getOrAccuracy() + fightLoser.killBonus);
+				break;
+			case SPEED: 
+					this.player.setOrSpeed(this.player.getOrSpeed() + fightLoser.killBonus);
+				break;
+			case STRENGTH: 
+					this.player.setOrStrength(this.player.getOrStrength() + fightLoser.killBonus);
+				break;
+		}
+		
+		return;
+	}
+
 	/**Controls which Actions to perform when an attack has been chosen by a creature.
 	 * @param creature
 	 * @throws InterruptedException 

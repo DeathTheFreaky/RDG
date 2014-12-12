@@ -15,8 +15,10 @@ import org.newdawn.slick.SlickException;
 import org.xml.sax.SAXException;
 
 import configLoader.Configloader;
+import elements.Creature;
 import elements.Element;
 import elements.Equipment;
+import elements.Monster;
 import elements.Potion;
 import fighting.Fight;
 import views.ArmorView;
@@ -74,7 +76,8 @@ public class Game extends BasicGame {
 	private int timeToUpdate = 0;
 
 	/* Origins of the different Views in tile numbers */
-	private Point gameEnvironmentOrigin, chatOrigin, armorViewOrigin,
+	/* gameEnvironment is needed for fight, because each fight is a new thread -> new instance */
+	private Point gameEnvironmentOrigin = new Point(0,0), chatOrigin, armorViewOrigin,
 			inventoryViewOrigin;
 
 	/* flag, if the mouse is over the chat (for scrolling) */
@@ -110,14 +113,17 @@ public class Game extends BasicGame {
 	// create instance of configloader
 	private Configloader configloader = null;
 	
-	/* fight Instance of game Environment */
-	private Fight fightInstance = null;
+	/* fight Thread  */
+	private Thread fightThread = null;
 	
 	/* needed for human fights - set to true if this is the lobby HOSTER */
 	private Boolean humanFightHost = false;
 	
 	/* list holding child threads */
 	private List<Thread> threadList = new ArrayList<Thread>();
+	
+	/* fight Instance from gameEnvironment */
+	private Fight fightInstance = null;
 
 	/* Declare all classes, we need for the game (Factory, Resourceloader) */
 	// private ResourceManager resourceManager;
@@ -209,6 +215,8 @@ public class Game extends BasicGame {
 		map.setPlayer(player);
 		map.setGameEnvironment(gameEnvironment);
 		// map.fillMap();
+		
+		this.fightInstance = gameEnvironment.getFightInstance();
 	}
 
 	@Override
@@ -244,7 +252,7 @@ public class Game extends BasicGame {
 
 	@Override
 	public void keyPressed(int key, char c) {
-
+		
 		/* Key Values for Players Movement! (a,s,d,w) */
 		if ((key == 30 || key == 31 || key == 32 || key == 17)
 				&& !fightInstance.isInFight()) {
@@ -256,7 +264,12 @@ public class Game extends BasicGame {
 				chat.setFocus(true);
 			}
 		} else if (key == 18) {
-			Element e = map.checkInFrontOfPlayer();
+			Element e = null;
+			try {
+				e = map.checkInFrontOfPlayer();
+			} catch (SlickException e1) {
+				e1.printStackTrace();
+			}
 			if (e != null) {
 				//inventoryView.storeEquipment((Equipment) e);
 				inventoryView.storeItem(e, armorView);
@@ -292,10 +305,12 @@ public class Game extends BasicGame {
 		if (button == 0) { // linke Maustaste
 			
 			if (fightInstance.isInFight()) {
-				fightInstance.handleFightOptions(x, y);
-			}
-			else if (fightInstance.isChangeTabActive()) {
-				armorView.changeTab(x, y);
+				if (!(fightInstance.isChangeTabActive())) {
+					fightInstance.handleFightOptions(x, y);
+				}
+				else if (fightInstance.isChangeTabActive()) {
+					armorView.changeTab(x, y);
+				}
 			}
 			else {
 				armorView.changeTab(x, y);
@@ -390,11 +405,38 @@ public class Game extends BasicGame {
 		}
 	}
 	
-	/**Returns the currently active Fight Instance or null if no fight is active 
+	/**Returns the currently active Fight Thread or null if no fight is active.
 	 * (thread that needs to be started more than once).
 	 * @return fight Instance
 	 */
-	public Fight getFightInstance() {
-		return fightInstance;
+	public Thread getFightThread() {
+		return fightThread;
+	}
+	
+	/**Sets fight Thread.
+	 * @param t
+	 */
+	public void setFightThread(Thread t) {
+		fightThread = t;
+	}
+
+	/**Called by gameEnvironment when a fight ends.<br>
+	 * Takes action based on who lost the fight.
+	 * @param looser
+	 */
+	public void fightEnds(Creature looser) {
+		
+		fightThread = null;
+		//do we need for thread to join - they should end before game anyhow?!?
+		
+		//do stuff with looser
+		if (looser == this.player) {
+			this.player.resetPlayerPosition();
+		} else if (looser instanceof Monster) {
+			map.removeContentInFrontOfPlayer();
+		} else {
+			
+			//YOU HAVE WON THE GAME - SWITCH GAME STATE
+		}
 	}
 }

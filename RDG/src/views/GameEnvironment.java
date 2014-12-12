@@ -28,19 +28,19 @@ public class GameEnvironment extends View {
 
 	/* Reference to the player, for which the GameEnvironment is shown */
 	private Player player;
-
+	
 	/*
 	 * Reference to the Shapes, which are shown in the GameEnvironment. Scope
 	 * Elements are passed from Map Class.
 	 */
 	private Element[][] backgroundScope;
 	private Element[][] overlayScope;
-
-	/* Marks if the player is in a Fight (for displaying Fighting Screen) */
-	private boolean fight = true;
 	
 	/* ArmorView is needed to interact with armory items */
 	ArmorView armorView = null;
+	
+	/* instance of a Fight - to be loaded into fight thread */
+	private Fight fightInstance = null;
 	
 	/* the base Game class */
 	Game game;
@@ -138,6 +138,7 @@ public class GameEnvironment extends View {
 		downright.y = (int) size.height / BLOCK_SIZE;
 
 		this.armorView = armorView;
+		this.fightInstance = new Fight(this.origin, this.size, this, player, armorView);
 		
 		update();
 	}
@@ -146,7 +147,7 @@ public class GameEnvironment extends View {
 	public void draw(GameContainer container, Graphics graphics) {
 		
 		/* if the player is not in a current fight */
-		if (game.getFightInstance() != null) {
+		if (!fightInstance.isInFight()) {
 			
 			/* downright is refered to in tile numbers */
 			for (int i = 0; i < downright.x; i++) {
@@ -185,7 +186,7 @@ public class GameEnvironment extends View {
 			player.draw(container, graphics);
 			
 		}else {	// show Fight
-			game.getFightInstance().draw(container, graphics);
+			fightInstance.draw(container, graphics);
 		}
 	}
 
@@ -201,16 +202,34 @@ public class GameEnvironment extends View {
 	 * Starts a Fight with the set creature as enemy.
 	 * 
 	 * @param creature - the enemy
-	 * @return the looser of a fight
+	 * @throws SlickException 
 	 * @throws InterruptedException 
 	 */
-	public Creature startFight(Creature creature) {
-		try {
-			return game.getFightInstance().newFight(creature);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			System.err.println("Fight was interrupted");
+	public void startFight(Creature enemy) throws SlickException {
+		
+		/* load fight instance into new thread for fight to be carried out */
+		if (game.getFightThread() == null) {
+			Thread thread = new Thread(fightInstance);
+			game.setFightThread(thread);
 		}
-		return null;
+		
+		/* start the fight and set the enemy */
+		game.getFightThread().start();
+		fightInstance.setEnemy(enemy);
+	}
+	
+	/**Called by fight thread to signal that it has ended.
+	 * @param looser
+	 */
+	public void fightEnds(Creature looser) {
+		game.fightEnds(looser);
+	}
+	
+	/**Returns the currently active Fight Instance or null if no fight is active.
+	 * (thread that needs to be started more than once).
+	 * @return fight Instance
+	 */
+	public Fight getFightInstance() {
+		return fightInstance;
 	}
 }

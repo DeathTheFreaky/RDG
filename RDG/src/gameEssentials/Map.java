@@ -278,15 +278,13 @@ public class Map {
 	 * Resets player to start, if he loses a fight.<br>
 	 * 
 	 * @return Equipment or null
+	 * @throws SlickException 
 	 * @throws InterruptedException 
 	 */
-	public Element checkInFrontOfPlayer() {
+	public Element checkInFrontOfPlayer() throws SlickException {
 		Element e = null;
 		int x = player.getPosition().x;
 		int y = player.getPosition().y;
-		
-		/* Needed if player engages in a fight. */
-		Creature loser = null;
 
 		switch (player.getDirectionOfView()) {
 		case NORTH:
@@ -295,10 +293,7 @@ public class Map {
 				e = overlay[x][y - 1];
 				overlay[x][y - 1] = null;
 			} else if (overlay[x][y - 1] instanceof Creature) {
-				loser = gameEnvironment.startFight((Creature) overlay[x][y - 1]);
-				if (loser instanceof Player) {
-					overlay[x][y - 1] = null;
-				}
+				gameEnvironment.startFight((Creature) overlay[x][y - 1]);
 			}
 			break;
 		case EAST:
@@ -307,10 +302,7 @@ public class Map {
 				e = overlay[x + 1][y];
 				overlay[x + 1][y] = null;
 			} else if (overlay[x + 1][y] instanceof Creature) {
-				loser = gameEnvironment.startFight((Creature) overlay[x + 1][y]);
-				if (loser instanceof Player) {
-					overlay[x + 1][y] = null;
-				}
+				gameEnvironment.startFight((Creature) overlay[x + 1][y]);
 			}
 			break;
 		case SOUTH:
@@ -319,10 +311,7 @@ public class Map {
 				e = overlay[x][y + 1];
 				overlay[x][y + 1] = null;
 			} else if (overlay[x][y + 1] instanceof Creature) {
-				loser = gameEnvironment.startFight((Creature) overlay[x][y + 1]);
-				if (loser instanceof Player) {
-					overlay[x][y + 1] = null;
-				}
+				gameEnvironment.startFight((Creature) overlay[x][y + 1]);
 			}
 			break;
 		case WEST:
@@ -331,24 +320,11 @@ public class Map {
 				e = overlay[x - 1][y];
 				overlay[x - 1][y] = null;
 			} else if (overlay[x - 1][y] instanceof Creature) {
-				loser = gameEnvironment.startFight((Creature) overlay[x - 1][y]);
-				if (loser instanceof Player) {
-					overlay[x - 1][y] = null;
-				}
+				gameEnvironment.startFight((Creature) overlay[x - 1][y]);
 			}
 			break;
 		default:
 			break;
-		}
-		
-		/* Check if player has lost a fight - reset to start! Victory and Game Over or triggered in Fight directly */
-		// PROBABLY MORE MODIFICATION IS NECESSARY SINCE PLAYER POSITIONING IS HANDLED IN PLAYER CLASS TOO.
-		if (loser != null) {
-			if (loser instanceof Player) {
-				/* IMPLEMENTING RESETTING PLAYER TO START */
-				// resetPlayerToStart(overlay[x][y]);
-				overlay[x][y] = null;
-			}
 		}
 
 		return e;
@@ -569,6 +545,32 @@ public class Map {
 					}
 				}
 			}
+		}
+	}
+
+	/**When a monster looses a fight, it has to be removed from the map.
+	 * 
+	 */
+	public void removeContentInFrontOfPlayer() {
+
+		int x = player.getPosition().x;
+		int y = player.getPosition().y;
+
+		switch (player.getDirectionOfView()) {
+		case NORTH:
+			overlay[x][y - 1] = null;
+			break;
+		case EAST:
+			overlay[x + 1][y] = null;
+			break;
+		case SOUTH:
+			overlay[x][y + 1] = null;
+			break;
+		case WEST:
+			overlay[x - 1][y] = null;
+			break;
+		default:
+			break;
 		}
 	}
 }
