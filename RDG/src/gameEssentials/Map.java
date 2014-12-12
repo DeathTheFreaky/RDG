@@ -301,62 +301,70 @@ public class Map {
 
 		switch (player.getDirectionOfView()) {
 		case NORTH:
-			if ((overlay[x][y - 1] instanceof Potion) ||
-				  (overlay[x][y - 1] instanceof Equipment)) {
-				e = overlay[x][y - 1];
-				overlay[x][y - 1] = null;
-			} else if (overlay[x][y - 1] instanceof Creature) {
-				gameEnvironment.startFight((Creature) overlay[x][y - 1]);
-			} else if (overlay[x][y - 1].NAME.equals("Key")) {
-				if (!player.getHasKey()) {
-					player.setHasKey();
+			if (overlay[x][y - 1] != null) {
+				if ((overlay[x][y - 1] instanceof Potion) ||
+					  (overlay[x][y - 1] instanceof Equipment)) {
 					e = overlay[x][y - 1];
 					overlay[x][y - 1] = null;
+				} else if (overlay[x][y - 1] instanceof Creature) {
+					gameEnvironment.startFight((Creature) overlay[x][y - 1]);
+				} else if (overlay[x][y - 1].NAME.equals("Key")) {
+					if (!player.getHasKey()) {
+						player.setHasKey();
+						e = overlay[x][y - 1];
+						overlay[x][y - 1] = null;
+					}
 				}
 			}
 			break;
 		case EAST:
-			if ((overlay[x + 1][y] instanceof Potion) ||
-				  (overlay[x + 1][y] instanceof Equipment)) {
-				e = overlay[x + 1][y];
-				overlay[x + 1][y] = null;
-			} else if (overlay[x + 1][y] instanceof Creature) {
-				gameEnvironment.startFight((Creature) overlay[x + 1][y]);
-			} else if (overlay[x + 1][y].NAME.equals("Key")) {
-				if (!player.getHasKey()) {
-					player.setHasKey();
+			if (overlay[x + 1][y] != null) {
+				if ((overlay[x + 1][y] instanceof Potion) ||
+					  (overlay[x + 1][y] instanceof Equipment)) {
 					e = overlay[x + 1][y];
 					overlay[x + 1][y] = null;
+				} else if (overlay[x + 1][y] instanceof Creature) {
+					gameEnvironment.startFight((Creature) overlay[x + 1][y]);
+				} else if (overlay[x + 1][y].NAME.equals("Key")) {
+					if (!player.getHasKey()) {
+						player.setHasKey();
+						e = overlay[x + 1][y];
+						overlay[x + 1][y] = null;
+					}
 				}
 			}
 			break;
 		case SOUTH:
-			if ((overlay[x][y + 1] instanceof Potion) ||
-				  (overlay[x][y + 1] instanceof Equipment)) {
-				e = overlay[x][y + 1];
-				overlay[x][y + 1] = null;
-			} else if (overlay[x][y + 1] instanceof Creature) {
-				gameEnvironment.startFight((Creature) overlay[x][y + 1]);
-			} else if (overlay[x][y + 1].NAME.equals("Key")) {
-				if (!player.getHasKey()) {
-					player.setHasKey();
+			if (overlay[x][y + 1] != null) {
+				if ((overlay[x][y + 1] instanceof Potion) ||
+					  (overlay[x][y + 1] instanceof Equipment)) {
 					e = overlay[x][y + 1];
 					overlay[x][y + 1] = null;
+				} else if (overlay[x][y + 1] instanceof Creature) {
+					gameEnvironment.startFight((Creature) overlay[x][y + 1]);
+				} else if (overlay[x][y + 1].NAME.equals("Key")) {
+					if (!player.getHasKey()) {
+						player.setHasKey();
+						e = overlay[x][y + 1];
+						overlay[x][y + 1] = null;
+					}
 				}
 			}
 			break;
 		case WEST:
-			if ((overlay[x - 1][y] instanceof Potion) ||
-				  (overlay[x - 1][y] instanceof Equipment)) {
-				e = overlay[x - 1][y];
-				overlay[x - 1][y] = null;
-			} else if (overlay[x - 1][y] instanceof Creature) {
-				gameEnvironment.startFight((Creature) overlay[x - 1][y]);
-			} else if (overlay[x - 1][y].NAME.equals("Key")) {
-				if (!player.getHasKey()) {
-					player.setHasKey();
+			if (overlay[x - 1][y] != null) {
+				if ((overlay[x - 1][y] instanceof Potion) ||
+					  (overlay[x - 1][y] instanceof Equipment)) {
 					e = overlay[x - 1][y];
 					overlay[x - 1][y] = null;
+				} else if (overlay[x - 1][y] instanceof Creature) {
+					gameEnvironment.startFight((Creature) overlay[x - 1][y]);
+				} else if (overlay[x - 1][y].NAME.equals("Key")) {
+					if (!player.getHasKey()) {
+						player.setHasKey();
+						e = overlay[x - 1][y];
+						overlay[x - 1][y] = null;
+					}
 				}
 			}
 			break;
