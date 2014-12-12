@@ -53,6 +53,9 @@ public class Player extends Creature {
 
 	/* The Map associated with this player for getting some Values */
 	Map map;
+	
+	/* if player has found the key, he may enter the treasure chamber */
+	private boolean hasKey = false;
 
 	/**Constructs a Player.<br>
 	 * Player will be positioned automatically in the upper left or lower right corner, depending on its player number.
@@ -383,5 +386,19 @@ public class Player extends Creature {
 			map.setScopePositionForPlayer(map.getWidth() - 13,
 					map.getHeight() - 10);
 		}
+	}
+	
+	/**
+	 * @return true if player has key to treasure chamber
+	 */
+	public boolean getHasKey() {
+		return this.hasKey;
+	}
+	
+	/**Sets hasKey to true, which means that player possesses key to treasure chamber.
+	 * 
+	 */
+	public void setHasKey() {
+		this.hasKey = true;
 	}
 }

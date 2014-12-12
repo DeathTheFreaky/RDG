@@ -242,6 +242,8 @@ public class InventoryView extends View {
 	 */
 	public void storeItem(Element item, ArmorView armorView) {
 		
+		System.out.println("itemname: " + item.NAME);
+		
 		if (item instanceof Weapon) {
 			/*weapons.add((Weapon) item);
 			armor.add((Equipment) item);*/
@@ -259,6 +261,8 @@ public class InventoryView extends View {
 			/*potions.add((Potion) item);*/
 			items.add(item);
 		}
+		else if (item.NAME.equals("Key")) {
+			items.add(item);
+		}
 	}
-
 }

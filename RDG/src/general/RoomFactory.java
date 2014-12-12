@@ -7,6 +7,7 @@ import java.util.Map;
 import org.newdawn.slick.SlickException;
 
 import configLoader.RoomTemplate;
+import elements.Armament;
 import elements.Element;
 import elements.Equipment;
 import elements.Item;

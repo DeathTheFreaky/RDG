@@ -2,6 +2,7 @@ package general;
 
 import elements.Element;
 import elements.Item;
+import elements.Room;
 import gameEssentials.Game;
 import general.Enums.Attacks;
 import general.Enums.ItemClasses;
@@ -12,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+
+import javax.swing.OverlayLayout;
 
 import org.newdawn.slick.SlickException;
 
@@ -221,5 +224,54 @@ public class Chances {
 		}
 		
 		return randAttackType;
+	}
+
+	/**Returns Point for a random Room on the map, excluding the treasure Chamber.
+	 * @return a random Room but not the treasure Chamber
+	 */
+	public static Point randomRoom() {
+		
+		int middleX = Game.ROOMSHOR/2;
+		int middleY = Game.ROOMSVER/2;
+		int randX = 0;
+		int randY = 0;
+		
+		do {
+			randX = r.nextInt(Game.ROOMSHOR);
+			randY = r.nextInt(Game.ROOMSVER);
+		} while (randX == middleX && randY == middleY);
+		
+		Point randRoom = new Point(randX, randY);
+		
+		return randRoom;
+	}
+
+	/**Returns a random empty tile in a room.
+	 * @return
+	 */
+	public static Point randomTile(Room randRoom) {
+
+		int randX = 0;
+		int randY = 0;
+		boolean found = false;
+		int ctr = 0;
+		
+		if (randRoom == null) {
+			return null;
+		}
+		
+		do {
+			randX = r.nextInt(Game.ROOMWIDTH);
+			randY = r.nextInt(Game.ROOMHEIGHT);
+			
+			if (randRoom.overlay[randX][randY] == null) {
+				found = true;
+			}
+			ctr++;
+		} while (found == false && ctr <= 20);
+		
+		Point randTile = new Point(randX, randY);
+		
+		return randTile;
 	}
 }

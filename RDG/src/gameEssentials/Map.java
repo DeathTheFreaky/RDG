@@ -13,8 +13,10 @@ import elements.Equipment;
 import elements.Potion;
 import elements.Room;
 import elements.Weapon;
+import general.Chances;
 import general.Enums.RoomTypes;
 import general.GroundFactory;
+import general.ResourceManager;
 import general.RoomFactory;
 
 /**
@@ -54,8 +56,10 @@ public class Map {
 	/* Multidimensional Array storing all Rooms */
 	private Room[][] rooms = null;
 	
-	/* */
 	private GameEnvironment gameEnvironment = null;
+	
+	/* ResourceManager needed for placing keys in random rooms */
+	private ResourceManager resourceManager = null;
 	
 	/**
 	 * Constructs a Map.
@@ -94,6 +98,8 @@ public class Map {
 		overlayScope = new Element[Game.SCOPEWIDTH][Game.SCOPEHEIGHT];
 		rooms = new Room[Game.ROOMSHOR][Game.ROOMSVER];
 		playerScopePosition = new Point();
+		
+		resourceManager = new ResourceManager().getInstance();
 
 		/* null-initialize overlay */
 		for (int i = 0; i < size.width; i++) {
@@ -267,6 +273,13 @@ public class Map {
 		if (overlay[fieldX][fieldY] == null) {
 			return true;
 		}
+		if (overlay[fieldX][fieldY] != null) {
+			if ((overlay[fieldX][fieldY].NAME.equals("DoorGroundTreasureChamber1") 
+					|| (overlay[fieldX][fieldY].NAME.equals("DoorGroundTreasureChamber2"))
+					&& this.player.getHasKey())) {
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -294,6 +307,12 @@ public class Map {
 				overlay[x][y - 1] = null;
 			} else if (overlay[x][y - 1] instanceof Creature) {
 				gameEnvironment.startFight((Creature) overlay[x][y - 1]);
+			} else if (overlay[x][y - 1].NAME.equals("Key")) {
+				if (!player.getHasKey()) {
+					player.setHasKey();
+					e = overlay[x][y - 1];
+					overlay[x][y - 1] = null;
+				}
 			}
 			break;
 		case EAST:
@@ -303,6 +322,12 @@ public class Map {
 				overlay[x + 1][y] = null;
 			} else if (overlay[x + 1][y] instanceof Creature) {
 				gameEnvironment.startFight((Creature) overlay[x + 1][y]);
+			} else if (overlay[x + 1][y].NAME.equals("Key")) {
+				if (!player.getHasKey()) {
+					player.setHasKey();
+					e = overlay[x + 1][y];
+					overlay[x + 1][y] = null;
+				}
 			}
 			break;
 		case SOUTH:
@@ -312,6 +337,12 @@ public class Map {
 				overlay[x][y + 1] = null;
 			} else if (overlay[x][y + 1] instanceof Creature) {
 				gameEnvironment.startFight((Creature) overlay[x][y + 1]);
+			} else if (overlay[x][y + 1].NAME.equals("Key")) {
+				if (!player.getHasKey()) {
+					player.setHasKey();
+					e = overlay[x][y + 1];
+					overlay[x][y + 1] = null;
+				}
 			}
 			break;
 		case WEST:
@@ -321,6 +352,12 @@ public class Map {
 				overlay[x - 1][y] = null;
 			} else if (overlay[x - 1][y] instanceof Creature) {
 				gameEnvironment.startFight((Creature) overlay[x - 1][y]);
+			} else if (overlay[x - 1][y].NAME.equals("Key")) {
+				if (!player.getHasKey()) {
+					player.setHasKey();
+					e = overlay[x - 1][y];
+					overlay[x - 1][y] = null;
+				}
 			}
 			break;
 		default:
@@ -466,6 +503,9 @@ public class Map {
 				rooms[i][j] = RoomFactory.createRoom(type);
 			}
 		}
+		
+		/* place keys for treasure chamber in random rooms */
+		placeKeys();
 	}
 
 	/**
@@ -546,6 +586,49 @@ public class Map {
 				}
 			}
 		}
+	}
+
+	/**Places 2 keys for the treasure chamber at random positions on the map.
+	 * 
+	 */
+	private void placeKeys() {
+		
+		/* random rooms */
+		int randRoom1x = 0;
+		int randRoom1y = 0;
+		int randRoom2x = 0;
+		int randRoom2y = 0;
+		
+		Point randRoom1 = Chances.randomRoom();
+		randRoom1x = randRoom1.x;
+		randRoom1y = randRoom1.y;
+		
+		Point randRoom2 = null;
+		
+		do {
+			randRoom2 = Chances.randomRoom();
+			randRoom2x = randRoom2.x;
+			randRoom2y = randRoom2.y;
+		} while (randRoom1x == randRoom2x && randRoom1y == randRoom2y);
+		
+		/* random tiles in room */
+		int x1 = 0;
+		int y1 = 0;
+		int x2 = 0;
+		int y2 = 0;
+		
+		Point randTile1 = Chances.randomTile(rooms[randRoom1x][randRoom1y]);
+		x1 = randTile1.x;
+		y1 = randTile1.y;
+		
+		do {
+			Point randTile2 = Chances.randomTile(rooms[randRoom2x][randRoom2y]);
+			x2 = randTile2.x;
+			y2 = randTile2.y;
+		} while (x1 == x2 && y1 == y2);
+		
+		rooms[randRoom1x][randRoom1y].overlay[x1][y1] = new Element("Key", resourceManager.IMAGES.get("Key"));
+		rooms[randRoom2x][randRoom2y].overlay[x1][y1] = new Element("Key", resourceManager.IMAGES.get("Key"));
 	}
 
 	/**When a monster looses a fight, it has to be removed from the map.
