@@ -1,5 +1,6 @@
 package general;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 
 import gameEssentials.Game;
@@ -33,8 +34,11 @@ public class Main {
 	private static void server(int count) {
 		LobbyServer server = null;
 		try {
-			server = new LobbyServer(1024, "Neue Lobby " + count);
+			server = new LobbyServer("Neue Lobby " + count);
 		} catch (ArgumentOutOfRangeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -46,7 +50,7 @@ public class Main {
 			@Override
 			public void run() {
 				LinkedList<Serverinfo> lobbyList = new LinkedList<Serverinfo>();
-				LobbySearcher search = new LobbySearcher(1025, lobbyList);
+				LobbySearcher search = new LobbySearcher(lobbyList);
 				search.start();
 				while (true) {
 					try {

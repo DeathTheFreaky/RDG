@@ -2,46 +2,74 @@ package at.RDG.network.discovery;
 
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.UUID;
 
-public class Serverinfo implements Serializable{
-	
+/**
+ * The Serverinfo class is a storage class that represents all important
+ * information about a lobby.
+ * 
+ * @author Clemens
+ */
+public class Serverinfo implements Serializable {
+
 	private static final long serialVersionUID = 2153567303370864667L;
 	private InetAddress address;
+	private int port;
 	private String lobbyName;
 	private String UID;
-	
-	Serverinfo(InetAddress address, String lobbyName){
-		this.setAddress(address);
+
+	/**
+	 * @see Serverinfo
+	 * @param address
+	 *            Informations about the servers socket address
+	 * @param port
+	 *            that the server listens at
+	 * @param lobbyName
+	 *            The name of the lobby
+	 * @param UID
+	 *            The UID of the server
+	 */
+	Serverinfo(InetAddress address, int port, String lobbyName, String UID) {
+		this.address = address;
 		this.lobbyName = lobbyName;
-		MessageDigest md = null;
-		byte[] thedigest = null;
-		try {
-			md = MessageDigest.getInstance("MD5");
-			thedigest = md.digest((this.lobbyName + UUID.randomUUID()).getBytes(StandardCharsets.UTF_8));
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		this.UID = new String(thedigest);
+		this.port = port;
+		this.UID = UID;
 	}
 
+	/**
+	 * @return the information about the servers socket address
+	 */
 	public InetAddress getAddress() {
-		return address;
+		return this.address;
 	}
 
+	/**
+	 * Sets the information about the servers socket address
+	 * 
+	 * @param address
+	 *            about the servers socket address
+	 */
 	void setAddress(InetAddress address) {
 		this.address = address;
 	}
-	
-	public String getLobbyName() {
-		return lobbyName;
+
+	/**
+	 * @return the port the server is listening to
+	 */
+	public int getPort() {
+		return this.port;
 	}
 
-	public String getUID() {
-		return UID;
+	/**
+	 * @return the lobby name of the server
+	 */
+	public String getLobbyName() {
+		return this.lobbyName;
+	}
+
+	/**
+	 * @return the UID of the server
+	 */
+	String getUID() {
+		return this.UID;
 	}
 }

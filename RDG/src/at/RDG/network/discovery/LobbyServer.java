@@ -4,43 +4,95 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
-import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Date;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import at.RDG.network.ArgumentOutOfRangeException;
-import at.RDG.network.NetworkStatics;
 
+/**
+ * The LobbyServer is listening for incoming discovery requests and sends back
+ * informations about him self.
+ * 
+ * @author Clemens
+ */
 public class LobbyServer extends Thread {
 
-	private int port;
-	private final String lobbyName;
+	private final String lobbyName; // the name of the lobby
+	private final String UID; // the UID of the server
 
-	public LobbyServer(int port, String lobbyName)
-			throws ArgumentOutOfRangeException {
-		if (lobbyName.length() > NetworkStatics.LOBBYNAMEMAXLENGTH) {
+	/**
+	 * @see LobbyServer
+	 * @param lobbyName
+	 *            The name the lobby should show up with. Should not be greater
+	 *            then 256 characters.
+	 * @throws ArgumentOutOfRangeException
+	 *             is thrown if the passed lobby name is greater then 256
+	 *             characters.
+	 * @throws NoSuchAlgorithmException
+	 *             is thrown if the LobbyServer class is unable to launch the
+	 *             MD5 algorithm to create his UID.
+	 */
+	public LobbyServer(String lobbyName) throws ArgumentOutOfRangeException,
+			NoSuchAlgorithmException {
+		if (lobbyName == null) {
+			throw new NullPointerException("lobbyName cannot be null.");
+		} else if (lobbyName.equals("")) {
 			throw new ArgumentOutOfRangeException(
-					"lobbyName cannot be more then " + NetworkStatics.LOBBYNAMEMAXLENGTH + " characters long!");
+					"lobbyName must at least be one character!");
+		} else if (lobbyName.length() > LobbyStatics.LOBBYNAMEMAXLENGTH) {
+			throw new ArgumentOutOfRangeException(
+					"lobbyName cannot be more then "
+							+ LobbyStatics.LOBBYNAMEMAXLENGTH
+							+ " characters long!");
 		}
-		this.port = port;
 		this.lobbyName = lobbyName;
+
+		// creates a UID for the server so if the server responses on two
+		// different ips it can be identified as on.
+		MessageDigest md = null;
+		byte[] thedigest = null;
+		Date date = new Date();
+		md = MessageDigest.getInstance("MD5");
+		thedigest = md.digest((this.lobbyName + UUID.randomUUID() + date
+				.toString()).getBytes(StandardCharsets.UTF_8));
+		this.UID = new String(thedigest);
 	}
 
+	/**
+	 * The method is started if the thread is started and responses to every
+	 * discovery request it receives.</br> (Don't start this directly! Use
+	 * Thread.start() instead.)
+	 */
 	@Override
 	public void run() {
-		// open MulticastSocket (UDP)
+		// open MulticastSocket and bound it to one of three free ports.
 		MulticastSocket socket = null;
 		try {
-			socket = new MulticastSocket(this.port);
+			for (int i = 0; i < LobbyStatics.SERVERPORTS.length; i++) {
+				socket = new MulticastSocket(LobbyStatics.SERVERPORTS[i]);
+				System.out.println(LobbyStatics.SERVERPORTS[i]);
+				System.out.println(socket.getPort());
+				if (socket.isBound())
+					break;
+			}
 			socket.setBroadcast(true);
 			socket.setTimeToLive(10);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getLogger(LobbyServer.class.getName()).log(Level.SEVERE,
+					"IOExeption while creating the MulticastSocket.", e);
+			Thread.currentThread().interrupt();
 		} finally {
-			if (!socket.isBound()/* || group == null */) {
+			// If its not successfully bound it stops the process.
+			if (!socket.isBound()) {
+				Logger.getLogger(LobbyServer.class.getName()).log(Level.SEVERE,
+						"Unable to bind the MulticastSocket.");
 				Thread.currentThread().interrupt();
-				// TODO error msg and logging
 			}
 		}
 
@@ -52,32 +104,38 @@ public class LobbyServer extends Thread {
 			try {
 				socket.receive(packet);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Logger.getLogger(LobbyServer.class.getName()).log(Level.SEVERE,
+						"Unable to receive a packet. SKIPPING", e);
+				continue;
 			}
+			// check if the request is a valid one
 			if (packet.getData()[0] == 7) {
-				System.out.println("recved");
-				Serverinfo server = new Serverinfo(null, this.lobbyName);
+				// prepare the answer and send lobby informations back
+				Serverinfo server = new Serverinfo(null, socket.getPort(),
+						this.lobbyName, this.UID);
 				ByteArrayOutputStream bos = new ByteArrayOutputStream(2048);
 				ObjectOutputStream oos = null;
 				try {
 					oos = new ObjectOutputStream(bos);
 					oos.writeObject(server);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Logger.getLogger(LobbyServer.class.getName()).log(
+							Level.SEVERE,
+							"Unable to write to ObjectOutputStream. SKIPPING",
+							e);
+					continue;
 				}
 
 				DatagramPacket sendPacket = new DatagramPacket(
 						bos.toByteArray(), bos.size(), packet.getAddress(),
 						packet.getPort());
-				System.out.println(bos.size());
 				try {
 					socket.send(sendPacket);
-					System.out.println("sended");
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Logger.getLogger(LobbyServer.class.getName()).log(
+							Level.SEVERE,
+							"Unable to send the packet. SKIPPING", e);
+					continue;
 				}
 			}
 		}
