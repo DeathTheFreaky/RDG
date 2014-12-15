@@ -43,4 +43,5 @@ public class Enums {
 	public enum ArmorStatsMode{SUM, AVERAGE, MIN};
 	
 	public enum ImageSize {d32x32, d20x20}
+	public enum MessageType {CHAT, PLAYERPOSITION, MAP, GENERAL, NETWORK, FIGHT, ITEMPICKUP}
 }
