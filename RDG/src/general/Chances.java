@@ -2,7 +2,9 @@ package general;
 
 import elements.Element;
 import elements.Item;
+import elements.Room;
 import gameEssentials.Game;
+import general.Enums.Attacks;
 import general.Enums.ItemClasses;
 import general.Enums.Levels;
 
@@ -12,10 +14,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import javax.swing.OverlayLayout;
+
 import org.newdawn.slick.SlickException;
 
 public class Chances {
-
+	
+	private static Random r = new Random();
+	private static ResourceManager resources = null;
+	
 	/**
 	 * Return a random float between two float barriers.
 	 * 
@@ -25,7 +32,6 @@ public class Chances {
 	 */
 	public static float randomFloat(float low, float high) {
 
-		Random r = new Random();
 		return r.nextFloat() * (high - low) + low;
 	}
 
@@ -41,7 +47,9 @@ public class Chances {
 	public static String randomMonster(Map<Levels, Float> monsterProbabilities)
 			throws SlickException {
 
-		ResourceManager resources = new ResourceManager().getInstance();
+		if (resources == null) {
+			resources = new ResourceManager().getInstance();
+		}
 
 		/* used to sum up all single possibility values from configloader */
 		float sum = 0;
@@ -61,7 +69,6 @@ public class Chances {
 		 * get a random value within the determined interval = sum of all
 		 * probability values
 		 */
-		Random r = new Random();
 		randomFloat = r.nextFloat() * (sum);
 
 		/* set thresholds for level probabilities */
@@ -113,8 +120,9 @@ public class Chances {
 	 */
 	public static Item randomItem(Map<ItemClasses, Float> itemClassProbabilities) throws SlickException {
 		
-		ResourceManager resources = new ResourceManager().getInstance();
-
+		if (resources == null) {
+			resources = new ResourceManager().getInstance();
+		}
 		/* used to sum up all single possibility values for all items from configloader */
 		float sum = 0;
 
@@ -133,7 +141,6 @@ public class Chances {
 		 * get a random value within the determined interval = sum of all
 		 * probability values
 		 */
-		Random r = new Random();
 		randomFloat = r.nextFloat() * (sum);
 		
 		/* set thresholds for itemClass probabilities */
@@ -180,9 +187,7 @@ public class Chances {
 	 * @return a free field or null if none is found
 	 */
 	public static Point randomFreeField(Element[][] overlay) {
-		
-		Random r = new Random();
-		
+				
 		for (int i = 0; i < Game.MAXTRIES; i++) {
 			
 			/* if ROOMWIDTH == 8: values will be between 0 and 7 */
@@ -195,5 +200,78 @@ public class Chances {
 		}
 		
 		return null;
+	}
+
+	/**Returns a random monster attack.
+	 * @return a random monster attack
+	 */
+	public static Attacks randomAttackType() {
+
+		Attacks randAttackType = null;
+		
+		float randFloat = r.nextFloat();
+		
+		if (randFloat < 0.2) {
+			randAttackType = Attacks.TORSO;
+		} else if (randFloat >= 0.2 && randFloat < 0.4) {
+			randAttackType = Attacks.HEAD;
+		} else if (randFloat >= 0.4 && randFloat < 0.6) {
+			randAttackType = Attacks.ARMS;
+		} else if (randFloat >= 0.6 && randFloat < 0.8) {
+			randAttackType = Attacks.LEGS;
+		} else if (randFloat >= 0.8 && randFloat < 1) {
+			randAttackType = Attacks.PARRY;
+		}
+		
+		return randAttackType;
+	}
+
+	/**Returns Point for a random Room on the map, excluding the treasure Chamber.
+	 * @return a random Room but not the treasure Chamber
+	 */
+	public static Point randomRoom() {
+		
+		int middleX = Game.ROOMSHOR/2;
+		int middleY = Game.ROOMSVER/2;
+		int randX = 0;
+		int randY = 0;
+		
+		do {
+			randX = r.nextInt(Game.ROOMSHOR);
+			randY = r.nextInt(Game.ROOMSVER);
+		} while (randX == middleX && randY == middleY);
+		
+		Point randRoom = new Point(randX, randY);
+		
+		return randRoom;
+	}
+
+	/**Returns a random empty tile in a room.
+	 * @return
+	 */
+	public static Point randomTile(Room randRoom) {
+
+		int randX = 0;
+		int randY = 0;
+		boolean found = false;
+		int ctr = 0;
+		
+		if (randRoom == null) {
+			return null;
+		}
+		
+		do {
+			randX = r.nextInt(Game.ROOMWIDTH);
+			randY = r.nextInt(Game.ROOMHEIGHT);
+			
+			if (randRoom.overlay[randX][randY] == null) {
+				found = true;
+			}
+			ctr++;
+		} while (found == false && ctr <= 20);
+		
+		Point randTile = new Point(randX, randY);
+		
+		return randTile;
 	}
 }

@@ -3,6 +3,8 @@ package gameEssentials;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -13,14 +15,23 @@ import org.newdawn.slick.SlickException;
 import org.xml.sax.SAXException;
 
 import configLoader.Configloader;
+import elements.Creature;
 import elements.Element;
 import elements.Equipment;
+import elements.Monster;
+import elements.Potion;
+import fighting.Fight;
 import views.ArmorView;
 import views.Chat;
 import views.GameEnvironment;
 import views.InventoryView;
+<<<<<<< HEAD
 import views.Minimap;
 import views.View;
+=======
+import general.Enums.AttackScreens;
+import general.Enums.Attacks;
+>>>>>>> branch 'Development' of https://github.com/DeathTheFreaky/RDG.git
 import general.Enums.CreatureType;
 import general.Enums.ImageSize;
 import general.Enums.UsedClasses;
@@ -74,8 +85,14 @@ public class Game extends BasicGame {
 	private int updatesUntilPlayerUpdate = 10;
 
 	/* Origins of the different Views in tile numbers */
+<<<<<<< HEAD
 	private Point gameEnvironmentOrigin, chatOrigin, armorViewOrigin,
 			inventoryViewOrigin, minimapOrigin;
+=======
+	/* gameEnvironment is needed for fight, because each fight is a new thread -> new instance */
+	private Point gameEnvironmentOrigin = new Point(0,0), chatOrigin, armorViewOrigin,
+			inventoryViewOrigin;
+>>>>>>> branch 'Development' of https://github.com/DeathTheFreaky/RDG.git
 
 	/* flag, if the mouse is over the chat (for scrolling) */
 	private boolean mouseOverChat = false;
@@ -123,6 +140,18 @@ public class Game extends BasicGame {
 
 	// create instance of configloader
 	private Configloader configloader = null;
+	
+	/* fight Thread  */
+	private Thread fightThread = null;
+	
+	/* needed for human fights - set to true if this is the lobby HOSTER */
+	private Boolean humanFightHost = false;
+	
+	/* list holding child threads */
+	private List<Thread> threadList = new ArrayList<Thread>();
+	
+	/* fight Instance from gameEnvironment */
+	private Fight fightInstance = null;
 
 	/* Declare all classes, we need for the game (Factory, Resourceloader) */
 	// private ResourceManager resourceManager;
@@ -136,7 +165,8 @@ public class Game extends BasicGame {
 	 * @see Game
 	 */
 	public Game(String title) {
-		this(title, "Find out if its Player1 or Player2");
+		/* Find out if its is player1 or player2 */
+		this(title, "Testplayername");
 	}
 
 	/**
@@ -192,12 +222,11 @@ public class Game extends BasicGame {
 					new ResourceManager().getInstance().IMAGES.get("Player2"),
 					gameEnvironmentOrigin, playerType);
 		}
-
-		map = new Map().getInstance();
-		map.setPlayer(player);
-		// map.fillMap();
-
-		/* Dimension is specified in pixels */
+		
+		/* Load Views - Dimension is specified in pixels */
+		armorView = new ArmorView("ArmorInventory", armorViewOrigin,
+				new Dimension(ARMOR_WIDTH, ARMOR_HEIGHT));
+		
 		gameEnvironment = new GameEnvironment("GameEnvironment",
 				gameEnvironmentOrigin, new Dimension(GAME_ENVIRONMENT_WIDTH,
 						GAME_ENVIRONMENT_HEIGHT), player);
@@ -213,6 +242,18 @@ public class Game extends BasicGame {
 
 		inventoryView = new InventoryView("Inventory", inventoryViewOrigin,
 				new Dimension(INVENTORY_WIDTH, INVENTORY_HEIGHT));
+
+		/* Load the chat */
+		chat = new Chat("Chat", chatOrigin, new Dimension(CHAT_WIDTH,
+				CHAT_HEIGHT), container);
+		
+		/* Load Map and place the player */
+		map = new Map().getInstance();
+		map.setPlayer(player);
+		map.setGameEnvironment(gameEnvironment);
+		// map.fillMap();
+		
+		this.fightInstance = gameEnvironment.getFightInstance();
 	}
 
 	@Override
@@ -257,7 +298,7 @@ public class Game extends BasicGame {
 
 	@Override
 	public void keyPressed(int key, char c) {
-
+		
 		/* Key Values for Players Movement! (a,s,d,w) */
 		if ((key == 30 || key == 31 || key == 32 || key == 17)
 				&& !gameEnvironment.isFightActive()) {
@@ -282,10 +323,24 @@ public class Game extends BasicGame {
 				chat.setFocus(true);
 			}
 		} else if (key == 18) {
-			Element e = map.getItemInFrontOfPlayer();
+			Element e = null;
+			try {
+				e = map.checkInFrontOfPlayer();
+			} catch (SlickException e1) {
+				e1.printStackTrace();
+			}
 			if (e != null) {
-				// inventoryView.storeEquipment((Equipment) e);
-				inventoryView.storeItem(e);
+				//inventoryView.storeEquipment((Equipment) e);
+				inventoryView.storeItem(e, armorView);
+			}
+		} else if (key == 1) {
+			//set attackScreen in Fight.java to MAIN
+			if (fightInstance.isInFight()) {
+				if (fightInstance.getAttackScreens() != AttackScreens.WAITING) {
+					fightInstance.setAttackScreen(AttackScreens.MAIN);
+					fightInstance.setChangeTabActive(false);
+					fightInstance.setPotionTakingActive(false);
+				}
 			}
 		}
 	}
@@ -311,8 +366,22 @@ public class Game extends BasicGame {
 
 	@Override
 	public void mouseClicked(int button, int x, int y, int clickCount) {
+				
+		/* All views' mouse click implementation are called.
+		 * Wrong ones do nothing */
 		if (button == 0) { // linke Maustaste
-			armorView.changeTab(x, y);
+			
+			if (fightInstance.isInFight()) {
+				if (!(fightInstance.isChangeTabActive())) {
+					fightInstance.handleFightOptions(x, y);
+				}
+				else if (fightInstance.isChangeTabActive()) {
+					armorView.changeTab(x, y);
+				}
+			}
+			else {
+				armorView.changeTab(x, y);
+			}
 		}
 	}
 
@@ -330,10 +399,11 @@ public class Game extends BasicGame {
 		 * versa -> equip and unequip weapon
 		 */
 		if (!dragging) {
-			if (gameEnvironment.isFightActive()) {
-				System.out
-						.println("You cannot change your Equipment during fight");
-				dragging = true;
+			if (fightInstance.isInFight()) {
+				if (fightInstance.isPotionTakingActive()) {
+					this.draggedItem = armorView.getItem(oldx, oldy);
+					dragging = true;
+				}
 				return;
 			}
 
@@ -344,7 +414,6 @@ public class Game extends BasicGame {
 					this.draggedItem = armorView.getEquipment(oldx, oldy);
 				}
 				dragging = true;
-			}
 
 		}
 		draggedX = newx;
@@ -388,6 +457,23 @@ public class Game extends BasicGame {
 					}
 					dragging = false;
 					draggedItem = null;
+				
+					Element e;
+				if (fightInstance.isInFight()) {
+					// only allow when potionTaking is active 
+					if (fightInstance.isPotionTakingActive()) {
+						if ((e = armorView.drinkPotion((Potion) draggedItem, x, y, inventoryView)) != null) {
+							armorView.backPotion((Potion) e);
+						} else {
+							fightInstance.setActiveAttackType(Attacks.POTION);
+							fightInstance.setPotionTakingActive(false);
+							fightInstance.setAttackScreen(AttackScreens.WAITING);
+						}
+					}
+				} else {
+					if ((e = armorView.equipItem(draggedItem, x, y, inventoryView)) != null) {
+						inventoryView.storeItem(e, armorView);
+					}
 				}
 			}
 
@@ -409,6 +495,9 @@ public class Game extends BasicGame {
 							- minimap.HEIGHT - 20;
 				}
 
+				dragging = false;
+				draggedItem = null;
+				//armorView.addFists();
 			}
 		}
 	}
@@ -458,6 +547,41 @@ public class Game extends BasicGame {
 		/* Enable chat scrolling if mouse if over chat */
 		if (mouseOverChat) {
 			chat.scroll(scroll);
+		}
+	}
+	
+	/**Returns the currently active Fight Thread or null if no fight is active.
+	 * (thread that needs to be started more than once).
+	 * @return fight Instance
+	 */
+	public Thread getFightThread() {
+		return fightThread;
+	}
+	
+	/**Sets fight Thread.
+	 * @param t
+	 */
+	public void setFightThread(Thread t) {
+		fightThread = t;
+	}
+
+	/**Called by gameEnvironment when a fight ends.<br>
+	 * Takes action based on who lost the fight.
+	 * @param looser
+	 */
+	public void fightEnds(Creature looser) {
+		
+		fightThread = null;
+		//do we need for thread to join - they should end before game anyhow?!?
+		
+		//do stuff with looser
+		if (looser == this.player) {
+			this.player.resetPlayerPosition();
+		} else if (looser instanceof Monster) {
+			map.removeContentInFrontOfPlayer();
+		} else {
+			
+			//YOU HAVE WON THE GAME - SWITCH GAME STATE
 		}
 	}
 }

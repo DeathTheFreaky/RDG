@@ -35,6 +35,12 @@ public class Enums {
 	public enum CreatureType {PLAYER1, PLAYER2, MONSTER}
 	public enum ItemType {ARMAMENT, POTION, WEAPON}
 	public enum UsedClasses{Element, Weapon, Armament, Potion, Equipment, Monster, Creature};
+	public enum Potions{POTION1, POTION2, POTION3};
+	public enum AttackScreens{MAIN, ATTACK, WAITING};
+	public enum AttackOptions{OPTION1, OPTION2, OPTION3, OPTION4};
+	public enum ArmorStatsAttributes{ARMOR, SPEED, ACCURACY, ATTACK};
+	public enum ArmorStatsTypes{ARMAMENT, WEAPONS};
+	public enum ArmorStatsMode{SUM, AVERAGE, MIN};
 	
 	public enum ImageSize {d32x32, d20x20}
 }

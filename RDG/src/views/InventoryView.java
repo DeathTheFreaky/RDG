@@ -262,12 +262,17 @@ public class InventoryView extends View {
 	/**Add items to lists of items, weapons, armaments, potions, armor.
 	 * @param item
 	 */
-	public void storeItem(Element item) {
+	public void storeItem(Element item, ArmorView armorView) {
+		
+		System.out.println("itemname: " + item.NAME);
 		
 		if (item instanceof Weapon) {
 			/*weapons.add((Weapon) item);
 			armor.add((Equipment) item);*/
-			items.add(item);
+			if (!(item.NAME.equals("Fists"))) {
+				items.add(item);
+			}
+			armorView.addFists();
 		}
 		else if (item instanceof Armament) {
 			/*armaments.add((Armament) item);
@@ -278,6 +283,8 @@ public class InventoryView extends View {
 			/*potions.add((Potion) item);*/
 			items.add(item);
 		}
+		else if (item.NAME.equals("Key")) {
+			items.add(item);
+		}
 	}
-
 }

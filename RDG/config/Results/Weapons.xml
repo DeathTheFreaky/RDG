@@ -67,8 +67,8 @@
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Attack>0</Attack>
-		<Speed>0</Speed>
-		<Accuracy>0</Accuracy>
+		<Speed>50</Speed>
+		<Accuracy>50</Accuracy>
 		<Defence>50</Defence>
 		<Slots>1</Slots>
 		<Max>1</Max>

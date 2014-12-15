@@ -11,6 +11,7 @@ import elements.Creature;
 import elements.Element;
 import elements.Monster;
 import fighting.Fight;
+import gameEssentials.Game;
 import gameEssentials.Player;
 import general.Enums.ImageSize;
 import general.MonsterFactory;
@@ -27,19 +28,22 @@ public class GameEnvironment extends View {
 
 	/* Reference to the player, for which the GameEnvironment is shown */
 	private Player player;
-
+	
 	/*
 	 * Reference to the Shapes, which are shown in the GameEnvironment. Scope
 	 * Elements are passed from Map Class.
 	 */
 	private Element[][] backgroundScope;
 	private Element[][] overlayScope;
-
-	/* Marks if the player is in a Fight (for displaying Fighting Screen) */
-	private boolean fight = true;
 	
-	/* Kind of View/Instance where the Fight takes place/is shown */
-	private Fight fightInstance;
+	/* ArmorView is needed to interact with armory items */
+	ArmorView armorView = null;
+	
+	/* instance of a Fight - to be loaded into fight thread */
+	private Fight fightInstance = null;
+	
+	/* the base Game class */
+	Game game;
 
 	/**
 	 * Constructs a GameEnvironment passing its origin as single x and y
@@ -56,8 +60,8 @@ public class GameEnvironment extends View {
 	 * @see GameEnvironment
 	 */
 	public GameEnvironment(String contextName, int originX, int originY,
-			Player player) throws SlickException {
-		this(contextName, new Point(originX, originY), player);
+			Player player, ArmorView armorView, Game game) throws SlickException {
+		this(contextName, new Point(originX, originY), player, armorView, game);
 	}
 
 	/**
@@ -73,9 +77,9 @@ public class GameEnvironment extends View {
 	 * @throws SlickException
 	 * @see GameEnvironment
 	 */
-	public GameEnvironment(String contextName, Point origin, Player player)
+	public GameEnvironment(String contextName, Point origin, Player player, ArmorView armorView, Game game)
 			throws SlickException {
-		this(contextName, origin, new Dimension(640, 480), player);
+		this(contextName, origin, new Dimension(640, 480), player, armorView, game);
 	}
 
 	/**
@@ -94,9 +98,9 @@ public class GameEnvironment extends View {
 	 * @see GameEnvironment
 	 */
 	public GameEnvironment(String contextName, int originX, int originY,
-			int width, int height, Player player) throws SlickException {
+			int width, int height, Player player, ArmorView armorView, Game game) throws SlickException {
 		this(contextName, new Point(originX, originY), new Dimension(width,
-				height), player);
+				height), player, armorView, game);
 	}
 
 	/**
@@ -113,13 +117,12 @@ public class GameEnvironment extends View {
 	 * @see GameEnvironment
 	 */
 	public GameEnvironment(String contextName, Point origin, Dimension size,
-			Player player) throws SlickException {
+			Player player, ArmorView armorView, Game game) throws SlickException {
 		super(contextName, origin, size);
-		this.player = player;
 		
-		Monster testenemy = MonsterFactory.createMonster("Bat");
-		fightInstance = new Fight(origin, size, this, player, testenemy); //added arguments player and enemy by Flo
-
+		this.game = game;
+		this.player = player;
+				
 		if (size.width % BLOCK_SIZE != 0) {
 			System.out.println("WATCH OUT! GameEnvironment only works well, "
 					+ "if the width is a multiple of " + BLOCK_SIZE + "!");
@@ -134,11 +137,15 @@ public class GameEnvironment extends View {
 		downright.x = (int) size.width / BLOCK_SIZE;
 		downright.y = (int) size.height / BLOCK_SIZE;
 
+		this.armorView = armorView;
+		this.fightInstance = new Fight(this.origin, this.size, this, player, armorView);
+		
 		update();
 	}
 
 	@Override
 	public void draw(GameContainer container, Graphics graphics) {
+		
 		/* if the player is not in a current fight */
 		if (!fightInstance.isInFight()) {
 			
@@ -181,7 +188,6 @@ public class GameEnvironment extends View {
 		}else {	// show Fight
 			fightInstance.draw(container, graphics);
 		}
-
 	}
 
 	@Override
@@ -193,21 +199,37 @@ public class GameEnvironment extends View {
 	
 	
 	/**
-	 * starts a Fight with the set creature as enemy
+	 * Starts a Fight with the set creature as enemy.
 	 * 
 	 * @param creature - the enemy
+	 * @throws SlickException 
+	 * @throws InterruptedException 
 	 */
-	public void startFight(Creature creature) {
-		fightInstance.newFight(creature);
+	public void startFight(Creature enemy) throws SlickException {
+		
+		/* load fight instance into new thread for fight to be carried out */
+		if (game.getFightThread() == null) {
+			Thread thread = new Thread(fightInstance);
+			game.setFightThread(thread);
+		}
+		
+		/* start the fight and set the enemy */
+		game.getFightThread().start();
+		fightInstance.setEnemy(enemy);
 	}
 	
-	/**
-	 * Looks if player is currently in a fight
-	 * 
-	 * @return true - in a fight
+	/**Called by fight thread to signal that it has ended.
+	 * @param looser
 	 */
-	public boolean isFightActive() {
-		return fightInstance.isInFight();
+	public void fightEnds(Creature looser) {
+		game.fightEnds(looser);
 	}
-
+	
+	/**Returns the currently active Fight Instance or null if no fight is active.
+	 * (thread that needs to be started more than once).
+	 * @return fight Instance
+	 */
+	public Fight getFightInstance() {
+		return fightInstance;
+	}
 }

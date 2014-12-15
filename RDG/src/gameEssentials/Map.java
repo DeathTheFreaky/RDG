@@ -5,14 +5,18 @@ import java.awt.Point;
 
 import org.newdawn.slick.SlickException;
 
+import views.GameEnvironment;
 import elements.Armament;
+import elements.Creature;
 import elements.Element;
 import elements.Equipment;
 import elements.Potion;
 import elements.Room;
 import elements.Weapon;
+import general.Chances;
 import general.Enums.RoomTypes;
 import general.GroundFactory;
+import general.ResourceManager;
 import general.RoomFactory;
 
 /**
@@ -51,7 +55,12 @@ public class Map {
 
 	/* Multidimensional Array storing all Rooms */
 	private Room[][] rooms = null;
-
+	
+	private GameEnvironment gameEnvironment = null;
+	
+	/* ResourceManager needed for placing keys in random rooms */
+	private ResourceManager resourceManager = null;
+	
 	/**
 	 * Constructs a Map.
 	 * 
@@ -89,6 +98,8 @@ public class Map {
 		overlayScope = new Element[Game.SCOPEWIDTH][Game.SCOPEHEIGHT];
 		rooms = new Room[Game.ROOMSHOR][Game.ROOMSVER];
 		playerScopePosition = new Point();
+		
+		resourceManager = new ResourceManager().getInstance();
 
 		/* null-initialize overlay */
 		for (int i = 0; i < size.width; i++) {
@@ -238,6 +249,13 @@ public class Map {
 			this.opponent = opponent;
 		}
 	}
+	
+	/**Sets the GameEnvironment for this Map.
+	 * @param gameEnvironment
+	 */
+	public void setGameEnvironment(GameEnvironment gameEnvironment) {
+		this.gameEnvironment = gameEnvironment;
+	}
 
 	/**
 	 * Checks in the passable array if the headed field is passable (not a wall
@@ -255,47 +273,99 @@ public class Map {
 		if (overlay[fieldX][fieldY] == null) {
 			return true;
 		}
+		if (overlay[fieldX][fieldY] != null) {
+			if ((overlay[fieldX][fieldY].NAME.equals("DoorGroundTreasureChamber1") 
+					|| (overlay[fieldX][fieldY].NAME.equals("DoorGroundTreasureChamber2"))
+					&& this.player.getHasKey())) {
+				return true;
+			}
+		}
 		return false;
 	}
 
 	/**
-	 * Checks if there is an Item in front of the player. If there is, it
-	 * returns the item, else it returns null.
+	 * Checks if there is an Item or a Monster in front of the player.<br>
+	 * If there is an item, pick up the item.<br>
+	 * If there is a monster, start a fight.<br>
+	 * If the monster looses the fight, delete it from map.<br>
+	 * Resets player to start, if he loses a fight.<br>
 	 * 
 	 * @return Equipment or null
+	 * @throws SlickException 
+	 * @throws InterruptedException 
 	 */
-	public Element getItemInFrontOfPlayer() {
+	public Element checkInFrontOfPlayer() throws SlickException {
 		Element e = null;
 		int x = player.getPosition().x;
 		int y = player.getPosition().y;
 
 		switch (player.getDirectionOfView()) {
 		case NORTH:
-			if ((overlay[x][y - 1] instanceof Potion) ||
-				  (overlay[x][y - 1] instanceof Equipment)) {
-				e = overlay[x][y - 1];
-				overlay[x][y - 1] = null;
+			if (overlay[x][y - 1] != null) {
+				if ((overlay[x][y - 1] instanceof Potion) ||
+					  (overlay[x][y - 1] instanceof Equipment)) {
+					e = overlay[x][y - 1];
+					overlay[x][y - 1] = null;
+				} else if (overlay[x][y - 1] instanceof Creature) {
+					gameEnvironment.startFight((Creature) overlay[x][y - 1]);
+				} else if (overlay[x][y - 1].NAME.equals("Key")) {
+					if (!player.getHasKey()) {
+						player.setHasKey();
+						e = overlay[x][y - 1];
+						overlay[x][y - 1] = null;
+					}
+				}
 			}
 			break;
 		case EAST:
-			if ((overlay[x + 1][y] instanceof Potion) ||
-				  (overlay[x + 1][y] instanceof Equipment)) {
-				e = overlay[x + 1][y];
-				overlay[x + 1][y] = null;
+			if (overlay[x + 1][y] != null) {
+				if ((overlay[x + 1][y] instanceof Potion) ||
+					  (overlay[x + 1][y] instanceof Equipment)) {
+					e = overlay[x + 1][y];
+					overlay[x + 1][y] = null;
+				} else if (overlay[x + 1][y] instanceof Creature) {
+					gameEnvironment.startFight((Creature) overlay[x + 1][y]);
+				} else if (overlay[x + 1][y].NAME.equals("Key")) {
+					if (!player.getHasKey()) {
+						player.setHasKey();
+						e = overlay[x + 1][y];
+						overlay[x + 1][y] = null;
+					}
+				}
 			}
 			break;
 		case SOUTH:
-			if ((overlay[x][y + 1] instanceof Potion) ||
-				  (overlay[x][y + 1] instanceof Equipment)) {
-				e = overlay[x][y + 1];
-				overlay[x][y + 1] = null;
+			if (overlay[x][y + 1] != null) {
+				if ((overlay[x][y + 1] instanceof Potion) ||
+					  (overlay[x][y + 1] instanceof Equipment)) {
+					e = overlay[x][y + 1];
+					overlay[x][y + 1] = null;
+				} else if (overlay[x][y + 1] instanceof Creature) {
+					gameEnvironment.startFight((Creature) overlay[x][y + 1]);
+				} else if (overlay[x][y + 1].NAME.equals("Key")) {
+					if (!player.getHasKey()) {
+						player.setHasKey();
+						e = overlay[x][y + 1];
+						overlay[x][y + 1] = null;
+					}
+				}
 			}
 			break;
 		case WEST:
-			if ((overlay[x - 1][y] instanceof Potion) ||
-				  (overlay[x - 1][y] instanceof Equipment)) {
-				e = overlay[x - 1][y];
-				overlay[x - 1][y] = null;
+			if (overlay[x - 1][y] != null) {
+				if ((overlay[x - 1][y] instanceof Potion) ||
+					  (overlay[x - 1][y] instanceof Equipment)) {
+					e = overlay[x - 1][y];
+					overlay[x - 1][y] = null;
+				} else if (overlay[x - 1][y] instanceof Creature) {
+					gameEnvironment.startFight((Creature) overlay[x - 1][y]);
+				} else if (overlay[x - 1][y].NAME.equals("Key")) {
+					if (!player.getHasKey()) {
+						player.setHasKey();
+						e = overlay[x - 1][y];
+						overlay[x - 1][y] = null;
+					}
+				}
 			}
 			break;
 		default:
@@ -306,7 +376,7 @@ public class Map {
 	}
 
 	/**
-	 * update the map - load rooms' overlays and backgrounds
+	 * Update the map - load rooms' overlays and backgrounds.
 	 * 
 	 */
 	public void update() {
@@ -441,6 +511,9 @@ public class Map {
 				rooms[i][j] = RoomFactory.createRoom(type);
 			}
 		}
+		
+		/* place keys for treasure chamber in random rooms */
+		placeKeys();
 	}
 
 	/**
@@ -520,6 +593,75 @@ public class Map {
 					}
 				}
 			}
+		}
+	}
+
+	/**Places 2 keys for the treasure chamber at random positions on the map.
+	 * 
+	 */
+	private void placeKeys() {
+		
+		/* random rooms */
+		int randRoom1x = 0;
+		int randRoom1y = 0;
+		int randRoom2x = 0;
+		int randRoom2y = 0;
+		
+		Point randRoom1 = Chances.randomRoom();
+		randRoom1x = randRoom1.x;
+		randRoom1y = randRoom1.y;
+		
+		Point randRoom2 = null;
+		
+		do {
+			randRoom2 = Chances.randomRoom();
+			randRoom2x = randRoom2.x;
+			randRoom2y = randRoom2.y;
+		} while (randRoom1x == randRoom2x && randRoom1y == randRoom2y);
+		
+		/* random tiles in room */
+		int x1 = 0;
+		int y1 = 0;
+		int x2 = 0;
+		int y2 = 0;
+		
+		Point randTile1 = Chances.randomTile(rooms[randRoom1x][randRoom1y]);
+		x1 = randTile1.x;
+		y1 = randTile1.y;
+		
+		do {
+			Point randTile2 = Chances.randomTile(rooms[randRoom2x][randRoom2y]);
+			x2 = randTile2.x;
+			y2 = randTile2.y;
+		} while (x1 == x2 && y1 == y2);
+		
+		rooms[randRoom1x][randRoom1y].overlay[x1][y1] = new Element("Key", resourceManager.IMAGES.get("Key"));
+		rooms[randRoom2x][randRoom2y].overlay[x1][y1] = new Element("Key", resourceManager.IMAGES.get("Key"));
+	}
+
+	/**When a monster looses a fight, it has to be removed from the map.
+	 * 
+	 */
+	public void removeContentInFrontOfPlayer() {
+
+		int x = player.getPosition().x;
+		int y = player.getPosition().y;
+
+		switch (player.getDirectionOfView()) {
+		case NORTH:
+			overlay[x][y - 1] = null;
+			break;
+		case EAST:
+			overlay[x + 1][y] = null;
+			break;
+		case SOUTH:
+			overlay[x][y + 1] = null;
+			break;
+		case WEST:
+			overlay[x - 1][y] = null;
+			break;
+		default:
+			break;
 		}
 	}
 }

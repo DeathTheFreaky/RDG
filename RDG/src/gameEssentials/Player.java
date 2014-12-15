@@ -54,6 +54,9 @@ public class Player extends Creature {
 
 	/* The Map associated with this player for getting some Values */
 	Map map;
+	
+	/* if player has found the key, he may enter the treasure chamber */
+	private boolean hasKey = false;
 
 	/**
 	 * Constructs a Player.<br>
@@ -409,9 +412,51 @@ public class Player extends Creature {
 	}
 
 	/**
-	 * Returns the Direction of View of the player
+	 * Returns the Direction of View of the player.
 	 */
 	public ViewingDirections getDirectionOfView() {
 		return this.lastViewingDirection;
+	}
+	
+	/**Resets position of a player which has lost a fight.
+	 * 
+	 */
+	public void resetPlayerPosition() {
+		
+		/* set positions related to player and camera
+		   all points reference the number of tiles, starting from upper left corner */
+		if (playerNumber == 1) {
+			this.position = new Point(5, 4);
+			this.cameraPosition = new Point(0, 0);
+
+			/* where the player is "placed" in the scope of the camera */
+			playerPositionInCamera = new Point(5, 4);
+
+			map.setScopePositionForPlayer(0, 0);
+		} else {
+			this.position = new Point(map.getWidth() - 4, map.getHeight() - 3);
+			this.cameraPosition = new Point(map.getWidth() - 14,
+					map.getHeight() - 11);
+
+			/* where the player is "placed" in the scope of the camera */
+			playerPositionInCamera = new Point(9, 7);
+
+			map.setScopePositionForPlayer(map.getWidth() - 13,
+					map.getHeight() - 10);
+		}
+	}
+	
+	/**
+	 * @return true if player has key to treasure chamber
+	 */
+	public boolean getHasKey() {
+		return this.hasKey;
+	}
+	
+	/**Sets hasKey to true, which means that player possesses key to treasure chamber.
+	 * 
+	 */
+	public void setHasKey() {
+		this.hasKey = true;
 	}
 }

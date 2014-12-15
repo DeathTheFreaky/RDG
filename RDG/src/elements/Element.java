@@ -2,6 +2,7 @@ package elements;
 import general.Enums.ImageSize;
 
 import java.awt.Point;
+import java.util.UUID;
 
 import org.newdawn.slick.Image;
 
@@ -76,7 +77,7 @@ public class Element {
 	public Element(String shapeName, Image image, Point position,
 			boolean visible) {
 		this.NAME = shapeName;
-		this.ID = shapeName + "Random UUID";
+		this.ID = shapeName + UUID.randomUUID();
 		this.image = image;
 		this.position = position;
 		this.visible = visible;

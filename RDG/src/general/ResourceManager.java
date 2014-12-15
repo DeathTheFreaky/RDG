@@ -149,7 +149,10 @@ public class ResourceManager {
 		IMAGES.put("Shoes", new Image(Game.IMAGEPATH + "Feet.png"));
 		IMAGES.put("M_Weapon", new Image(Game.IMAGEPATH + "Weapon.png"));
 		IMAGES.put("S_Weapon", new Image(Game.IMAGEPATH + "Weapon2.png"));
-
+		
+		/* load key picture */ 
+		IMAGES.put("Key", new Image(Game.IMAGEPATH + "key.png"));
+		
 		/* load images from paths stored in config loader */
 		for (Entry<String, ArmamentTemplate> entry : configloader
 				.getArmamentTemplates().entrySet()) {

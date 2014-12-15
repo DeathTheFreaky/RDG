@@ -7,6 +7,7 @@ import java.util.Map;
 import org.newdawn.slick.SlickException;
 
 import configLoader.RoomTemplate;
+import elements.Armament;
 import elements.Element;
 import elements.Equipment;
 import elements.Item;
@@ -58,8 +59,10 @@ public class RoomFactory {
 		background = fillGround(type, background, size);
 
 		//for testing only
-		overlay[0][0] = ItemFactory.createWeapon("Longsword", 1);
+		/*overlay[0][0] = ItemFactory.createWeapon("Longsword", 1);
 		overlay[0][1] = ItemFactory.createWeapon("Shield", 1);
+		overlay[0][0] = ItemFactory.createPotion("Poison", 1);
+		overlay[0][1] = ItemFactory.createPotion("Slowness", 1);*/
 		
 		return new Room(type, background, overlay);
 	}
