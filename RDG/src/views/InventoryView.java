@@ -231,6 +231,28 @@ public class InventoryView extends View {
 		return null;
 	}
 	
+	public void showDescription(int mouseX, int mouseY) {
+		int x = 0, y = 0;
+		for (int i = 0; i < items.size(); i++) {
+
+			if (mouseX > ORIGIN_X + x * 40
+					&& mouseX < ORIGIN_X + x * 40 + 40
+					&& mouseY > ORIGIN_Y + y * 40
+					&& mouseY < ORIGIN_Y + y * 40 + 40) {
+				break;
+			}
+
+			if (i % 4 == 0 && i != 0) {
+				y++;
+				x = 0;
+			} else {
+				x++;
+			}
+		}
+		
+		String description = items.get(x + y*4).getDescription();
+	}
+	
 	/*
 	public void storeEquipment(Equipment equipment) {
 		armor.add(equipment);

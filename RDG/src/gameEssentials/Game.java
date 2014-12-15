@@ -19,9 +19,12 @@ import views.ArmorView;
 import views.Chat;
 import views.GameEnvironment;
 import views.InventoryView;
+import views.Minimap;
+import views.View;
 import general.Enums.CreatureType;
 import general.Enums.ImageSize;
 import general.Enums.UsedClasses;
+import general.Enums.ViewingDirections;
 import general.ResourceManager;
 import general.Enums.Updates;
 
@@ -48,39 +51,55 @@ public class Game extends BasicGame {
 	// final if these values cannot be changed later on - if we want to change
 	// roomsize, minimap size, scope size -> don't make final
 	/* room, minimap, scope sizes */
-	public static int ROOMWIDTH = 8; // should be even -> door's width = 2
-	public static int ROOMHEIGHT = 6; // should be even -> door's width = 2
-	public static int MINIMAPWIDTH = 5;
-	public static int MINIMAPHEIGHT = 5;
-	public static int SCOPEWIDTH = 15;
-	public static int SCOPEHEIGHT = 12;
+	public static final int ROOMWIDTH = 8; // should be even -> door's width = 2
+	public static final int ROOMHEIGHT = 6; // should be even -> door's width =
+											// 2
+	public static final int MINIMAPWIDTH = 5;
+	public static final int MINIMAPHEIGHT = 5;
+	public static final int SCOPEWIDTH = 15;
+	public static final int SCOPEHEIGHT = 12;
 
 	/* room numbers */
 	public static int ROOMSHOR = 5;
 	public static int ROOMSVER = 5;
-	
+
 	/* number of tries when looking for a free field in a room */
 	public static int MAXTRIES = 15;
 
 	/* every milliseconds an Update is made */
-	private final int UPDATE = 200;
+	private final int UPDATE = 100;
 	/* how many milliseconds passed until the next Update */
 	private int timeToUpdate = 0;
+	/* Updates left for Player Update */
+	private int updatesUntilPlayerUpdate = 10;
 
 	/* Origins of the different Views in tile numbers */
 	private Point gameEnvironmentOrigin, chatOrigin, armorViewOrigin,
-			inventoryViewOrigin;
+			inventoryViewOrigin, minimapOrigin;
 
 	/* flag, if the mouse is over the chat (for scrolling) */
-	boolean mouseOverChat = false;
+	private boolean mouseOverChat = false;
+	/* flag, if the mouse is over the minimap (for moving) */
+	private boolean mouseOverMinimap = false;
 
 	/* flag, if the mouse is currently moving an item */
-	boolean dragging = false;
+	private boolean dragging = false;
+	/* flag, if the mouse is currently moving the minimap */
+	private boolean draggingMinimap = false;
+
+	/* For moving the player */
+	private ViewingDirections goTo = null;
+	/* flag, if a key is released */
+	private boolean keyReleased = false;
+
 	/* Equippment that is dragged */
-	Element draggedItem;
+	private Element draggedItem;
 	/* For positioning the dragged Item */
-	int draggedX = 0;
-	int draggedY = 0;
+	private int draggedX = 0;
+	private int draggedY = 0;
+	/* For positioning the minimap while dragging */
+	private int offsetX = 0;
+	private int offsetY = 0;
 
 	/* The Game for Player ... */
 	private String playerName;
@@ -91,6 +110,7 @@ public class Game extends BasicGame {
 	private Chat chat;
 	private ArmorView armorView;
 	private InventoryView inventoryView;
+	private Minimap minimap;
 
 	/* Map which is needed for each Player */
 	private Map map;
@@ -156,6 +176,7 @@ public class Game extends BasicGame {
 		chatOrigin = new Point(0, 12);
 		armorViewOrigin = new Point(15, 0);
 		inventoryViewOrigin = new Point(15, 12);
+		minimapOrigin = new Point(20, 20);
 
 		/* Initialize Factory and Manager classes! */
 		new ResourceManager().getInstance();
@@ -178,9 +199,11 @@ public class Game extends BasicGame {
 
 		/* Dimension is specified in pixels */
 		gameEnvironment = new GameEnvironment("GameEnvironment",
+				gameEnvironmentOrigin, new Dimension(GAME_ENVIRONMENT_WIDTH,
+						GAME_ENVIRONMENT_HEIGHT), player);
 
-		gameEnvironmentOrigin, new Dimension(GAME_ENVIRONMENT_WIDTH,
-				GAME_ENVIRONMENT_HEIGHT), player);
+		minimap = new Minimap("Minimap", gameEnvironmentOrigin.x
+				+ minimapOrigin.x, gameEnvironmentOrigin.y + minimapOrigin.y);
 
 		chat = new Chat("Chat", chatOrigin, new Dimension(CHAT_WIDTH,
 				CHAT_HEIGHT), container);
@@ -198,11 +221,19 @@ public class Game extends BasicGame {
 
 		/* run an Update */
 		if (timeToUpdate > UPDATE) {
-			player.update();
+			if (updatesUntilPlayerUpdate == 0) {
+				player.update(goTo);
+				if (keyReleased) {
+					goTo = null;
+					keyReleased = false;
+				}
+				updatesUntilPlayerUpdate = 3;
+			}
 			gameEnvironment.update();
 			chat.update();
 
 			timeToUpdate = 0;
+			updatesUntilPlayerUpdate--;
 		}
 
 		timeToUpdate += delta;
@@ -213,6 +244,7 @@ public class Game extends BasicGame {
 			throws SlickException {
 
 		gameEnvironment.draw(container, g);
+		minimap.draw(container, g);
 		chat.draw(container, g);
 		armorView.draw(container, g);
 		inventoryView.draw(container, g);
@@ -229,7 +261,20 @@ public class Game extends BasicGame {
 		/* Key Values for Players Movement! (a,s,d,w) */
 		if ((key == 30 || key == 31 || key == 32 || key == 17)
 				&& !gameEnvironment.isFightActive()) {
-			player.update(key, Updates.KEY_PRESSED);
+			// player.update(key, Updates.KEY_PRESSED);
+			if (key == 30) {
+				goTo = ViewingDirections.WEST;
+				keyReleased = false;
+			} else if (key == 31) {
+				goTo = ViewingDirections.SOUTH;
+				keyReleased = false;
+			} else if (key == 32) {
+				goTo = ViewingDirections.EAST;
+				keyReleased = false;
+			} else {
+				goTo = ViewingDirections.NORTH;
+				keyReleased = false;
+			}
 		} else if (key == 15) {
 			if (chat.hasFocus()) {
 				chat.setFocus(false);
@@ -239,20 +284,28 @@ public class Game extends BasicGame {
 		} else if (key == 18) {
 			Element e = map.getItemInFrontOfPlayer();
 			if (e != null) {
-				//inventoryView.storeEquipment((Equipment) e);
+				// inventoryView.storeEquipment((Equipment) e);
 				inventoryView.storeItem(e);
 			}
 		}
-		System.out.println("Key: " + key + ", Char: " + c);
 	}
 
 	@Override
 	public void keyReleased(int key, char c) {
-		
+
 		/* Key Values for Players Movement! (a,s,d,w) */
 		if ((key == 30 || key == 31 || key == 32 || key == 17)
 				&& !gameEnvironment.isFightActive()) {
-			player.update(key, Updates.KEY_RELEASED);
+			// player.update(key, Updates.KEY_RELEASED);
+			if (key == 30 && goTo == ViewingDirections.WEST) {
+				keyReleased = true;
+			} else if (key == 31 && goTo == ViewingDirections.SOUTH) {
+				keyReleased = true;
+			} else if (key == 32 && goTo == ViewingDirections.EAST) {
+				keyReleased = true;
+			} else if (key == 17 && goTo == ViewingDirections.NORTH) {
+				keyReleased = true;
+			}
 		}
 	}
 
@@ -265,13 +318,17 @@ public class Game extends BasicGame {
 
 	@Override
 	public void mouseDragged(int oldx, int oldy, int newx, int newy) {
-		
-		/* add potion check -> potion may be activated only during a fight 
-		 * and after that the next round continues -> use variable to 
-		 * determine when potion taking is possiple*/
-		
-		/* pulls a weapon or armament from the inventory to armor set and vice versa
-		 *  -> equip and unequip weapon */
+
+		/*
+		 * add potion check -> potion may be activated only during a fight and
+		 * after that the next round continues -> use variable to determine when
+		 * potion taking is possiple
+		 */
+
+		/*
+		 * pulls a weapon or armament from the inventory to armor set and vice
+		 * versa -> equip and unequip weapon
+		 */
 		if (!dragging) {
 			if (gameEnvironment.isFightActive()) {
 				System.out
@@ -279,34 +336,79 @@ public class Game extends BasicGame {
 				dragging = true;
 				return;
 			}
-			
-			this.draggedItem = inventoryView.getItem(oldx, oldy, UsedClasses.Equipment);
-			if (draggedItem == null) {
-				this.draggedItem = armorView.getEquipment(oldx, oldy);
+
+			if (!mouseOverMinimap) {
+				this.draggedItem = inventoryView.getItem(oldx, oldy,
+						UsedClasses.Equipment);
+				if (draggedItem == null) {
+					this.draggedItem = armorView.getEquipment(oldx, oldy);
+				}
+				dragging = true;
 			}
-			dragging = true;
+
 		}
 		draggedX = newx;
 		draggedY = newy;
+
+		if (mouseOverMinimap) {
+			if (!draggingMinimap) {
+				System.out.println("Set new offsets");
+				draggingMinimap = true;
+				offsetX = oldx - minimap.positionX;
+				offsetY = oldy - minimap.positionY;
+				minimap.setMoved(true);
+			}
+
+			minimap.positionX = newx - offsetX;
+			minimap.positionY = newy - offsetY;
+
+		}
 	}
 
 	@Override
 	public void mouseReleased(int button, int x, int y) {
-		
-		/* add potion check -> potion may be activated only during a fight 
-		 * and after that the next round continues -> use variable to 
-		 * determine when potion taking is possiple*/
-		
-		/* drops a weapon or armament from the inventory to armor set and vice versa
-		 *  -> equip and unequip weapon */
+
+		/*
+		 * add potion check -> potion may be activated only during a fight and
+		 * after that the next round continues -> use variable to determine when
+		 * potion taking is possiple
+		 */
+
+		/*
+		 * drops a weapon or armament from the inventory to armor set and vice
+		 * versa -> equip and unequip weapon
+		 */
 		if (button == 0) { // linke Maustaste
 			if (dragging) {
-				Equipment e;
-				if ((e = armorView.equipArmor((Equipment) draggedItem, x, y, inventoryView)) != null) {
-					inventoryView.storeItem((Element) e);
+				if (!draggingMinimap) {
+					Equipment e;
+					if ((e = armorView.equipArmor((Equipment) draggedItem, x,
+							y, inventoryView)) != null) {
+						inventoryView.storeItem((Element) e);
+					}
+					dragging = false;
+					draggedItem = null;
 				}
-				dragging = false;
-				draggedItem = null;
+			}
+
+			if (draggingMinimap) {
+				draggingMinimap = false;
+				minimap.setMoved(false);
+
+				if (x - offsetX < GAME_ENVIRONMENT_WIDTH - x - offsetX) {
+					minimap.positionX = 20;
+				} else {
+					minimap.positionX = GAME_ENVIRONMENT_WIDTH - minimap.WIDTH
+							- 20;
+				}
+
+				if (y - offsetY < GAME_ENVIRONMENT_HEIGHT - y - offsetY) {
+					minimap.positionY = 20;
+				} else {
+					minimap.positionY = GAME_ENVIRONMENT_HEIGHT
+							- minimap.HEIGHT - 20;
+				}
+
 			}
 		}
 	}
@@ -321,9 +423,33 @@ public class Game extends BasicGame {
 		if (newX >= 0 && newX <= CHAT_WIDTH && newY > GAME_ENVIRONMENT_HEIGHT
 				&& newY <= HEIGHT) {
 			mouseOverChat = true;
+			mouseOverMinimap = false;
+		} else if (newX >= minimap.positionX
+				&& newX <= minimap.positionX + minimap.WIDTH
+				&& newY >= minimap.positionY
+				&& newY <= minimap.positionY + minimap.HEIGHT) {
+			mouseOverMinimap = true;
+			mouseOverChat = false;
 		} else {
 			mouseOverChat = false;
+			mouseOverMinimap = false;
 		}
+
+		// Im inventory view
+		if (newX > GAME_ENVIRONMENT_WIDTH
+				&& newX < GAME_ENVIRONMENT_WIDTH + INVENTORY_WIDTH
+				&& newY > ARMOR_HEIGHT
+				&& newY < ARMOR_HEIGHT + INVENTORY_HEIGHT) {
+
+		}
+
+		// Im Armor view
+		if (newX > GAME_ENVIRONMENT_WIDTH
+				&& newX < GAME_ENVIRONMENT_WIDTH + INVENTORY_WIDTH && newY > 0
+				&& newY < ARMOR_HEIGHT) {
+
+		}
+
 	}
 
 	@Override

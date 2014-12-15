@@ -21,7 +21,7 @@ public class Potion extends Element {
 	/* do not set variables to public -> breaks encapsulation ??? */
 	/* make variables public for code reduction */
 
-	public final String DESCRIPTION;
+	private final String itemDescription;
 	
 	/* used to determine which item can be found in which type of room -> see rooms config sheet */
 	public final ItemClasses ITEM_CLASS;
@@ -69,12 +69,20 @@ public class Potion extends Element {
 		
 		super(potionName, image);
 		
-		this.DESCRIPTION = description;
+		this.itemDescription = description;
+		itemDescription.replace("xxx", Float.toString(power));
+		itemDescription.replace("nnn", Integer.toString(duration));
+		
 		this.ITEM_CLASS = itemClass;
 		this.EFFECT = effect;
 		this.TARGET = target;
 		this.MODE = mode;
 		this.POWER = power;
 		this.DURATION = duration;
+	}
+	
+	public String getDescription() {
+		
+		return NAME + ":\n" + itemDescription;
 	}
 }
