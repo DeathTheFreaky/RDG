@@ -279,7 +279,9 @@ public class Game extends BasicGame {
 			throws SlickException {
 
 		gameEnvironment.draw(container, g);
-		minimap.draw(container, g);
+		if (!(fightInstance.isInFight())) {
+			minimap.draw(container, g);
+		}
 		chat.draw(container, g);
 		armorView.draw(container, g);
 		inventoryView.draw(container, g);
