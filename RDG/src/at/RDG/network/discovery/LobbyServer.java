@@ -56,12 +56,12 @@ public class LobbyServer extends Thread {
 		// creates a UID for the server so if the server responses on two
 		// different ips it can be identified as on.
 		MessageDigest md = null;
-		byte[] thedigest = null;
+		byte[] digest = null;
 		Date date = new Date();
 		md = MessageDigest.getInstance("MD5");
-		thedigest = md.digest((this.lobbyName + UUID.randomUUID() + date
+		digest = md.digest((this.lobbyName + UUID.randomUUID() + date
 				.toString()).getBytes(StandardCharsets.UTF_8));
-		this.UID = new String(thedigest);
+		this.UID = new String(digest);
 	}
 
 	/**
