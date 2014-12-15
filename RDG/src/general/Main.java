@@ -17,7 +17,7 @@ public class Main {
 
 		AppGameContainer app1 = new AppGameContainer(new Game("Battle Dungeon"));
 		app1.setDisplayMode(Game.WIDTH, Game.HEIGHT, false); // Breite, Höhe, ???
-		app1.setTargetFrameRate(60); // 60 Frames pro Sekunde
+		app1.setTargetFrameRate(30); // 60 Frames pro Sekunde
 		app1.setAlwaysRender(true); // Spiel wird auch ohne Fokus aktualisiert
 		app1.setShowFPS(false);
 		app1.start(); // startet die App

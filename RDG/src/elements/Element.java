@@ -141,5 +141,9 @@ public class Element {
 	public void delete() {
 		// Maybe we have to delete Elements
 	}
+	
+	public String getDescription() {
+		return "Not Set";
+	}
 
 }

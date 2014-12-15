@@ -27,7 +27,7 @@ public class Chat extends View {
 
 	/* Maximum for saved Messages and Message Length */
 	private final int MAXIMUM_MESSAGES = 7;
-	private final int MAXIMUM_LENGTH = 39;
+	private final int MAXIMUM_LENGTH = 34;
 
 	/* Input Field for typing messages */
 	private InputField input;
@@ -42,15 +42,17 @@ public class Chat extends View {
 	private int zeile = 0;
 
 	/* Different Colors */
-	Color textColor = new Color(0f, 0f, 0f);
-	Color backgroundColor = new Color(1f, 1f, 1f);
-	Color borderColor = new Color(0.2f, 0.2f, 0.2f);
+	private Color BLACK = new Color(0f, 0f, 0f);
+	private Color WHITE = new Color(1f, 1f, 1f);
+	private Color DARK_GREY = new Color(0.2f, 0.2f, 0.2f);
+	private Color TURQUIS = new Color(0.2f, 0.5f, 0.9f);
+	private Color BLUE = new Color(0f, 0f, 1f);
 
 	/* Chat Window Values */
 	private int positionX;
 	private int positionY;
 	private final int strokeSize = 5;
-	private final int timeSpace = 60;
+	private final int timeSpace = 68;
 	private final int inputFieldHeight = 20;
 	private final int inputFieldWidth = size.width - 3 * strokeSize - timeSpace;
 
@@ -137,8 +139,10 @@ public class Chat extends View {
 		positionX = origin.x * GameEnvironment.BLOCK_SIZE;
 		positionY = origin.y * GameEnvironment.BLOCK_SIZE;
 
-		hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-		minute = Calendar.getInstance().get(Calendar.MINUTE);
+		Calendar cal = Calendar.getInstance();
+
+		hour = cal.get(Calendar.HOUR_OF_DAY);
+		minute = cal.get(Calendar.MINUTE);
 
 		messages = new LinkedList<Message>();
 
@@ -146,24 +150,23 @@ public class Chat extends View {
 		 * print a welcoming message and use an instance of Calendar class to
 		 * get current time
 		 */
-		messages.add(new Message("New Game Started! Player vs. Opponent",
-				Calendar.getInstance()));
+		messages.add(new Message("New Game Started! Player vs. Opponent", cal));
 		/* print end of this game session */
 		/*
 		 * if game session overlaps a full hour, react accordingly -> use up
 		 * minutes until full hour is reached, increase hour, increase remaining
 		 * minutes starting form 0
 		 */
-		if (Calendar.getInstance().get(Calendar.MINUTE) >= 45) {
+		if (minute >= 45) {
 			messages.add(new Message(
 					"Instance ends at "
 							+ ((hour + 1) > 23 ? "00" : (hour + 1))
 							+ ":"
 							+ ((minute - 45) > 9 ? (minute - 45) : "0"
-									+ (minute - 45)), Calendar.getInstance()));
+									+ (minute - 45)), cal));
 		} else {
 			messages.add(new Message("Instance ends at " + hour + ":"
-					+ (minute + 15), Calendar.getInstance()));
+					+ (minute + 15), cal));
 		}
 
 		/* set first 4 messages to be shown */
@@ -180,7 +183,7 @@ public class Chat extends View {
 		TrueTypeFont ttf = new TrueTypeFont(font, true);
 
 		/* create an inputfield and clear it when message is sent */
-		input = new InputField(container, ttf, strokeSize*2 + timeSpace,
+		input = new InputField(container, ttf, strokeSize * 2 + timeSpace,
 				positionY + size.height - inputFieldHeight - strokeSize,
 				inputFieldWidth, inputFieldHeight) {
 			@Override
@@ -204,11 +207,11 @@ public class Chat extends View {
 
 	@Override
 	public void draw(GameContainer container, Graphics graphics) {
-		graphics.setColor(borderColor);
+		graphics.setColor(DARK_GREY);
 		graphics.fillRect(origin.x * GameEnvironment.BLOCK_SIZE, origin.y
 				* GameEnvironment.BLOCK_SIZE, size.width, size.height);
 
-		graphics.setColor(backgroundColor);
+		graphics.setColor(WHITE);
 		graphics.fillRect(positionX + strokeSize, positionY + strokeSize,
 				size.width - 2 * strokeSize, size.height - 3 * strokeSize
 						- inputFieldHeight);
@@ -216,10 +219,10 @@ public class Chat extends View {
 				- strokeSize - inputFieldHeight, inputFieldWidth,
 				inputFieldHeight);
 
-		graphics.setColor(new Color(0.2f, 0.5f, 0.9f));
+		graphics.setColor(TURQUIS);
 		input.render(container, graphics);
 
-		graphics.setColor(new Color(0f, 0f, 0f));
+		graphics.setColor(BLACK);
 		// graphics.setColor(new Color(0f, 0f, 0f));
 		int i = 0;
 		for (Message m : messages) {
@@ -236,20 +239,21 @@ public class Chat extends View {
 		}
 		zeile = 0;
 
-		graphics.setColor(new Color(0f, 0f, 1f));
+		graphics.setColor(BLUE);
 		graphics.fillRect(strokeSize, positionY + size.height
 				- inputFieldHeight - strokeSize, timeSpace, inputFieldHeight);
-		
-		graphics.setColor(new Color(0f, 0f, 0f));
-		graphics.drawString("<" + hour + ":"
+
+		graphics.setColor(BLACK);
+		graphics.drawString("<" + (hour>9?Integer.toString(hour):"0"+hour) + ":"
 				+ (minute > 9 ? minute : ("0" + minute)) + ">", strokeSize + 2,
 				positionY + size.height - inputFieldHeight - strokeSize);
 	}
 
 	@Override
 	public void update() {
-		hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-		minute = Calendar.getInstance().get(Calendar.MINUTE);
+		Calendar cal = Calendar.getInstance();
+		hour = cal.get(Calendar.HOUR_OF_DAY);
+		minute = cal.get(Calendar.MINUTE);
 	}
 
 	/**
