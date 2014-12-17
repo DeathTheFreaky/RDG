@@ -94,6 +94,9 @@ public class Fight extends View implements Runnable {
 	private Boolean humanFightSlave = false;
 	private Boolean humanFight = false; 
 	
+	/* fightCtr for increasing damage of monster's attack damage over time */
+	private float fightCtr = 0;
+	
 	/* since return type is not allowed */
 	
 	/* values manipulated by networking class */
@@ -353,6 +356,8 @@ public class Fight extends View implements Runnable {
 		
 		/* after a fight, reset the fighting instance's variables */
 		reset();
+		
+		fightCtr++;
 		
 		gameEnvironment.fightEnds(myLoser);
 	}
@@ -947,7 +952,9 @@ public class Fight extends View implements Runnable {
 				break;
 		}
 		
-		attributeDamage = defenderAttributeResult - 
+		float fightCtrMultiplier = 1 + 0.025f * fightCtr;
+		
+		attributeDamage = fightCtrMultiplier * defenderAttributeResult - 
 				(defenderAttributeResult 
 				* activeAttack.attributeDamageMultiplier
 				* Chances.randomFloat(activeAttack.statsLowMultiplier, activeAttack.statsHighMultiplier));
@@ -1219,10 +1226,11 @@ public class Fight extends View implements Runnable {
 		}
 		
 		float rawDamage = attack/defenseDivisor;
+		float fightCtrMultiplier = 1 + 0.025f * fightCtr;
 		
 		System.out.println("parry multiplier during attack is " + parryMultiplier);
 				
-		damage = parryMultiplier * rawDamage * Chances.randomFloat(activeAttack.statsLowMultiplier, activeAttack.statsHighMultiplier);
+		damage = fightCtrMultiplier * parryMultiplier * rawDamage * Chances.randomFloat(activeAttack.statsLowMultiplier, activeAttack.statsHighMultiplier);
 		
 		return damage;
 	}
