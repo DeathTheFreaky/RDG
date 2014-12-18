@@ -188,7 +188,8 @@ public class InventoryView extends View {
 	 * @param mouseY
 	 * @return
 	 */
-	public Element getItem(int mouseX, int mouseY, UsedClasses classname) {
+	public Element getItem(int mouseX, int mouseY, UsedClasses classname) {		
+		
 		if (mouseX > ORIGIN_X && mouseX < ORIGIN_X + size.width
 				&& mouseY > ORIGIN_Y && mouseY < ORIGIN_Y + size.height) {
 						
@@ -225,7 +226,7 @@ public class InventoryView extends View {
 			} 
 			
 			items.remove(x + y*4);
-			
+						
 			return e;
 		}
 		return null;

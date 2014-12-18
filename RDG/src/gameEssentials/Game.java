@@ -411,6 +411,8 @@ public class Game extends BasicGame {
 			if (!mouseOverMinimap) {
 				this.draggedItem = inventoryView.getItem(oldx, oldy,
 						UsedClasses.Equipment);
+				this.draggedItem = inventoryView.getItem(oldx, oldy,
+						UsedClasses.Potion);
 				if (draggedItem == null) {
 					this.draggedItem = armorView.getItem(oldx, oldy);
 				}

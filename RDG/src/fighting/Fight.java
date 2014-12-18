@@ -443,11 +443,13 @@ public class Fight extends View implements Runnable {
 			int firstAttackTemp =  determineFirstAttack();
 			
 			if (firstAttackTemp == 1) {
+				System.err.println("firstattack on player");
 				creature1 = this.player;
 				creature2 = this.enemy;
 				this.attackScreen = AttackScreens.MAIN;
 			}
 			else if (firstAttackTemp == 2) {
+				System.err.println("firstattack on enemy");
 				creature1 = this.enemy;
 				creature2 = this.player;
 				this.attackScreen = AttackScreens.WAITING;
@@ -573,6 +575,7 @@ public class Fight extends View implements Runnable {
 				
 				/* only switch sets if this is the player's turn */
 				if (creature1 == this.player) {
+					System.out.println("Switching sets");
 					armorView.switchSet();
 					sendStats();
 				}
@@ -1083,6 +1086,8 @@ public class Fight extends View implements Runnable {
 		/* the initial speed - momentum  - does not consider armor -> armor is considered for hit probability */
 		float attackerSpeed = calcCreatureSpeed(attacker) * Chances.randomFloat(speedRandLow, speedRandHigh);
 		float defenderSpeed = calcCreatureSpeed(defender) * Chances.randomFloat(speedRandLow, speedRandHigh);
+		
+		System.err.println("attackerSpeed: " + attackerSpeed + ", defenderSpeed: " + defenderSpeed);
 		
 		if (attackerSpeed > defenderSpeed) {
 			attackerSucceeds = true;

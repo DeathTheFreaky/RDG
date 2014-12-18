@@ -395,11 +395,14 @@ public class ArmorView extends View {
 	 * @param set
 	 */
 	public void switchSet() {
+		System.out.println(this.set);
+		System.out.println("Set switch");
 		if (set) {
 			this.set = false;
 		} else {
 			this.set = true;
 		}
+		System.out.println(this.set);
 	}
 
 	/**
@@ -1134,6 +1137,13 @@ public class ArmorView extends View {
 						}
 						if (att == ArmorStatsAttributes.ARMOR) {
 							value += ((Armament) e).ARMOR;
+						}
+					}
+				}
+				if (e instanceof Weapon) {
+					if (mode == ArmorStatsMode.SUM) {
+						if (att == ArmorStatsAttributes.ARMOR) {
+							value += ((Weapon) e).DEFENSE;
 						}
 					}
 				}
