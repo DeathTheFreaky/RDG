@@ -231,9 +231,6 @@ public class Game extends BasicGame {
 		chat = new Chat("Chat", chatOrigin, new Dimension(CHAT_WIDTH,
 				CHAT_HEIGHT), container);
 
-		armorView = new ArmorView("ArmorInventory", armorViewOrigin,
-				new Dimension(ARMOR_WIDTH, ARMOR_HEIGHT));
-
 		inventoryView = new InventoryView("Inventory", inventoryViewOrigin,
 				new Dimension(INVENTORY_WIDTH, INVENTORY_HEIGHT));
 
