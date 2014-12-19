@@ -1253,11 +1253,11 @@ public class Fight extends View implements Runnable {
 
 		switch(activeAttack.effect) {
 			case HP:
-				float hp = defender.getHp() - attributeDamage;
+				/*float hp = defender.getHp() - attributeDamage;
 				if (hp < 0) {
 					hp = 0;
 				}
-				defender.setHp(hp);
+				defender.setHp(hp);*/
 				break;
 			case ACCURACY:
 				float accuracy = defender.getAccuracy() - attributeDamage;
