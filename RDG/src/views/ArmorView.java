@@ -1120,7 +1120,7 @@ public class ArmorView extends View {
 		
 		float value = 0f;
 		float subvalue = 0f;
-		int itemCtr = 1; //needed for average calculation
+		int itemCtr = 0; //needed for average calculation
 		Collection<Equipment> myEquipment = null;
 		
 		if (set) {
@@ -1160,7 +1160,7 @@ public class ArmorView extends View {
 					}
 					if (mode == ArmorStatsMode.AVERAGE) {
 						if (att == ArmorStatsAttributes.ACCURACY) {
-							value = (value + ((Weapon) e).ACCURACY)/itemCtr;
+							value = value + ((Weapon) e).ACCURACY;
 							itemCtr++;
 						}
 					}
@@ -1180,6 +1180,11 @@ public class ArmorView extends View {
 					value = value * armamentBonus();
 				}
 			}
+		}
+		
+		/* calculate average */
+		if (itemCtr > 0 && mode == ArmorStatsMode.AVERAGE) {
+			value = value/itemCtr;
 		}
 		
 		value = value + subvalue;
