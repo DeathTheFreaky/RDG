@@ -1011,11 +1011,11 @@ public class Fight extends View implements Runnable {
 		
 		/* actual calculated malus from equipped armaments to be substracted from Player's speed */
 		float playerArmorSpeedMalus;
-		float armorSpeedMalusMultiplier = 0.5f;
+		float armorSpeedMalusMultiplier = 0.25f;
 		
 		/* actual calculated malus multiplier from equipped weapons to be substracted from Player's speed */
-		float playerWeaponSpeedMalusMult;
-		float weaponSpeedMult = 0.5f; // for balancing
+		float playerWeaponSpeedMalus;
+		float weaponSpeedMult = 0.25f; // for balancing
 		
 		/* calculated from armor view */
 		float playerArmorSpeedMalusSum = 0;
@@ -1030,7 +1030,7 @@ public class Fight extends View implements Runnable {
 		if (creature == this.player) {
 			
 			playerArmorSpeedMalusSum = armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.SPEED);
-			playerWeaponSpeedMalusMax = armorView.getStats(ArmorStatsTypes.WEAPONS, ArmorStatsMode.MIN, ArmorStatsAttributes.SPEED);
+			playerWeaponSpeedMalusMax = armorView.getStats(ArmorStatsTypes.WEAPONS, ArmorStatsMode.MAX, ArmorStatsAttributes.SPEED);
 		}
 		
 		/* get speed of other player */
@@ -1045,22 +1045,17 @@ public class Fight extends View implements Runnable {
 		}
 		
 		if (playerArmorSpeedMalusSum >= 1) {
-			playerArmorSpeedMalus = creature.getSpeed() / (armorSpeedMalusMultiplier * playerArmorSpeedMalusSum);
+			playerArmorSpeedMalus = creature.getSpeed() / 100 * playerArmorSpeedMalusSum * armorSpeedMalusMultiplier;
 		}
 		else {
 			playerArmorSpeedMalus = 0;
 		}
 		
 		/* playerWeaponSpeedMalusMax means that the lower the speed value of a weapon, the higher the malus */
-		if (playerWeaponSpeedMalusMax >= 1) {
-			playerWeaponSpeedMalusMult = creature.getSpeed() * playerWeaponSpeedMalusMax/100 * weaponSpeedMult;
-		}
-		else {
-			playerWeaponSpeedMalusMult = creature.getSpeed() * 80/100 * weaponSpeedMult; //80 -> fists: not sure if those are actually equipped
-		}
-		
+		playerWeaponSpeedMalus = creature.getSpeed() / 100 * playerWeaponSpeedMalusMax * weaponSpeedMult;
+
 		/* the initial speed - momentum  - does not consider armor -> armor is considered for hit probability */
-		speed = (creature.getSpeed() - playerArmorSpeedMalus) * playerWeaponSpeedMalusMult;
+		speed = creature.getSpeed() - playerArmorSpeedMalus - playerWeaponSpeedMalus;
 		
 		return speed;
 	}

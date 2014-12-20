@@ -40,7 +40,7 @@ public class Enums {
 	public enum AttackOptions{OPTION1, OPTION2, OPTION3, OPTION4};
 	public enum ArmorStatsAttributes{ARMOR, SPEED, ACCURACY, ATTACK};
 	public enum ArmorStatsTypes{ARMAMENT, WEAPONS};
-	public enum ArmorStatsMode{SUM, AVERAGE, MIN};
+	public enum ArmorStatsMode{SUM, AVERAGE, MIN, MAX};
 	
 	public enum ImageSize {d32x32, d20x20}
 	public enum MessageType {CHAT, PLAYERPOSITION, MAP, GENERAL, NETWORK, FIGHT, ITEMPICKUP}

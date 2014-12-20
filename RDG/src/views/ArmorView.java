@@ -1151,9 +1151,9 @@ public class ArmorView extends View {
 			}
 			if (type == ArmorStatsTypes.WEAPONS) {
 				if (e instanceof Weapon) {
-					if (mode == ArmorStatsMode.MIN) {
+					if (mode == ArmorStatsMode.MAX) {
 						if (att == ArmorStatsAttributes.SPEED) {
-							if (((Weapon) e).SPEED < value && ((Weapon) e).SPEED > 0) {
+							if ((100 - ((Weapon) e).SPEED) > value) {
 								value = ((Weapon) e).SPEED;
 							}
 						}
