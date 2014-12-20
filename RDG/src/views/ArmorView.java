@@ -1119,6 +1119,7 @@ public class ArmorView extends View {
 	public float getStats(ArmorStatsTypes type, ArmorStatsMode mode, ArmorStatsAttributes att) {
 		
 		float value = 0f;
+		float subvalue = 0f;
 		int itemCtr = 1; //needed for average calculation
 		Collection<Equipment> myEquipment = null;
 		
@@ -1143,7 +1144,7 @@ public class ArmorView extends View {
 				if (e instanceof Weapon) {
 					if (mode == ArmorStatsMode.SUM) {
 						if (att == ArmorStatsAttributes.ARMOR) {
-							value += ((Weapon) e).DEFENSE;
+							subvalue += ((Weapon) e).DEFENSE;
 						}
 					}
 				}
@@ -1180,6 +1181,8 @@ public class ArmorView extends View {
 				}
 			}
 		}
+		
+		value = value + subvalue;
 		
 		return value;
 	}	
