@@ -1075,12 +1075,13 @@ public class Fight extends View implements Runnable {
 		boolean attackerSucceeds = false;
 		
 		/* balancing values */
-		float speedRandLow = 0.0f;
+		float speedRandLow = 0.5f;
 		float speedRandHigh = 1.0f;
-		
+		float speedBase = 50.0f;
+
 		/* the initial speed - momentum  - does not consider armor -> armor is considered for hit probability */
-		float attackerSpeed = calcCreatureSpeed(attacker) * Chances.randomFloat(speedRandLow, speedRandHigh);
-		float defenderSpeed = calcCreatureSpeed(defender) * Chances.randomFloat(speedRandLow, speedRandHigh);
+		float attackerSpeed = (speedBase + calcCreatureSpeed(attacker)) * Chances.randomFloat(speedRandLow, speedRandHigh);
+		float defenderSpeed = (speedBase + calcCreatureSpeed(defender)) * Chances.randomFloat(speedRandLow, speedRandHigh);
 		
 		System.err.println("attackerSpeed: " + attackerSpeed + ", defenderSpeed: " + defenderSpeed);
 		
