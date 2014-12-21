@@ -106,7 +106,7 @@ public class Player extends Creature {
 		 * at first create player as player1 - later check if it is player 1 or
 		 * 2 and change type accordingly
 		 */
-		super(creatureName, image, type, 100, 10, 10, 10);
+		super(creatureName, image, type, 50, 25, 25, 25);
 
 		this.originOfGameEnvironment = originOfGameEnvironment;
 

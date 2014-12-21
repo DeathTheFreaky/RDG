@@ -95,7 +95,7 @@ public class Fight extends View implements Runnable {
 	private Boolean humanFight = false; 
 	
 	/* fightCtr for increasing damage of monster's attack damage over time */
-	private float fightCtr = 0;
+	private float finishedFights = 0;
 	
 	/* since return type is not allowed */
 	
@@ -357,7 +357,7 @@ public class Fight extends View implements Runnable {
 		/* after a fight, reset the fighting instance's variables */
 		reset();
 		
-		fightCtr++;
+		finishedFights++;
 		
 		gameEnvironment.fightEnds(myLoser);
 	}
@@ -955,7 +955,7 @@ public class Fight extends View implements Runnable {
 				break;
 		}
 		
-		float fightCtrMultiplier = 1 + 0.025f * fightCtr;
+		float fightCtrMultiplier = 1 + 0.025f * finishedFights;
 		
 		attributeDamage = fightCtrMultiplier * defenderAttributeResult - 
 				(defenderAttributeResult 
@@ -975,7 +975,7 @@ public class Fight extends View implements Runnable {
 		System.out.println("calcCreatureAccuracy");
 
 		float accuracy = 0;
-		float accuracyMultiplier = 0.5f;
+		float accuracyMultiplier = 4.0f;
 		
 		/* get accuracy of a monster */
 		if (creature instanceof Monster) {
@@ -984,7 +984,7 @@ public class Fight extends View implements Runnable {
 		
 		/* get accuracy of local player */
 		if (creature == this.player) {
-			accuracy = creature.getAccuracy() + accuracyMultiplier * armorView.getStats(ArmorStatsTypes.WEAPONS, ArmorStatsMode.AVERAGE, ArmorStatsAttributes.ACCURACY);
+			accuracy = creature.getAccuracy() / 100 * armorView.getStats(ArmorStatsTypes.WEAPONS, ArmorStatsMode.AVERAGE, ArmorStatsAttributes.ACCURACY) * accuracyMultiplier;
 		} 
 		
 		/* get the accuracy of the other player */
@@ -1078,10 +1078,21 @@ public class Fight extends View implements Runnable {
 		float speedRandLow = 0.5f;
 		float speedRandHigh = 1.0f;
 		float speedBase = 50.0f;
-
+		float finishedFightsDivisor = 25.0f;
+		float attackerSpeedTemp = attacker.getSpeed();
+		float defenderSpeedTemp = defender.getSpeed();
+		
+		/* include already finished fights to make enemies stronger */
+		if (defender instanceof Monster) {
+			defenderSpeedTemp = defenderSpeedTemp * (1 + finishedFights/finishedFightsDivisor);
+		}
+		if (attacker instanceof Monster) {
+			attackerSpeedTemp = attackerSpeedTemp * (1 + finishedFights/finishedFightsDivisor);
+		}
+		
 		/* the initial speed - momentum  - does not consider armor -> armor is considered for hit probability */
-		float attackerSpeed = (speedBase + calcCreatureSpeed(attacker)) * Chances.randomFloat(speedRandLow, speedRandHigh);
-		float defenderSpeed = (speedBase + calcCreatureSpeed(defender)) * Chances.randomFloat(speedRandLow, speedRandHigh);
+		float attackerSpeed = attackerSpeedTemp + (calcCreatureSpeed(attacker)/attackerSpeedTemp * speedBase) * Chances.randomFloat(speedRandLow, speedRandHigh);
+		float defenderSpeed = defenderSpeedTemp + (calcCreatureSpeed(defender)/defenderSpeedTemp * speedBase) * Chances.randomFloat(speedRandLow, speedRandHigh);
 		
 		System.err.println("attackerSpeed: " + attackerSpeed + ", defenderSpeed: " + defenderSpeed);
 		
@@ -1143,7 +1154,7 @@ public class Fight extends View implements Runnable {
 		System.out.println("calcHitSuccess");
 
 		float randAccuracyLow = 0.5f;
-		float randAccuracyHigh = 1.0f;
+		float randAccuracyHigh = 1.5f;
 		
 		/* speed value will probably be quite a lot lower than accuracy, because for accuracy,
 		 * the average of equipped weapons accuracy adds to the player's accuracy whereas for speed,
@@ -1227,7 +1238,7 @@ public class Fight extends View implements Runnable {
 		}
 		
 		float rawDamage = attack/defenseDivisor;
-		float fightCtrMultiplier = 1 + 0.025f * fightCtr;
+		float fightCtrMultiplier = 1 + 0.025f * finishedFights;
 		
 		System.out.println("parry multiplier during attack is " + parryMultiplier);
 				
