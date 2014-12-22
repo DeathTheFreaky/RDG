@@ -95,7 +95,7 @@ public class Fight extends View implements Runnable {
 	private Boolean humanFight = false; 
 	
 	/* fightCtr for increasing damage of monster's attack damage over time */
-	private float finishedFights = 0;
+	private float finishedFights = 0; //only increase when fight is won
 	
 	/* since return type is not allowed */
 	
@@ -599,7 +599,7 @@ public class Fight extends View implements Runnable {
 			case PARRY:
 				
 				/* when a player decides to parry, if successful, he deals x times the damage of a normal torso attack */
-				parryMultiplier = 2.0f;
+				parryMultiplier = 1.5f;
 				if (parrySuccess(creature1, creature2) == true) {
 					System.out.println("CARRYING OUT AN ATTACK AFTER SUCCESSFUL PARRY");
 					activeAttack = attacks.get(Attacks.TORSO);	// muss man noch rausfinden was am besten is (ich war ja für head aber flo für torso xD)

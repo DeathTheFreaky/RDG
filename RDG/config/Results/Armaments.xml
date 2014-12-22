@@ -7,7 +7,7 @@
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>20</Armor>
-		<Speed>13.3333333333333</Speed>
+		<Speed>6.66666666666667</Speed>
 		<Type>leather</Type>
 		<Bonus>0.1</Bonus>
 		<Image>armaments/leather_helmet.png</Image>
@@ -19,7 +19,7 @@
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>30</Armor>
-		<Speed>20</Speed>
+		<Speed>10</Speed>
 		<Type>leather</Type>
 		<Bonus>0.1</Bonus>
 		<Image>armaments/leather_harness.png</Image>
@@ -31,7 +31,7 @@
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>10</Armor>
-		<Speed>6.66666666666667</Speed>
+		<Speed>5</Speed>
 		<Type>leather</Type>
 		<Bonus>0.1</Bonus>
 		<Image>armaments/leather_gauntlets.png</Image>
@@ -43,7 +43,7 @@
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>15</Armor>
-		<Speed>10</Speed>
+		<Speed>5</Speed>
 		<Type>leather</Type>
 		<Bonus>0.1</Bonus>
 		<Image>armaments/leather_cuisse.png</Image>
@@ -55,7 +55,7 @@
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>10</Armor>
-		<Speed>6.66666666666667</Speed>
+		<Speed>3.33333333333333</Speed>
 		<Type>leather</Type>
 		<Bonus>0.1</Bonus>
 		<Image>armaments/leather_boots.png</Image>
@@ -67,7 +67,7 @@
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>26.6666666666667</Armor>
-		<Speed>16.6666666666667</Speed>
+		<Speed>13.3333333333333</Speed>
 		<Type>habergeon</Type>
 		<Bonus>0.15</Bonus>
 		<Image>armaments/habergeon_helmet.png</Image>
@@ -79,7 +79,7 @@
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>40</Armor>
-		<Speed>25</Speed>
+		<Speed>20</Speed>
 		<Type>habergeon</Type>
 		<Bonus>0.15</Bonus>
 		<Image>armaments/habergeon_harness.png</Image>
@@ -91,7 +91,7 @@
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>13.3333333333333</Armor>
-		<Speed>8.33333333333333</Speed>
+		<Speed>6.66666666666667</Speed>
 		<Type>habergeon</Type>
 		<Bonus>0.15</Bonus>
 		<Image>armaments/habergeon_gauntlets.png</Image>
@@ -103,7 +103,7 @@
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>20</Armor>
-		<Speed>12.5</Speed>
+		<Speed>10</Speed>
 		<Type>habergeon</Type>
 		<Bonus>0.15</Bonus>
 		<Image>armaments/habergeon_cuisse.png</Image>
@@ -115,7 +115,7 @@
 		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
 		<Armor>13.3333333333333</Armor>
-		<Speed>8.33333333333333</Speed>
+		<Speed>6.66666666666667</Speed>
 		<Type>habergeon</Type>
 		<Bonus>0.15</Bonus>
 		<Image>armaments/habergeon_boots.png</Image>
