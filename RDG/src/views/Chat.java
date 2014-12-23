@@ -204,9 +204,13 @@ public class Chat extends View {
 		input.setTextColor(new Color(0f, 0f, 0f));
 		input.setMaxLength(MAXIMUM_LENGTH);
 	}
-
+	
+	 /*
+	 * Synchronzied to avoid concurrent modification exception caused by 
+	 * modifiying list form two threads at same time.
+	 */
 	@Override
-	public void draw(GameContainer container, Graphics graphics) {
+	public synchronized void draw(GameContainer container, Graphics graphics) {
 		graphics.setColor(DARK_GREY);
 		graphics.fillRect(origin.x * GameEnvironment.BLOCK_SIZE, origin.y
 				* GameEnvironment.BLOCK_SIZE, size.width, size.height);
@@ -260,11 +264,19 @@ public class Chat extends View {
 	 * Adds a new message to the list of message, delete oldest message if more
 	 * than 7 messages are present.<br>
 	 * 
-	 * Only the first 4 messages will be shown and rendered on the screen.
+	 * Only the first 4 messages will be shown and rendered on the screen.<br>
+	 * Synchronzied to avoid concurrent modification exception caused by 
+	 * modifiying list form two threads at same time.
 	 * 
 	 * @param message
 	 */
-	private void newMessage(Message message) {
+	public synchronized void newMessage(Message message) {
+		message.setTime(hour, minute); //set time to chat time - useful when adding message from other computer to avoid time sync
+		
+		if (message.getChannel() == Channels.PUBLIC) {
+			//send message to other computer
+		}
+		
 		messages.add(message);
 		if (messages.size() > 7) {
 			messages.removeFirst();

@@ -211,17 +211,17 @@ public class Chances {
 		
 		float randFloat = r.nextFloat();
 		
-		if (randFloat < 0.2) {
+		if (randFloat < 0.5) {
 			randAttackType = Attacks.TORSO;
-		} else if (randFloat >= 0.2 && randFloat < 0.4) {
+		} else if (randFloat >= 0.5 && randFloat < 0.66) {
 			randAttackType = Attacks.HEAD;
-		} else if (randFloat >= 0.4 && randFloat < 0.6) {
+		} else if (randFloat >= 0.66 && randFloat < 0.83) {
 			randAttackType = Attacks.ARMS;
-		} else if (randFloat >= 0.6 && randFloat < 0.8) {
+		} else if (randFloat >= 0.83 && randFloat < 1) {
 			randAttackType = Attacks.LEGS;
-		} else if (randFloat >= 0.8 && randFloat < 1) {
+		}/* else if (randFloat >= 0.8 && randFloat < 1) {
 			randAttackType = Attacks.PARRY;
-		}
+		}*/
 		
 		return randAttackType;
 	}

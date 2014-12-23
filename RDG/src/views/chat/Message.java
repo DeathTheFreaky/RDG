@@ -31,6 +31,16 @@ public class Message {
 	public Message(String message, Calendar time) {
 		this(message, time, Channels.PRIVATE);
 	}
+	
+	/**Constructs a Message.<br>
+	 * Time will not be set - use only when using Chat.newMessage() which adds time later on!
+	 * @param message
+	 * @param channel
+	 */
+	public Message(String message, Channels channel) {
+		this.message = message;
+		this.channel = channel;
+	}
 
 	/**
 	 * Constructs a Message.
@@ -59,5 +69,13 @@ public class Message {
 	 */
 	public Channels getChannel() {
 		return this.channel;
+	}
+	
+	/**Used by Chat.newMessage() to set time 
+	 * @param time
+	 */
+	public void setTime(int hour, int minute) {
+		this.hour = hour;
+		this.minute = minute;
 	}
 }

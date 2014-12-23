@@ -217,26 +217,23 @@ public class Game extends BasicGame {
 					gameEnvironmentOrigin, playerType);
 		}
 		
+		/* Load the chat */
+		chat = new Chat("Chat", chatOrigin, new Dimension(CHAT_WIDTH,
+				CHAT_HEIGHT), container);
+		
 		/* Load Views - Dimension is specified in pixels */
 		armorView = new ArmorView("ArmorInventory", armorViewOrigin,
 				new Dimension(ARMOR_WIDTH, ARMOR_HEIGHT));
 		
 		gameEnvironment = new GameEnvironment("GameEnvironment",
 				gameEnvironmentOrigin, new Dimension(GAME_ENVIRONMENT_WIDTH,
-						GAME_ENVIRONMENT_HEIGHT), player, armorView, this);
+						GAME_ENVIRONMENT_HEIGHT), player, armorView, this, chat);
 
 		minimap = new Minimap("Minimap", gameEnvironmentOrigin.x
 				+ minimapOrigin.x, gameEnvironmentOrigin.y + minimapOrigin.y);
 
-		chat = new Chat("Chat", chatOrigin, new Dimension(CHAT_WIDTH,
-				CHAT_HEIGHT), container);
-
 		inventoryView = new InventoryView("Inventory", inventoryViewOrigin,
 				new Dimension(INVENTORY_WIDTH, INVENTORY_HEIGHT));
-
-		/* Load the chat */
-		chat = new Chat("Chat", chatOrigin, new Dimension(CHAT_WIDTH,
-				CHAT_HEIGHT), container);
 		
 		/* Load Map and place the player */
 		map = new Map().getInstance();

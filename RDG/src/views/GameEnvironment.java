@@ -37,13 +37,16 @@ public class GameEnvironment extends View {
 	private Element[][] overlayScope;
 	
 	/* ArmorView is needed to interact with armory items */
-	ArmorView armorView = null;
+	private ArmorView armorView = null;
+	
+	/* Chat class used to display messages */
+	private Chat chat = null;
 	
 	/* instance of a Fight - to be loaded into fight thread */
 	private Fight fightInstance = null;
 	
 	/* the base Game class */
-	Game game;
+	private Game game;
 
 	/**
 	 * Constructs a GameEnvironment passing its origin as single x and y
@@ -60,8 +63,8 @@ public class GameEnvironment extends View {
 	 * @see GameEnvironment
 	 */
 	public GameEnvironment(String contextName, int originX, int originY,
-			Player player, ArmorView armorView, Game game) throws SlickException {
-		this(contextName, new Point(originX, originY), player, armorView, game);
+			Player player, ArmorView armorView, Game game, Chat chat) throws SlickException {
+		this(contextName, new Point(originX, originY), player, armorView, game, chat);
 	}
 
 	/**
@@ -77,9 +80,9 @@ public class GameEnvironment extends View {
 	 * @throws SlickException
 	 * @see GameEnvironment
 	 */
-	public GameEnvironment(String contextName, Point origin, Player player, ArmorView armorView, Game game)
+	public GameEnvironment(String contextName, Point origin, Player player, ArmorView armorView, Game game, Chat chat)
 			throws SlickException {
-		this(contextName, origin, new Dimension(640, 480), player, armorView, game);
+		this(contextName, origin, new Dimension(640, 480), player, armorView, game, chat);
 	}
 
 	/**
@@ -98,9 +101,9 @@ public class GameEnvironment extends View {
 	 * @see GameEnvironment
 	 */
 	public GameEnvironment(String contextName, int originX, int originY,
-			int width, int height, Player player, ArmorView armorView, Game game) throws SlickException {
+			int width, int height, Player player, ArmorView armorView, Game game, Chat chat) throws SlickException {
 		this(contextName, new Point(originX, originY), new Dimension(width,
-				height), player, armorView, game);
+				height), player, armorView, game, chat);
 	}
 
 	/**
@@ -117,7 +120,7 @@ public class GameEnvironment extends View {
 	 * @see GameEnvironment
 	 */
 	public GameEnvironment(String contextName, Point origin, Dimension size,
-			Player player, ArmorView armorView, Game game) throws SlickException {
+			Player player, ArmorView armorView, Game game, Chat chat) throws SlickException {
 		super(contextName, origin, size);
 		
 		this.game = game;
@@ -138,7 +141,9 @@ public class GameEnvironment extends View {
 		downright.y = (int) size.height / BLOCK_SIZE;
 
 		this.armorView = armorView;
-		this.fightInstance = new Fight(this.origin, this.size, this, player, armorView);
+		this.fightInstance = new Fight(this.origin, this.size, this, player, armorView, chat);
+		
+		this.chat = chat;
 		
 		update();
 	}
