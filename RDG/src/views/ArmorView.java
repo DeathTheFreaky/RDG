@@ -1111,7 +1111,6 @@ public class ArmorView extends View {
 	}
 	
 	/**Returns sum of all values for a specific armament attribute of all equipped armaments.<br>
-	 * NOT YET COMPLETELY IMPLEMENTED!
 	 * 
 	 * @param speed
 	 * @return
