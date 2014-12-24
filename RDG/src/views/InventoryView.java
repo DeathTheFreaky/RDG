@@ -130,7 +130,7 @@ public class InventoryView extends View {
 		potions = new LinkedList<Potion>();*/
 
 		/* for testing */
-		items.add(new Weapon("Dolch", resources.IMAGES.get("M_Weapon"), 0f, 0f,
+		/*items.add(new Weapon("Dolch", resources.IMAGES.get("M_Weapon"), 0f, 0f,
 				0f, 0f, ItemClasses.MEDIUM, WeaponTypes.SINGLEHAND, 0));
 		items.add(new Weapon("Schwert", resources.IMAGES.get("S_Weapon"), 0f,
 				0f, 0f, 0f, ItemClasses.MEDIUM, WeaponTypes.SINGLEHAND, 0));
@@ -149,7 +149,7 @@ public class InventoryView extends View {
 				Armor.FEET));
 		items.add(new Armament("Legs", resources.IMAGES.get("Legs"),
 				"dont know what type is for", ItemClasses.MEDIUM, 0f, 0f, 0f,
-				Armor.LEGS));
+				Armor.LEGS));*/
 		/* testing */
 	}
 
