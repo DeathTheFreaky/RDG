@@ -4,12 +4,12 @@
 		<Name>Rat</Name>
 		<Level>easy</Level>
 		<Class_Multiplier>1</Class_Multiplier>
-		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<HP>25</HP>
 		<Strength>35</Strength>
 		<Speed>70</Speed>
-		<Accuracy>45</Accuracy>
+		<Accuracy>65</Accuracy>
 		<Kill_Bonus_Type>strength</Kill_Bonus_Type>
 		<Kill_Bonus_Low>2</Kill_Bonus_Low>
 		<Kill_Bonus_High>3</Kill_Bonus_High>
@@ -19,12 +19,12 @@
 		<Name>Spider</Name>
 		<Level>easy</Level>
 		<Class_Multiplier>1</Class_Multiplier>
-		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<HP>30</HP>
 		<Strength>30</Strength>
 		<Speed>60</Speed>
-		<Accuracy>65</Accuracy>
+		<Accuracy>80</Accuracy>
 		<Kill_Bonus_Type>accuracy</Kill_Bonus_Type>
 		<Kill_Bonus_Low>1</Kill_Bonus_Low>
 		<Kill_Bonus_High>3</Kill_Bonus_High>
@@ -34,12 +34,12 @@
 		<Name>Frog</Name>
 		<Level>easy</Level>
 		<Class_Multiplier>1</Class_Multiplier>
-		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<HP>20</HP>
 		<Strength>20</Strength>
 		<Speed>65</Speed>
-		<Accuracy>55</Accuracy>
+		<Accuracy>75</Accuracy>
 		<Kill_Bonus_Type>accuracy</Kill_Bonus_Type>
 		<Kill_Bonus_Low>1</Kill_Bonus_Low>
 		<Kill_Bonus_High>3</Kill_Bonus_High>
@@ -49,12 +49,12 @@
 		<Name>Bat</Name>
 		<Level>easy</Level>
 		<Class_Multiplier>1</Class_Multiplier>
-		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<HP>30</HP>
 		<Strength>25</Strength>
 		<Speed>80</Speed>
-		<Accuracy>50</Accuracy>
+		<Accuracy>70</Accuracy>
 		<Kill_Bonus_Type>speed</Kill_Bonus_Type>
 		<Kill_Bonus_Low>1</Kill_Bonus_Low>
 		<Kill_Bonus_High>5</Kill_Bonus_High>
@@ -64,12 +64,12 @@
 		<Name>Salamander</Name>
 		<Level>easy</Level>
 		<Class_Multiplier>1</Class_Multiplier>
-		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<HP>20</HP>
 		<Strength>30</Strength>
 		<Speed>75</Speed>
-		<Accuracy>55</Accuracy>
+		<Accuracy>75</Accuracy>
 		<Kill_Bonus_Type>strength</Kill_Bonus_Type>
 		<Kill_Bonus_Low>1</Kill_Bonus_Low>
 		<Kill_Bonus_High>3</Kill_Bonus_High>
@@ -79,8 +79,8 @@
 		<Name>Goblin</Name>
 		<Level>normal</Level>
 		<Class_Multiplier>1</Class_Multiplier>
-		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<HP>35</HP>
 		<Strength>45</Strength>
 		<Speed>55</Speed>
@@ -94,8 +94,8 @@
 		<Name>Gremlin</Name>
 		<Level>normal</Level>
 		<Class_Multiplier>1</Class_Multiplier>
-		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<HP>40</HP>
 		<Strength>55</Strength>
 		<Speed>40</Speed>
@@ -109,12 +109,12 @@
 		<Name>Ghost</Name>
 		<Level>normal</Level>
 		<Class_Multiplier>1</Class_Multiplier>
-		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<HP>45</HP>
 		<Strength>60</Strength>
 		<Speed>45</Speed>
-		<Accuracy>20</Accuracy>
+		<Accuracy>55</Accuracy>
 		<Kill_Bonus_Type>speed</Kill_Bonus_Type>
 		<Kill_Bonus_Low>3</Kill_Bonus_Low>
 		<Kill_Bonus_High>5</Kill_Bonus_High>
@@ -124,12 +124,12 @@
 		<Name>Zombie</Name>
 		<Level>normal</Level>
 		<Class_Multiplier>1</Class_Multiplier>
-		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<HP>55</HP>
 		<Strength>55</Strength>
 		<Speed>30</Speed>
-		<Accuracy>30</Accuracy>
+		<Accuracy>45</Accuracy>
 		<Kill_Bonus_Type>strength</Kill_Bonus_Type>
 		<Kill_Bonus_Low>5</Kill_Bonus_Low>
 		<Kill_Bonus_High>10</Kill_Bonus_High>
@@ -139,8 +139,8 @@
 		<Name>Ogre</Name>
 		<Level>hard</Level>
 		<Class_Multiplier>1</Class_Multiplier>
-		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<HP>60</HP>
 		<Strength>90</Strength>
 		<Speed>15</Speed>
@@ -154,8 +154,8 @@
 		<Name>Giant</Name>
 		<Level>hard</Level>
 		<Class_Multiplier>1</Class_Multiplier>
-		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<HP>80</HP>
 		<Strength>75</Strength>
 		<Speed>20</Speed>
@@ -169,8 +169,8 @@
 		<Name>Cyclops</Name>
 		<Level>hard</Level>
 		<Class_Multiplier>1</Class_Multiplier>
-		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<HP>70</HP>
 		<Strength>80</Strength>
 		<Speed>25</Speed>

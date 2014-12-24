@@ -1072,7 +1072,7 @@ public class Fight extends View implements Runnable {
 	private float calcCreatureAccuracy(Creature creature) throws InterruptedException {
 	
 		/* constants */
-		float accuracyMultiplier = 4.0f;
+		float accuracyMultiplier = 2.65f;
 
 		/* results */
 		float accuracy;
