@@ -1158,6 +1158,7 @@ public class ArmorView extends View {
 						}
 					}
 					if (mode == ArmorStatsMode.AVERAGE) {
+						System.out.println(e.NAME);
 						if (att == ArmorStatsAttributes.ACCURACY) {
 							value = value + ((Weapon) e).ACCURACY;
 							itemCtr++;

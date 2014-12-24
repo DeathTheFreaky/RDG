@@ -6,9 +6,9 @@
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
-		<Attack>5</Attack>
+		<Attack>4</Attack>
 		<Speed>80</Speed>
-		<Accuracy>80</Accuracy>
+		<Accuracy>85</Accuracy>
 		<Defence>0</Defence>
 		<Slots>1</Slots>
 		<Max>2</Max>
@@ -21,9 +21,9 @@
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
-		<Attack>10</Attack>
+		<Attack>8</Attack>
 		<Speed>70</Speed>
-		<Accuracy>75</Accuracy>
+		<Accuracy>80</Accuracy>
 		<Defence>0</Defence>
 		<Slots>1</Slots>
 		<Max>2</Max>
@@ -36,7 +36,7 @@
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
-		<Attack>30</Attack>
+		<Attack>24</Attack>
 		<Speed>40</Speed>
 		<Accuracy>60</Accuracy>
 		<Defence>0</Defence>
@@ -51,7 +51,7 @@
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
-		<Attack>20</Attack>
+		<Attack>16</Attack>
 		<Speed>60</Speed>
 		<Accuracy>70</Accuracy>
 		<Defence>0</Defence>
@@ -68,7 +68,7 @@
 		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<Attack>0</Attack>
 		<Speed>50</Speed>
-		<Accuracy>55</Accuracy>
+		<Accuracy>70</Accuracy>
 		<Defence>50</Defence>
 		<Slots>1</Slots>
 		<Max>1</Max>
@@ -81,7 +81,7 @@
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
-		<Attack>25</Attack>
+		<Attack>20</Attack>
 		<Speed>50</Speed>
 		<Accuracy>65</Accuracy>
 		<Defence>0</Defence>
@@ -98,7 +98,7 @@
 		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<Attack>60</Attack>
 		<Speed>20</Speed>
-		<Accuracy>40</Accuracy>
+		<Accuracy>50</Accuracy>
 		<Defence>0</Defence>
 		<Slots>2</Slots>
 		<Max>1</Max>
@@ -111,9 +111,9 @@
 		<Class_Multiplier>1</Class_Multiplier>
 		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
 		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
-		<Attack>40</Attack>
+		<Attack>50</Attack>
 		<Speed>30</Speed>
-		<Accuracy>50</Accuracy>
+		<Accuracy>55</Accuracy>
 		<Defence>0</Defence>
 		<Slots>2</Slots>
 		<Max>1</Max>
