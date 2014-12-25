@@ -329,12 +329,17 @@ public class Chat extends View {
 		}
 	}
 
+	/**Set focus on input field.
+	 * @param b
+	 */
 	public void setFocus(boolean b) {
 		input.setFocus(b);
 	}
 
+	/**Check if input field has focus.
+	 * @return
+	 */
 	public boolean hasFocus() {
 		return input.hasFocus();
 	}
-
 }

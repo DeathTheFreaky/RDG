@@ -218,16 +218,18 @@ public class InventoryView extends View {
 				}
 			}
 			
-			Element e = items.get(x + y*4);
-						
-			/* only allow operation for specified class */
-			if (!(tempClass.isInstance(e))) {
-				return null;
-			} 
-			
-			items.remove(x + y*4);
-						
-			return e;
+			if ((x + y*4) < items.size()) {
+				Element e = items.get(x + y*4);
+				
+				/* only allow operation for specified class */
+				if (!(tempClass.isInstance(e))) {
+					return null;
+				} 
+				
+				items.remove(x + y*4);
+				
+				return e;
+			}
 		}
 		return null;
 	}

@@ -508,6 +508,7 @@ public class Fight extends View implements Runnable {
 		
 		if (player.getHp() <= 0) {
 			player.resetOriginals();
+			enemy.resetOriginals();
 			fightLoser = player;
 		} else {
 			fightLoser = enemy;
@@ -1445,7 +1446,7 @@ public class Fight extends View implements Runnable {
 		}
 		
 		if (potion.DURATION > 0) {
-			chatMessage("Decreasing " + creature.NAME + "'s " + potion.EFFECT + " by " + round(potion.POWER, 1) * finishedFightsMult);
+			chatMessage(potion.NAME + " decreasing " + creature.NAME + "'s " + potion.EFFECT + " by " + round(potion.POWER, 1) * finishedFightsMult);
 		}
 			
 		switch(potion.EFFECT) {
@@ -1500,7 +1501,7 @@ public class Fight extends View implements Runnable {
 		}
 		
 		if (potion.DURATION > 0) {
-			chatMessage("Increasing " + creature + "'s " + potion.EFFECT + " by " + round(potion.POWER, 1) * finishedFightsMult);
+			chatMessage(potion.NAME + " increasing " + creature.NAME + "'s " + potion.EFFECT + " by " + round(potion.POWER, 1) * finishedFightsMult);
 		}
 		
 		switch(potion.EFFECT) {
