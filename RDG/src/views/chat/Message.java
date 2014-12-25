@@ -18,6 +18,7 @@ public class Message {
 	String message;
 	int minute = -1;
 	int hour = -1;
+	boolean followUp = false; //if true: do not display time
 	Channels channel;
 
 	/**
@@ -55,13 +56,50 @@ public class Message {
 		this.minute = time.get(Calendar.MINUTE);
 		this.channel = channel;
 	}
+	
+	/**
+	 * Constructs a Message.
+	 *
+	 * @param message
+	 * @param time
+	 * @param channel
+	 */
+	public Message(String message, int hour, int minute, Channels channel) {
+		this.message = message;
+		this.hour = hour;
+		this.minute = minute;
+		this.channel = channel;
+	}
+	
+	/**
+	 * Constructs a follow Up Message.
+	 *
+	 * @param message
+	 * @param time
+	 * @param channel
+	 * @param followUp
+	 */
+	public Message(String message, int hour, int minute, Channels channel, Boolean followUp) {
+		this.message = message;
+		this.channel = channel;
+		this.followUp = followUp;
+	}
 
 	/**
 	 * @return time and message content
 	 */
 	public String print() {
-		return "<" + (hour > 9 ? Integer.toString(hour) : "0" + hour) + ":"
-				+ (minute > 9 ? minute : ("0" + minute)) + "> - " + message;
+		
+		String retString;
+		
+		if (followUp == false) {
+			retString = "<" + (hour > 9 ? Integer.toString(hour) : "0" + hour) + ":"
+					+ (minute > 9 ? minute : ("0" + minute)) + "> - " + message;
+		} else {
+			retString = "          " + message;
+		}
+		
+		return retString; 
 	}
 
 	/**

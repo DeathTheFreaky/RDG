@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Point;
 import java.util.Calendar;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -27,7 +28,7 @@ public class Chat extends View {
 
 	/* Maximum for saved Messages and Message Length */
 	private final int MAXIMUM_MESSAGES = 7;
-	private final int MAXIMUM_LENGTH = 34;
+	private final int MAXIMUM_LENGTH = 39;
 
 	/* Input Field for typing messages */
 	private InputField input;
@@ -64,6 +65,10 @@ public class Chat extends View {
 	/* Time */
 	private int hour = -1;
 	private int minute = -1;
+	
+	/* set font type */
+	Font font = new Font("Verdana", Font.BOLD, 11);
+	TrueTypeFont ttf = new TrueTypeFont(font, true);
 
 	/**
 	 * Constructs a Chat passing its origin's position as single x and y
@@ -150,7 +155,8 @@ public class Chat extends View {
 		 * print a welcoming message and use an instance of Calendar class to
 		 * get current time
 		 */
-		messages.add(new Message("New Game Started! Player vs. Opponent", cal));
+		
+		newMessage(new Message("New Game Started! Player vs. Opponent", cal));
 		/* print end of this game session */
 		/*
 		 * if game session overlaps a full hour, react accordingly -> use up
@@ -158,14 +164,14 @@ public class Chat extends View {
 		 * minutes starting form 0
 		 */
 		if (minute >= 45) {
-			messages.add(new Message(
+			newMessage(new Message(
 					"Instance ends at "
 							+ ((hour + 1) > 23 ? "00" : (hour + 1))
 							+ ":"
 							+ ((minute - 45) > 9 ? (minute - 45) : "0"
 									+ (minute - 45)), cal));
 		} else {
-			messages.add(new Message("Instance ends at " + hour + ":"
+			newMessage(new Message("Instance ends at " + hour + ":"
 					+ (minute + 15), cal));
 		}
 
@@ -177,10 +183,6 @@ public class Chat extends View {
 				shown[i] = false;
 			}
 		}
-
-		/* set font type */
-		Font font = new Font("Verdana", Font.BOLD, 12);
-		TrueTypeFont ttf = new TrueTypeFont(font, true);
 
 		/* create an inputfield and clear it when message is sent */
 		input = new InputField(container, ttf, strokeSize * 2 + timeSpace,
@@ -271,25 +273,53 @@ public class Chat extends View {
 	 * @param message
 	 */
 	public synchronized void newMessage(Message message) {
+		
 		message.setTime(hour, minute); //set time to chat time - useful when adding message from other computer to avoid time sync
 		
-		if (message.getChannel() == Channels.PUBLIC) {
-			//send message to other computer
-		}
-		
-		messages.add(message);
-		if (messages.size() > 7) {
-			messages.removeFirst();
-		}
-
-		if (messages.size() > 4) {
-			for (int i = 0; i < messages.size(); i++) {
-				if (i < messages.size() - 4) {
-					shown[i] = false;
+		String string = message.print();
+		List<String> words = new LinkedList<String>();
+		Channels channel = message.getChannel();
+								
+		/* split string if too long */
+		if (ttf.getWidth(string) > 340) {
+			
+			String tempString = "";
+			String[] stringSplit = new String[2];
+			
+			stringSplit = string.split("-", 2);
+			stringSplit[1] = stringSplit[1].substring(1);
+			
+			for (String word: stringSplit[1].split(" ")){
+		         words.add(word);
+		    }
+						
+			String testLength = null;
+			int followUpCtr = 0;
+			
+			while (words.size() > 0) {
+				
+				testLength = "";
+				tempString = "";
+				
+				do {
+					tempString = tempString.concat(words.get(0)).concat(" ");
+					words.remove(0);
+					if (words.size() > 0) {
+						testLength = tempString.concat(words.get(0));
+					}
+				} while (ttf.getWidth(testLength) < 265 && words.size() > 0);
+				
+				if (followUpCtr == 0) {
+					processMessage(new Message(tempString, hour, minute, channel));
 				} else {
-					shown[i] = true;
+					processMessage(new Message(tempString, hour, minute, channel, true));
 				}
+				
+				followUpCtr++;
 			}
+			
+		} else {
+			processMessage(message);
 		}
 	}
 
@@ -341,5 +371,30 @@ public class Chat extends View {
 	 */
 	public boolean hasFocus() {
 		return input.hasFocus();
+	}
+	
+	/**If a message is too long, split into seperate lines.
+	 * @param print
+	 */
+	private void processMessage(Message message) {
+
+		if (message.getChannel() == Channels.PUBLIC) {
+			//send message to other computer
+		}
+		
+		messages.add(message);
+		if (messages.size() > 7) {
+			messages.removeFirst();
+		}
+
+		if (messages.size() > 4) {
+			for (int i = 0; i < messages.size(); i++) {
+				if (i < messages.size() - 4) {
+					shown[i] = false;
+				} else {
+					shown[i] = true;
+				}
+			}
+		}
 	}
 }
