@@ -25,6 +25,7 @@ public class NetworkManager {
 	private Queue<NetworkMessage> readQueue;
 	private ServerSocket serverSocket;
 	private Socket acceptSocket = null;
+	private Socket connectSocket = null;
 	private LobbySearcher searcher = null;
 	private LobbyServer lserver = null;
 	private NetworkWriter writer = null;
@@ -35,14 +36,6 @@ public class NetworkManager {
 		this.readQueue = new LinkedList<NetworkMessage>();
 		this.serverSocket = new ServerSocket(0);
 	}
-
-	/*
-	 * private void accept(){ new Thread(new Runnable(){
-	 * 
-	 * @Override public void run() { try { acceptSocket = serverSocket.accept();
-	 * } catch (IOException e) { e.printStackTrace(); acceptSocket = null; } }
-	 * }).start(); }
-	 */
 
 	public void sendMessage(NetworkMessage msg) {
 		if (!this.writer.isAlive())
@@ -56,7 +49,7 @@ public class NetworkManager {
 	}
 
 	public void startLobby(String lobbyName)
-			throws ArgumentOutOfRangeException, UnableToStartExecption, IllegalThreadStateException {
+			throws ArgumentOutOfRangeException, UnableToStartConnectionExecption, IllegalThreadStateException {
 		if (this.serverSocket == null) {
 			try {
 				this.lserver = new LobbyServer(lobbyName,
@@ -64,7 +57,7 @@ public class NetworkManager {
 			} catch (NoSuchAlgorithmException e) {
 				Logger.getLogger(LobbyServer.class.getName()).log(Level.SEVERE,
 						"Unable to create UID for server.", e);
-				throw new UnableToStartExecption(
+				throw new UnableToStartConnectionExecption(
 						"The LobbyServer is unable to start.");
 			}
 		}
@@ -85,8 +78,21 @@ public class NetworkManager {
 		this.searcher.interrupt();
 	}
 
-	public void connect(Serverinfo lobbyInfo) {
-
+	public void connect(Serverinfo lobbyInfo) throws UnableToStartConnectionExecption {
+		try {
+			this.connectSocket = new Socket(lobbyInfo.getAddress(), lobbyInfo.getPort());
+			this.writer = new NetworkWriter(this.connectSocket, this.writeQueue);
+			this.writer.start();
+			this.sendMessage(new NetworkMessage(this.serverSocket.getInetAddress(), this.serverSocket.getLocalPort(), null));
+			this.acceptSocket = this.serverSocket.accept();
+			this.reader = new NetworkReader(this.acceptSocket, this.readQueue);
+			this.reader.start();
+		} catch (IOException e) {
+			Logger.getLogger(LobbyServer.class.getName()).log(Level.SEVERE,
+					"Unable to connect to server.", e);
+			throw new UnableToStartConnectionExecption(
+					"The connection is unable to start.");
+		}
 	}
 
 	public static NetworkManager getInstance() throws IOException {
