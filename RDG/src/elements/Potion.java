@@ -37,7 +37,7 @@ public class Potion extends Element {
 	public final Modes MODE;
 	
 	/* status change (how much a value in- or decreases */
-	public final float POWER;
+	public float power; //cannot be final because power needs to be set by selected Potion
 	
 	/* states how many rounds this potion will take effect */
 	public int DURATION; 
@@ -81,7 +81,7 @@ public class Potion extends Element {
 		this.EFFECT = effect;
 		this.TARGET = target;
 		this.MODE = mode;
-		this.POWER = power;
+		this.power = power;
 		this.DURATION = duration;
 		this.POTION_TYPE = Potions.POTION1;
 	}
