@@ -2,21 +2,29 @@ package general;
 
 import elements.Element;
 import elements.Item;
+import elements.Room;
 import gameEssentials.Game;
 import general.Enums.Attacks;
 import general.Enums.ItemClasses;
 import general.Enums.Levels;
 
 import java.awt.Point;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import javax.swing.OverlayLayout;
+
 import org.newdawn.slick.SlickException;
 
 public class Chances {
-
+	
+	private static Random r = new Random();
+	private static ResourceManager resources = null;
+	
 	/**
 	 * Return a random float between two float barriers.
 	 * 
@@ -26,7 +34,6 @@ public class Chances {
 	 */
 	public static float randomFloat(float low, float high) {
 
-		Random r = new Random();
 		return r.nextFloat() * (high - low) + low;
 	}
 
@@ -36,13 +43,17 @@ public class Chances {
 	 * Returns the name of a random Monster.
 	 * 
 	 * @param monsterProbabilities
+	 * @param balanceOffsets 
+	 * @param monsterBalance 
 	 * @return random Monster
 	 * @throws SlickException
 	 */
-	public static String randomMonster(Map<Levels, Float> monsterProbabilities)
+	public static String randomMonster(Map<Levels, Float> monsterProbabilities, Map<Levels, HashMap<String, Integer>> monsterBalance, Map<String, Integer> balanceOffsets)
 			throws SlickException {
 
-		ResourceManager resources = new ResourceManager().getInstance();
+		if (resources == null) {
+			resources = new ResourceManager().getInstance();
+		}
 
 		/* used to sum up all single possibility values from configloader */
 		float sum = 0;
@@ -52,6 +63,12 @@ public class Chances {
 
 		/* the determined, random monster level */
 		Levels monsterLevel = null;
+		
+		/* offset needed for balancing occurrence of same leveled items */
+		int offset = 0;
+		
+		/* map of all monster counts for the chosen level */
+		HashMap<String, Integer> balance = null;
 
 		/* calculate total some to determine random interval */
 		for (Entry<Levels, Float> entry : monsterProbabilities.entrySet()) {
@@ -62,7 +79,6 @@ public class Chances {
 		 * get a random value within the determined interval = sum of all
 		 * probability values
 		 */
-		Random r = new Random();
 		randomFloat = r.nextFloat() * (sum);
 
 		/* set thresholds for level probabilities */
@@ -79,12 +95,18 @@ public class Chances {
 			monsterLevel = Levels.NONE;
 		} else if (randomFloat > noneThreshold && randomFloat <= easyThreshold) {
 			monsterLevel = Levels.EASY;
+			offset = balanceOffsets.get("easy");
+			balance = monsterBalance.get(Levels.EASY);
 		} else if (randomFloat > easyThreshold && randomFloat <= normalThreshold) {
 			monsterLevel = Levels.NORMAL;
+			offset = balanceOffsets.get("normal");
+			balance = monsterBalance.get(Levels.NORMAL);
 		} else if (randomFloat > normalThreshold && randomFloat <= hardThreshold) {
 			monsterLevel = Levels.HARD;
+			offset = balanceOffsets.get("hard");
+			balance = monsterBalance.get(Levels.HARD);
 		}
-
+		
 		/* no monster shall be placed in this room */
 		if (monsterLevel == Levels.NONE) {
 			return null;
@@ -96,26 +118,60 @@ public class Chances {
 
 		/*
 		 * return the name of a random monster within the list of leveled
-		 * monsters
+		 * monsters keeping the count of monsters per level balanced by offset
 		 */
-		String randomMonster = monsterLeveledList.get(r
-				.nextInt(monsterLeveledList.size()));
-
+		String randomMonster = null;
+								
+		List<String> mins = new LinkedList<String>();
+		
+		/* determine min and max of all monster counts of this level */
+		int min = 99999;
+		int max = 0;
+		for (Entry<String, Integer> entry : balance.entrySet()) {
+			if (entry.getValue() < min) {
+				min = entry.getValue();
+			}
+			if (entry.getValue() > max) {
+				max = entry.getValue();
+			}
+		}
+		
+		/* determine all monsters with min count */
+		for (Entry<String, Integer> entry : balance.entrySet()) {
+			if (entry.getValue() <= min) {
+				mins.add(entry.getKey());
+			}
+		}
+		
+		if (randomMonster == null) {
+			/* keep monsters balanced by a max margin of offset */
+			if (min <= (max - offset)) {
+				randomMonster = mins.get(r
+						.nextInt(mins.size()));
+			} else {
+				randomMonster = monsterLeveledList.get(r
+						.nextInt(monsterLeveledList.size()));
+			}
+		}
+		
 		return randomMonster;
 	}
 	
 	/**Takes a Map of ItemClass - Float pairs describing the probability for each type of
 	 * Item.<br>
 	 * Returns name and type of a random Item.
+	 * @param balanceOffsets 
+	 * @param itemsBalance 
 	 * 
 	 * @param overlay
 	 * @return a random Item
 	 * @throws SlickException 
 	 */
-	public static Item randomItem(Map<ItemClasses, Float> itemClassProbabilities) throws SlickException {
+	public static Item randomItem(Map<ItemClasses, Float> itemClassProbabilities, Map<ItemClasses, HashMap<Item, Integer>> itemsBalance, Map<String, Integer> balanceOffsets) throws SlickException {
 		
-		ResourceManager resources = new ResourceManager().getInstance();
-
+		if (resources == null) {
+			resources = new ResourceManager().getInstance();
+		}
 		/* used to sum up all single possibility values for all items from configloader */
 		float sum = 0;
 
@@ -124,6 +180,12 @@ public class Chances {
 
 		/* the determined, random monster level */
 		ItemClasses itemClass = null;
+		
+		/* offset needed for balancing occurrence of same leveled items */
+		int offset = 0;
+		
+		/* map of all item counts for the chosen level */
+		HashMap<Item, Integer> balance = null;
 
 		/* calculate total some to determine random interval */
 		for (Entry<ItemClasses, Float> entry : itemClassProbabilities.entrySet()) {
@@ -134,7 +196,6 @@ public class Chances {
 		 * get a random value within the determined interval = sum of all
 		 * probability values
 		 */
-		Random r = new Random();
 		randomFloat = r.nextFloat() * (sum);
 		
 		/* set thresholds for itemClass probabilities */
@@ -151,12 +212,18 @@ public class Chances {
 			itemClass = ItemClasses.NONE;
 		} else if (randomFloat > noneThreshold && randomFloat <= weakThreshold) {
 			itemClass = ItemClasses.WEAK;
+			offset = balanceOffsets.get("weak");
+			balance = itemsBalance.get(ItemClasses.WEAK);
 		} else if (randomFloat > weakThreshold && randomFloat <= mediumThreshold) {
 			itemClass = ItemClasses.MEDIUM;
+			offset = balanceOffsets.get("medium");
+			balance = itemsBalance.get(ItemClasses.MEDIUM);
 		} else if (randomFloat > mediumThreshold && randomFloat <= strongThreshold) {
 			itemClass = ItemClasses.STRONG;
+			offset = balanceOffsets.get("strong");
+			balance = itemsBalance.get(ItemClasses.STRONG);
 		}
-				
+						
 		/* no item shall be placed in this room */
 		if (itemClass == ItemClasses.NONE) {
 			return null;
@@ -168,10 +235,41 @@ public class Chances {
 		
 		/*
 		 * return the name of a random item within the list of leveled
-		 * items
+		 * items keeping the items per level balanced
 		 */
-		Item randomItem = itemClassedList.get(r
-				.nextInt(itemClassedList.size()));
+		Item randomItem = null;
+					
+		List<Item> mins = new LinkedList<Item>();
+		
+		/* determine min and max of all item counts of this level */
+		int min = 99999;
+		int max = 0;
+		for (Entry<Item, Integer> entry : balance.entrySet()) {
+			if (entry.getValue() < min) {
+				min = entry.getValue();
+			}
+			if (entry.getValue() > max) {
+				max = entry.getValue();
+			}
+		}
+		
+		/* determine all items with min count */
+		for (Entry<Item, Integer> entry : balance.entrySet()) {
+			if (entry.getValue() <= min) {
+				mins.add(entry.getKey());
+			}
+		}
+		
+		if (randomItem == null) {		
+			/* keep items balanced by a max margin of offset */
+			if (min <= (max - offset)) {
+				randomItem = mins.get(r
+						.nextInt(mins.size()));
+			} else {
+				randomItem = itemClassedList.get(r
+						.nextInt(itemClassedList.size()));
+			}
+		}
 		
 		return randomItem;
 	}
@@ -181,9 +279,7 @@ public class Chances {
 	 * @return a free field or null if none is found
 	 */
 	public static Point randomFreeField(Element[][] overlay) {
-		
-		Random r = new Random();
-		
+				
 		for (int i = 0; i < Game.MAXTRIES; i++) {
 			
 			/* if ROOMWIDTH == 8: values will be between 0 and 7 */
@@ -203,23 +299,71 @@ public class Chances {
 	 */
 	public static Attacks randomAttackType() {
 
-		Random r = new Random();
 		Attacks randAttackType = null;
 		
 		float randFloat = r.nextFloat();
 		
-		if (randFloat < 0.2) {
+		if (randFloat < 0.5) {
 			randAttackType = Attacks.TORSO;
-		} else if (randFloat >= 0.2 && randFloat < 0.4) {
+		} else if (randFloat >= 0.5 && randFloat < 0.66) {
 			randAttackType = Attacks.HEAD;
-		} else if (randFloat >= 0.4 && randFloat < 0.6) {
+		} else if (randFloat >= 0.66 && randFloat < 0.83) {
 			randAttackType = Attacks.ARMS;
-		} else if (randFloat >= 0.6 && randFloat < 0.8) {
+		} else if (randFloat >= 0.83 && randFloat < 1) {
 			randAttackType = Attacks.LEGS;
-		} else if (randFloat >= 0.8 && randFloat < 1) {
+		}/* else if (randFloat >= 0.8 && randFloat < 1) {
 			randAttackType = Attacks.PARRY;
-		}
+		}*/
 		
 		return randAttackType;
+	}
+
+	/**Returns Point for a random Room on the map, excluding the treasure Chamber.
+	 * @return a random Room but not the treasure Chamber
+	 */
+	public static Point randomRoom() {
+		
+		int middleX = Game.ROOMSHOR/2;
+		int middleY = Game.ROOMSVER/2;
+		int randX = 0;
+		int randY = 0;
+		
+		do {
+			randX = r.nextInt(Game.ROOMSHOR);
+			randY = r.nextInt(Game.ROOMSVER);
+		} while (randX == middleX && randY == middleY);
+		
+		Point randRoom = new Point(randX, randY);
+		
+		return randRoom;
+	}
+
+	/**Returns a random empty tile in a room.
+	 * @return
+	 */
+	public static Point randomTile(Room randRoom) {
+
+		int randX = 0;
+		int randY = 0;
+		boolean found = false;
+		int ctr = 0;
+		
+		if (randRoom == null) {
+			return null;
+		}
+		
+		do {
+			randX = r.nextInt(Game.ROOMWIDTH);
+			randY = r.nextInt(Game.ROOMHEIGHT);
+			
+			if (randRoom.overlay[randX][randY] == null) {
+				found = true;
+			}
+			ctr++;
+		} while (found == false && ctr <= 20);
+		
+		Point randTile = new Point(randX, randY);
+		
+		return randTile;
 	}
 }

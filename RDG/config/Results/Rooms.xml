@@ -16,7 +16,7 @@
 			<hard>0</hard>
 		</Monster>
 		<Monster_Count>1</Monster_Count>
-		<Item_Multiplier>1.5</Item_Multiplier>
+		<Item_Multiplier>1.25</Item_Multiplier>
 		<Find_Probabilities>
 			<none>0</none>
 			<weak>30</weak>
@@ -42,7 +42,7 @@
 			<hard>0</hard>
 		</Monster>
 		<Monster_Count>1</Monster_Count>
-		<Item_Multiplier>1.25</Item_Multiplier>
+		<Item_Multiplier>1.13</Item_Multiplier>
 		<Find_Probabilities>
 			<none>30</none>
 			<weak>30</weak>
@@ -68,7 +68,7 @@
 			<hard>0</hard>
 		</Monster>
 		<Monster_Count>1</Monster_Count>
-		<Item_Multiplier>1.25</Item_Multiplier>
+		<Item_Multiplier>1.13</Item_Multiplier>
 		<Find_Probabilities>
 			<none>30</none>
 			<weak>30</weak>
@@ -94,7 +94,7 @@
 			<hard>0</hard>
 		</Monster>
 		<Monster_Count>1</Monster_Count>
-		<Item_Multiplier>1.1</Item_Multiplier>
+		<Item_Multiplier>1.05</Item_Multiplier>
 		<Find_Probabilities>
 			<none>25</none>
 			<weak>50</weak>
@@ -146,7 +146,7 @@
 			<hard>1</hard>
 		</Monster>
 		<Monster_Count>1</Monster_Count>
-		<Item_Multiplier>2</Item_Multiplier>
+		<Item_Multiplier>1.5</Item_Multiplier>
 		<Find_Probabilities>
 			<none>0</none>
 			<weak>10</weak>

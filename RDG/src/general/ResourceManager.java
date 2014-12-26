@@ -142,14 +142,17 @@ public class ResourceManager {
 		IMAGES.put("Player2", new Image(Game.IMAGEPATH + "soldier_32x32.png"));
 		IMAGES.put("Armor_Background", new Image(Game.IMAGEPATH
 				+ "warrior_160x160.png"));
-		IMAGES.put("Helmet", new Image(Game.IMAGEPATH + "Head.png"));
+		/*IMAGES.put("Helmet", new Image(Game.IMAGEPATH + "Head.png"));
 		IMAGES.put("Arms", new Image(Game.IMAGEPATH + "Arm.png"));
 		IMAGES.put("Cuirass", new Image(Game.IMAGEPATH + "Chest.png"));
 		IMAGES.put("Legs", new Image(Game.IMAGEPATH + "Legs.png"));
 		IMAGES.put("Shoes", new Image(Game.IMAGEPATH + "Feet.png"));
 		IMAGES.put("M_Weapon", new Image(Game.IMAGEPATH + "Weapon.png"));
-		IMAGES.put("S_Weapon", new Image(Game.IMAGEPATH + "Weapon2.png"));
-
+		IMAGES.put("S_Weapon", new Image(Game.IMAGEPATH + "Weapon2.png"));*/
+		
+		/* load key picture */ 
+		IMAGES.put("Key", new Image(Game.IMAGEPATH + "key.png"));
+		
 		/* load images from paths stored in config loader */
 		for (Entry<String, ArmamentTemplate> entry : configloader
 				.getArmamentTemplates().entrySet()) {

@@ -141,5 +141,17 @@ public class Element {
 	public void delete() {
 		// Maybe we have to delete Elements
 	}
+	
+	public String getDescription() {
+		return "Not Set";
+	}
+	
+	/**Sets then image of this element. <br>
+	 * To be used for replacing image with null when sending element via network.
+	 * @param image
+	 */
+	public void setImage(Image image) {
+		this.image = image;
+	}
 
 }

@@ -1,5 +1,6 @@
 package elements;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import general.Enums.CreatureType;
@@ -55,13 +56,15 @@ public class Creature extends Element{
 		this.orStrength = strength;
 		this.orAccuracy = accuracy;
 		this.orSpeed = speed;
+		
+		this.activePotions = new LinkedList<Potion>();
 	}
 
 	/**
 	 * @return the Creature's temporary (one fight) Health Points
 	 */
 	public float getHp() {
-		return hp;
+		return this.hp;
 	}
 
 	/**Sets the Creatures temporary (one fight) Health Points.
@@ -76,7 +79,7 @@ public class Creature extends Element{
 	 * @return the Creature's temporary (one fight) Strength
 	 */
 	public float getStrength() {
-		return strength;
+		return this.strength;
 	}
 
 	/**Sets the Creature's temporary (one fight) Strength.
@@ -85,13 +88,14 @@ public class Creature extends Element{
 	 */
 	public void setStrength(float strength) {
 		this.strength = strength;
+		System.out.println("creature has now a strength of " + this.strength);
 	}
 
 	/**
 	 * @return the Creature's temporary (one fight) Speed
 	 */
 	public float getSpeed() {
-		return speed;
+		return this.speed;
 	}
 
 	/**Sets the Creature's temporary (one fight) Speed.
@@ -106,7 +110,7 @@ public class Creature extends Element{
 	 * @return the Creature's temporary (one fight) Accuracy
 	 */
 	public float getAccuracy() {
-		return accuracy;
+		return this.accuracy;
 	}
 
 	/**Set the Creature's temporary (one fight) accuracy.
@@ -121,7 +125,7 @@ public class Creature extends Element{
 	 * @return the Creature's permament Health Points
 	 */
 	public float getOrHp() {
-		return orHp;
+		return this.orHp;
 	}
 
 	/**Sets the Creature's permament Health Points.
@@ -136,7 +140,7 @@ public class Creature extends Element{
 	 * @return the Creature's permament Strength
 	 */
 	public float getOrStrength() {
-		return orStrength;
+		return this.orStrength;
 	}
 
 	/**Sets the Creature's permament Strength.
@@ -151,7 +155,7 @@ public class Creature extends Element{
 	 * @return the Creature's permament Speed
 	 */
 	public float getOrSpeed() {
-		return orSpeed;
+		return this.orSpeed;
 	}
 
 	/**Set the Creature's permament Speed.
@@ -166,7 +170,7 @@ public class Creature extends Element{
 	 * @return the Creature's permament Accuracy
 	 */
 	public float getOrAccuracy() {
-		return orAccuracy;
+		return this.orAccuracy;
 	}
 
 	/**Sets the Creature's permanent Accuracy.
@@ -181,21 +185,39 @@ public class Creature extends Element{
 	 * 
 	 */
 	public void resetOriginals() {
+		
+		System.out.println("resetting original attributes");
 		accuracy = orAccuracy;
 		speed = orSpeed;
 		strength = orStrength;
 		hp = orHp;
 	}
 	
+	/**Adds a potion to the list of active potions.
+	 * @param potion
+	 */
 	public void addActivePotions(Potion potion) {
 		activePotions.add(potion);
 	}
 	
+	/**Removes a potion from the list of active potions.
+	 * @param potion
+	 */
 	public void removeActivePotions(Potion potion) {
 		activePotions.remove(potion);
 	}
 	
+	/**Returns a list of active potions for this creature.
+	 * @return
+	 */
 	public List<Potion> getActivePotions() {
 		return activePotions;
+	}
+
+	/**Removes all potions from the creature's list of active potions.
+	 * 
+	 */
+	public void emptyActivePotions() {
+		activePotions.clear();
 	}
 }

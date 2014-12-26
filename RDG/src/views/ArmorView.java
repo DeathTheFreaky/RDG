@@ -21,6 +21,7 @@ import general.Enums.ArmorStatsTypes;
 import general.Enums.ImageSize;
 import general.Enums.Potions;
 import general.Enums.WeaponTypes;
+import general.ItemFactory;
 import general.ResourceManager;
 import general.Enums.Armor;
 
@@ -89,6 +90,10 @@ public class ArmorView extends View {
 	
 	/* a potion drunk by a player and set in armorView.drinkPotion() */
 	Potion selectedPotion = null;
+	
+	/* fallback weapon: fists */
+	Weapon fists1 = null;
+	Weapon fists2 = null;
 
 	/**
 	 * Constructs an ArmorView passing its origin as single x and y coordinates
@@ -182,6 +187,17 @@ public class ArmorView extends View {
 		potions1 = potion1_types.values();
 		potion2_types = new HashMap<Potions, Potion>(3);
 		potions2 = potion2_types.values();
+		
+		/* create fists as fallback weapons */
+		fists1 = ItemFactory.createWeapon("Fists", 1);
+		fists2= ItemFactory.createWeapon("Fists", 1);
+		
+		fists2.setAsSubWeapon();
+		
+		armor1.put(Armor.MAIN_WEAPON, fists1);
+		armor1.put(Armor.SUB_WEAPON, fists2);
+		armor2.put(Armor.MAIN_WEAPON, fists1);
+		armor2.put(Armor.SUB_WEAPON, fists2);
 	}
 
 	@Override
@@ -379,11 +395,14 @@ public class ArmorView extends View {
 	 * @param set
 	 */
 	public void switchSet() {
+		System.out.println(this.set);
+		System.out.println("Set switch");
 		if (set) {
 			this.set = false;
 		} else {
 			this.set = true;
 		}
+		System.out.println(this.set);
 	}
 
 	/**
@@ -418,7 +437,6 @@ public class ArmorView extends View {
 		}
 		if (x > ORIGIN_X && x < ORIGIN_X + size.width && y > ORIGIN_Y + tabHeight + 5 
 				&& y < ORIGIN_Y + size.height - tabHeight - 5) {
-			System.out.println("potion taken");
 			
 			//Send info about taken potion to enemy ? -> only if potion effects enemy?
 			
@@ -475,26 +493,41 @@ public class ArmorView extends View {
 				/* decide on which side to drop the weapon -> main or sub */
 				if ((x - ORIGIN_X) > size.width/2) {
 					((Equipment) element).setAsSubWeapon();
+					if (thisweapon == fists1) {
+						thisweapon = fists2;
+					}
 				}
 				else {
 					((Equipment) element).setAsMainWeapon();
+					if (thisweapon == fists2) {
+						thisweapon = fists1;
+					}
 				}
 				
 				/* check if weapon is dragged from inside Armor */
 				if (set) {
+					
+					/* check if dragged weapon is stored inside armor */
+					
 					if (thisweapon == prevWeaponMainSet1 || thisweapon == prevWeaponSubSet1) {
 						fromInsideArmor = true;
 					}
+					if (thisweapon.NAME.equals("Fists")) {
+						fromInsideArmor = true;
+					} 
 					weapon1 = (Weapon) armor1.get(Armor.MAIN_WEAPON);
 					weapon2 = (Weapon) armor1.get(Armor.SUB_WEAPON);
 				} else {
 					if (thisweapon == prevWeaponMainSet2 || thisweapon == prevWeaponSubSet2) {
 						fromInsideArmor = true;
 					}
+					if (thisweapon.NAME.equals("Fists")) {
+						fromInsideArmor = true;
+					}
 					weapon1 = (Weapon) armor2.get(Armor.MAIN_WEAPON);
 					weapon2 = (Weapon) armor2.get(Armor.SUB_WEAPON);
 				}
-								
+												
 				/* return both weapons to inventory if a twohand is added */
 				if (thisweapon.TYPE == WeaponTypes.TWOHAND) {
 					
@@ -507,10 +540,10 @@ public class ArmorView extends View {
 					}		
 					
 					if (weapon1 != null) {
-						inventory.storeItem(weapon1);
+						inventory.storeItem(weapon1, this);
 					}
 					if (weapon2 != null) {
-						inventory.storeItem(weapon2);
+						inventory.storeItem(weapon2, this);
 					}
 					
 				} else {
@@ -593,10 +626,12 @@ public class ArmorView extends View {
 				
 				/* do not allow adding another weapon when a twohand is equipped or max of weapon is 1 */
 				if (returnImmediatly) {
+					//addFists();
 					return e;
 				}
 				/* do not allow adding another weapon when a twohand is equipped or max of weapon is 1 */
 				if (returnImmediatlyNull) {
+					//addFists();
 					return null;
 				}
 			}
@@ -620,6 +655,7 @@ public class ArmorView extends View {
 			prevWeaponMainSet2 = (Weapon) armor2.get(Armor.MAIN_WEAPON);
 			prevWeaponSubSet2 = (Weapon) armor2.get(Armor.SUB_WEAPON);
 			
+			//addFists();
 			return e;
 		
 		/* check if item is dragged to potion section */
@@ -749,6 +785,118 @@ public class ArmorView extends View {
 		}
 		return e;
 	}
+	
+	/**Always add Fist as fallback weapon when there are still free slots.
+	 * 
+	 */
+	public void addFists() {
+		
+		Weapon equippedWeaponMain = null;
+		Weapon equippedWeaponSub = null;
+		int slotSum = 0;
+		
+		/* get the equipped weapons */
+		if (set) {	
+			equippedWeaponMain = (Weapon) armor1.get(Armor.MAIN_WEAPON);
+			equippedWeaponSub = (Weapon) armor1.get(Armor.SUB_WEAPON);
+		} else {
+			equippedWeaponMain = (Weapon) armor2.get(Armor.MAIN_WEAPON);
+			equippedWeaponSub = (Weapon) armor2.get(Armor.SUB_WEAPON);
+		}
+		
+		/* reset fists */
+		if (equippedWeaponMain != null) {
+			/* delete fists if equipping two-hand */
+			if (set) {
+				if (equippedWeaponMain.NAME.equals(("Fists"))) {
+					armor1.remove(Armor.MAIN_WEAPON);
+				}
+			} else {
+				if (equippedWeaponMain.NAME.equals(("Fists"))) {
+					armor2.remove(Armor.MAIN_WEAPON);
+				}
+			}
+			if (equippedWeaponMain.NAME.equals("Fists")) {
+				equippedWeaponMain = null;
+			}
+		}
+		if (equippedWeaponSub != null) {
+			/* delete fists if equipping two-hand */
+			if (set) {
+				if (equippedWeaponSub.NAME.equals(("Fists"))) {
+					armor1.remove(Armor.SUB_WEAPON);
+				}
+			} else {
+				if (equippedWeaponSub.NAME.equals(("Fists"))) {
+					armor2.remove(Armor.SUB_WEAPON);
+				}
+			}
+			if (equippedWeaponSub.NAME.equals("Fists")) {
+				equippedWeaponSub = null;
+			}
+		} 
+		fists1.setAsMainWeapon();
+		fists2.setAsSubWeapon();
+		
+		
+		/* calculate how many slots they need */
+		if (equippedWeaponMain != null) {
+			if (equippedWeaponMain.TYPE == WeaponTypes.SINGLEHAND) {
+				slotSum += 1;
+			}
+			else if (equippedWeaponMain.TYPE == WeaponTypes.TWOHAND) {
+				slotSum += 2;
+			}
+		}
+		if (equippedWeaponSub != null) {
+			if (equippedWeaponSub.TYPE == WeaponTypes.SINGLEHAND) {
+				slotSum += 1;
+			}
+			else if (equippedWeaponSub.TYPE == WeaponTypes.TWOHAND) {
+				slotSum += 2;
+			}
+		}
+				
+		/* if not 2 slots are used, fill up with fists */
+		if (slotSum == 0) {
+			fists1.setAsMainWeapon();
+			fists2.setAsSubWeapon();
+			if (set) {
+				armor1.put(Armor.MAIN_WEAPON, fists1);
+				prevWeaponMainSet1 = null;
+				armor1.put(Armor.SUB_WEAPON, fists2);
+				prevWeaponSubSet1 = null;
+			} else {
+				armor2.put(Armor.MAIN_WEAPON, fists1);
+				prevWeaponMainSet2 = null;
+				armor2.put(Armor.SUB_WEAPON, fists2);
+				prevWeaponSubSet2 = null;
+			}
+		}
+		else if (slotSum == 1) {
+			if (equippedWeaponMain == null) {
+				if (set) {
+					fists1.setAsMainWeapon();
+					armor1.put(Armor.MAIN_WEAPON, fists1);
+					prevWeaponMainSet1 = null;
+				} else {
+					fists2.setAsMainWeapon();
+					armor2.put(Armor.MAIN_WEAPON, fists1);
+					prevWeaponMainSet2 = null;
+				}
+			} else if (equippedWeaponSub == null) {
+				if (set) {
+					fists1.setAsSubWeapon();
+					armor1.put(Armor.SUB_WEAPON, fists2);
+					prevWeaponSubSet1 = null;
+				} else {
+					fists2.setAsSubWeapon();
+					armor2.put(Armor.SUB_WEAPON, fists2);
+					prevWeaponSubSet2 = null;
+				}
+			}
+		}
+	}
 
 	/**Returns an equipped item. 
 	 * 
@@ -757,7 +905,7 @@ public class ArmorView extends View {
 	 * @return
 	 */
 	public Element getItem(int mouseX, int mouseY) {
-				
+								
 		if (mouseX > ORIGIN_X && mouseX < ORIGIN_X + size.width
 				&& mouseY > ORIGIN_Y && mouseY < ORIGIN_Y + size.height - tabHeight - 5) {
 			
@@ -835,7 +983,7 @@ public class ArmorView extends View {
 				if(set) {
 					e = armor1.get(Armor.MAIN_WEAPON);
 					armor1.remove(Armor.MAIN_WEAPON);
-				}else {
+				} else {
 					e = armor2.get(Armor.MAIN_WEAPON);
 					armor2.remove(Armor.MAIN_WEAPON);
 				}
@@ -853,7 +1001,7 @@ public class ArmorView extends View {
 					armor2.remove(Armor.SUB_WEAPON);
 				}
 			}
-
+			
 			return e;
 			
 		} else if (mouseX > ORIGIN_X && mouseX < ORIGIN_X + size.width && mouseY > ORIGIN_Y + size.height - tabHeight - 5
@@ -908,8 +1056,61 @@ public class ArmorView extends View {
 		}
 	}
 
+	/**Bonus is added when wearing a full set of armor.
+	 * @return the bonus for a full set of armor or 1
+	 */
+	private float armamentBonus(){
+		
+		float bonus = 1f;
+		
+		/* get one armament material */
+		Equipment exampleItem = null;
+		String armamentMaterial = null;
+		
+		if (set) {
+			exampleItem = armor1.get(Armor.CHEST);
+		} else {
+			exampleItem = armor2.get(Armor.CHEST);
+		}
+		
+		/* if one part in set is missing, bonus will not be applied */
+		if (exampleItem == null) {
+			return 1.0f;
+		}
+		else {
+			
+			armamentMaterial = ((Armament) exampleItem).TYPE;
+			
+			int sameCtr = 0; //must be five for a set bonus
+			
+			if (set) {
+				//loop through all equipment in set and increase sameCtr if the types match
+				for (Equipment e : equipment1) {
+					if (e instanceof Armament) {
+						if (((Armament) e).TYPE.equals(armamentMaterial)) {
+							sameCtr++;
+						}
+					}
+				}
+			} else {
+				for (Equipment e : equipment2) {
+					if (e instanceof Armament) {
+						if (((Armament) e).TYPE.equals(armamentMaterial)) {
+							sameCtr++;
+						}
+					}
+				}
+			}
+			
+			if (sameCtr == 5) {
+				bonus = ((Armament) exampleItem).BONUS;
+			}
+		}
+		
+		return bonus;	
+	}
+	
 	/**Returns sum of all values for a specific armament attribute of all equipped armaments.<br>
-	 * NOT YET COMPLETELY IMPLEMENTED!
 	 * 
 	 * @param speed
 	 * @return
@@ -917,6 +1118,8 @@ public class ArmorView extends View {
 	public float getStats(ArmorStatsTypes type, ArmorStatsMode mode, ArmorStatsAttributes att) {
 		
 		float value = 0f;
+		float subvalue = 0f;
+		int itemCtr = 0; //needed for average calculation
 		Collection<Equipment> myEquipment = null;
 		
 		if (set) {
@@ -932,22 +1135,60 @@ public class ArmorView extends View {
 						if (att == ArmorStatsAttributes.SPEED) {
 							value += ((Armament) e).SPEED;
 						}
+						if (att == ArmorStatsAttributes.ARMOR) {
+							value += ((Armament) e).ARMOR;
+						}
+					}
+				}
+				if (e instanceof Weapon) {
+					if (mode == ArmorStatsMode.SUM) {
+						if (att == ArmorStatsAttributes.ARMOR) {
+							subvalue += ((Weapon) e).DEFENSE;
+						}
 					}
 				}
 			}
 			if (type == ArmorStatsTypes.WEAPONS) {
 				if (e instanceof Weapon) {
-					if (mode == ArmorStatsMode.MIN) {
+					if (mode == ArmorStatsMode.MAX) {
 						if (att == ArmorStatsAttributes.SPEED) {
-							if (((Weapon) e).SPEED < value && ((Weapon) e).SPEED > 0) {
+							if ((100 - ((Weapon) e).SPEED) > value) {
 								value = ((Weapon) e).SPEED;
 							}
+						}
+					}
+					if (mode == ArmorStatsMode.AVERAGE) {
+						System.out.println(e.NAME);
+						if (att == ArmorStatsAttributes.ACCURACY) {
+							value = value + ((Weapon) e).ACCURACY;
+							itemCtr++;
+						}
+					}
+					if (mode == ArmorStatsMode.SUM) {
+						if (att == ArmorStatsAttributes.ATTACK) {
+							value += (value + ((Weapon) e).ATTACK);
 						}
 					}
 				}
 			}
 		}
 		
+		/* add armament bonus for a full set of armor */
+		if (type == ArmorStatsTypes.ARMAMENT) {
+			if (mode == ArmorStatsMode.SUM) {
+				if (att == ArmorStatsAttributes.ARMOR) {
+					value = value * armamentBonus();
+				}
+			}
+		}
+		
+		/* calculate average */
+		if (itemCtr > 0 && mode == ArmorStatsMode.AVERAGE) {
+			value = value/itemCtr;
+		}
+		
+		value = value + subvalue;
+		
 		return value;
-	}
+	}	
 }

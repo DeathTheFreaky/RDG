@@ -130,7 +130,7 @@ public class InventoryView extends View {
 		potions = new LinkedList<Potion>();*/
 
 		/* for testing */
-		items.add(new Weapon("Dolch", resources.IMAGES.get("M_Weapon"), 0f, 0f,
+		/*items.add(new Weapon("Dolch", resources.IMAGES.get("M_Weapon"), 0f, 0f,
 				0f, 0f, ItemClasses.MEDIUM, WeaponTypes.SINGLEHAND, 0));
 		items.add(new Weapon("Schwert", resources.IMAGES.get("S_Weapon"), 0f,
 				0f, 0f, 0f, ItemClasses.MEDIUM, WeaponTypes.SINGLEHAND, 0));
@@ -149,7 +149,7 @@ public class InventoryView extends View {
 				Armor.FEET));
 		items.add(new Armament("Legs", resources.IMAGES.get("Legs"),
 				"dont know what type is for", ItemClasses.MEDIUM, 0f, 0f, 0f,
-				Armor.LEGS));
+				Armor.LEGS));*/
 		/* testing */
 	}
 
@@ -188,7 +188,8 @@ public class InventoryView extends View {
 	 * @param mouseY
 	 * @return
 	 */
-	public Element getItem(int mouseX, int mouseY, UsedClasses classname) {
+	public Element getItem(int mouseX, int mouseY, UsedClasses classname) {		
+		
 		if (mouseX > ORIGIN_X && mouseX < ORIGIN_X + size.width
 				&& mouseY > ORIGIN_Y && mouseY < ORIGIN_Y + size.height) {
 						
@@ -217,18 +218,42 @@ public class InventoryView extends View {
 				}
 			}
 			
-			Element e = items.get(x + y*4);
-						
-			/* only allow operation for specified class */
-			if (!(tempClass.isInstance(e))) {
-				return null;
-			} 
-			
-			items.remove(x + y*4);
-			
-			return e;
+			if ((x + y*4) < items.size()) {
+				Element e = items.get(x + y*4);
+				
+				/* only allow operation for specified class */
+				if (!(tempClass.isInstance(e))) {
+					return null;
+				} 
+				
+				items.remove(x + y*4);
+				
+				return e;
+			}
 		}
 		return null;
+	}
+	
+	public void showDescription(int mouseX, int mouseY) {
+		int x = 0, y = 0;
+		for (int i = 0; i < items.size(); i++) {
+
+			if (mouseX > ORIGIN_X + x * 40
+					&& mouseX < ORIGIN_X + x * 40 + 40
+					&& mouseY > ORIGIN_Y + y * 40
+					&& mouseY < ORIGIN_Y + y * 40 + 40) {
+				break;
+			}
+
+			if (i % 4 == 0 && i != 0) {
+				y++;
+				x = 0;
+			} else {
+				x++;
+			}
+		}
+		
+		String description = items.get(x + y*4).getDescription();
 	}
 	
 	/*
@@ -240,12 +265,17 @@ public class InventoryView extends View {
 	/**Add items to lists of items, weapons, armaments, potions, armor.
 	 * @param item
 	 */
-	public void storeItem(Element item) {
+	public void storeItem(Element item, ArmorView armorView) {
+		
+		System.out.println("itemname: " + item.NAME);
 		
 		if (item instanceof Weapon) {
 			/*weapons.add((Weapon) item);
 			armor.add((Equipment) item);*/
-			items.add(item);
+			if (!(item.NAME.equals("Fists"))) {
+				items.add(item);
+			}
+			armorView.addFists();
 		}
 		else if (item instanceof Armament) {
 			/*armaments.add((Armament) item);
@@ -256,6 +286,8 @@ public class InventoryView extends View {
 			/*potions.add((Potion) item);*/
 			items.add(item);
 		}
+		else if (item.NAME.equals("Key")) {
+			items.add(item);
+		}
 	}
-
 }
