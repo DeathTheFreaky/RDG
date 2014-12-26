@@ -260,12 +260,20 @@ public class Game extends BasicGame {
 			}
 			gameEnvironment.update();
 			chat.update();
+			processNetworkMessages();
 
 			timeToUpdate = 0;
 			updatesUntilPlayerUpdate--;
 		}
 
 		timeToUpdate += delta;
+	}
+
+	/**Process Network Messages according to their type.
+	 * 
+	 */
+	private void processNetworkMessages() {
+		
 	}
 
 	@Override

@@ -11,6 +11,7 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
+import at.RDG.network.NetworkManager;
 import elements.Attack;
 import elements.Creature;
 import elements.Monster;
@@ -27,6 +28,7 @@ import general.Enums.Attacks;
 import general.Enums.Attributes;
 import general.Enums.Channels;
 import general.Enums.Levels;
+import general.Enums.MessageType;
 import general.Enums.Modes;
 import general.Enums.Targets;
 import views.ArmorView;
@@ -79,6 +81,9 @@ public class Fight extends View implements Runnable {
 	
 	/* Reference to Chat class for displaying fight messages */
 	private Chat chat;
+	
+	/* Reference to NetworkManager for sending stats to other human player */
+	private NetworkManager nw;
 
 	/* Creature that the player is fighting against */
 	private Creature enemy = null;
@@ -163,6 +168,8 @@ public class Fight extends View implements Runnable {
 		this.armorView = armorView;
 		
 		this.chat = chat;
+		
+		this.nw = NetworkManager.getInstance();
 		
 	}
 	
@@ -593,6 +600,8 @@ public class Fight extends View implements Runnable {
 		float playerArmorSum = armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.ARMOR);
 		float playerSpeed = calcCreatureSpeed(this.player);
 		float playerAccuracy = calcCreatureAccuracy(this.player);
+		
+		//NetworkMessage(Map<String, Float> fightvalues);
 		
 		//send message(playerArmorSum, value)
 		//send message(playerSpeed, value)
