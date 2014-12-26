@@ -34,7 +34,7 @@ public class Main {
 	private static void server(int count) {
 		LobbyServer server = null;
 		try {
-			server = new LobbyServer("Neue Lobby " + count);
+			server = new LobbyServer("Neue Lobby " + count, 1024);
 		} catch (ArgumentOutOfRangeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

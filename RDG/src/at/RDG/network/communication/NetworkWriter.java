@@ -9,8 +9,10 @@ public class NetworkWriter extends Thread{
 	
 	private ObjectOutputStream oos;
 	private Queue<NetworkMessage> writeQueue;
+	private Socket s;
 	
 	public NetworkWriter(Socket s, Queue<NetworkMessage> writeQueue) throws IOException{
+		this.s = s;
 		this.oos = new ObjectOutputStream(s.getOutputStream());
 		this.writeQueue = writeQueue;
 	}
@@ -34,5 +36,8 @@ public class NetworkWriter extends Thread{
 				e.printStackTrace();
 			}
 		}
+		try {
+			this.s.close();
+		} catch (IOException e) {}
 	}
 }
