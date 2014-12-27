@@ -20,6 +20,7 @@ import elements.Potion;
 import gameEssentials.Player;
 import general.AttackFactory;
 import general.Chances;
+import general.Enums.ImageSize;
 import general.ItemFactory;
 import general.Enums.ArmorStatsAttributes;
 import general.Enums.ArmorStatsMode;
@@ -229,9 +230,21 @@ public class Fight extends View implements Runnable {
 		graphics.setColor(BLACK);
 		graphics.drawString(this.enemy.NAME, origin.x + border + barGap + 1 , origin.y
 				+ border + barGap - 25);
+		/* Player name */
 		graphics.drawString(this.player.NAME, fightWindowWidth - border - barGap - barWidth , 
 				fightWindowHeight - barGap + 10);
-
+		
+		/* Print Enemy and Player Image */
+		/* Enemy Image */
+		if (enemy != null) {
+			graphics.drawImage(resources.IMAGES.get(enemy.NAME + "_Big"),
+				origin.x + fightWindowWidth - resources.IMAGES.get(enemy.NAME + "_Big").getWidth() - 5, origin.y + border + 10);
+		}
+		
+		/* Player Image */
+		graphics.drawImage(resources.IMAGES.get("Player1_big"), origin.x + border + 5,
+				origin.y + fightWindowHeight - resources.IMAGES.get("Player1_big").getHeight() + 5);
+		
 		// Fight Options
 		if (attackScreen == AttackScreens.MAIN) {
 			graphics.setColor(BLACK);
