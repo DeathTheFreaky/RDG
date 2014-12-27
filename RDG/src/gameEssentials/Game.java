@@ -5,6 +5,8 @@ import java.awt.Point;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -14,10 +16,11 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.xml.sax.SAXException;
 
+import at.RDG.network.NetworkManager;
+import at.RDG.network.communication.NetworkMessage;
 import configLoader.Configloader;
 import elements.Creature;
 import elements.Element;
-import elements.Equipment;
 import elements.Monster;
 import elements.Potion;
 import fighting.Fight;
@@ -26,17 +29,14 @@ import views.Chat;
 import views.GameEnvironment;
 import views.InventoryView;
 import views.Minimap;
-import views.View;
-
 import general.Enums.AttackScreens;
 import general.Enums.Attacks;
-
 import general.Enums.CreatureType;
 import general.Enums.ImageSize;
 import general.Enums.UsedClasses;
 import general.Enums.ViewingDirections;
+import general.Main;
 import general.ResourceManager;
-import general.Enums.Updates;
 
 /**
  * Game class stores the main configuration parameters of a game and defines
@@ -45,6 +45,9 @@ import general.Enums.Updates;
  * @see BasicGame
  */
 public class Game extends BasicGame {
+	
+	/* game Instance */
+	private static Game INSTANCE = null;
 
 	/* Game Variables in pixels */
 	public static final int WIDTH = 640;
@@ -125,7 +128,10 @@ public class Game extends BasicGame {
 
 	/* Map which is needed for each Player */
 	private Map map;
-
+	
+	/* NetworkManager for transferring messages between two computers */
+	private NetworkManager nw = null;
+	
 	/* resource path */
 	public static final String IMAGEPATH = "./resources/images/";
 
@@ -139,7 +145,7 @@ public class Game extends BasicGame {
 	private Thread fightThread = null;
 	
 	/* needed for human fights - set to true if this is the lobby HOSTER */
-	private Boolean humanFightHost = false;
+	private Boolean lobbyHost = false;
 	
 	/* list holding child threads */
 	private List<Thread> threadList = new ArrayList<Thread>();
@@ -156,9 +162,10 @@ public class Game extends BasicGame {
 	 * "Find out if its Player 1 or Player2"
 	 * 
 	 * @param title
+	 * @throws IOException 
 	 * @see Game
 	 */
-	public Game(String title) {
+	private Game(String title) throws IOException {
 		/* Find out if its is player1 or player2 */
 		this(title, "Testplayername");
 	}
@@ -168,11 +175,45 @@ public class Game extends BasicGame {
 	 * 
 	 * @param title
 	 * @param playerName
+	 * @throws IOException 
 	 * @see Game
 	 */
-	public Game(String title, String playerName) {
+	private Game(String title, String playerName) throws IOException {
 		super(title);
 		this.playerName = playerName;
+		nw = NetworkManager.getInstance();
+	}
+	
+	/**Only returns existing instance of game or null if none instance exists yet.
+	 * @return
+	 */
+	public static Game getInstance() {
+		return INSTANCE;
+	}
+	
+	/**Get Instance of Game.
+	 * @param title
+	 * @return
+	 * @throws IOException 
+	 */
+	public static Game getInstance(String title) throws IOException {
+		if (INSTANCE == null) {
+			INSTANCE = new Game(title);
+		}
+		return INSTANCE;
+	}
+	
+	/**Get Instance of Game.
+	 * @param title
+	 * @param playerName
+	 * @return
+	 * @throws IOException 
+	 */
+	public static Game getInstance(String title, String playerName) throws IOException {
+		if (INSTANCE == null) {
+			INSTANCE = new Game(title, playerName);
+		}
+		return INSTANCE;
 	}
 
 	@Override
@@ -183,9 +224,8 @@ public class Game extends BasicGame {
 			configloader = new Configloader().getInstance();
 		} catch (IllegalArgumentException | ParserConfigurationException
 				| SAXException | IOException e) {
-			e.printStackTrace();
-			System.err
-					.println("\nParsing Configuration Files failed\nExiting program\n");
+			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
+					"Parsing Configuration Files failed.", e);
 			System.exit(1);
 		}
 
@@ -274,6 +314,31 @@ public class Game extends BasicGame {
 	 */
 	private void processNetworkMessages() {
 		
+		NetworkMessage message = null;
+		
+		while((message = nw.getNextMessage()) != null) {
+			switch(message.type) {
+				case CHAT:
+						
+					break;
+				case FIGHT:
+						fightInstance.processMessages(message);
+					break;
+				case GENERAL:
+					break;
+				case ITEMPICKUP:
+					break;
+				case MAP:
+						
+					break;
+				case NETWORK:
+					break;
+				case PLAYERPOSITION:
+					break;
+				default:
+					break;
+			}
+		}
 	}
 
 	@Override
@@ -582,5 +647,12 @@ public class Game extends BasicGame {
 			
 			//YOU HAVE WON THE GAME - SWITCH GAME STATE
 		}
+	}
+	
+	/**Checks if the computer is the lobbyHost.
+	 * @return true if this computer hosted the lobby
+	 */
+	public boolean isLobbyHost() {
+		return this.lobbyHost;
 	}
 }

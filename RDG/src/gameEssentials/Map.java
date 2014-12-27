@@ -80,6 +80,7 @@ public class Map {
 	private final int WEAK_ITEM_OFFSET = 1;
 	private final int MEDIUM_ITEM_OFFSET = 1; 
 	private final int STRONG_ITEM_OFFSET = 1;
+
 	
 	/**
 	 * Constructs a Map.
@@ -87,7 +88,7 @@ public class Map {
 	 * @see Map
 	 */
 	public Map() {
-
+		
 	}
 
 	/**
@@ -194,6 +195,11 @@ public class Map {
 		// test door pos detection
 		loadRooms();
 		updateRooms();
+		
+		/* send Map to other computer */
+		if (Game.getInstance().isLobbyHost()) {
+			sendMap();
+		}
 
 		/* true-initialize passable */
 		/*
@@ -777,5 +783,12 @@ public class Map {
 				}
 			}
 		}
+	}
+	
+	/**Sends Map overlay to other player but sets all images to null.
+	 * 
+	 */
+	private void sendMap() {
+		
 	}
 }

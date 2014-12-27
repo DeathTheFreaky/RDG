@@ -1,12 +1,18 @@
 package general;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import gameEssentials.Game;
 
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.SlickException;
+import org.xml.sax.SAXException;
 
 import at.RDG.network.ArgumentOutOfRangeException;
 import at.RDG.network.discovery.LobbySearcher;
@@ -23,7 +29,14 @@ public class Main {
 	 */
 	public static void main(String[] args) throws SlickException {
 
-		AppGameContainer app1 = new AppGameContainer(new Game("Battle Dungeon"));
+		AppGameContainer app1 = null;
+		try {
+			app1 = new AppGameContainer(Game.getInstance("Battle Dungeon"));
+		} catch (IOException e) {
+			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
+					"ServerSocket could not be created.", e);
+			System.exit(1);;
+		} 
 		app1.setDisplayMode(Game.WIDTH, Game.HEIGHT, false); // Breite, Höhe, ???
 		app1.setTargetFrameRate(30); // 60 Frames pro Sekunde
 		app1.setAlwaysRender(true); // Spiel wird auch ohne Fokus aktualisiert
