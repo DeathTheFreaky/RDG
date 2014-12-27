@@ -1,12 +1,15 @@
 package gameEssentials;
 
 import java.awt.Point;
+import java.io.IOException;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
+import at.RDG.network.NetworkManager;
+import at.RDG.network.communication.NetworkMessage;
 import elements.Creature;
 import views.GameEnvironment;
 import general.Enums.CreatureType;
@@ -55,8 +58,12 @@ public class Player extends Creature {
 	/* The Map associated with this player for getting some Values */
 	Map map;
 	
-	/* if player has found the key, he may enter the treasure chamber */
-	private boolean hasKey = false;
+	/* network manager for moving the player */
+	NetworkManager networkManager;
+	
+	/* save position of current enemy in a fight to avoid two players */
+	private int enemyX = 0;
+	private int enemyY = 0;
 
 	/**
 	 * Constructs a Player.<br>
@@ -96,6 +103,7 @@ public class Player extends Creature {
 	 * @param name
 	 * @param originOfGameEnvironment
 	 * @throws SlickException
+	 * @throws IOException 
 	 * @see Player
 	 */
 	public Player(String creatureName, Image image,
@@ -109,6 +117,9 @@ public class Player extends Creature {
 		super(creatureName, image, type, 50, 25, 25, 25);
 
 		this.originOfGameEnvironment = originOfGameEnvironment;
+		
+		/* network manager */
+		networkManager = Game.getInstance().networkManager;
 
 		/* unique player number, to identify a player */
 
@@ -268,6 +279,7 @@ public class Player extends Creature {
 			lastViewingDirection = ViewingDirections.NORTH;
 			if (map.isFieldPassable(position.x, position.y - 1)) {
 				position.move(position.x, position.y - 1);
+				networkManager.sendMessage(new NetworkMessage(position.x, position.y, goTo));
 				moveCamera(Directions.UP);
 				map.setScopePositionForPlayer(cameraPosition);
 			}
@@ -292,6 +304,7 @@ public class Player extends Creature {
 			lastViewingDirection = ViewingDirections.WEST;
 			if (map.isFieldPassable(position.x - 1, position.y)) {
 				position.move(position.x - 1, position.y);
+				networkManager.sendMessage(new NetworkMessage(position.x, position.y, goTo));
 				moveCamera(Directions.LEFT);
 				map.setScopePositionForPlayer(cameraPosition);
 			}
@@ -316,6 +329,7 @@ public class Player extends Creature {
 			lastViewingDirection = ViewingDirections.SOUTH;
 			if (map.isFieldPassable(position.x, position.y + 1)) {
 				position.move(position.x, position.y + 1);
+				networkManager.sendMessage(new NetworkMessage(position.x, position.y, goTo));
 				moveCamera(Directions.DOWN);
 				map.setScopePositionForPlayer(cameraPosition);
 			}
@@ -340,6 +354,7 @@ public class Player extends Creature {
 			lastViewingDirection = ViewingDirections.EAST;
 			if (map.isFieldPassable(position.x + 1, position.y)) {
 				position.move(position.x + 1, position.y);
+				networkManager.sendMessage(new NetworkMessage(position.x, position.y, goTo));
 				moveCamera(Directions.RIGHT);
 				map.setScopePositionForPlayer(cameraPosition);
 			}
@@ -428,6 +443,7 @@ public class Player extends Creature {
 		   all points reference the number of tiles, starting from upper left corner */
 		if (playerNumber == 1) {
 			this.position = new Point(5, 4);
+			networkManager.sendMessage(new NetworkMessage(5, 4, lastViewingDirection));
 			this.cameraPosition = new Point(0, 0);
 
 			/* where the player is "placed" in the scope of the camera */
@@ -436,6 +452,7 @@ public class Player extends Creature {
 			map.setScopePositionForPlayer(0, 0);
 		} else {
 			this.position = new Point(map.getWidth() - 4, map.getHeight() - 3);
+			networkManager.sendMessage(new NetworkMessage(map.getWidth() - 4, map.getHeight() - 3, lastViewingDirection));
 			this.cameraPosition = new Point(map.getWidth() - 14,
 					map.getHeight() - 11);
 
@@ -445,5 +462,21 @@ public class Player extends Creature {
 			map.setScopePositionForPlayer(map.getWidth() - 13,
 					map.getHeight() - 10);
 		}
+	}
+	
+	/**Set position of current enemy in a fight or 0 when fight ends.
+	 * @param x
+	 * @param y
+	 */
+	public void setEnemyPosition(int x, int y) {
+		this.enemyX = x;
+		this.enemyY = y;
+	}
+	
+	/**
+	 * @return position of current enemy in fight or 0 if no fight is active
+	 */
+	public Point getEnemyPosition() {
+		return new Point(this.enemyX, this.enemyY);
 	}
 }

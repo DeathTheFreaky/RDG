@@ -13,8 +13,11 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 
+import at.RDG.network.NetworkManager;
+import at.RDG.network.communication.NetworkMessage;
 import views.chat.InputField;
 import views.chat.Message;
+import gameEssentials.Game;
 import general.Enums.Channels;
 
 /**
@@ -69,6 +72,9 @@ public class Chat extends View {
 	/* set font type */
 	Font font = new Font("Verdana", Font.BOLD, 11);
 	TrueTypeFont ttf = new TrueTypeFont(font, true);
+	
+	/* network manager for transferring messages to other pc */
+	NetworkManager networkManager;
 
 	/**
 	 * Constructs a Chat passing its origin's position as single x and y
@@ -379,7 +385,7 @@ public class Chat extends View {
 	private void processMessage(Message message) {
 
 		if (message.getChannel() == Channels.PUBLIC) {
-			//send message to other computer
+			networkManager.sendMessage(new NetworkMessage(message.getMessage()));
 		}
 		
 		messages.add(message);

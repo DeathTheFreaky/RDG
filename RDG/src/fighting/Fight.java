@@ -353,6 +353,21 @@ public class Fight extends View implements Runnable {
 			//wait for enemy to be set
 		}
 		
+		switch (((Player) this.player).getDirectionOfView()) {
+			case NORTH:
+				((Player) this.player).setEnemyPosition(((Player) this.player).getPosition().x, ((Player) this.player).getPosition().y - 1);
+				break;
+			case EAST:
+				((Player) this.player).setEnemyPosition(((Player) this.player).getPosition().x + 1, ((Player) this.player).getPosition().y);
+				break;
+			case SOUTH:
+				((Player) this.player).setEnemyPosition(((Player) this.player).getPosition().x, ((Player) this.player).getPosition().y + 1);
+				break;
+			case WEST:
+				((Player) this.player).setEnemyPosition(((Player) this.player).getPosition().x - 1, ((Player) this.player).getPosition().y);
+				break;
+		}
+		
 		chatMessage("Started fight: " + this.player.NAME + " vs " + this.enemy.NAME);
 
 		this.humanFight = false; //reset to false before checking if it is a human fight
@@ -376,6 +391,9 @@ public class Fight extends View implements Runnable {
 		
 		/* after a fight, reset the fighting instance's variables */
 		reset();
+		
+		/* reset position of fightenemy when fight ends */
+		((Player) this.player).setEnemyPosition(0, 0);
 		
 		gameEnvironment.fightEnds(myLoser);
 	}

@@ -31,8 +31,10 @@ import views.GameEnvironment;
 import views.InventoryView;
 import views.Minimap;
 import views.View;
+import views.chat.Message;
 import general.Enums.AttackScreens;
 import general.Enums.Attacks;
+import general.Enums.Channels;
 import general.Enums.CreatureType;
 import general.Enums.ImageSize;
 import general.Enums.UsedClasses;
@@ -135,9 +137,6 @@ public class Game extends BasicGame {
 	/* Map which is needed for each Player */
 	private Map map;
 	
-	/* NetworkManager for transferring messages between two computers */
-	private NetworkManager nw = null;
-	
 	/* resource path */
 	public static final String IMAGEPATH = "./resources/images/";
 
@@ -158,6 +157,9 @@ public class Game extends BasicGame {
 	
 	/* fight Instance from gameEnvironment */
 	private Fight fightInstance = null;
+	
+	/* network manager for transferring data to other pc */
+	NetworkManager networkManager;
 
 	/* Declare all classes, we need for the game (Factory, Resourceloader) */
 	// private ResourceManager resourceManager;
@@ -187,7 +189,7 @@ public class Game extends BasicGame {
 	private Game(String title, String playerName) throws IOException {
 		super(title);
 		this.playerName = playerName;
-		nw = NetworkManager.getInstance();
+		this.networkManager = NetworkManager.getInstance();
 	}
 	
 	/**Only returns existing instance of game or null if none instance exists yet.
@@ -322,26 +324,28 @@ public class Game extends BasicGame {
 		
 		NetworkMessage message = null;
 		
-		while((message = nw.getNextMessage()) != null) {
+		while((message = networkManager.getNextMessage()) != null) {
 			switch(message.type) {
 				case CHAT:
-						
+					chat.newMessage(new Message(message.message, 0, 0, Channels.PRIVATE));
 					break;
 				case FIGHT:
-						fightInstance.processMessages(message);
+					fightInstance.processMessages(message);
 					break;
 				case GENERAL:
-						
+						//still to be implemented
 					break;
 				case ITEM:
-						
+					map.getOverlay()[message.itempos[0]][message.itempos[1]] = message.item;
 					break;
 				case MAP:
-						map.setOverlay(MapConverter.toOverlay(message));
+					map.setOverlay(MapConverter.toOverlay(message));
 					break;
 				case NETWORK:
+						//not in queue 
 					break;
 				case PLAYERPOSITION:
+					map.getOpponent().setPosition(message.playerpos[0], message.playerpos[1]);
 					break;
 				default:
 					break;
@@ -697,5 +701,12 @@ public class Game extends BasicGame {
 	 */
 	public boolean isLobbyHost() {
 		return this.lobbyHost;
+	}
+	
+	/**
+	 * @return instance of network Manager
+	 */
+	public NetworkManager getNetworkManager() {
+		return this.networkManager;
 	}
 }

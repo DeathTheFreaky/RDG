@@ -58,7 +58,7 @@ public class NetworkManager {
 	 *            NetworkMessage to send.
 	 */
 	public void sendMessage(NetworkMessage msg) {
-		if (!this.writer.isAlive())
+		if (this.writer == null || !this.writer.isAlive())
 			return;
 		// writes into the queue and notifies the writer thread that something
 		// is in the queue.

@@ -3,6 +3,7 @@ package at.RDG.network.communication;
 import elements.Element;
 import general.Enums.Directions;
 import general.Enums.MessageType;
+import general.Enums.ViewingDirections;
 
 import java.net.InetAddress;
 import java.util.Map;
@@ -38,7 +39,7 @@ public class NetworkMessage {
 	 * Position 1 = Y Position
 	 */
 	public final int playerpos[];
-	public final Directions playerdir;
+	public final ViewingDirections playerdir;
 	
 	//for fight
 	public final Map<String, Float> fightvalues;
@@ -122,7 +123,7 @@ public class NetworkMessage {
 	 * @param playerposY The y position of the player on the map.
 	 * @param playerdir The players facing direction.
 	 */
-	public NetworkMessage(int playerposX, int playerposY, Directions playerdir){
+	public NetworkMessage(int playerposX, int playerposY, ViewingDirections playerdir){
 		this.type = MessageType.PLAYERPOSITION;
 		this.addr = null;
 		this.port = 0;
@@ -189,7 +190,7 @@ public class NetworkMessage {
 	 * @param fightvalues A Map for fightvalues.
 	 * @param overlay A two dimensional {@link Element} array.
 	 */
-	public NetworkMessage(MessageType type, InetAddress addr, int port, String msg, int[] itempos, Element item, int[] playerpos, Directions playerdir, Map<String,Float> fightvalues, Element[][] overlay){
+	public NetworkMessage(MessageType type, InetAddress addr, int port, String msg, int[] itempos, Element item, int[] playerpos, ViewingDirections playerdir, Map<String,Float> fightvalues, Element[][] overlay){
 		this.type = type;
 		this.addr = addr;
 		this.port = port;

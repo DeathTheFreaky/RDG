@@ -11,6 +11,7 @@ import org.newdawn.slick.SlickException;
 
 import at.RDG.network.NetworkManager;
 import at.RDG.network.communication.MapConverter;
+import at.RDG.network.communication.NetworkMessage;
 import views.GameEnvironment;
 import views.InventoryView;
 import views.View;
@@ -402,70 +403,45 @@ public class Map {
 		Element e = null;
 		int x = player.getPosition().x;
 		int y = player.getPosition().y;
-
+		
+		int targetX = 0;
+		int targetY = 0;
+		
 		switch (player.getDirectionOfView()) {
 		case NORTH:
-			System.out.println(overlay[x][y - 1].NAME);
-			if (overlay[x][y - 1] != null) {
-				if ((overlay[x][y - 1] instanceof Potion) ||
-					  (overlay[x][y - 1] instanceof Equipment)) {
-					e = overlay[x][y - 1];
-					overlay[x][y - 1] = null;
-				} else if (overlay[x][y - 1] instanceof Creature) {
-					gameEnvironment.startFight((Creature) overlay[x][y - 1]);
-				} else if (overlay[x][y - 1].NAME.equals("Key") && (!(InventoryView.getInstance().hasKey()))) {
-					e = overlay[x][y - 1];
-					overlay[x][y - 1] = null;
-				}
-			}
+			targetX = x;
+			targetY = y - 1;
 			break;
 		case EAST:
-			System.out.println(overlay[x + 1][y].NAME);
-			if (overlay[x + 1][y] != null) {
-				if ((overlay[x + 1][y] instanceof Potion) ||
-					  (overlay[x + 1][y] instanceof Equipment)) {
-					e = overlay[x + 1][y];
-					overlay[x + 1][y] = null;
-				} else if (overlay[x + 1][y] instanceof Creature) {
-					gameEnvironment.startFight((Creature) overlay[x + 1][y]);
-				} else if (overlay[x + 1][y].NAME.equals("Key") && (!(InventoryView.getInstance().hasKey()))) {
-					e = overlay[x + 1][y];
-					overlay[x + 1][y] = null;
-				}
-			}
+			targetX = x + 1;
+			targetY = y;
 			break;
 		case SOUTH:
-			System.out.println(overlay[x][y + 1].NAME);
-			if (overlay[x][y + 1] != null) {
-				if ((overlay[x][y + 1] instanceof Potion) ||
-					  (overlay[x][y + 1] instanceof Equipment)) {
-					e = overlay[x][y + 1];
-					overlay[x][y + 1] = null;
-				} else if (overlay[x][y + 1] instanceof Creature) {
-					gameEnvironment.startFight((Creature) overlay[x][y + 1]);
-				} else if (overlay[x][y + 1].NAME.equals("Key") && (!(InventoryView.getInstance().hasKey()))) {
-					e = overlay[x][y + 1];
-					overlay[x][y + 1] = null;
-				}
-			}
+			targetX = x;
+			targetY = y + 1;
 			break;
 		case WEST:
-			System.out.println(overlay[x - 1][y].NAME);
-			if (overlay[x - 1][y] != null) {
-				if ((overlay[x - 1][y] instanceof Potion) ||
-					  (overlay[x - 1][y] instanceof Equipment)) {
-					e = overlay[x - 1][y];
-					overlay[x - 1][y] = null;
-				} else if (overlay[x - 1][y] instanceof Creature) {
-					gameEnvironment.startFight((Creature) overlay[x - 1][y]);
-				} else if (overlay[x - 1][y].NAME.equals("Key") && (!(InventoryView.getInstance().hasKey()))) {
-					e = overlay[x - 1][y];
-					overlay[x - 1][y] = null;
-				}
-			}
+			targetX = x - 1;
+			targetY = y;
 			break;
 		default:
 			break;
+		}
+		
+		System.out.println(overlay[targetX][targetY].NAME);
+		if (overlay[targetX][targetY] != null) {
+			if ((overlay[targetX][targetY] instanceof Potion) ||
+				  (overlay[targetX][targetY] instanceof Equipment)) {
+				e = overlay[targetX][targetY];
+				overlay[targetX][targetY] = null;
+				networkManager.sendMessage(new NetworkMessage(targetX, targetY, overlay[targetX][targetY]));
+			} else if ((overlay[targetX][targetY] instanceof Creature) || (targetX == opponent.getPosition().x && targetY == opponent.getPosition().y)) {
+				gameEnvironment.startFight((Creature) overlay[targetX][targetY]);
+			} else if (overlay[targetX][targetY].NAME.equals("Key") && (!(InventoryView.getInstance().hasKey()))) {
+				e = overlay[targetX][targetY];
+				overlay[targetX][targetY] = null;
+				networkManager.sendMessage(new NetworkMessage(targetX, targetY, overlay[targetX][targetY]));
+			}
 		}
 
 		return e;
@@ -793,15 +769,19 @@ public class Map {
 		switch (player.getDirectionOfView()) {
 		case NORTH:
 			overlay[x][y - 1] = null;
+			networkManager.sendMessage(new NetworkMessage(x, y - 1, overlay[x][y - 1]));
 			break;
 		case EAST:
 			overlay[x + 1][y] = null;
+			networkManager.sendMessage(new NetworkMessage(x + 1, y, overlay[x + 1][y]));
 			break;
 		case SOUTH:
 			overlay[x][y + 1] = null;
+			networkManager.sendMessage(new NetworkMessage(x, y + 1, overlay[x][y + 1]));
 			break;
 		case WEST:
 			overlay[x - 1][y] = null;
+			networkManager.sendMessage(new NetworkMessage(x - 1, y, overlay[x - 1][y]));
 			break;
 		default:
 			break;
