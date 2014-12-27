@@ -10,7 +10,7 @@ import general.Enums.Levels;
  */
 public class MonsterTemplate {
 
-	private String name, image;
+	private String name, image, imageBig;
 	private Attributes killBonusType;
 	private Levels level; 
 	private float classMultiplier, statsLowMultiplier, statsHighMultiplier, hp, strength, speed, accuracy, killBonusLow, killBonusHigh;
@@ -32,13 +32,14 @@ public class MonsterTemplate {
 	 * @param killBonusHigh
 	 * @see MonsterTemplate
 	 */
-	public MonsterTemplate(String name, String image, Levels level, Attributes killBonusType, 
+	public MonsterTemplate(String name, String image, String imageBig, Levels level, Attributes killBonusType, 
 		float classMultiplier, float statsLowMultiplier, float statsHighMultiplier, float hp, float strength, float speed, float accuracy, float killBonusLow, float killBonusHigh) {
 		
 		this.name = name; 
 		this.level = level; 
 		this.killBonusType = killBonusType; 
 		this.image = image;
+		this.imageBig = imageBig;
 		this.classMultiplier = classMultiplier;
 		this.statsLowMultiplier = statsLowMultiplier; 
 		this.statsHighMultiplier = statsHighMultiplier; 
@@ -78,6 +79,13 @@ public class MonsterTemplate {
 	 */
 	public String getImage() {
 		return image;
+	}
+	
+	/**
+	 * @return imageBig
+	 */
+	public String getImageBig() {
+		return imageBig;
 	}
 	
 	/**

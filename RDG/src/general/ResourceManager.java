@@ -173,7 +173,10 @@ public class ResourceManager {
 				.getMonsterTemplates().entrySet()) {
 			IMAGES.put(entry.getKey(), new Image(Game.IMAGEPATH
 					+ entry.getValue().getImage()));
+			IMAGES.put(entry.getKey().concat("_Big"), new Image(Game.IMAGEPATH
+					+ entry.getValue().getImageBig()));
 		}
+		
 
 		/* Print which images are stored now */
 		/*
