@@ -14,6 +14,7 @@
 		<Kill_Bonus_Low>2</Kill_Bonus_Low>
 		<Kill_Bonus_High>3</Kill_Bonus_High>
 		<Image>monsters/rat.png</Image>
+		<Image_Big>monsters/rat_big.png</Image_Big>
 	</Monster>
 	<Monster>
 		<Name>Spider</Name>
@@ -29,6 +30,7 @@
 		<Kill_Bonus_Low>1</Kill_Bonus_Low>
 		<Kill_Bonus_High>3</Kill_Bonus_High>
 		<Image>monsters/spider.png</Image>
+		<Image_Big>monsters/spider_big.png</Image_Big>
 	</Monster>
 	<Monster>
 		<Name>Frog</Name>
@@ -44,6 +46,7 @@
 		<Kill_Bonus_Low>1</Kill_Bonus_Low>
 		<Kill_Bonus_High>3</Kill_Bonus_High>
 		<Image>monsters/frog.png</Image>
+		<Image_Big>monsters/frog_big.png</Image_Big>
 	</Monster>
 	<Monster>
 		<Name>Bat</Name>
@@ -59,6 +62,7 @@
 		<Kill_Bonus_Low>1</Kill_Bonus_Low>
 		<Kill_Bonus_High>5</Kill_Bonus_High>
 		<Image>monsters/bat.png</Image>
+		<Image_Big>monsters/bat_big.png</Image_Big>
 	</Monster>
 	<Monster>
 		<Name>Salamander</Name>
@@ -74,6 +78,7 @@
 		<Kill_Bonus_Low>1</Kill_Bonus_Low>
 		<Kill_Bonus_High>3</Kill_Bonus_High>
 		<Image>monsters/salamander.png</Image>
+		<Image_Big>monsters/salamander_big.png</Image_Big>
 	</Monster>
 	<Monster>
 		<Name>Goblin</Name>
@@ -89,6 +94,7 @@
 		<Kill_Bonus_Low>3</Kill_Bonus_Low>
 		<Kill_Bonus_High>5</Kill_Bonus_High>
 		<Image>monsters/goblin.png</Image>
+		<Image_Big>monsters/goblin_big.png</Image_Big>
 	</Monster>
 	<Monster>
 		<Name>Gremlin</Name>
@@ -104,6 +110,7 @@
 		<Kill_Bonus_Low>4</Kill_Bonus_Low>
 		<Kill_Bonus_High>7</Kill_Bonus_High>
 		<Image>monsters/gremlin.png</Image>
+		<Image_Big>monsters/gremlin_big.png</Image_Big>
 	</Monster>
 	<Monster>
 		<Name>Ghost</Name>
@@ -119,6 +126,7 @@
 		<Kill_Bonus_Low>3</Kill_Bonus_Low>
 		<Kill_Bonus_High>5</Kill_Bonus_High>
 		<Image>monsters/ghost.png</Image>
+		<Image_Big>monsters/ghost_big.png</Image_Big>
 	</Monster>
 	<Monster>
 		<Name>Zombie</Name>
@@ -134,6 +142,7 @@
 		<Kill_Bonus_Low>5</Kill_Bonus_Low>
 		<Kill_Bonus_High>10</Kill_Bonus_High>
 		<Image>monsters/zombie.png</Image>
+		<Image_Big>monsters/zombie_big.png</Image_Big>
 	</Monster>
 	<Monster>
 		<Name>Ogre</Name>
@@ -149,6 +158,7 @@
 		<Kill_Bonus_Low>20</Kill_Bonus_Low>
 		<Kill_Bonus_High>30</Kill_Bonus_High>
 		<Image>monsters/ogre.png</Image>
+		<Image_Big>monsters/ogre_big.png</Image_Big>
 	</Monster>
 	<Monster>
 		<Name>Giant</Name>
@@ -164,6 +174,7 @@
 		<Kill_Bonus_Low>20</Kill_Bonus_Low>
 		<Kill_Bonus_High>30</Kill_Bonus_High>
 		<Image>monsters/giant.png</Image>
+		<Image_Big>monsters/giant_big.png</Image_Big>
 	</Monster>
 	<Monster>
 		<Name>Cyclops</Name>
@@ -179,5 +190,6 @@
 		<Kill_Bonus_Low>20</Kill_Bonus_Low>
 		<Kill_Bonus_High>30</Kill_Bonus_High>
 		<Image>monsters/cyclops.png</Image>
+		<Image_Big>monsters/cyclops_big.png</Image_Big>
 	</Monster>
 </Monsters>
