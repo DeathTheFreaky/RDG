@@ -81,22 +81,25 @@ public class Map {
 	private final int MEDIUM_ITEM_OFFSET = 1; 
 	private final int STRONG_ITEM_OFFSET = 1;
 	
+	/* true if this computer is the lobbyHost */
+	Boolean lobbyHost = null;
+	
 	/**
 	 * Constructs a Map.
 	 * 
 	 * @see Map
 	 */
-	public Map() {
-
+	public Map(Boolean lobbyHost) {
+		this.lobbyHost = lobbyHost;
 	}
 
 	/**
 	 * @return the one and only instance of Map
 	 * @throws SlickException
 	 */
-	public Map getInstance() throws SlickException {
+	public Map getInstance(Boolean lobbyHost) throws SlickException {
 		if (INSTANCE == null) {
-			INSTANCE = new Map();
+			INSTANCE = new Map(lobbyHost);
 			INSTANCE.init();
 		}
 		return INSTANCE;
@@ -194,6 +197,11 @@ public class Map {
 		// test door pos detection
 		loadRooms();
 		updateRooms();
+		
+		/* send Map to other computer */
+		if (this.lobbyHost) {
+			sendMap();
+		}
 
 		/* true-initialize passable */
 		/*
@@ -777,5 +785,12 @@ public class Map {
 				}
 			}
 		}
+	}
+	
+	/**Sends Map overlay to other player but sets all images to null.
+	 * 
+	 */
+	private void sendMap() {
+		
 	}
 }

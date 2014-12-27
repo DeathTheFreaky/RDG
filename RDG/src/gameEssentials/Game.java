@@ -14,10 +14,11 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.xml.sax.SAXException;
 
+import at.RDG.network.NetworkManager;
+import at.RDG.network.communication.NetworkMessage;
 import configLoader.Configloader;
 import elements.Creature;
 import elements.Element;
-import elements.Equipment;
 import elements.Monster;
 import elements.Potion;
 import fighting.Fight;
@@ -26,17 +27,13 @@ import views.Chat;
 import views.GameEnvironment;
 import views.InventoryView;
 import views.Minimap;
-import views.View;
-
 import general.Enums.AttackScreens;
 import general.Enums.Attacks;
-
 import general.Enums.CreatureType;
 import general.Enums.ImageSize;
 import general.Enums.UsedClasses;
 import general.Enums.ViewingDirections;
 import general.ResourceManager;
-import general.Enums.Updates;
 
 /**
  * Game class stores the main configuration parameters of a game and defines
@@ -125,7 +122,10 @@ public class Game extends BasicGame {
 
 	/* Map which is needed for each Player */
 	private Map map;
-
+	
+	/* NetworkManager for transferring messages between two computers */
+	private NetworkManager nw = NetworkManager.getInstance();
+	
 	/* resource path */
 	public static final String IMAGEPATH = "./resources/images/";
 
@@ -139,7 +139,7 @@ public class Game extends BasicGame {
 	private Thread fightThread = null;
 	
 	/* needed for human fights - set to true if this is the lobby HOSTER */
-	private Boolean humanFightHost = false;
+	private Boolean lobbyHost = false;
 	
 	/* list holding child threads */
 	private List<Thread> threadList = new ArrayList<Thread>();
@@ -236,7 +236,7 @@ public class Game extends BasicGame {
 				new Dimension(INVENTORY_WIDTH, INVENTORY_HEIGHT));
 		
 		/* Load Map and place the player */
-		map = new Map().getInstance();
+		map = new Map(lobbyHost).getInstance(lobbyHost);
 		map.setPlayer(player);
 		map.setGameEnvironment(gameEnvironment);
 		// map.fillMap();
@@ -274,6 +274,31 @@ public class Game extends BasicGame {
 	 */
 	private void processNetworkMessages() {
 		
+		NetworkMessage message = null;
+		
+		while((message = nw.getNextMessage()) != null) {
+			switch(message.type) {
+				case CHAT:
+						
+					break;
+				case FIGHT:
+						fightInstance.processMessages(message);
+					break;
+				case GENERAL:
+					break;
+				case ITEMPICKUP:
+					break;
+				case MAP:
+						
+					break;
+				case NETWORK:
+					break;
+				case PLAYERPOSITION:
+					break;
+				default:
+					break;
+			}
+		}
 	}
 
 	@Override

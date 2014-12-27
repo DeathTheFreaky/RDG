@@ -1669,67 +1669,82 @@ public class Fight extends View implements Runnable {
 		this.humanFightHost = true;
 	}
 	
-	/**Set initializing data at begin of human fight.
-	 * @param data
+	/**Logic for processing network messages concerning human fights.
+	 * 
 	 */
-	public synchronized void setAll(HashMap<String, Float> data) {
-		if (data.get("slave") == 1f) {
+	public synchronized void processMessages(NetworkMessage message) {
+		if (message.fightvalues.containsKey("slave")) {
+			setAll(message.fightvalues);
+		} else if (message.fightvalues.containsKey("firstPlayer")) {
+			setFirst(message.fightvalues);
+		} else if (message.fightvalues.containsKey("activeAttack")) {
+			setAttack(message.fightvalues);
+		} else if (message.fightvalues.containsKey("armorSum")) {
+			setSet(message.fightvalues);
+		}
+	}
+	
+	/**Set initializing data at begin of human fight.
+	 * @param fightvalues
+	 */
+	private synchronized void setAll(Map<String, Float> fightvalues) {
+		if (fightvalues.get("slave") == 1f) {
 			this.humanFightSlave = true;
 		} else {
 			this.humanFightHost = true;
 		}
-		this.enemy.setHp(data.get("health"));
-		this.enemy.setOrHp(data.get("health"));
-		this.enemy.setAccuracy(data.get("accuracy"));
-		this.enemy.setOrAccuracy(data.get("accuracy"));
-		this.enemy.setSpeed(data.get("speed"));
-		this.enemy.setOrSpeed(data.get("speed"));
-		this.enemy.setStrength(data.get("strength"));
-		this.enemy.setOrStrength(data.get("strength"));
-		this.enemyFightsMultiplier = data.get("fightsMultiplier");
-		this.enemyArmorSpeedMalusSum = data.get("armorSpeedMalusSum");
-		this.enemyWeaponSpeedMalusMax = data.get("weaponSpeedMalusMax");
-		this.enemyArmorSum = data.get("armorSum");
+		this.enemy.setHp(fightvalues.get("health"));
+		this.enemy.setOrHp(fightvalues.get("health"));
+		this.enemy.setAccuracy(fightvalues.get("accuracy"));
+		this.enemy.setOrAccuracy(fightvalues.get("accuracy"));
+		this.enemy.setSpeed(fightvalues.get("speed"));
+		this.enemy.setOrSpeed(fightvalues.get("speed"));
+		this.enemy.setStrength(fightvalues.get("strength"));
+		this.enemy.setOrStrength(fightvalues.get("strength"));
+		this.enemyFightsMultiplier = fightvalues.get("fightsMultiplier");
+		this.enemyArmorSpeedMalusSum = fightvalues.get("armorSpeedMalusSum");
+		this.enemyWeaponSpeedMalusMax = fightvalues.get("weaponSpeedMalusMax");
+		this.enemyArmorSum = fightvalues.get("armorSum");
 		this.allSet = true;
 	}
 	
 	/**Set first attacker in a round.
-	 * @param data
+	 * @param fightvalues
 	 */
-	public synchronized void setFirst(HashMap<String, Float> data) {
-		this.thisPlayerisFirst = data.get("firstPlayer");
+	private synchronized void setFirst(Map<String, Float> fightvalues) {
+		this.thisPlayerisFirst = fightvalues.get("firstPlayer");
 		this.firstSet = true;
 	}
 	
 	/**Set stats data from equipped items when other player changes set.
-	 * @param data
+	 * @param fightvalues
 	 */
-	public synchronized void setSet(HashMap<String, Float> data) {
-		this.enemyArmorSpeedMalusSum = data.get("armorSpeedMalusSum");
-		this.enemyWeaponSpeedMalusMax = data.get("weaponSpeedMalusMax");
-		this.enemyArmorSum = data.get("armorSum");
+	private synchronized void setSet(Map<String, Float> fightvalues) {
+		this.enemyArmorSpeedMalusSum = fightvalues.get("armorSpeedMalusSum");
+		this.enemyWeaponSpeedMalusMax = fightvalues.get("weaponSpeedMalusMax");
+		this.enemyArmorSum = fightvalues.get("armorSum");
 	}
 	
 	/**Set after each attack performed by other human player.
-	 * @param data
+	 * @param fightvalues
 	 */
-	public synchronized void setAttack(HashMap<String, Float> data) {
+	private synchronized void setAttack(Map<String, Float> fightvalues) {
 		
-		if(data.get("activeAttack") == 1f || data.get("activeAttack") == 7f) {
-			this.enemyAttackHealthDamage = data.get("healthDamage");
-		} else if (data.get("activeAttack") >= 2f && data.get("activeAttack") <= 4f) {
-			this.enemyAttackHealthDamage = data.get("healthDamage");
-			this.enemyAttackAttributeDamage = data.get("attributeDamage");
-		} else if (data.get("activeAttack") == 5f) {
-			data.put("armorSpeedMalusSum", armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.SPEED));
-			data.put("weaponSpeedMalusMax", armorView.getStats(ArmorStatsTypes.WEAPONS, ArmorStatsMode.MAX, ArmorStatsAttributes.SPEED));
-			data.put("armorSum", armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.ARMOR));
-		} else if (data.get("activeAttack") == 6f) {
+		if(fightvalues.get("activeAttack") == 1f || fightvalues.get("activeAttack") == 7f) {
+			this.enemyAttackHealthDamage = fightvalues.get("healthDamage");
+		} else if (fightvalues.get("activeAttack") >= 2f && fightvalues.get("activeAttack") <= 4f) {
+			this.enemyAttackHealthDamage = fightvalues.get("healthDamage");
+			this.enemyAttackAttributeDamage = fightvalues.get("attributeDamage");
+		} else if (fightvalues.get("activeAttack") == 5f) {
+			fightvalues.put("armorSpeedMalusSum", armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.SPEED));
+			fightvalues.put("weaponSpeedMalusMax", armorView.getStats(ArmorStatsTypes.WEAPONS, ArmorStatsMode.MAX, ArmorStatsAttributes.SPEED));
+			fightvalues.put("armorSum", armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.ARMOR));
+		} else if (fightvalues.get("activeAttack") == 6f) {
 			for (String potionName : resources.POTIONS) {
-				if (data.containsKey(potionName)) {
+				if (fightvalues.containsKey(potionName)) {
 					try {
 						this.selectedPotion = ItemFactory.createPotion(potionName, 1);
-						this.selectedPotion.power = data.get(potionName);
+						this.selectedPotion.power = fightvalues.get(potionName);
 					} catch (SlickException e) {
 						e.printStackTrace();
 					}
