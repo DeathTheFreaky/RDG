@@ -23,7 +23,7 @@ public class Main {
 	 */
 	public static void main(String[] args) throws SlickException {
 
-		AppGameContainer app1 = new AppGameContainer(new Game("Battle Dungeon"));
+		AppGameContainer app1 = new AppGameContainer(Game.getInstance("Battle Dungeon"));
 		app1.setDisplayMode(Game.WIDTH, Game.HEIGHT, false); // Breite, Höhe, ???
 		app1.setTargetFrameRate(30); // 60 Frames pro Sekunde
 		app1.setAlwaysRender(true); // Spiel wird auch ohne Fokus aktualisiert

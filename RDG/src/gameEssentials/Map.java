@@ -80,26 +80,24 @@ public class Map {
 	private final int WEAK_ITEM_OFFSET = 1;
 	private final int MEDIUM_ITEM_OFFSET = 1; 
 	private final int STRONG_ITEM_OFFSET = 1;
-	
-	/* true if this computer is the lobbyHost */
-	Boolean lobbyHost = null;
+
 	
 	/**
 	 * Constructs a Map.
 	 * 
 	 * @see Map
 	 */
-	public Map(Boolean lobbyHost) {
-		this.lobbyHost = lobbyHost;
+	public Map() {
+		
 	}
 
 	/**
 	 * @return the one and only instance of Map
 	 * @throws SlickException
 	 */
-	public Map getInstance(Boolean lobbyHost) throws SlickException {
+	public Map getInstance() throws SlickException {
 		if (INSTANCE == null) {
-			INSTANCE = new Map(lobbyHost);
+			INSTANCE = new Map();
 			INSTANCE.init();
 		}
 		return INSTANCE;
@@ -199,7 +197,7 @@ public class Map {
 		updateRooms();
 		
 		/* send Map to other computer */
-		if (this.lobbyHost) {
+		if (Game.getInstance().isLobbyHost()) {
 			sendMap();
 		}
 

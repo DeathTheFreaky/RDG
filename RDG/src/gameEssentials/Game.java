@@ -42,6 +42,9 @@ import general.ResourceManager;
  * @see BasicGame
  */
 public class Game extends BasicGame {
+	
+	/* game Instance */
+	private static Game INSTANCE = null;
 
 	/* Game Variables in pixels */
 	public static final int WIDTH = 640;
@@ -158,7 +161,7 @@ public class Game extends BasicGame {
 	 * @param title
 	 * @see Game
 	 */
-	public Game(String title) {
+	private Game(String title) {
 		/* Find out if its is player1 or player2 */
 		this(title, "Testplayername");
 	}
@@ -170,9 +173,39 @@ public class Game extends BasicGame {
 	 * @param playerName
 	 * @see Game
 	 */
-	public Game(String title, String playerName) {
+	private Game(String title, String playerName) {
 		super(title);
 		this.playerName = playerName;
+	}
+	
+	/**Only returns existing instance of game or null if none instance exists yet.
+	 * @return
+	 */
+	public static Game getInstance() {
+		return INSTANCE;
+	}
+	
+	/**Get Instance of Game.
+	 * @param title
+	 * @return
+	 */
+	public static Game getInstance(String title) {
+		if (INSTANCE == null) {
+			INSTANCE = new Game(title);
+		}
+		return INSTANCE;
+	}
+	
+	/**Get Instance of Game.
+	 * @param title
+	 * @param playerName
+	 * @return
+	 */
+	public static Game getInstance(String title, String playerName) {
+		if (INSTANCE == null) {
+			INSTANCE = new Game(title, playerName);
+		}
+		return INSTANCE;
 	}
 
 	@Override
@@ -236,7 +269,7 @@ public class Game extends BasicGame {
 				new Dimension(INVENTORY_WIDTH, INVENTORY_HEIGHT));
 		
 		/* Load Map and place the player */
-		map = new Map(lobbyHost).getInstance(lobbyHost);
+		map = new Map().getInstance();
 		map.setPlayer(player);
 		map.setGameEnvironment(gameEnvironment);
 		// map.fillMap();
@@ -607,5 +640,12 @@ public class Game extends BasicGame {
 			
 			//YOU HAVE WON THE GAME - SWITCH GAME STATE
 		}
+	}
+	
+	/**Checks if the computer is the lobbyHost.
+	 * @return true if this computer hosted the lobby
+	 */
+	public boolean isLobbyHost() {
+		return this.lobbyHost;
 	}
 }
