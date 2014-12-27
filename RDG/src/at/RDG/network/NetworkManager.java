@@ -36,6 +36,7 @@ public class NetworkManager {
 	private LobbyServer lserver = null;
 	private NetworkWriter writer = null;
 	private NetworkReader reader = null;
+	private Thread acceptor;
 
 	/**
 	 * @see NetworkManager
@@ -46,26 +47,30 @@ public class NetworkManager {
 	private NetworkManager() throws IOException {
 		this.writeQueue = new LinkedList<NetworkMessage>();
 		this.readQueue = new LinkedList<NetworkMessage>();
-		this.serverSocket = new ServerSocket(0);
+		this.serverSocket = new ServerSocket();
 	}
 
 	/**
-	 * Every NetworkMessage put as param is sent through the network.</br>
-	 * If there is no connection the operation is ignored and nothing gets sent.
+	 * Every NetworkMessage put as param is sent through the network.</br> If
+	 * there is no connection the operation is ignored and nothing gets sent.
 	 * 
-	 * @param msg NetworkMessage to send.
+	 * @param msg
+	 *            NetworkMessage to send.
 	 */
 	public void sendMessage(NetworkMessage msg) {
 		if (!this.writer.isAlive())
 			return;
-		//writes into the queue and notifies the writer thread that something is in the queue.
+		// writes into the queue and notifies the writer thread that something
+		// is in the queue.
 		this.writeQueue.offer(msg);
 		this.writer.notify();
 	}
 
 	/**
 	 * Returns next received NetworkMessage in the queue.
-	 * @return next NetworkMessage in the queue. Returns null if there is no message.</br>A message cannot be gotten 2 times.
+	 * 
+	 * @return next NetworkMessage in the queue. Returns null if there is no
+	 *         message.</br>A message cannot be gotten 2 times.
 	 */
 	public NetworkMessage getNextMessage() {
 		return this.readQueue.poll();
@@ -74,14 +79,47 @@ public class NetworkManager {
 	/**
 	 * Starts a Lobby with the name passed to it.
 	 * 
-	 * @param lobbyName The name for the lobby.
-	 * @throws ArgumentOutOfRangeException Is thrown if the lobbyName is greater then 256 characters.
-	 * @throws UnableToStartConnectionException Is thrown if the lobby was not able to start.
-	 * @throws IllegalThreadStateException Is thrown if the lobby is started more then once.
+	 * @param lobbyName
+	 *            The name for the lobby.
+	 * @throws ArgumentOutOfRangeException
+	 *             Is thrown if the lobbyName is greater then 256 characters.
+	 * @throws UnableToStartConnectionException
+	 *             Is thrown if the lobby was not able to start.
+	 * @throws IllegalThreadStateException
+	 *             Is thrown if the lobby is started more then once.
 	 */
 	public void startLobby(String lobbyName)
 			throws ArgumentOutOfRangeException,
 			UnableToStartConnectionException, IllegalThreadStateException {
+		// starts thread to accept incomming connection
+		if (this.acceptor == null) {
+			this.acceptor = new Thread() {
+				@Override
+				public void interrupt() {
+					try {
+						serverSocket.close();
+					} catch (IOException e) {
+					} finally {
+						super.interrupt();
+					}
+				}
+
+				@Override
+				public void run() {
+					try {
+						serverSocket.bind(null);
+						socket = serverSocket.accept();
+					} catch (IOException e) {
+						Logger.getLogger(LobbyServer.class.getName())
+								.log(Level.SEVERE,
+										"Unable bind socket. Accept connection or thread was interrupted.",
+										e);
+					}
+				}
+			};
+		}
+		this.acceptor.start();
+		//starts lobby thread
 		if (this.lserver == null) {
 			try {
 				this.lserver = new LobbyServer(lobbyName,
@@ -97,18 +135,20 @@ public class NetworkManager {
 	}
 
 	/**
-	 * Stops the started lobby.</br>
-	 * Has no effect if the lobby is not started.
+	 * Stops the started lobby.</br> Has no effect if the lobby is not started.
 	 */
 	public void stopLobby() {
 		this.lserver.interrupt();
+		this.acceptor.interrupt();
 	}
 
 	/**
 	 * Starts a search for all open lobby in the local network.
 	 * 
-	 * @param lobbyList A list where all found lobbies are written to.
-	 * @throws IllegalThreadStateException Is thrown if the search is started more then once.
+	 * @param lobbyList
+	 *            A list where all found lobbies are written to.
+	 * @throws IllegalThreadStateException
+	 *             Is thrown if the search is started more then once.
 	 */
 	public void searchLobby(List<Serverinfo> lobbyList)
 			throws IllegalThreadStateException {
@@ -118,8 +158,8 @@ public class NetworkManager {
 	}
 
 	/**
-	 * Stops the search for lobbies.</br>
-	 * Has no effect if the lobby is not started.
+	 * Stops the search for lobbies.</br> Has no effect if the lobby is not
+	 * started.
 	 */
 	public void stopSearchLobby() {
 		this.searcher.interrupt();
@@ -128,13 +168,16 @@ public class NetworkManager {
 	/**
 	 * Tries to connect to a lobby.
 	 * 
-	 * @param lobbyInfo The {@link Serverinfo} object of the lobby where to connect to.
-	 * @throws UnableToStartConnectionException Is thrown if it was not possible to connect to the lobby.
+	 * @param lobbyInfo
+	 *            The {@link Serverinfo} object of the lobby where to connect
+	 *            to.
+	 * @throws UnableToStartConnectionException
+	 *             Is thrown if it was not possible to connect to the lobby.
 	 */
 	public void connect(Serverinfo lobbyInfo)
 			throws UnableToStartConnectionException {
 		try {
-			//connect to lobby and start the writer and reader for the socket.
+			// connect to lobby and start the writer and reader for the socket.
 			this.socket = new Socket(lobbyInfo.getAddress(),
 					lobbyInfo.getPort());
 			this.writer = new NetworkWriter(this.socket, this.writeQueue);
@@ -144,18 +187,32 @@ public class NetworkManager {
 		} catch (IOException e) {
 			Logger.getLogger(LobbyServer.class.getName()).log(Level.SEVERE,
 					"Unable to connect to server.", e);
+			if (this.writer.isAlive())
+				this.writer.interrupt();
+			if (this.reader.isAlive())
+				this.reader.interrupt();
 			throw new UnableToStartConnectionException(
 					"The connection is unable to start.");
 		}
 	}
 
 	/**
-	 * Returns a instance of the NetworkManager to work with. Once it is created it is always the same.
+	 * @return true if connected to another player and false if not.
+	 */
+	public boolean isConnected() {
+		return this.socket != null;
+	}
+
+	/**
+	 * Returns a instance of the NetworkManager to work with. Once it is created
+	 * it is always the same.
+	 * 
 	 * @return instance of NetworkManager
-	 * @throws IOException 
+	 * @throws IOException
 	 *             The Exception is thrown if there is no free port on the
-	 *             system and the ServerSocket was not able to bind.</br>
-	 *             The Exception can only be thrown if the NetworkManager is created.
+	 *             system and the ServerSocket was not able to bind.</br> The
+	 *             Exception can only be thrown if the NetworkManager is
+	 *             created.
 	 */
 	public static NetworkManager getInstance() throws IOException {
 		if (INSTANCE == null) {
