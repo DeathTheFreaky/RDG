@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Point;
 import java.util.Calendar;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -42,15 +43,17 @@ public class Chat extends View {
 	private int zeile = 0;
 
 	/* Different Colors */
-	Color textColor = new Color(0f, 0f, 0f);
-	Color backgroundColor = new Color(1f, 1f, 1f);
-	Color borderColor = new Color(0.2f, 0.2f, 0.2f);
+	private Color BLACK = new Color(0f, 0f, 0f);
+	private Color WHITE = new Color(1f, 1f, 1f);
+	private Color DARK_GREY = new Color(0.2f, 0.2f, 0.2f);
+	private Color TURQUIS = new Color(0.2f, 0.5f, 0.9f);
+	private Color BLUE = new Color(0f, 0f, 1f);
 
 	/* Chat Window Values */
 	private int positionX;
 	private int positionY;
 	private final int strokeSize = 5;
-	private final int timeSpace = 60;
+	private final int timeSpace = 68;
 	private final int inputFieldHeight = 20;
 	private final int inputFieldWidth = size.width - 3 * strokeSize - timeSpace;
 
@@ -62,6 +65,10 @@ public class Chat extends View {
 	/* Time */
 	private int hour = -1;
 	private int minute = -1;
+	
+	/* set font type */
+	Font font = new Font("Verdana", Font.BOLD, 11);
+	TrueTypeFont ttf = new TrueTypeFont(font, true);
 
 	/**
 	 * Constructs a Chat passing its origin's position as single x and y
@@ -137,8 +144,10 @@ public class Chat extends View {
 		positionX = origin.x * GameEnvironment.BLOCK_SIZE;
 		positionY = origin.y * GameEnvironment.BLOCK_SIZE;
 
-		hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-		minute = Calendar.getInstance().get(Calendar.MINUTE);
+		Calendar cal = Calendar.getInstance();
+
+		hour = cal.get(Calendar.HOUR_OF_DAY);
+		minute = cal.get(Calendar.MINUTE);
 
 		messages = new LinkedList<Message>();
 
@@ -146,24 +155,24 @@ public class Chat extends View {
 		 * print a welcoming message and use an instance of Calendar class to
 		 * get current time
 		 */
-		messages.add(new Message("New Game Started! Player vs. Opponent",
-				Calendar.getInstance()));
+		
+		newMessage(new Message("New Game Started! Player vs. Opponent", cal));
 		/* print end of this game session */
 		/*
 		 * if game session overlaps a full hour, react accordingly -> use up
 		 * minutes until full hour is reached, increase hour, increase remaining
 		 * minutes starting form 0
 		 */
-		if (Calendar.getInstance().get(Calendar.MINUTE) >= 45) {
-			messages.add(new Message(
+		if (minute >= 45) {
+			newMessage(new Message(
 					"Instance ends at "
 							+ ((hour + 1) > 23 ? "00" : (hour + 1))
 							+ ":"
 							+ ((minute - 45) > 9 ? (minute - 45) : "0"
-									+ (minute - 45)), Calendar.getInstance()));
+									+ (minute - 45)), cal));
 		} else {
-			messages.add(new Message("Instance ends at " + hour + ":"
-					+ (minute + 15), Calendar.getInstance()));
+			newMessage(new Message("Instance ends at " + hour + ":"
+					+ (minute + 15), cal));
 		}
 
 		/* set first 4 messages to be shown */
@@ -175,12 +184,8 @@ public class Chat extends View {
 			}
 		}
 
-		/* set font type */
-		Font font = new Font("Verdana", Font.BOLD, 12);
-		TrueTypeFont ttf = new TrueTypeFont(font, true);
-
 		/* create an inputfield and clear it when message is sent */
-		input = new InputField(container, ttf, strokeSize*2 + timeSpace,
+		input = new InputField(container, ttf, strokeSize * 2 + timeSpace,
 				positionY + size.height - inputFieldHeight - strokeSize,
 				inputFieldWidth, inputFieldHeight) {
 			@Override
@@ -201,14 +206,18 @@ public class Chat extends View {
 		input.setTextColor(new Color(0f, 0f, 0f));
 		input.setMaxLength(MAXIMUM_LENGTH);
 	}
-
+	
+	 /*
+	 * Synchronzied to avoid concurrent modification exception caused by 
+	 * modifiying list form two threads at same time.
+	 */
 	@Override
-	public void draw(GameContainer container, Graphics graphics) {
-		graphics.setColor(borderColor);
+	public synchronized void draw(GameContainer container, Graphics graphics) {
+		graphics.setColor(DARK_GREY);
 		graphics.fillRect(origin.x * GameEnvironment.BLOCK_SIZE, origin.y
 				* GameEnvironment.BLOCK_SIZE, size.width, size.height);
 
-		graphics.setColor(backgroundColor);
+		graphics.setColor(WHITE);
 		graphics.fillRect(positionX + strokeSize, positionY + strokeSize,
 				size.width - 2 * strokeSize, size.height - 3 * strokeSize
 						- inputFieldHeight);
@@ -216,10 +225,10 @@ public class Chat extends View {
 				- strokeSize - inputFieldHeight, inputFieldWidth,
 				inputFieldHeight);
 
-		graphics.setColor(new Color(0.2f, 0.5f, 0.9f));
+		graphics.setColor(TURQUIS);
 		input.render(container, graphics);
 
-		graphics.setColor(new Color(0f, 0f, 0f));
+		graphics.setColor(BLACK);
 		// graphics.setColor(new Color(0f, 0f, 0f));
 		int i = 0;
 		for (Message m : messages) {
@@ -236,44 +245,81 @@ public class Chat extends View {
 		}
 		zeile = 0;
 
-		graphics.setColor(new Color(0f, 0f, 1f));
+		graphics.setColor(BLUE);
 		graphics.fillRect(strokeSize, positionY + size.height
 				- inputFieldHeight - strokeSize, timeSpace, inputFieldHeight);
-		
-		graphics.setColor(new Color(0f, 0f, 0f));
-		graphics.drawString("<" + hour + ":"
+
+		graphics.setColor(BLACK);
+		graphics.drawString("<" + (hour>9?Integer.toString(hour):"0"+hour) + ":"
 				+ (minute > 9 ? minute : ("0" + minute)) + ">", strokeSize + 2,
 				positionY + size.height - inputFieldHeight - strokeSize);
 	}
 
 	@Override
 	public void update() {
-		hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-		minute = Calendar.getInstance().get(Calendar.MINUTE);
+		Calendar cal = Calendar.getInstance();
+		hour = cal.get(Calendar.HOUR_OF_DAY);
+		minute = cal.get(Calendar.MINUTE);
 	}
 
 	/**
 	 * Adds a new message to the list of message, delete oldest message if more
 	 * than 7 messages are present.<br>
 	 * 
-	 * Only the first 4 messages will be shown and rendered on the screen.
+	 * Only the first 4 messages will be shown and rendered on the screen.<br>
+	 * Synchronzied to avoid concurrent modification exception caused by 
+	 * modifiying list form two threads at same time.
 	 * 
 	 * @param message
 	 */
-	private void newMessage(Message message) {
-		messages.add(message);
-		if (messages.size() > 7) {
-			messages.removeFirst();
-		}
-
-		if (messages.size() > 4) {
-			for (int i = 0; i < messages.size(); i++) {
-				if (i < messages.size() - 4) {
-					shown[i] = false;
+	public synchronized void newMessage(Message message) {
+		
+		message.setTime(hour, minute); //set time to chat time - useful when adding message from other computer to avoid time sync
+		
+		String string = message.print();
+		List<String> words = new LinkedList<String>();
+		Channels channel = message.getChannel();
+								
+		/* split string if too long */
+		if (ttf.getWidth(string) > 340) {
+			
+			String tempString = "";
+			String[] stringSplit = new String[2];
+			
+			stringSplit = string.split("-", 2);
+			stringSplit[1] = stringSplit[1].substring(1);
+			
+			for (String word: stringSplit[1].split(" ")){
+		         words.add(word);
+		    }
+						
+			String testLength = null;
+			int followUpCtr = 0;
+			
+			while (words.size() > 0) {
+				
+				testLength = "";
+				tempString = "";
+				
+				do {
+					tempString = tempString.concat(words.get(0)).concat(" ");
+					words.remove(0);
+					if (words.size() > 0) {
+						testLength = tempString.concat(words.get(0));
+					}
+				} while (ttf.getWidth(testLength) < 265 && words.size() > 0);
+				
+				if (followUpCtr == 0) {
+					processMessage(new Message(tempString, hour, minute, channel));
 				} else {
-					shown[i] = true;
+					processMessage(new Message(tempString, hour, minute, channel, true));
 				}
+				
+				followUpCtr++;
 			}
+			
+		} else {
+			processMessage(message);
 		}
 	}
 
@@ -313,12 +359,42 @@ public class Chat extends View {
 		}
 	}
 
+	/**Set focus on input field.
+	 * @param b
+	 */
 	public void setFocus(boolean b) {
 		input.setFocus(b);
 	}
 
+	/**Check if input field has focus.
+	 * @return
+	 */
 	public boolean hasFocus() {
 		return input.hasFocus();
 	}
+	
+	/**If a message is too long, split into seperate lines.
+	 * @param print
+	 */
+	private void processMessage(Message message) {
 
+		if (message.getChannel() == Channels.PUBLIC) {
+			//send message to other computer
+		}
+		
+		messages.add(message);
+		if (messages.size() > 7) {
+			messages.removeFirst();
+		}
+
+		if (messages.size() > 4) {
+			for (int i = 0; i < messages.size(); i++) {
+				if (i < messages.size() - 4) {
+					shown[i] = false;
+				} else {
+					shown[i] = true;
+				}
+			}
+		}
+	}
 }

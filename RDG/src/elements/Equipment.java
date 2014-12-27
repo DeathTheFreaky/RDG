@@ -12,7 +12,7 @@ import general.Enums.Armor;
 public class Equipment extends Element {
 	
 	private Armor armorType;
-
+	
 	/**Constructs an Equipment.
 	 * 
 	 * @param equipmentName
@@ -49,5 +49,5 @@ public class Equipment extends Element {
 			armorType = Armor.MAIN_WEAPON;
 		}
 	}
-
+	
 }

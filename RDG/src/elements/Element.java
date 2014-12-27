@@ -2,6 +2,7 @@ package elements;
 import general.Enums.ImageSize;
 
 import java.awt.Point;
+import java.util.UUID;
 
 import org.newdawn.slick.Image;
 
@@ -24,6 +25,8 @@ public class Element {
 	protected boolean visible = true;
 	/* saves the Name of the element */
 	public String NAME = null;
+	/* an Element's unique ID (if needed) */
+	public String ID = null;
 	
 	
 
@@ -73,7 +76,8 @@ public class Element {
 	 */
 	public Element(String shapeName, Image image, Point position,
 			boolean visible) {
-		this.NAME = shapeName +  "Random UUID";
+		this.NAME = shapeName;
+		this.ID = shapeName + UUID.randomUUID();
 		this.image = image;
 		this.position = position;
 		this.visible = visible;
@@ -136,6 +140,18 @@ public class Element {
 	 */
 	public void delete() {
 		// Maybe we have to delete Elements
+	}
+	
+	public String getDescription() {
+		return "Not Set";
+	}
+	
+	/**Sets then image of this element. <br>
+	 * To be used for replacing image with null when sending element via network.
+	 * @param image
+	 */
+	public void setImage(Image image) {
+		this.image = image;
 	}
 
 }
