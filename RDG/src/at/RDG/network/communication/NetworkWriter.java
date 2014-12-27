@@ -7,8 +7,6 @@ import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import at.RDG.network.discovery.LobbySearcher;
-
 /**
  * The NetworkWriter is a subclass of Thread and when started it writes every
  * object in the queue into the network stream.
@@ -47,14 +45,14 @@ public class NetworkWriter extends Thread{
 					this.oos.writeObject(this.writeQueue.poll());
 					this.oos.flush();
 				} catch (IOException e) {
-					Logger.getLogger(LobbySearcher.class.getName()).log(Level.SEVERE,
+					Logger.getLogger(NetworkWriter.class.getName()).log(Level.SEVERE,
 							"Unable to write the object into the network stream.", e);
 				}
 			}
 			try {
 				this.wait();
 			} catch (InterruptedException e) {
-				Logger.getLogger(LobbySearcher.class.getName()).log(Level.INFO,
+				Logger.getLogger(NetworkWriter.class.getName()).log(Level.INFO,
 						"NetworkWriter got interrupted and stops operating", e);
 			}
 		}

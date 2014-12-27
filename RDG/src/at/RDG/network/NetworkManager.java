@@ -110,7 +110,7 @@ public class NetworkManager {
 						serverSocket.bind(null);
 						socket = serverSocket.accept();
 					} catch (IOException e) {
-						Logger.getLogger(LobbyServer.class.getName())
+						Logger.getLogger(NetworkManager.class.getName())
 								.log(Level.SEVERE,
 										"Unable bind socket. Accept connection or thread was interrupted.",
 										e);
@@ -125,7 +125,7 @@ public class NetworkManager {
 				this.lserver = new LobbyServer(lobbyName,
 						this.serverSocket.getLocalPort());
 			} catch (NoSuchAlgorithmException e) {
-				Logger.getLogger(LobbyServer.class.getName()).log(Level.SEVERE,
+				Logger.getLogger(NetworkManager.class.getName()).log(Level.SEVERE,
 						"Unable to create UID for server.", e);
 				throw new UnableToStartConnectionException(
 						"The LobbyServer is unable to start.");
@@ -185,7 +185,7 @@ public class NetworkManager {
 			this.reader = new NetworkReader(this.socket, this.readQueue);
 			this.reader.start();
 		} catch (IOException e) {
-			Logger.getLogger(LobbyServer.class.getName()).log(Level.SEVERE,
+			Logger.getLogger(NetworkManager.class.getName()).log(Level.SEVERE,
 					"Unable to connect to server.", e);
 			if (this.writer.isAlive())
 				this.writer.interrupt();
