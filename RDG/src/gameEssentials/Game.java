@@ -3,6 +3,8 @@ package gameEssentials;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -12,16 +14,26 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.xml.sax.SAXException;
 
+import at.RDG.network.NetworkManager;
+import at.RDG.network.communication.NetworkMessage;
 import configLoader.Configloader;
-import elements.Equipment;
+import elements.Creature;
+import elements.Element;
+import elements.Monster;
+import elements.Potion;
+import fighting.Fight;
 import views.ArmorView;
 import views.Chat;
 import views.GameEnvironment;
 import views.InventoryView;
+import views.Minimap;
+import general.Enums.AttackScreens;
+import general.Enums.Attacks;
 import general.Enums.CreatureType;
 import general.Enums.ImageSize;
+import general.Enums.UsedClasses;
+import general.Enums.ViewingDirections;
 import general.ResourceManager;
-import general.Enums.Updates;
 
 /**
  * Game class stores the main configuration parameters of a game and defines
@@ -30,6 +42,9 @@ import general.Enums.Updates;
  * @see BasicGame
  */
 public class Game extends BasicGame {
+	
+	/* game Instance */
+	private static Game INSTANCE = null;
 
 	/* Game Variables in pixels */
 	public static final int WIDTH = 640;
@@ -46,39 +61,56 @@ public class Game extends BasicGame {
 	// final if these values cannot be changed later on - if we want to change
 	// roomsize, minimap size, scope size -> don't make final
 	/* room, minimap, scope sizes */
-	public static int ROOMWIDTH = 8; // should be even -> door's width = 2
-	public static int ROOMHEIGHT = 6; // should be even -> door's width = 2
-	public static int MINIMAPWIDTH = 5;
-	public static int MINIMAPHEIGHT = 5;
-	public static int SCOPEWIDTH = 15;
-	public static int SCOPEHEIGHT = 12;
+	public static final int ROOMWIDTH = 8; // should be even -> door's width = 2
+	public static final int ROOMHEIGHT = 6; // should be even -> door's width =
+											// 2
+	public static final int MINIMAPWIDTH = 5;
+	public static final int MINIMAPHEIGHT = 5;
+	public static final int SCOPEWIDTH = 15;
+	public static final int SCOPEHEIGHT = 12;
 
 	/* room numbers */
 	public static int ROOMSHOR = 5;
 	public static int ROOMSVER = 5;
-	
+
 	/* number of tries when looking for a free field in a room */
 	public static int MAXTRIES = 15;
 
 	/* every milliseconds an Update is made */
-	private final int UPDATE = 200;
+	private final int UPDATE = 100;
 	/* how many milliseconds passed until the next Update */
 	private int timeToUpdate = 0;
+	/* Updates left for Player Update */
+	private int updatesUntilPlayerUpdate = 10;
 
 	/* Origins of the different Views in tile numbers */
-	private Point gameEnvironmentOrigin, chatOrigin, armorViewOrigin,
-			inventoryViewOrigin;
+	/* gameEnvironment is needed for fight, because each fight is a new thread -> new instance */
+	private Point gameEnvironmentOrigin = new Point(0,0), chatOrigin, armorViewOrigin,
+			inventoryViewOrigin, minimapOrigin;
 
 	/* flag, if the mouse is over the chat (for scrolling) */
-	boolean mouseOverChat = false;
+	private boolean mouseOverChat = false;
+	/* flag, if the mouse is over the minimap (for moving) */
+	private boolean mouseOverMinimap = false;
 
 	/* flag, if the mouse is currently moving an item */
-	boolean dragging = false;
+	private boolean dragging = false;
+	/* flag, if the mouse is currently moving the minimap */
+	private boolean draggingMinimap = false;
+
+	/* For moving the player */
+	private ViewingDirections goTo = null;
+	/* flag, if a key is released */
+	private boolean keyReleased = false;
+
 	/* Equippment that is dragged */
-	Equipment draggedEquipment;
+	private Element draggedItem;
 	/* For positioning the dragged Item */
-	int draggedX = 0;
-	int draggedY = 0;
+	private int draggedX = 0;
+	private int draggedY = 0;
+	/* For positioning the minimap while dragging */
+	private int offsetX = 0;
+	private int offsetY = 0;
 
 	/* The Game for Player ... */
 	private String playerName;
@@ -89,10 +121,14 @@ public class Game extends BasicGame {
 	private Chat chat;
 	private ArmorView armorView;
 	private InventoryView inventoryView;
+	private Minimap minimap;
 
 	/* Map which is needed for each Player */
 	private Map map;
-
+	
+	/* NetworkManager for transferring messages between two computers */
+	private NetworkManager nw = NetworkManager.getInstance();
+	
 	/* resource path */
 	public static final String IMAGEPATH = "./resources/images/";
 
@@ -101,6 +137,18 @@ public class Game extends BasicGame {
 
 	// create instance of configloader
 	private Configloader configloader = null;
+	
+	/* fight Thread  */
+	private Thread fightThread = null;
+	
+	/* needed for human fights - set to true if this is the lobby HOSTER */
+	private Boolean lobbyHost = false;
+	
+	/* list holding child threads */
+	private List<Thread> threadList = new ArrayList<Thread>();
+	
+	/* fight Instance from gameEnvironment */
+	private Fight fightInstance = null;
 
 	/* Declare all classes, we need for the game (Factory, Resourceloader) */
 	// private ResourceManager resourceManager;
@@ -113,8 +161,9 @@ public class Game extends BasicGame {
 	 * @param title
 	 * @see Game
 	 */
-	public Game(String title) {
-		this(title, "Find out if its Player1 or Player2");
+	private Game(String title) {
+		/* Find out if its is player1 or player2 */
+		this(title, "Testplayername");
 	}
 
 	/**
@@ -124,9 +173,39 @@ public class Game extends BasicGame {
 	 * @param playerName
 	 * @see Game
 	 */
-	public Game(String title, String playerName) {
+	private Game(String title, String playerName) {
 		super(title);
 		this.playerName = playerName;
+	}
+	
+	/**Only returns existing instance of game or null if none instance exists yet.
+	 * @return
+	 */
+	public static Game getInstance() {
+		return INSTANCE;
+	}
+	
+	/**Get Instance of Game.
+	 * @param title
+	 * @return
+	 */
+	public static Game getInstance(String title) {
+		if (INSTANCE == null) {
+			INSTANCE = new Game(title);
+		}
+		return INSTANCE;
+	}
+	
+	/**Get Instance of Game.
+	 * @param title
+	 * @param playerName
+	 * @return
+	 */
+	public static Game getInstance(String title, String playerName) {
+		if (INSTANCE == null) {
+			INSTANCE = new Game(title, playerName);
+		}
+		return INSTANCE;
 	}
 
 	@Override
@@ -154,6 +233,7 @@ public class Game extends BasicGame {
 		chatOrigin = new Point(0, 12);
 		armorViewOrigin = new Point(15, 0);
 		inventoryViewOrigin = new Point(15, 12);
+		minimapOrigin = new Point(20, 20);
 
 		/* Initialize Factory and Manager classes! */
 		new ResourceManager().getInstance();
@@ -169,25 +249,32 @@ public class Game extends BasicGame {
 					new ResourceManager().getInstance().IMAGES.get("Player2"),
 					gameEnvironmentOrigin, playerType);
 		}
-
-		map = new Map().getInstance();
-		map.setPlayer(player);
-		// map.fillMap();
-
-		/* Dimension is specified in pixels */
-		gameEnvironment = new GameEnvironment("GameEnvironment",
-
-		gameEnvironmentOrigin, new Dimension(GAME_ENVIRONMENT_WIDTH,
-				GAME_ENVIRONMENT_HEIGHT), player);
-
+		
+		/* Load the chat */
 		chat = new Chat("Chat", chatOrigin, new Dimension(CHAT_WIDTH,
 				CHAT_HEIGHT), container);
-
+		
+		/* Load Views - Dimension is specified in pixels */
 		armorView = new ArmorView("ArmorInventory", armorViewOrigin,
 				new Dimension(ARMOR_WIDTH, ARMOR_HEIGHT));
+		
+		gameEnvironment = new GameEnvironment("GameEnvironment",
+				gameEnvironmentOrigin, new Dimension(GAME_ENVIRONMENT_WIDTH,
+						GAME_ENVIRONMENT_HEIGHT), player, armorView, this, chat);
+
+		minimap = new Minimap("Minimap", gameEnvironmentOrigin.x
+				+ minimapOrigin.x, gameEnvironmentOrigin.y + minimapOrigin.y);
 
 		inventoryView = new InventoryView("Inventory", inventoryViewOrigin,
 				new Dimension(INVENTORY_WIDTH, INVENTORY_HEIGHT));
+		
+		/* Load Map and place the player */
+		map = new Map().getInstance();
+		map.setPlayer(player);
+		map.setGameEnvironment(gameEnvironment);
+		// map.fillMap();
+		
+		this.fightInstance = gameEnvironment.getFightInstance();
 	}
 
 	@Override
@@ -196,14 +283,55 @@ public class Game extends BasicGame {
 
 		/* run an Update */
 		if (timeToUpdate > UPDATE) {
-			player.update();
+			if (updatesUntilPlayerUpdate == 0) {
+				player.update(goTo);
+				if (keyReleased) {
+					goTo = null;
+					keyReleased = false;
+				}
+				updatesUntilPlayerUpdate = 3;
+			}
 			gameEnvironment.update();
 			chat.update();
+			processNetworkMessages();
 
 			timeToUpdate = 0;
+			updatesUntilPlayerUpdate--;
 		}
 
 		timeToUpdate += delta;
+	}
+
+	/**Process Network Messages according to their type.
+	 * 
+	 */
+	private void processNetworkMessages() {
+		
+		NetworkMessage message = null;
+		
+		while((message = nw.getNextMessage()) != null) {
+			switch(message.type) {
+				case CHAT:
+						
+					break;
+				case FIGHT:
+						fightInstance.processMessages(message);
+					break;
+				case GENERAL:
+					break;
+				case ITEMPICKUP:
+					break;
+				case MAP:
+						
+					break;
+				case NETWORK:
+					break;
+				case PLAYERPOSITION:
+					break;
+				default:
+					break;
+			}
+		}
 	}
 
 	@Override
@@ -211,23 +339,39 @@ public class Game extends BasicGame {
 			throws SlickException {
 
 		gameEnvironment.draw(container, g);
+		if (!(fightInstance.isInFight())) {
+			minimap.draw(container, g);
+		}
 		chat.draw(container, g);
 		armorView.draw(container, g);
 		inventoryView.draw(container, g);
 
-		if (dragging && draggedEquipment != null) {
-			g.drawImage(draggedEquipment.getImage(ImageSize.d20x20), draggedX,
+		if (dragging && draggedItem != null) {
+			g.drawImage(draggedItem.getImage(ImageSize.d20x20), draggedX,
 					draggedY);
 		}
 	}
 
 	@Override
 	public void keyPressed(int key, char c) {
-
+		
 		/* Key Values for Players Movement! (a,s,d,w) */
 		if ((key == 30 || key == 31 || key == 32 || key == 17)
-				&& !gameEnvironment.isFightActive()) {
-			player.update(key, Updates.KEY_PRESSED);
+				&& !fightInstance.isInFight()) {
+			// player.update(key, Updates.KEY_PRESSED);
+			if (key == 30) {
+				goTo = ViewingDirections.WEST;
+				keyReleased = false;
+			} else if (key == 31) {
+				goTo = ViewingDirections.SOUTH;
+				keyReleased = false;
+			} else if (key == 32) {
+				goTo = ViewingDirections.EAST;
+				keyReleased = false;
+			} else {
+				goTo = ViewingDirections.NORTH;
+				keyReleased = false;
+			}
 		} else if (key == 15) {
 			if (chat.hasFocus()) {
 				chat.setFocus(false);
@@ -235,63 +379,182 @@ public class Game extends BasicGame {
 				chat.setFocus(true);
 			}
 		} else if (key == 18) {
-			Equipment e = map.getItemInFrontOfPlayer();
+			Element e = null;
+			try {
+				e = map.checkInFrontOfPlayer();
+			} catch (SlickException e1) {
+				e1.printStackTrace();
+			}
 			if (e != null) {
-				inventoryView.storeEquipment(e);
+				//inventoryView.storeEquipment((Equipment) e);
+				inventoryView.storeItem(e, armorView);
+			}
+		} else if (key == 1) {
+			//set attackScreen in Fight.java to MAIN
+			if (fightInstance.isInFight()) {
+				if (fightInstance.getAttackScreens() != AttackScreens.WAITING) {
+					fightInstance.setAttackScreen(AttackScreens.MAIN);
+					fightInstance.setChangeTabActive(false);
+					fightInstance.setPotionTakingActive(false);
+				}
 			}
 		}
-		System.out.println("Key: " + key + ", Char: " + c);
 	}
 
 	@Override
 	public void keyReleased(int key, char c) {
+
 		/* Key Values for Players Movement! (a,s,d,w) */
 		if ((key == 30 || key == 31 || key == 32 || key == 17)
-				&& !gameEnvironment.isFightActive()) {
-			player.update(key, Updates.KEY_RELEASED);
+				&& !fightInstance.isInFight()) {
+			// player.update(key, Updates.KEY_RELEASED);
+			if (key == 30 && goTo == ViewingDirections.WEST) {
+				keyReleased = true;
+			} else if (key == 31 && goTo == ViewingDirections.SOUTH) {
+				keyReleased = true;
+			} else if (key == 32 && goTo == ViewingDirections.EAST) {
+				keyReleased = true;
+			} else if (key == 17 && goTo == ViewingDirections.NORTH) {
+				keyReleased = true;
+			}
 		}
 	}
 
 	@Override
 	public void mouseClicked(int button, int x, int y, int clickCount) {
+				
+		/* All views' mouse click implementation are called.
+		 * Wrong ones do nothing */
 		if (button == 0) { // linke Maustaste
-			armorView.changeTab(x, y);
+			
+			if (fightInstance.isInFight()) {
+				if (!(fightInstance.isChangeTabActive())) {
+					fightInstance.handleFightOptions(x, y);
+				}
+				else if (fightInstance.isChangeTabActive()) {
+					armorView.changeTab(x, y);
+				}
+			}
+			else {
+				armorView.changeTab(x, y);
+			}
 		}
-
 	}
 
 	@Override
 	public void mouseDragged(int oldx, int oldy, int newx, int newy) {
+
+		/*
+		 * add potion check -> potion may be activated only during a fight and
+		 * after that the next round continues -> use variable to determine when
+		 * potion taking is possiple
+		 */
+
+		/*
+		 * pulls a weapon or armament from the inventory to armor set and vice
+		 * versa -> equip and unequip weapon
+		 */
 		if (!dragging) {
-			if (gameEnvironment.isFightActive()) {
-				System.out
-						.println("You cannot change your Equipment during fight");
-				dragging = true;
+			if (fightInstance.isInFight()) {
+				if (fightInstance.isPotionTakingActive()) {
+					this.draggedItem = armorView.getItem(oldx, oldy);
+					dragging = true;
+				}
 				return;
 			}
-			this.draggedEquipment = inventoryView.getEquipment(oldx, oldy);
-			if (draggedEquipment == null) {
-				this.draggedEquipment = armorView.getEquipment(oldx, oldy);
-			}
-			if (draggedEquipment != null) {
+
+			/*this.draggedItem = inventoryView.getItem(oldx, oldy, UsedClasses.Element);
+			
+			if (draggedItem == null) {
+				this.draggedItem = armorView.getItem(oldx, oldy);*/
+
+			if (!mouseOverMinimap) {
+				this.draggedItem = inventoryView.getItem(oldx, oldy,
+						UsedClasses.Element);
+				if (draggedItem == null) {
+					this.draggedItem = armorView.getItem(oldx, oldy);
+				}
 				dragging = true;
 			}
+
 		}
 		draggedX = newx;
 		draggedY = newy;
 
+		if (mouseOverMinimap) {
+			if (!draggingMinimap) {
+				System.out.println("Set new offsets");
+				draggingMinimap = true;
+				offsetX = oldx - minimap.positionX;
+				offsetY = oldy - minimap.positionY;
+				minimap.setMoved(true);
+			}
+
+			minimap.positionX = newx - offsetX;
+			minimap.positionY = newy - offsetY;
+
+		}
 	}
 
 	@Override
 	public void mouseReleased(int button, int x, int y) {
+
+		/*
+		 * add potion check -> potion may be activated only during a fight and
+		 * after that the next round continues -> use variable to determine when
+		 * potion taking is possiple
+		 */
+
+		/*
+		 * drops a weapon or armament from the inventory to armor set and vice
+		 * versa -> equip and unequip weapon
+		 */
 		if (button == 0) { // linke Maustaste
 			if (dragging) {
-				Equipment e;
-				if ((e = armorView.equipArmor(draggedEquipment, x, y)) != null) {
-					inventoryView.storeEquipment(e);
+				Element e;
+				if (fightInstance.isInFight()) {
+					// only allow when potionTaking is active 
+					if (fightInstance.isPotionTakingActive()) {
+						if ((e = armorView.drinkPotion((Potion) draggedItem, x, y, inventoryView)) != null) {
+							armorView.backPotion((Potion) e);
+						} else {
+							fightInstance.setActiveAttackType(Attacks.POTION);
+							fightInstance.setPotionTakingActive(false);
+							fightInstance.setAttackScreen(AttackScreens.WAITING);
+						}
+					}
+				} else {
+
+					if (!draggingMinimap) {
+						if ((e = armorView.equipItem(draggedItem, x, y, inventoryView)) != null) {
+							inventoryView.storeItem(e, armorView);
+						}
+						dragging = false;
+						draggedItem = null;
+					}
 				}
 				dragging = false;
-				draggedEquipment = null;
+				draggedItem = null;
+				//armorView.addFists();
+			}
+
+			if (draggingMinimap) {
+				draggingMinimap = false;
+				minimap.setMoved(false);
+
+				if (x - offsetX < GAME_ENVIRONMENT_WIDTH - x - offsetX) {
+					minimap.positionX = 20;
+				} else {
+					minimap.positionX = GAME_ENVIRONMENT_WIDTH - minimap.WIDTH
+							- 20;
+				}
+
+				if (y - offsetY < GAME_ENVIRONMENT_HEIGHT - y - offsetY) {
+					minimap.positionY = 20;
+				} else {
+					minimap.positionY = GAME_ENVIRONMENT_HEIGHT
+							- minimap.HEIGHT - 20;
+				}
 			}
 		}
 	}
@@ -306,9 +569,33 @@ public class Game extends BasicGame {
 		if (newX >= 0 && newX <= CHAT_WIDTH && newY > GAME_ENVIRONMENT_HEIGHT
 				&& newY <= HEIGHT) {
 			mouseOverChat = true;
+			mouseOverMinimap = false;
+		} else if (newX >= minimap.positionX
+				&& newX <= minimap.positionX + minimap.WIDTH
+				&& newY >= minimap.positionY
+				&& newY <= minimap.positionY + minimap.HEIGHT) {
+			mouseOverMinimap = true;
+			mouseOverChat = false;
 		} else {
 			mouseOverChat = false;
+			mouseOverMinimap = false;
 		}
+
+		// Im inventory view
+		if (newX > GAME_ENVIRONMENT_WIDTH
+				&& newX < GAME_ENVIRONMENT_WIDTH + INVENTORY_WIDTH
+				&& newY > ARMOR_HEIGHT
+				&& newY < ARMOR_HEIGHT + INVENTORY_HEIGHT) {
+
+		}
+
+		// Im Armor view
+		if (newX > GAME_ENVIRONMENT_WIDTH
+				&& newX < GAME_ENVIRONMENT_WIDTH + INVENTORY_WIDTH && newY > 0
+				&& newY < ARMOR_HEIGHT) {
+
+		}
+
 	}
 
 	@Override
@@ -318,5 +605,47 @@ public class Game extends BasicGame {
 		if (mouseOverChat) {
 			chat.scroll(scroll);
 		}
+	}
+	
+	/**Returns the currently active Fight Thread or null if no fight is active.
+	 * (thread that needs to be started more than once).
+	 * @return fight Instance
+	 */
+	public Thread getFightThread() {
+		return fightThread;
+	}
+	
+	/**Sets fight Thread.
+	 * @param t
+	 */
+	public void setFightThread(Thread t) {
+		fightThread = t;
+	}
+
+	/**Called by gameEnvironment when a fight ends.<br>
+	 * Takes action based on who lost the fight.
+	 * @param looser
+	 */
+	public void fightEnds(Creature looser) {
+		
+		fightThread = null;
+		//do we need for thread to join - they should end before game anyhow?!?
+		
+		//do stuff with looser
+		if (looser == this.player) {
+			this.player.resetPlayerPosition();
+		} else if (looser instanceof Monster) {
+			map.removeContentInFrontOfPlayer();
+		} else {
+			
+			//YOU HAVE WON THE GAME - SWITCH GAME STATE
+		}
+	}
+	
+	/**Checks if the computer is the lobbyHost.
+	 * @return true if this computer hosted the lobby
+	 */
+	public boolean isLobbyHost() {
+		return this.lobbyHost;
 	}
 }

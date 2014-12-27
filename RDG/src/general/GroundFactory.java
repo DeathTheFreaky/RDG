@@ -282,7 +282,7 @@ public class GroundFactory {
 		ResourceManager resources = new ResourceManager().getInstance();
 		SpriteSheet tiles = resources.TILES;
 
-		return new Element("DoorGround", tiles.getSubImage(5, 3), positionX, positionY);
+		return new Element("DoorGroundTreasureChamber1", tiles.getSubImage(5, 3), positionX, positionY);
 	}
 	
 	/**Creates door grounds with images taken from tiles Spritesheet.<br>
@@ -298,6 +298,6 @@ public class GroundFactory {
 		ResourceManager resources = new ResourceManager().getInstance();
 		SpriteSheet tiles = resources.TILES;
 		
-		return new Element("DoorGround", tiles.getSubImage(5, 3).getFlippedCopy(false, true), positionX, positionY);
+		return new Element("DoorGroundTreasureChamber2", tiles.getSubImage(5, 3).getFlippedCopy(false, true), positionX, positionY);
 	}
 }

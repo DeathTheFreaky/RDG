@@ -73,4 +73,11 @@ public class Weapon extends Equipment {
 		this.TYPE = type;
 		this.MAX = max;
 	}
+
+	@Override
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return NAME + ":\n" + "Typ: " + TYPE + "\n" + "Strength: " + ATTACK + "\n"
+				+ "Speed: " + SPEED + "\n" + "Accuracy: " + ACCURACY + "\n";
+	}
 }

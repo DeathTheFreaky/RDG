@@ -10,12 +10,14 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
 import elements.Armament;
+import elements.Element;
 import elements.Equipment;
 import elements.Potion;
 import elements.Weapon;
 import general.Enums.Armor;
 import general.Enums.ImageSize;
 import general.Enums.ItemClasses;
+import general.Enums.UsedClasses;
 import general.Enums.WeaponTypes;
 import general.ResourceManager;
 
@@ -32,9 +34,11 @@ public class InventoryView extends View {
 	private final int border = 5;
 
 	/* Collection for all Items, saved in Inventory */
-	private LinkedList<Weapon> weapons;
-	private LinkedList<Equipment> armor;
+	/*private LinkedList<Weapon> weapons;
+	private LinkedList<Armament> armaments;
 	private LinkedList<Potion> potions;
+	private LinkedList<Equipment> armor;*/
+	private LinkedList<Element> items;
 
 	/* ResourceManager */
 	private ResourceManager resources;
@@ -119,31 +123,33 @@ public class InventoryView extends View {
 
 		resources = new ResourceManager().getInstance();
 
-		weapons = new LinkedList<Weapon>();
+		items = new LinkedList<Element>();
+		/*weapons = new LinkedList<Weapon>();
+		armaments = new LinkedList<Armament>();
 		armor = new LinkedList<Equipment>();
-		potions = new LinkedList<Potion>();
+		potions = new LinkedList<Potion>();*/
 
 		/* for testing */
-		armor.add(new Weapon("Dolch", resources.IMAGES.get("M_Weapon"), 0f, 0f,
+		/*items.add(new Weapon("Dolch", resources.IMAGES.get("M_Weapon"), 0f, 0f,
 				0f, 0f, ItemClasses.MEDIUM, WeaponTypes.SINGLEHAND, 0));
-		armor.add(new Weapon("Schwert", resources.IMAGES.get("S_Weapon"), 0f,
+		items.add(new Weapon("Schwert", resources.IMAGES.get("S_Weapon"), 0f,
 				0f, 0f, 0f, ItemClasses.MEDIUM, WeaponTypes.SINGLEHAND, 0));
 
-		armor.add(new Armament("Helmet", resources.IMAGES.get("Helmet"),
+		items.add(new Armament("Helmet", resources.IMAGES.get("Helmet"),
 				"dont know what type is for", ItemClasses.MEDIUM, 0f, 0f, 0f,
 				Armor.HEAD));
-		armor.add(new Armament("Chest", resources.IMAGES.get("Cuirass"),
+		items.add(new Armament("Chest", resources.IMAGES.get("Cuirass"),
 				"dont know what type is for", ItemClasses.MEDIUM, 0f, 0f, 0f,
 				Armor.CHEST));
-		armor.add(new Armament("Arms", resources.IMAGES.get("Arms"),
+		items.add(new Armament("Arms", resources.IMAGES.get("Arms"),
 				"dont know what type is for", ItemClasses.MEDIUM, 0f, 0f, 0f,
 				Armor.ARMS));
-		armor.add(new Armament("Shoes", resources.IMAGES.get("Shoes"),
+		items.add(new Armament("Shoes", resources.IMAGES.get("Shoes"),
 				"dont know what type is for", ItemClasses.MEDIUM, 0f, 0f, 0f,
 				Armor.FEET));
-		armor.add(new Armament("Legs", resources.IMAGES.get("Legs"),
+		items.add(new Armament("Legs", resources.IMAGES.get("Legs"),
 				"dont know what type is for", ItemClasses.MEDIUM, 0f, 0f, 0f,
-				Armor.LEGS));
+				Armor.LEGS));*/
 		/* testing */
 	}
 
@@ -157,8 +163,8 @@ public class InventoryView extends View {
 
 		int x = 0, y = 0;
 
-		for (Equipment a : armor) {
-			graphics.drawImage(a.getImage(ImageSize.d20x20), 10 + ORIGIN_X + x * 40, 10
+		for (Element e : items) {
+			graphics.drawImage(e.getImage(ImageSize.d20x20), 10 + ORIGIN_X + x * 40, 10
 					+ ORIGIN_Y + y * 40);
 			if (x == 3) {
 				x = 0;
@@ -176,12 +182,26 @@ public class InventoryView extends View {
 	}
 
 	/* 160:240 */
-	public Equipment getEquipment(int mouseX, int mouseY) {
+	/**Returns the selected Item from Inventory screen.
+	 * 
+	 * @param mouseX
+	 * @param mouseY
+	 * @return
+	 */
+	public Element getItem(int mouseX, int mouseY, UsedClasses classname) {		
+		
 		if (mouseX > ORIGIN_X && mouseX < ORIGIN_X + size.width
 				&& mouseY > ORIGIN_Y && mouseY < ORIGIN_Y + size.height) {
-
+						
+			Class<?> tempClass = null;
+			try {
+				tempClass = Class.forName( "elements." + classname);
+			} catch (ClassNotFoundException e1) {
+				System.out.println("Only element classes are allowed in inventory interaction!");
+			}
+									
 			int x = 0, y = 0;
-			for (int i = 0; i < armor.size(); i++) {
+			for (int i = 0; i < items.size(); i++) {
 
 				if (mouseX > ORIGIN_X + x * 40
 						&& mouseX < ORIGIN_X + x * 40 + 40
@@ -198,16 +218,76 @@ public class InventoryView extends View {
 				}
 			}
 			
-			Equipment e = armor.get(x + y*4);
-			armor.remove(x + y*4);
-			
-			return e;
+			if ((x + y*4) < items.size()) {
+				Element e = items.get(x + y*4);
+				
+				/* only allow operation for specified class */
+				if (!(tempClass.isInstance(e))) {
+					return null;
+				} 
+				
+				items.remove(x + y*4);
+				
+				return e;
+			}
 		}
 		return null;
 	}
 	
+	public void showDescription(int mouseX, int mouseY) {
+		int x = 0, y = 0;
+		for (int i = 0; i < items.size(); i++) {
+
+			if (mouseX > ORIGIN_X + x * 40
+					&& mouseX < ORIGIN_X + x * 40 + 40
+					&& mouseY > ORIGIN_Y + y * 40
+					&& mouseY < ORIGIN_Y + y * 40 + 40) {
+				break;
+			}
+
+			if (i % 4 == 0 && i != 0) {
+				y++;
+				x = 0;
+			} else {
+				x++;
+			}
+		}
+		
+		String description = items.get(x + y*4).getDescription();
+	}
+	
+	/*
 	public void storeEquipment(Equipment equipment) {
 		armor.add(equipment);
+	} */ //Flo: deprecated -> replaced by storeItem
+	
+	
+	/**Add items to lists of items, weapons, armaments, potions, armor.
+	 * @param item
+	 */
+	public void storeItem(Element item, ArmorView armorView) {
+		
+		System.out.println("itemname: " + item.NAME);
+		
+		if (item instanceof Weapon) {
+			/*weapons.add((Weapon) item);
+			armor.add((Equipment) item);*/
+			if (!(item.NAME.equals("Fists"))) {
+				items.add(item);
+			}
+			armorView.addFists();
+		}
+		else if (item instanceof Armament) {
+			/*armaments.add((Armament) item);
+			armor.add((Equipment) item);*/
+			items.add(item);
+		}
+		else if (item instanceof Potion) {
+			/*potions.add((Potion) item);*/
+			items.add(item);
+		}
+		else if (item.NAME.equals("Key")) {
+			items.add(item);
+		}
 	}
-
 }
