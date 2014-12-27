@@ -143,7 +143,7 @@ public class Chat extends View {
 
 		positionX = origin.x * GameEnvironment.BLOCK_SIZE;
 		positionY = origin.y * GameEnvironment.BLOCK_SIZE;
-
+		
 		Calendar cal = Calendar.getInstance();
 
 		hour = cal.get(Calendar.HOUR_OF_DAY);

@@ -30,6 +30,7 @@ import views.Chat;
 import views.GameEnvironment;
 import views.InventoryView;
 import views.Minimap;
+import views.View;
 import general.Enums.AttackScreens;
 import general.Enums.Attacks;
 import general.Enums.CreatureType;
@@ -101,6 +102,10 @@ public class Game extends BasicGame {
 	private boolean dragging = false;
 	/* flag, if the mouse is currently moving the minimap */
 	private boolean draggingMinimap = false;
+	/* check if item was dragged from inventory or armor view */
+	private View draggingSource;
+	private int draggingOldX;
+	private int draggingOldY;
 
 	/* For moving the player */
 	private ViewingDirections goTo = null;
@@ -273,7 +278,7 @@ public class Game extends BasicGame {
 		minimap = new Minimap("Minimap", gameEnvironmentOrigin.x
 				+ minimapOrigin.x, gameEnvironmentOrigin.y + minimapOrigin.y);
 
-		inventoryView = new InventoryView("Inventory", inventoryViewOrigin,
+		inventoryView = InventoryView.getInstance("Inventory", inventoryViewOrigin,
 				new Dimension(INVENTORY_WIDTH, INVENTORY_HEIGHT));
 		
 		/* Load Map and place the player */
@@ -326,8 +331,10 @@ public class Game extends BasicGame {
 						fightInstance.processMessages(message);
 					break;
 				case GENERAL:
+						
 					break;
 				case ITEM:
+						
 					break;
 				case MAP:
 						map.setOverlay(MapConverter.toOverlay(message));
@@ -390,12 +397,17 @@ public class Game extends BasicGame {
 			Element e = null;
 			try {
 				e = map.checkInFrontOfPlayer();
+				if (e != null) {
+					//inventoryView.storeEquipment((Equipment) e);
+					if (inventoryView.hasMoreRoom()) {
+						inventoryView.storeItem(e, armorView);
+					}
+					else {
+						map.dropItem(e, 1, 1);
+					}
+				}
 			} catch (SlickException e1) {
 				e1.printStackTrace();
-			}
-			if (e != null) {
-				//inventoryView.storeEquipment((Equipment) e);
-				inventoryView.storeItem(e, armorView);
 			}
 		} else if (key == 1) {
 			//set attackScreen in Fight.java to MAIN
@@ -481,6 +493,15 @@ public class Game extends BasicGame {
 						UsedClasses.Element);
 				if (draggedItem == null) {
 					this.draggedItem = armorView.getItem(oldx, oldy);
+					if (this.draggedItem != null) {
+						draggingSource = armorView;
+						draggingOldX = oldx;
+						draggingOldY = oldy;
+					}
+				} else {
+					draggingSource = inventoryView;
+					draggingOldX = oldx;
+					draggingOldY = oldy;
 				}
 				dragging = true;
 			}
@@ -520,6 +541,9 @@ public class Game extends BasicGame {
 		if (button == 0) { // linke Maustaste
 			if (dragging) {
 				Element e;
+				
+				System.out.println("dropped " + this.draggedItem);
+				
 				if (fightInstance.isInFight()) {
 					// only allow when potionTaking is active 
 					if (fightInstance.isPotionTakingActive()) {
@@ -534,11 +558,29 @@ public class Game extends BasicGame {
 				} else {
 
 					if (!draggingMinimap) {
-						if ((e = armorView.equipItem(draggedItem, x, y, inventoryView)) != null) {
-							inventoryView.storeItem(e, armorView);
+						try {
+							int mapDropRet = map.dropItem(this.draggedItem, x, y);
+							if (mapDropRet == 1) {
+				
+							} else {
+								if ((e = armorView.equipItem(draggedItem, x, y, inventoryView)) != null) {
+									if ((e = inventoryView.storeItem(e, armorView)) != null) {
+										if (draggingSource == inventoryView) {
+											map.dropItem(e, x, y);
+										} else if (draggingSource == armorView) {
+											armorView.equipItem(draggedItem, draggingOldX, draggingOldY, inventoryView);
+										}
+									} 
+								} 
+							}
+						} catch (SlickException e1) {
+							e1.printStackTrace();
 						}
 						dragging = false;
+						draggingSource = null;
 						draggedItem = null;
+						draggingOldX = 0;
+						draggingOldY = 0;
 					}
 				}
 				dragging = false;

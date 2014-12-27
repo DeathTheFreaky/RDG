@@ -3,7 +3,6 @@ package gameEssentials;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -12,9 +11,9 @@ import org.newdawn.slick.SlickException;
 
 import at.RDG.network.NetworkManager;
 import at.RDG.network.communication.MapConverter;
-import configLoader.ArmamentTemplate;
-import configLoader.MonsterTemplate;
 import views.GameEnvironment;
+import views.InventoryView;
+import views.View;
 import elements.Creature;
 import elements.Element;
 import elements.Equipment;
@@ -368,8 +367,9 @@ public class Map {
 	 * @param fieldX
 	 * @param fieldY
 	 * @return
+	 * @throws SlickException 
 	 */
-	public boolean isFieldPassable(int fieldX, int fieldY) {
+	public boolean isFieldPassable(int fieldX, int fieldY) throws SlickException {
 		if (fieldX < 0 || fieldX > getWidth() || fieldY < 0
 				|| fieldY > getHeight()) {
 			return false;
@@ -380,7 +380,7 @@ public class Map {
 		if (overlay[fieldX][fieldY] != null) {
 			if (((overlay[fieldX][fieldY].NAME.equals("DoorGroundTreasureChamber1") 
 					|| (overlay[fieldX][fieldY].NAME.equals("DoorGroundTreasureChamber2")))
-					&& this.player.getHasKey())) {
+					&& InventoryView.getInstance().hasKey())) {
 				return true;
 			}
 		}
@@ -394,7 +394,7 @@ public class Map {
 	 * If the monster looses the fight, delete it from map.<br>
 	 * Resets player to start, if he loses a fight.<br>
 	 * 
-	 * @return Equipment or null
+	 * @return Element or null
 	 * @throws SlickException 
 	 * @throws InterruptedException 
 	 */
@@ -405,6 +405,7 @@ public class Map {
 
 		switch (player.getDirectionOfView()) {
 		case NORTH:
+			System.out.println(overlay[x][y - 1].NAME);
 			if (overlay[x][y - 1] != null) {
 				if ((overlay[x][y - 1] instanceof Potion) ||
 					  (overlay[x][y - 1] instanceof Equipment)) {
@@ -412,16 +413,14 @@ public class Map {
 					overlay[x][y - 1] = null;
 				} else if (overlay[x][y - 1] instanceof Creature) {
 					gameEnvironment.startFight((Creature) overlay[x][y - 1]);
-				} else if (overlay[x][y - 1].NAME.equals("Key")) {
-					if (!player.getHasKey()) {
-						player.setHasKey();
-						e = overlay[x][y - 1];
-						overlay[x][y - 1] = null;
-					}
+				} else if (overlay[x][y - 1].NAME.equals("Key") && (!(InventoryView.getInstance().hasKey()))) {
+					e = overlay[x][y - 1];
+					overlay[x][y - 1] = null;
 				}
 			}
 			break;
 		case EAST:
+			System.out.println(overlay[x + 1][y].NAME);
 			if (overlay[x + 1][y] != null) {
 				if ((overlay[x + 1][y] instanceof Potion) ||
 					  (overlay[x + 1][y] instanceof Equipment)) {
@@ -429,16 +428,14 @@ public class Map {
 					overlay[x + 1][y] = null;
 				} else if (overlay[x + 1][y] instanceof Creature) {
 					gameEnvironment.startFight((Creature) overlay[x + 1][y]);
-				} else if (overlay[x + 1][y].NAME.equals("Key")) {
-					if (!player.getHasKey()) {
-						player.setHasKey();
-						e = overlay[x + 1][y];
-						overlay[x + 1][y] = null;
-					}
+				} else if (overlay[x + 1][y].NAME.equals("Key") && (!(InventoryView.getInstance().hasKey()))) {
+					e = overlay[x + 1][y];
+					overlay[x + 1][y] = null;
 				}
 			}
 			break;
 		case SOUTH:
+			System.out.println(overlay[x][y + 1].NAME);
 			if (overlay[x][y + 1] != null) {
 				if ((overlay[x][y + 1] instanceof Potion) ||
 					  (overlay[x][y + 1] instanceof Equipment)) {
@@ -446,16 +443,14 @@ public class Map {
 					overlay[x][y + 1] = null;
 				} else if (overlay[x][y + 1] instanceof Creature) {
 					gameEnvironment.startFight((Creature) overlay[x][y + 1]);
-				} else if (overlay[x][y + 1].NAME.equals("Key")) {
-					if (!player.getHasKey()) {
-						player.setHasKey();
-						e = overlay[x][y + 1];
-						overlay[x][y + 1] = null;
-					}
+				} else if (overlay[x][y + 1].NAME.equals("Key") && (!(InventoryView.getInstance().hasKey()))) {
+					e = overlay[x][y + 1];
+					overlay[x][y + 1] = null;
 				}
 			}
 			break;
 		case WEST:
+			System.out.println(overlay[x - 1][y].NAME);
 			if (overlay[x - 1][y] != null) {
 				if ((overlay[x - 1][y] instanceof Potion) ||
 					  (overlay[x - 1][y] instanceof Equipment)) {
@@ -463,18 +458,50 @@ public class Map {
 					overlay[x - 1][y] = null;
 				} else if (overlay[x - 1][y] instanceof Creature) {
 					gameEnvironment.startFight((Creature) overlay[x - 1][y]);
-				} else if (overlay[x - 1][y].NAME.equals("Key")) {
-					if (!player.getHasKey()) {
-						player.setHasKey();
-						e = overlay[x - 1][y];
-						overlay[x - 1][y] = null;
-					}
+				} else if (overlay[x - 1][y].NAME.equals("Key") && (!(InventoryView.getInstance().hasKey()))) {
+					e = overlay[x - 1][y];
+					overlay[x - 1][y] = null;
 				}
 			}
 			break;
 		default:
 			break;
 		}
+
+		return e;
+	}
+	
+	/**
+	 * Returns Element in front of player or null.
+	 * 
+	 * @return Element or null
+	 * @throws SlickException 
+	 * @throws InterruptedException 
+	 */
+	public Element checkInFrontOfPlayer(boolean checkNull) throws SlickException {
+		
+		Element e = null;
+		int x = player.getPosition().x;
+		int y = player.getPosition().y;
+
+		switch (player.getDirectionOfView()) {
+			case NORTH:
+				e = overlay[x][y - 1];
+				break;
+			case EAST:
+				e = overlay[x + 1][y];
+				break;
+			case SOUTH:
+				e = overlay[x][y + 1];
+				break;
+			case WEST:
+				e = overlay[x - 1][y];
+				break;
+			default:
+				break;
+		}
+		
+		System.out.println("in front of player: " + e);
 
 		return e;
 	}
@@ -814,5 +841,55 @@ public class Map {
 	 */
 	public void setOverlay(Element[][] overlay) {
 		this.overlay = overlay;
+	}
+	
+	/**Drops item on the map on the field in front of the player if the field is free.
+	 * @param element
+	 * @param x
+	 * @param y
+	 * @param source
+	 * @return
+	 * @throws SlickException 
+	 */
+	public int dropItem(Element element, int x, int y) throws SlickException {
+		
+		if (element == null) {
+			return 0;
+		}
+		
+		/* check if dragged item is dragged to armor section */
+		if (x > 0 && x < 480 && y > 0 
+				&& y < 384) {
+						
+			Element e = checkInFrontOfPlayer(true);
+					
+			/* dragged element cannot be dropped */
+			if (e != null) {
+				return 2;
+			} 
+			/* drop item on the map */
+			else {
+				switch (player.getDirectionOfView()) {
+					case NORTH:
+						overlay[player.getPosition().x][player.getPosition().y - 1] = element;
+						break;
+					case EAST:
+						overlay[player.getPosition().x + 1][player.getPosition().y] = element;
+						break;
+					case SOUTH:
+						overlay[player.getPosition().x][player.getPosition().y + 1] = element;
+						break;
+					case WEST:
+						overlay[player.getPosition().x - 1][player.getPosition().y] = element;
+						break;
+					default:
+						break;
+				}
+			}
+			
+			return 1;
+		}
+				
+		return 0;
 	}
 }

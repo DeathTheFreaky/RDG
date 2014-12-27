@@ -247,9 +247,10 @@ public class Player extends Creature {
 	 * 
 	 * Moves the Player position, moves the camera and sets scopePosition for
 	 * the Player.
+	 * @throws SlickException 
 	 * 
 	 */
-	public void update(ViewingDirections goTo) {
+	public void update(ViewingDirections goTo) throws SlickException {
 		if (goTo == ViewingDirections.NORTH) {
 			switch (lastViewingDirection) {
 			case WEST:
@@ -444,19 +445,5 @@ public class Player extends Creature {
 			map.setScopePositionForPlayer(map.getWidth() - 13,
 					map.getHeight() - 10);
 		}
-	}
-	
-	/**
-	 * @return true if player has key to treasure chamber
-	 */
-	public boolean getHasKey() {
-		return this.hasKey;
-	}
-	
-	/**Sets hasKey to true, which means that player possesses key to treasure chamber.
-	 * 
-	 */
-	public void setHasKey() {
-		this.hasKey = true;
 	}
 }
