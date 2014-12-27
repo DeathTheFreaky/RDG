@@ -126,6 +126,7 @@ public class Game extends BasicGame {
 	/* The Game for Player ... */
 	private String playerName;
 	private Player player;
+	private Player opponent;
 
 	/* Declares all Views for the Game */
 	private GameEnvironment gameEnvironment;
@@ -242,6 +243,9 @@ public class Game extends BasicGame {
 		 * ConfigTestprinter configprinter = new
 		 * ConfigTestprinter(configloader); configprinter.print();
 		 */
+		
+		/* determined by network lobby  - TESTING only */
+		this.lobbyHost = true;
 
 		/* Points in tile numbers */
 		gameEnvironmentOrigin = new Point(0, 0);
@@ -254,15 +258,27 @@ public class Game extends BasicGame {
 		new ResourceManager().getInstance();
 
 		/* network lobby must be called before this to detect player type */
-		CreatureType playerType = CreatureType.PLAYER1;
+		CreatureType playerType;
+		if (this.lobbyHost) {
+			playerType = CreatureType.PLAYER1;
+		}
+		else {
+			playerType = CreatureType.PLAYER2;
+		}
 		if (playerType == CreatureType.PLAYER1) {
 			player = new Player(playerName,
 					new ResourceManager().getInstance().IMAGES.get("Player1"),
-					gameEnvironmentOrigin, playerType);
+					gameEnvironmentOrigin, CreatureType.PLAYER1);
+			opponent = new Player("enemy",
+					new ResourceManager().getInstance().IMAGES.get("Player2"),
+					gameEnvironmentOrigin, CreatureType.PLAYER2);
 		} else if (playerType == CreatureType.PLAYER2) {
 			player = new Player(playerName,
 					new ResourceManager().getInstance().IMAGES.get("Player2"),
-					gameEnvironmentOrigin, playerType);
+					gameEnvironmentOrigin, CreatureType.PLAYER2);
+			opponent = new Player("enemy",
+					new ResourceManager().getInstance().IMAGES.get("Player1"),
+					gameEnvironmentOrigin, CreatureType.PLAYER1);
 		}
 		
 		/* Load the chat */
@@ -287,8 +303,11 @@ public class Game extends BasicGame {
 		map = new Map().getInstance();
 		map.setPlayer(player);
 		map.setGameEnvironment(gameEnvironment);
-		// map.fillMap();
 		
+		/* needs to be changed - only for testing purposes */
+		map.setOpponent(opponent);
+		// map.fillMap();
+				
 		this.fightInstance = gameEnvironment.getFightInstance();
 	}
 

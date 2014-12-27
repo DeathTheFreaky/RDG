@@ -20,10 +20,14 @@ public class MapConverter {
 		
 		Element[][] overlay = _overlay.clone();
 		
+		System.out.println("overlay: " + _overlay);
+		System.out.println("overlayCopy: " + overlay);
+		
 		for (int i = 0; i < overlay.length; i++) {
 			for (int j = 0; j < overlay[0].length; j++) {
 				if (overlay[i][j] != null) {
-					overlay[i][j].setImage(null);
+					/* setting null causes game to crash right - although it should not set overlay but the copy of overlay which is never to be drawn -> maybe whole image is null?!? */
+					//overlay[i][j].setImage(null);
 				}
 			}
 		}

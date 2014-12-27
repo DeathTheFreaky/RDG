@@ -351,6 +351,7 @@ public class Map {
 		/* opponent can only be initialized one time (start of game) */
 		if (this.opponent == null) {
 			this.opponent = opponent;
+			System.out.println(this.opponent.getPosition().x + ", " + this.opponent.getPosition().y);
 		}
 	}
 	
@@ -428,7 +429,6 @@ public class Map {
 			break;
 		}
 				
-		System.out.println(overlay[targetX][targetY].NAME);
 		if (overlay[targetX][targetY] != null) {
 			if ((overlay[targetX][targetY] instanceof Potion) ||
 				  (overlay[targetX][targetY] instanceof Equipment)) {

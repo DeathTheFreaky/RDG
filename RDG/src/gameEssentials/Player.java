@@ -135,6 +135,8 @@ public class Player extends Creature {
 			playerNumber = 1;
 		else if (type == CreatureType.PLAYER2)
 			playerNumber = 2;
+		
+		System.out.println(this.NAME + ": " + this.playerNumber);
 
 		/* is needed for some values contained in the Map Class */
 		map = new Map().getInstance();
@@ -172,8 +174,8 @@ public class Player extends Creature {
 			/* where the player is "placed" in the scope of the camera */
 			playerPositionInCamera = new Point(9, 7);
 
-			map.setScopePositionForPlayer(map.getWidth() - 13,
-					map.getHeight() - 10);
+			map.setScopePositionForPlayer(map.getWidth() - 14,
+					map.getHeight() - 11);
 		}
 
 		camera[playerPositionInCamera.x][playerPositionInCamera.y] = true;
@@ -460,8 +462,8 @@ public class Player extends Creature {
 			/* where the player is "placed" in the scope of the camera */
 			playerPositionInCamera = new Point(9, 7);
 
-			map.setScopePositionForPlayer(map.getWidth() - 13,
-					map.getHeight() - 10);
+			map.setScopePositionForPlayer(map.getWidth() - 14,
+					map.getHeight() - 11);
 		}
 	}
 	

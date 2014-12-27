@@ -78,7 +78,7 @@ public class Element {
 			boolean visible) {
 		this.NAME = shapeName;
 		this.ID = shapeName + UUID.randomUUID();
-		this.image = image;
+		this.image = image.copy();
 		this.position = position;
 		this.visible = visible;
 	}
