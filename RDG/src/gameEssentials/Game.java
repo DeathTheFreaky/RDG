@@ -5,6 +5,8 @@ import java.awt.Point;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -33,6 +35,7 @@ import general.Enums.CreatureType;
 import general.Enums.ImageSize;
 import general.Enums.UsedClasses;
 import general.Enums.ViewingDirections;
+import general.Main;
 import general.ResourceManager;
 
 /**
@@ -127,7 +130,7 @@ public class Game extends BasicGame {
 	private Map map;
 	
 	/* NetworkManager for transferring messages between two computers */
-	private NetworkManager nw = NetworkManager.getInstance();
+	private NetworkManager nw = null;
 	
 	/* resource path */
 	public static final String IMAGEPATH = "./resources/images/";
@@ -159,9 +162,10 @@ public class Game extends BasicGame {
 	 * "Find out if its Player 1 or Player2"
 	 * 
 	 * @param title
+	 * @throws IOException 
 	 * @see Game
 	 */
-	private Game(String title) {
+	private Game(String title) throws IOException {
 		/* Find out if its is player1 or player2 */
 		this(title, "Testplayername");
 	}
@@ -171,11 +175,13 @@ public class Game extends BasicGame {
 	 * 
 	 * @param title
 	 * @param playerName
+	 * @throws IOException 
 	 * @see Game
 	 */
-	private Game(String title, String playerName) {
+	private Game(String title, String playerName) throws IOException {
 		super(title);
 		this.playerName = playerName;
+		nw = NetworkManager.getInstance();
 	}
 	
 	/**Only returns existing instance of game or null if none instance exists yet.
@@ -188,8 +194,9 @@ public class Game extends BasicGame {
 	/**Get Instance of Game.
 	 * @param title
 	 * @return
+	 * @throws IOException 
 	 */
-	public static Game getInstance(String title) {
+	public static Game getInstance(String title) throws IOException {
 		if (INSTANCE == null) {
 			INSTANCE = new Game(title);
 		}
@@ -200,8 +207,9 @@ public class Game extends BasicGame {
 	 * @param title
 	 * @param playerName
 	 * @return
+	 * @throws IOException 
 	 */
-	public static Game getInstance(String title, String playerName) {
+	public static Game getInstance(String title, String playerName) throws IOException {
 		if (INSTANCE == null) {
 			INSTANCE = new Game(title, playerName);
 		}
@@ -216,9 +224,8 @@ public class Game extends BasicGame {
 			configloader = new Configloader().getInstance();
 		} catch (IllegalArgumentException | ParserConfigurationException
 				| SAXException | IOException e) {
-			e.printStackTrace();
-			System.err
-					.println("\nParsing Configuration Files failed\nExiting program\n");
+			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
+					"Parsing Configuration Files failed.", e);
 			System.exit(1);
 		}
 

@@ -3,9 +3,8 @@ package fighting;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.HashMap;
+import java.io.IOException;
 import java.util.Map;
-
-import javax.xml.crypto.dsig.spec.HMACParameterSpec;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -32,7 +31,6 @@ import general.Enums.Attributes;
 import general.Enums.Channels;
 import general.Enums.FightSendType;
 import general.Enums.Levels;
-import general.Enums.MessageType;
 import general.Enums.Modes;
 import general.Enums.Targets;
 import general.ResourceManager;
@@ -167,8 +165,11 @@ public class Fight extends View implements Runnable {
 		
 		this.chat = chat;
 		
-		this.nw = NetworkManager.getInstance();
-		
+		try {
+			this.nw = NetworkManager.getInstance();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override

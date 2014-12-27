@@ -25,6 +25,8 @@ public class LobbyServer extends Thread {
 
 	private final String lobbyName; // the name of the lobby
 	private final String UID; // the UID of the server
+	private final int port;
+	private MulticastSocket socket = null;
 
 	/**
 	 * @see LobbyServer
@@ -38,7 +40,7 @@ public class LobbyServer extends Thread {
 	 *             is thrown if the LobbyServer class is unable to launch the
 	 *             MD5 algorithm to create his UID.
 	 */
-	public LobbyServer(String lobbyName) throws ArgumentOutOfRangeException,
+	public LobbyServer(String lobbyName, int port) throws ArgumentOutOfRangeException,
 			NoSuchAlgorithmException {
 		if (lobbyName == null) {
 			throw new NullPointerException("lobbyName cannot be null.");
@@ -52,6 +54,7 @@ public class LobbyServer extends Thread {
 							+ " characters long!");
 		}
 		this.lobbyName = lobbyName;
+		this.port = port;
 
 		// creates a UID for the server so if the server responses on two
 		// different ips it can be identified as on.
@@ -65,6 +68,15 @@ public class LobbyServer extends Thread {
 	}
 
 	/**
+	 * @see Thread.interrupt
+	 */
+	@Override
+	public void interrupt(){
+		this.socket.close();
+		super.interrupt();
+	}
+	
+	/**
 	 * The method is started if the thread is started and responses to every
 	 * discovery request it receives.</br> (Don't start this directly! Use
 	 * Thread.start() instead.)
@@ -72,24 +84,23 @@ public class LobbyServer extends Thread {
 	@Override
 	public void run() {
 		// open MulticastSocket and bound it to one of three free ports.
-		MulticastSocket socket = null;
 		try {
 			for (int i = 0; i < LobbyStatics.SERVERPORTS.length; i++) {
-				socket = new MulticastSocket(LobbyStatics.SERVERPORTS[i]);
+				this.socket = new MulticastSocket(LobbyStatics.SERVERPORTS[i]);
 				System.out.println(LobbyStatics.SERVERPORTS[i]);
-				System.out.println(socket.getPort());
-				if (socket.isBound())
+				System.out.println(this.socket.getPort());
+				if (this.socket.isBound())
 					break;
 			}
-			socket.setBroadcast(true);
-			socket.setTimeToLive(10);
+			this.socket.setBroadcast(true);
+			this.socket.setTimeToLive(10);
 		} catch (IOException e) {
 			Logger.getLogger(LobbyServer.class.getName()).log(Level.SEVERE,
 					"IOExeption while creating the MulticastSocket.", e);
 			Thread.currentThread().interrupt();
 		} finally {
 			// If its not successfully bound it stops the process.
-			if (!socket.isBound()) {
+			if (!this.socket.isBound()) {
 				Logger.getLogger(LobbyServer.class.getName()).log(Level.SEVERE,
 						"Unable to bind the MulticastSocket.");
 				Thread.currentThread().interrupt();
@@ -102,7 +113,7 @@ public class LobbyServer extends Thread {
 			byte[] buf = new byte[1];
 			packet = new DatagramPacket(buf, buf.length);
 			try {
-				socket.receive(packet);
+				this.socket.receive(packet);
 			} catch (IOException e) {
 				Logger.getLogger(LobbyServer.class.getName()).log(Level.SEVERE,
 						"Unable to receive a packet. SKIPPING", e);
@@ -111,7 +122,7 @@ public class LobbyServer extends Thread {
 			// check if the request is a valid one
 			if (packet.getData()[0] == 7) {
 				// prepare the answer and send lobby informations back
-				Serverinfo server = new Serverinfo(null, socket.getPort(),
+				Serverinfo server = new Serverinfo(null, this.port,
 						this.lobbyName, this.UID);
 				ByteArrayOutputStream bos = new ByteArrayOutputStream(2048);
 				ObjectOutputStream oos = null;
@@ -130,7 +141,7 @@ public class LobbyServer extends Thread {
 						bos.toByteArray(), bos.size(), packet.getAddress(),
 						packet.getPort());
 				try {
-					socket.send(sendPacket);
+					this.socket.send(sendPacket);
 				} catch (IOException e) {
 					Logger.getLogger(LobbyServer.class.getName()).log(
 							Level.SEVERE,
@@ -141,7 +152,8 @@ public class LobbyServer extends Thread {
 		}
 
 		// close Socket when interrupted
-		socket.close();
+		this.socket.close();
+		this.socket = null;
 	}
 
 }
