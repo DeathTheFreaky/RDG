@@ -17,6 +17,7 @@ import org.newdawn.slick.SlickException;
 import org.xml.sax.SAXException;
 
 import at.RDG.network.NetworkManager;
+import at.RDG.network.communication.MapConverter;
 import at.RDG.network.communication.NetworkMessage;
 import configLoader.Configloader;
 import elements.Creature;
@@ -326,10 +327,10 @@ public class Game extends BasicGame {
 					break;
 				case GENERAL:
 					break;
-				case ITEMPICKUP:
+				case ITEM:
 					break;
 				case MAP:
-						
+						map.setOverlay(MapConverter.toOverlay(message));
 					break;
 				case NETWORK:
 					break;

@@ -1,5 +1,6 @@
 package at.RDG.network.communication;
 
+import elements.Element;
 import general.Enums.Directions;
 import general.Enums.MessageType;
 
@@ -23,12 +24,13 @@ public class NetworkMessage {
 	//for chat and network
 	public final String message;
 	
-	//for item/monster remove
+	//for item/monster change
 	/**
 	 * Position 0 = X Position</br>
 	 * Position 1 = Y Position
 	 */
 	public final int itempos[];
+	public final Element item;
 	
 	//for player movement
 	/**
@@ -40,6 +42,9 @@ public class NetworkMessage {
 	
 	//for fight
 	public final Map<String, Float> fightvalues;
+	
+	//for map transfer
+	public final Element[][] overlay;
 	
 	/**
 	 * The NetworkMessage predefined for network related messages.</br>
@@ -56,9 +61,11 @@ public class NetworkMessage {
 		this.port = port;
 		this.message = msg;
 		this.itempos = null;
+		this.item = null;
 		this.playerpos = null;
 		this.playerdir = null;
 		this.fightvalues = null;
+		this.overlay = null;
 	}
 	
 	/**
@@ -74,9 +81,11 @@ public class NetworkMessage {
 		this.port = 0;
 		this.message = msg;
 		this.itempos = null;
+		this.item = null;
 		this.playerpos = null;
 		this.playerdir = null;
 		this.fightvalues = null;
+		this.overlay = null;
 	}
 	
 	/**
@@ -88,17 +97,19 @@ public class NetworkMessage {
 	 * @param itemposX The x position of the item on the map.
 	 * @param itemposY The y position of the item on the map.
 	 */
-	public NetworkMessage(int itemposX, int itemposY){
-		this.type = MessageType.ITEMPICKUP;
+	public NetworkMessage(int itemposX, int itemposY, Element item){
+		this.type = MessageType.ITEM;
 		this.addr = null;
 		this.port = 0;
 		this.message = null;
 		this.itempos = new int[2];
 		this.itempos[0] = itemposX;
 		this.itempos[1] = itemposY;
+		this.item = item;
 		this.playerpos = null;
 		this.playerdir = null;
 		this.fightvalues = null;
+		this.overlay = null;
 	}
 	
 	/**
@@ -117,11 +128,13 @@ public class NetworkMessage {
 		this.port = 0;
 		this.message = null;
 		this.itempos = null;
+		this.item = null;
 		this.playerpos = new int[2];
 		this.playerpos[0] = playerposX;
 		this.playerpos[1] = playerposY;
 		this.playerdir = playerdir;
 		this.fightvalues = null;
+		this.overlay = null;
 	}
 	
 	/**
@@ -137,9 +150,28 @@ public class NetworkMessage {
 		this.port = 0;
 		this.message = null;
 		this.itempos = null;
+		this.item = null;
 		this.playerpos = null;
 		this.playerdir = null;
 		this.fightvalues = fightvalues;
+		this.overlay = null;
+	}
+	
+	/**The NetworkMessage predefined for initial map transfer.</br>
+	 * All other fields are null/0.
+	 * @param overlay
+	 */
+	public NetworkMessage(Element[][] overlay) {
+		this.type = MessageType.MAP;
+		this.addr = null;
+		this.port = 0;
+		this.message = null;
+		this.itempos = null;
+		this.item = null;
+		this.playerpos = null;
+		this.playerdir = null;
+		this.fightvalues = null;
+		this.overlay = overlay;
 	}
 	
 	/**
@@ -151,19 +183,23 @@ public class NetworkMessage {
 	 * @param port A port in int representation.
 	 * @param msg A String message.
 	 * @param itempos A int array.
+	 * @param itempos A {@link Element} to add to the map.
 	 * @param playerpos A int array.
 	 * @param playerdir The {@link Directions} a player is facing.
 	 * @param fightvalues A Map for fightvalues.
+	 * @param overlay A two dimensional {@link Element} array.
 	 */
-	public NetworkMessage(MessageType type, InetAddress addr, int port, String msg, int[] itempos, int[] playerpos, Directions playerdir, Map<String,Float> fightvalues){
+	public NetworkMessage(MessageType type, InetAddress addr, int port, String msg, int[] itempos, Element item, int[] playerpos, Directions playerdir, Map<String,Float> fightvalues, Element[][] overlay){
 		this.type = type;
 		this.addr = addr;
 		this.port = port;
 		this.message = msg;
 		this.itempos = itempos;
+		this.item = item;
 		this.playerpos = playerpos;
 		this.playerdir = playerdir;
 		this.fightvalues = fightvalues;
+		this.overlay = overlay;
 	}
 	
 }

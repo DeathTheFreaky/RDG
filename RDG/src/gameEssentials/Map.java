@@ -2,6 +2,7 @@ package gameEssentials;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,8 @@ import java.util.Map.Entry;
 
 import org.newdawn.slick.SlickException;
 
+import at.RDG.network.NetworkManager;
+import at.RDG.network.communication.MapConverter;
 import configLoader.ArmamentTemplate;
 import configLoader.MonsterTemplate;
 import views.GameEnvironment;
@@ -81,6 +84,8 @@ public class Map {
 	private final int MEDIUM_ITEM_OFFSET = 1; 
 	private final int STRONG_ITEM_OFFSET = 1;
 
+	/* Network Manager for sending Map data */
+	NetworkManager networkManager = null;
 	
 	/**
 	 * Constructs a Map.
@@ -121,6 +126,11 @@ public class Map {
 		playerScopePosition = new Point();
 		
 		resourceManager = new ResourceManager().getInstance();
+		try {
+			networkManager = NetworkManager.getInstance();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		/* null-initialize overlay */
 		for (int i = 0; i < size.width; i++) {
@@ -199,7 +209,7 @@ public class Map {
 		/* send Map to other computer */
 		if (Game.getInstance().isLobbyHost()) {
 			sendMap();
-		}
+		} 
 
 		/* true-initialize passable */
 		/*
@@ -234,6 +244,13 @@ public class Map {
 	 */
 	public int getHeight() {
 		return this.size.height - 1;
+	}
+	
+	/**Returns overlay for network transfer.
+	 * @return overlay
+	 */
+	public Element[][] getOverlay() {
+		return this.overlay;
 	}
 
 	/**
@@ -789,6 +806,13 @@ public class Map {
 	 * 
 	 */
 	private void sendMap() {
-		
+		networkManager.sendMessage(MapConverter.toNetworkMessage(this.overlay));
+	}
+	
+	/**Set overlay from network Classes.
+	 * @param overlay
+	 */
+	public void setOverlay(Element[][] overlay) {
+		this.overlay = overlay;
 	}
 }
