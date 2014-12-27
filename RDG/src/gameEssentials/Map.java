@@ -427,7 +427,7 @@ public class Map {
 		default:
 			break;
 		}
-		
+				
 		System.out.println(overlay[targetX][targetY].NAME);
 		if (overlay[targetX][targetY] != null) {
 			if ((overlay[targetX][targetY] instanceof Potion) ||
@@ -435,8 +435,16 @@ public class Map {
 				e = overlay[targetX][targetY];
 				overlay[targetX][targetY] = null;
 				networkManager.sendMessage(new NetworkMessage(targetX, targetY, overlay[targetX][targetY]));
-			} else if ((overlay[targetX][targetY] instanceof Creature) || (targetX == opponent.getPosition().x && targetY == opponent.getPosition().y)) {
-				gameEnvironment.startFight((Creature) overlay[targetX][targetY]);
+			} else if ((overlay[targetX][targetY] instanceof Creature)) {
+				/* avoid two players fighting the same enemy */
+				if (!(this.opponent.getEnemyPosition().x == targetX && this.opponent.getEnemyPosition().y == targetY)) {
+					gameEnvironment.startFight((Creature) overlay[targetX][targetY]);
+				}
+			} else if (targetX == this.opponent.getPosition().x && targetY == this.opponent.getPosition().y) {
+				/* only start fight against other player if he isn't currently in a fight */
+				if (!this.opponent.isInFight()) {
+					gameEnvironment.startFight((Creature) overlay[targetX][targetY]);
+				}
 			} else if (overlay[targetX][targetY].NAME.equals("Key") && (!(InventoryView.getInstance().hasKey()))) {
 				e = overlay[targetX][targetY];
 				overlay[targetX][targetY] = null;

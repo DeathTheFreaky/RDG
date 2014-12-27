@@ -64,6 +64,7 @@ public class Player extends Creature {
 	/* save position of current enemy in a fight to avoid two players */
 	private int enemyX = 0;
 	private int enemyY = 0;
+	private boolean activeFight = false;
 
 	/**
 	 * Constructs a Player.<br>
@@ -468,9 +469,10 @@ public class Player extends Creature {
 	 * @param x
 	 * @param y
 	 */
-	public void setEnemyPosition(int x, int y) {
+	public void setEnemyPosition(int x, int y, boolean activeFight) {
 		this.enemyX = x;
 		this.enemyY = y;
+		this.activeFight = activeFight;
 	}
 	
 	/**
@@ -478,5 +480,12 @@ public class Player extends Creature {
 	 */
 	public Point getEnemyPosition() {
 		return new Point(this.enemyX, this.enemyY);
+	}
+	
+	/**
+	 * @return true if this player is currently fighting
+	 */
+	public boolean isInFight() {
+		return this.activeFight;
 	}
 }

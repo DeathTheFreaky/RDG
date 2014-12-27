@@ -341,8 +341,12 @@ public class Game extends BasicGame {
 				case MAP:
 					map.setOverlay(MapConverter.toOverlay(message));
 					break;
-				case NETWORK:
-						//not in queue 
+				case FIGHTPOSITION:
+					if (message.enemyPosX == 0 && message.enemyPosY == 0) {
+						map.getOpponent().setEnemyPosition(message.enemyPosX, message.enemyPosY, false); 
+					} else {
+						map.getOpponent().setEnemyPosition(message.enemyPosX, message.enemyPosY, true);
+					}
 					break;
 				case PLAYERPOSITION:
 					map.getOpponent().setPosition(message.playerpos[0], message.playerpos[1]);

@@ -47,6 +47,10 @@ public class NetworkMessage {
 	//for map transfer
 	public final Element[][] overlay;
 	
+	//for avoiding two players fighting the same creature
+	public final int enemyPosX;
+	public final int enemyPosY;
+	
 	/**
 	 * The NetworkMessage predefined for network related messages.</br>
 	 * All other fields are null.
@@ -67,6 +71,8 @@ public class NetworkMessage {
 		this.playerdir = null;
 		this.fightvalues = null;
 		this.overlay = null;
+		this.enemyPosX = 0;
+		this.enemyPosY = 0;
 	}
 	
 	/**
@@ -87,6 +93,8 @@ public class NetworkMessage {
 		this.playerdir = null;
 		this.fightvalues = null;
 		this.overlay = null;
+		this.enemyPosX = 0;
+		this.enemyPosY = 0;
 	}
 	
 	/**
@@ -111,6 +119,8 @@ public class NetworkMessage {
 		this.playerdir = null;
 		this.fightvalues = null;
 		this.overlay = null;
+		this.enemyPosX = 0;
+		this.enemyPosY = 0;
 	}
 	
 	/**
@@ -136,6 +146,8 @@ public class NetworkMessage {
 		this.playerdir = playerdir;
 		this.fightvalues = null;
 		this.overlay = null;
+		this.enemyPosX = 0;
+		this.enemyPosY = 0;
 	}
 	
 	/**
@@ -156,6 +168,8 @@ public class NetworkMessage {
 		this.playerdir = null;
 		this.fightvalues = fightvalues;
 		this.overlay = null;
+		this.enemyPosX = 0;
+		this.enemyPosY = 0;
 	}
 	
 	/**The NetworkMessage predefined for initial map transfer.</br>
@@ -173,6 +187,27 @@ public class NetworkMessage {
 		this.playerdir = null;
 		this.fightvalues = null;
 		this.overlay = overlay;
+		this.enemyPosX = 0;
+		this.enemyPosY = 0;
+	}
+	
+	/**The NetworkMessage predefined for telling other pc against whom the player currently fights.</br>
+	 * All other fields are null/0.
+	 * @param overlay
+	 */
+	public NetworkMessage(int enemyX, int enemyY) {
+		this.type = MessageType.FIGHTPOSITION;
+		this.addr = null;
+		this.port = 0;
+		this.message = null;
+		this.itempos = null;
+		this.item = null;
+		this.playerpos = null;
+		this.playerdir = null;
+		this.fightvalues = null;
+		this.overlay = null;
+		this.enemyPosX = 0;
+		this.enemyPosY = 0;
 	}
 	
 	/**
@@ -190,7 +225,7 @@ public class NetworkMessage {
 	 * @param fightvalues A Map for fightvalues.
 	 * @param overlay A two dimensional {@link Element} array.
 	 */
-	public NetworkMessage(MessageType type, InetAddress addr, int port, String msg, int[] itempos, Element item, int[] playerpos, ViewingDirections playerdir, Map<String,Float> fightvalues, Element[][] overlay){
+	public NetworkMessage(MessageType type, InetAddress addr, int port, String msg, int[] itempos, Element item, int[] playerpos, ViewingDirections playerdir, Map<String,Float> fightvalues, Element[][] overlay, int enemyPosX, int enemyPosY){
 		this.type = type;
 		this.addr = addr;
 		this.port = port;
@@ -201,6 +236,8 @@ public class NetworkMessage {
 		this.playerdir = playerdir;
 		this.fightvalues = fightvalues;
 		this.overlay = overlay;
+		this.enemyPosX = enemyPosX;
+		this.enemyPosY = enemyPosY;
 	}
 	
 }
