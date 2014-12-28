@@ -273,17 +273,17 @@ public class Game extends BasicGame {
 		if (playerType == CreatureType.PLAYER1) {
 			player = new Player(playerName,
 					new ResourceManager().getInstance().IMAGES.get("Player1"),
-					gameEnvironmentOrigin, CreatureType.PLAYER1);
+					gameEnvironmentOrigin, CreatureType.PLAYER1, true);
 			opponent = new Player("Testenemy",
 					new ResourceManager().getInstance().IMAGES.get("Player2"),
-					gameEnvironmentOrigin, CreatureType.PLAYER2);
+					gameEnvironmentOrigin, CreatureType.PLAYER2, false);
 		} else if (playerType == CreatureType.PLAYER2) {
 			player = new Player(playerName,
 					new ResourceManager().getInstance().IMAGES.get("Player2"),
-					gameEnvironmentOrigin, CreatureType.PLAYER2);
+					gameEnvironmentOrigin, CreatureType.PLAYER2, true);
 			opponent = new Player("Testenemy",
 					new ResourceManager().getInstance().IMAGES.get("Player1"),
-					gameEnvironmentOrigin, CreatureType.PLAYER1);
+					gameEnvironmentOrigin, CreatureType.PLAYER1, false);
 		}
 		
 		/* Load the chat */

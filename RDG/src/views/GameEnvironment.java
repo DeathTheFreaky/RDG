@@ -202,7 +202,6 @@ public class GameEnvironment extends View {
 
 	@Override
 	public void update() {
-		//map.update();	Warum???
 		backgroundScope = map.getBackgroundScope();
 		overlayScope = map.getOverlayScope();
 	}

@@ -90,10 +90,10 @@ public class Player extends Creature {
 	 * @param type
 	 * @throws SlickException
 	 */
-	public Player(String creatureName, Image image, CreatureType type)
+	public Player(String creatureName, Image image, CreatureType type, Boolean myPlayer)
 			throws SlickException {
 
-		this(creatureName, image, new Point(0, 0), type);
+		this(creatureName, image, new Point(0, 0), type, myPlayer);
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class Player extends Creature {
 	 * @see Player
 	 */
 	public Player(String creatureName, Image image,
-			Point originOfGameEnvironment, CreatureType type)
+			Point originOfGameEnvironment, CreatureType type, Boolean myPlayer)
 			throws SlickException {
 
 		/*
@@ -164,8 +164,13 @@ public class Player extends Creature {
 
 			/* where the player is "placed" in the scope of the camera */
 			playerPositionInCamera = new Point(5, 4);
-
-			map.setScopePositionForPlayer(0, 0);
+			
+			/* only set scope for actual own player and not for enemy */
+			if (myPlayer) {
+				map.setScopePositionForPlayer(0, 0);
+				System.out.println("set scope for 1");
+			}
+			
 		} else {
 			this.position = new Point(map.getWidth() - 4, map.getHeight() - 3);
 			this.cameraPosition = new Point(map.getWidth() - 14,
@@ -173,9 +178,12 @@ public class Player extends Creature {
 
 			/* where the player is "placed" in the scope of the camera */
 			playerPositionInCamera = new Point(9, 7);
-
-			map.setScopePositionForPlayer(map.getWidth() - 14,
-					map.getHeight() - 11);
+			
+			/* only set scope for actual own player and not for enemy */
+			if (myPlayer) {
+				map.setScopePositionForPlayer(map.getWidth() - 14,
+						map.getHeight() - 11);
+			}
 		}
 
 		camera[playerPositionInCamera.x][playerPositionInCamera.y] = true;
