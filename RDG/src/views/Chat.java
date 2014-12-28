@@ -3,6 +3,7 @@ package views;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -146,6 +147,12 @@ public class Chat extends View {
 	public Chat(String contextName, Point origin, Dimension size,
 			GameContainer container) throws SlickException {
 		super(contextName, origin, size);
+		
+		try {
+			this.networkManager = NetworkManager.getInstance();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		positionX = origin.x * GameEnvironment.BLOCK_SIZE;
 		positionY = origin.y * GameEnvironment.BLOCK_SIZE;

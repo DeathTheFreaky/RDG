@@ -376,6 +376,9 @@ public class Map {
 				|| fieldY > getHeight()) {
 			return false;
 		}
+		if (fieldX == opponent.getPosition().x && fieldY == opponent.getPosition().y) {
+			return false;
+		}
 		if (overlay[fieldX][fieldY] == null) {
 			return true;
 		}
@@ -440,20 +443,21 @@ public class Map {
 				if (!(this.opponent.getEnemyPosition().x == targetX && this.opponent.getEnemyPosition().y == targetY)) {
 					gameEnvironment.startFight((Creature) overlay[targetX][targetY]);
 				}
-			} else if (targetX == this.opponent.getPosition().x && targetY == this.opponent.getPosition().y) {
-				/* only start fight against other player if he isn't currently in a fight */
-				if (!this.opponent.isInFight()) {
-					gameEnvironment.startFight((Creature) overlay[targetX][targetY]);
-				}
 			} else if (overlay[targetX][targetY].NAME.equals("Key") && (!(InventoryView.getInstance().hasKey()))) {
 				e = overlay[targetX][targetY];
 				overlay[targetX][targetY] = null;
 				networkManager.sendMessage(new NetworkMessage(targetX, targetY, overlay[targetX][targetY]));
 			}
 		}
+		if (targetX == this.opponent.getPosition().x && targetY == this.opponent.getPosition().y) {
+			/* only start fight against other player if he isn't currently in a fight */
+			if (!this.opponent.isInFight()) {
+				gameEnvironment.startFight((Creature) opponent);
+			}
+		}
 
 		return e;
-	}
+	} 
 	
 	/**
 	 * Returns Element in front of player or null.

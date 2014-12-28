@@ -13,6 +13,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.xml.sax.SAXException;
 
@@ -39,6 +40,7 @@ import general.Enums.CreatureType;
 import general.Enums.ImageSize;
 import general.Enums.UsedClasses;
 import general.Enums.ViewingDirections;
+import general.ItemFactory;
 import general.Main;
 import general.ResourceManager;
 
@@ -161,6 +163,9 @@ public class Game extends BasicGame {
 	
 	/* network manager for transferring data to other pc */
 	NetworkManager networkManager;
+	
+	/* instance of resource Manager for loading images */
+	private ResourceManager resourceManager;
 
 	/* Declare all classes, we need for the game (Factory, Resourceloader) */
 	// private ResourceManager resourceManager;
@@ -255,7 +260,7 @@ public class Game extends BasicGame {
 		minimapOrigin = new Point(20, 20);
 
 		/* Initialize Factory and Manager classes! */
-		new ResourceManager().getInstance();
+		resourceManager = new ResourceManager().getInstance();
 
 		/* network lobby must be called before this to detect player type */
 		CreatureType playerType;
@@ -269,14 +274,14 @@ public class Game extends BasicGame {
 			player = new Player(playerName,
 					new ResourceManager().getInstance().IMAGES.get("Player1"),
 					gameEnvironmentOrigin, CreatureType.PLAYER1);
-			opponent = new Player("enemy",
+			opponent = new Player("Testenemy",
 					new ResourceManager().getInstance().IMAGES.get("Player2"),
 					gameEnvironmentOrigin, CreatureType.PLAYER2);
 		} else if (playerType == CreatureType.PLAYER2) {
 			player = new Player(playerName,
 					new ResourceManager().getInstance().IMAGES.get("Player2"),
 					gameEnvironmentOrigin, CreatureType.PLAYER2);
-			opponent = new Player("enemy",
+			opponent = new Player("Testenemy",
 					new ResourceManager().getInstance().IMAGES.get("Player1"),
 					gameEnvironmentOrigin, CreatureType.PLAYER1);
 		}
@@ -291,7 +296,7 @@ public class Game extends BasicGame {
 		
 		gameEnvironment = new GameEnvironment("GameEnvironment",
 				gameEnvironmentOrigin, new Dimension(GAME_ENVIRONMENT_WIDTH,
-						GAME_ENVIRONMENT_HEIGHT), player, armorView, this, chat);
+						GAME_ENVIRONMENT_HEIGHT), player, opponent, armorView, this, chat);
 
 		minimap = new Minimap("Minimap", gameEnvironmentOrigin.x
 				+ minimapOrigin.x, gameEnvironmentOrigin.y + minimapOrigin.y);
@@ -337,9 +342,10 @@ public class Game extends BasicGame {
 	}
 
 	/**Process Network Messages according to their type.
+	 * @throws SlickException 
 	 * 
 	 */
-	private void processNetworkMessages() {
+	private void processNetworkMessages() throws SlickException {
 		
 		NetworkMessage message = null;
 		
@@ -368,7 +374,22 @@ public class Game extends BasicGame {
 					}
 					break;
 				case PLAYERPOSITION:
-					map.getOpponent().setPosition(message.playerpos[0], message.playerpos[1]);
+					opponent.setPosition(message.playerpos[0], message.playerpos[1]);
+					Image image = opponent.getImage();
+					switch (message.playerdir) {
+						case WEST:
+							image.rotate(90);
+							break;
+						case SOUTH:
+							image.rotate(180f);
+							break;
+						case EAST:
+							image.rotate(-90f);
+							break;
+						default:
+							break;
+					}
+					opponent.setImage(image);
 					break;
 				default:
 					break;
@@ -396,6 +417,19 @@ public class Game extends BasicGame {
 
 	@Override
 	public void keyPressed(int key, char c) {
+		
+		
+			try {
+				if (key == 19) {
+					map.getOverlay()[1][1] = ItemFactory.createPotion("Poison", 1);
+				} else if (key == 20) {
+					map.getOverlay()[1][1].setImage(resourceManager.IMAGES.get("Strength"));
+				}
+			} catch (SlickException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
 		
 		/* Key Values for Players Movement! (a,s,d,w) */
 		if ((key == 30 || key == 31 || key == 32 || key == 17)
@@ -731,5 +765,19 @@ public class Game extends BasicGame {
 	 */
 	public NetworkManager getNetworkManager() {
 		return this.networkManager;
+	}
+	
+	/**
+	 * @return the own Player
+	 */
+	public Player getPlayer() {
+		return this.player;
+	}
+	
+	/**
+	 * @return the opposing Player
+	 */
+	public Player getOpponent() {
+		return this.opponent;
 	}
 }
