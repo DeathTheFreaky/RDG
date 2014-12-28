@@ -82,6 +82,17 @@ public class Element {
 		this.position = position;
 		this.visible = visible;
 	}
+	
+	/**A copy constructor used for manipulating a copy of Element before transferring it via the network.
+	 * @param copy
+	 */
+	public Element(Element copy) {
+		this.NAME = copy.NAME;
+		this.ID = copy.ID;
+		this.image = copy.image.copy();
+		this.position = copy.position;
+		this.visible = copy.visible;
+	}
 
 	/**Changes visibility of an Element.
 	 * 
@@ -123,7 +134,7 @@ public class Element {
 	}
 
 	/**
-	 * @return An Element's image.
+	 * @return a scaled copy of an element's image
 	 */
 	public Image getImage(ImageSize is) {
 		switch(is) {
@@ -133,6 +144,13 @@ public class Element {
 			return this.image.getScaledCopy(20, 20);
 		}
 		return null;
+	}
+	
+	/**
+	 * @return the element's image
+	 */
+	public Image getImage() {
+		return this.image;
 	}
 
 	/**

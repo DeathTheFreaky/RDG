@@ -369,17 +369,29 @@ public class Player extends Creature {
 	}
 
 	/**
-	 * Draws Player on the map.
+	 * Draws Players on the map.
 	 * 
 	 * @param container
 	 * @param graphics
 	 */
-	public void draw(GameContainer container, Graphics graphics) {
-		graphics.drawImage(image,
-				(originOfGameEnvironment.x + position.x - cameraPosition.x)
-						* GameEnvironment.BLOCK_SIZE,
-				(originOfGameEnvironment.y + position.y - cameraPosition.y)
-						* GameEnvironment.BLOCK_SIZE);
+	public void draw(GameContainer container, Graphics graphics, Player opponent) {
+		
+		if (Game.getInstance().getPlayer() == this) {
+			
+			/* draw player */
+			graphics.drawImage(image,
+					(originOfGameEnvironment.x + position.x - cameraPosition.x)
+							* GameEnvironment.BLOCK_SIZE,
+					(originOfGameEnvironment.y + position.y - cameraPosition.y)
+							* GameEnvironment.BLOCK_SIZE);
+			
+			/* draw opponent */
+			graphics.drawImage(opponent.image,
+					(originOfGameEnvironment.x + opponent.getPosition().x - cameraPosition.x)
+							* GameEnvironment.BLOCK_SIZE,
+					(originOfGameEnvironment.y + opponent.getPosition().y - cameraPosition.y)
+							* GameEnvironment.BLOCK_SIZE);			
+		} 
 	}
 
 	/**
