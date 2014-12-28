@@ -3,6 +3,7 @@ package general;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,6 +14,7 @@ import org.newdawn.slick.SlickException;
 
 import at.RDG.network.ArgumentOutOfRangeException;
 import at.RDG.network.NetworkManager;
+import at.RDG.network.UnableToStartConnectionException;
 import at.RDG.network.discovery.LobbySearcher;
 import at.RDG.network.discovery.LobbyServer;
 import at.RDG.network.discovery.Serverinfo;
@@ -31,17 +33,29 @@ public class TestClient {
 		NetworkManager networkManager = null;
 		try {
 			networkManager = NetworkManager.getInstance();
-		} catch (IOException e) {
+			
+			/* TEST: lobbyclient -> start server before!!! */
+			List<Serverinfo> lobbyList = new LinkedList<Serverinfo>();
+			networkManager.searchLobby(lobbyList);
+			
+			while(lobbyList.size() == 0) {
+				lobbyList = networkManager.getLobbyList();
+			}
+			
+			networkManager.stopSearchLobby();
+			
+			System.out.println(lobbyList.get(0).getLobbyName());
+			System.out.println(lobbyList.get(0).getPort());
+						
+			networkManager.connect(lobbyList.get(0));
+			
+			System.out.println("is connected: " + networkManager.isConnected());
+			
+		} catch (IOException | UnableToStartConnectionException e) {
 			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
 					"Failed to obtain network socket.", e);
 			System.exit(1);
 		}
-		
-		/* TEST: lobbyclient -> start server before!!! */
-		searcher();
-		networkManager.setLobbyHost(false);
-		
-		System.out.println(networkManager.isConnected());
 		
 		AppGameContainer app1 = null;
 		try {
@@ -56,46 +70,5 @@ public class TestClient {
 		app1.setAlwaysRender(true); // Spiel wird auch ohne Fokus aktualisiert
 		app1.setShowFPS(false);
 		app1.start(); // startet die App
-	}
-	
-	private static void server(int count) {
-		LobbyServer server = null;
-		try {
-			server = new LobbyServer("Neue Lobby " + count, 1024);
-		} catch (ArgumentOutOfRangeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		server.start();
-	}
-
-	private static void searcher() {
-		Thread t = new Thread() {
-			@Override
-			public void run() {
-				LinkedList<Serverinfo> lobbyList = new LinkedList<Serverinfo>();
-				LobbySearcher search = new LobbySearcher(lobbyList);
-				search.start();
-				while (true) {
-					try {
-						Thread.sleep(1000);
-						System.out.println("stopped waiting");
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					for(int i = 0; i < lobbyList.size(); i++){
-						Serverinfo info = lobbyList.get(i);
-						System.out.println("Lobbyserver: "
-								+ info.getLobbyName());
-					}
-				}
-			}
-		};
-
-		t.start();
 	}
 }

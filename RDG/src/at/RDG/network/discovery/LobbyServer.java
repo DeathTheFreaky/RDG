@@ -83,7 +83,6 @@ public class LobbyServer extends Thread {
 	 */
 	@Override
 	public void run() {
-		System.out.println("starting lobby server");
 		// open MulticastSocket and bound it to one of three free ports.
 		try {
 			for (int i = 0; i < LobbyStatics.SERVERPORTS.length; i++) {

@@ -133,6 +133,9 @@ public class NetworkManager {
 			}
 		}
 		this.lserver.start();
+		
+		/* don't know where to set this -> once connection has been established */
+		setLobbyHost(true);
 	}
 
 	/**
@@ -232,7 +235,18 @@ public class NetworkManager {
 	/**Sets Boolean to tell if this computer is the lobbyHost.
 	 * @param lobbyHost
 	 */
-	public void setLobbyHost(Boolean lobbyHost) {
+	private void setLobbyHost(Boolean lobbyHost) {
 		this.lobbyHost = lobbyHost;
+	}
+	
+	/**
+	 * @return list of all lobbies found by searcher or null if no searcher is started 
+	 */
+	public List<Serverinfo> getLobbyList() {
+		if (this.searcher == null) {
+			return null;
+		} else {
+			return this.searcher.getFilledLobbyList();
+		}
 	}
 }
