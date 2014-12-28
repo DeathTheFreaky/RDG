@@ -250,7 +250,7 @@ public class Game extends BasicGame {
 		 */
 		
 		/* determined by network lobby  - TESTING only */
-		this.lobbyHost = true;
+		this.lobbyHost = networkManager.isLobbyHost();
 
 		/* Points in tile numbers */
 		gameEnvironmentOrigin = new Point(0, 0);
@@ -573,7 +573,6 @@ public class Game extends BasicGame {
 
 		if (mouseOverMinimap) {
 			if (!draggingMinimap) {
-				System.out.println("Set new offsets");
 				draggingMinimap = true;
 				offsetX = oldx - minimap.positionX;
 				offsetY = oldy - minimap.positionY;
@@ -602,9 +601,7 @@ public class Game extends BasicGame {
 		if (button == 0) { // linke Maustaste
 			if (dragging) {
 				Element e;
-				
-				System.out.println("dropped " + this.draggedItem);
-				
+								
 				if (fightInstance.isInFight()) {
 					// only allow when potionTaking is active 
 					if (fightInstance.isPotionTakingActive()) {

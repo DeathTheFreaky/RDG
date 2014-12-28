@@ -37,6 +37,7 @@ public class NetworkManager {
 	private NetworkWriter writer = null;
 	private NetworkReader reader = null;
 	private Thread acceptor;
+	private Boolean lobbyHost = false;
 
 	/**
 	 * @see NetworkManager
@@ -219,5 +220,19 @@ public class NetworkManager {
 			INSTANCE = new NetworkManager();
 		}
 		return INSTANCE;
+	}
+	
+	/**
+	 * @return true if this Computer hosted the lobby
+	 */
+	public Boolean isLobbyHost() {
+		return this.lobbyHost;
+	}
+	
+	/**Sets Boolean to tell if this computer is the lobbyHost.
+	 * @param lobbyHost
+	 */
+	public void setLobbyHost(Boolean lobbyHost) {
+		this.lobbyHost = lobbyHost;
 	}
 }

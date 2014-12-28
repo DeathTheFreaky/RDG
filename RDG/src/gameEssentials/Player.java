@@ -136,8 +136,6 @@ public class Player extends Creature {
 		else if (type == CreatureType.PLAYER2)
 			playerNumber = 2;
 		
-		System.out.println(this.NAME + ": " + this.playerNumber);
-
 		/* is needed for some values contained in the Map Class */
 		map = new Map().getInstance();
 
@@ -168,7 +166,6 @@ public class Player extends Creature {
 			/* only set scope for actual own player and not for enemy */
 			if (myPlayer) {
 				map.setScopePositionForPlayer(0, 0);
-				System.out.println("set scope for 1");
 			}
 			
 		} else {
