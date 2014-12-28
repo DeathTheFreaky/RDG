@@ -395,11 +395,14 @@ public class ArmorView extends View {
 	 * @param set
 	 */
 	public void switchSet() {
+		System.out.println(this.set);
+		System.out.println("Set switch");
 		if (set) {
 			this.set = false;
 		} else {
 			this.set = true;
 		}
+		System.out.println(this.set);
 	}
 
 	/**
@@ -1108,7 +1111,6 @@ public class ArmorView extends View {
 	}
 	
 	/**Returns sum of all values for a specific armament attribute of all equipped armaments.<br>
-	 * NOT YET COMPLETELY IMPLEMENTED!
 	 * 
 	 * @param speed
 	 * @return
@@ -1116,7 +1118,8 @@ public class ArmorView extends View {
 	public float getStats(ArmorStatsTypes type, ArmorStatsMode mode, ArmorStatsAttributes att) {
 		
 		float value = 0f;
-		int itemCtr = 1; //needed for average calculation
+		float subvalue = 0f;
+		int itemCtr = 0; //needed for average calculation
 		Collection<Equipment> myEquipment = null;
 		
 		if (set) {
@@ -1137,19 +1140,27 @@ public class ArmorView extends View {
 						}
 					}
 				}
+				if (e instanceof Weapon) {
+					if (mode == ArmorStatsMode.SUM) {
+						if (att == ArmorStatsAttributes.ARMOR) {
+							subvalue += ((Weapon) e).DEFENSE;
+						}
+					}
+				}
 			}
 			if (type == ArmorStatsTypes.WEAPONS) {
 				if (e instanceof Weapon) {
-					if (mode == ArmorStatsMode.MIN) {
+					if (mode == ArmorStatsMode.MAX) {
 						if (att == ArmorStatsAttributes.SPEED) {
-							if (((Weapon) e).SPEED < value && ((Weapon) e).SPEED > 0) {
+							if ((100 - ((Weapon) e).SPEED) > value) {
 								value = ((Weapon) e).SPEED;
 							}
 						}
 					}
 					if (mode == ArmorStatsMode.AVERAGE) {
+						System.out.println(e.NAME);
 						if (att == ArmorStatsAttributes.ACCURACY) {
-							value = (value + ((Weapon) e).ACCURACY)/itemCtr;
+							value = value + ((Weapon) e).ACCURACY;
 							itemCtr++;
 						}
 					}
@@ -1170,6 +1181,13 @@ public class ArmorView extends View {
 				}
 			}
 		}
+		
+		/* calculate average */
+		if (itemCtr > 0 && mode == ArmorStatsMode.AVERAGE) {
+			value = value/itemCtr;
+		}
+		
+		value = value + subvalue;
 		
 		return value;
 	}	

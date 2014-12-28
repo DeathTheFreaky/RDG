@@ -2,18 +2,28 @@ package gameEssentials;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
 
 import org.newdawn.slick.SlickException;
 
+import at.RDG.network.NetworkManager;
+import at.RDG.network.communication.MapConverter;
+import at.RDG.network.communication.NetworkMessage;
 import views.GameEnvironment;
-import elements.Armament;
+import views.InventoryView;
+import views.View;
 import elements.Creature;
 import elements.Element;
 import elements.Equipment;
+import elements.Item;
 import elements.Potion;
 import elements.Room;
-import elements.Weapon;
 import general.Chances;
+import general.Enums.ItemClasses;
+import general.Enums.Levels;
 import general.Enums.RoomTypes;
 import general.GroundFactory;
 import general.ResourceManager;
@@ -61,13 +71,29 @@ public class Map {
 	/* ResourceManager needed for placing keys in random rooms */
 	private ResourceManager resourceManager = null;
 	
+	/* ensure that spawned items are a little balanced */
+	private java.util.Map<Levels, HashMap<String, Integer>> monsterBalance;
+	private java.util.Map<ItemClasses, HashMap<Item, Integer>> itemsBalance;
+	private java.util.Map<String, Integer> balanceOffsets;
+	
+	/* offsets for balance counters */
+	private final int EASY_MONSTER_OFFSET = 1;
+	private final int NORMAL_MONSTER_OFFSET = 1;
+	private final int HARD_MONSTER_OFFSET = 1;
+	private final int WEAK_ITEM_OFFSET = 1;
+	private final int MEDIUM_ITEM_OFFSET = 1; 
+	private final int STRONG_ITEM_OFFSET = 1;
+
+	/* Network Manager for sending Map data */
+	NetworkManager networkManager = null;
+	
 	/**
 	 * Constructs a Map.
 	 * 
 	 * @see Map
 	 */
 	public Map() {
-
+		
 	}
 
 	/**
@@ -100,6 +126,11 @@ public class Map {
 		playerScopePosition = new Point();
 		
 		resourceManager = new ResourceManager().getInstance();
+		try {
+			networkManager = NetworkManager.getInstance();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		/* null-initialize overlay */
 		for (int i = 0; i < size.width; i++) {
@@ -107,12 +138,78 @@ public class Map {
 				overlay[i][j] = null;
 			}
 		}
-
+		
+		/* initialize the monster/item count balancing constructs */
+		monsterBalance = new HashMap<Levels, HashMap<String, Integer>>();
+		itemsBalance = new HashMap<ItemClasses, HashMap<Item, Integer>>();
+		balanceOffsets = new HashMap<String, Integer>();
+		
+		HashMap<String, Integer> easyMap = new HashMap<String, Integer>();
+		HashMap<String, Integer> normalMap = new HashMap<String, Integer>();
+		HashMap<String, Integer> hardMap = new HashMap<String, Integer>();
+		
+		HashMap<Item, Integer> weakMap = new HashMap<Item, Integer>();
+		HashMap<Item, Integer> mediumMap = new HashMap<Item, Integer>();
+		HashMap<Item, Integer> strongMap = new HashMap<Item, Integer>();
+		
+		balanceOffsets.put("easy", EASY_MONSTER_OFFSET);
+		balanceOffsets.put("normal", NORMAL_MONSTER_OFFSET);
+		balanceOffsets.put("hard", HARD_MONSTER_OFFSET);
+		balanceOffsets.put("weak", WEAK_ITEM_OFFSET);
+		balanceOffsets.put("medium", MEDIUM_ITEM_OFFSET);
+		balanceOffsets.put("strong", STRONG_ITEM_OFFSET);
+		
+		for (Entry<Levels, List<String>> entry : resourceManager.MONSTERS_LEVELED.entrySet()) {
+			for (String name : entry.getValue()) {
+				switch(entry.getKey()) {
+					case EASY:
+						easyMap.put(name, 0);
+						break;
+					case NORMAL:
+						normalMap.put(name, 0);
+						break;
+					case HARD:
+						hardMap.put(name, 0);
+						break;
+				}
+			}
+		}
+		
+		for (Entry<ItemClasses, List<Item>> entry : resourceManager.ITEMCLASSLIST.entrySet()) {
+			for (Item item : entry.getValue()) {
+				switch(entry.getKey()) {
+					case WEAK:
+						weakMap.put(item, 0);
+						break;
+					case MEDIUM:
+						mediumMap.put(item, 0);
+						break;
+					case STRONG:
+						strongMap.put(item, 0);
+						break;
+				}
+			}
+		}
+		
+		monsterBalance.put(Levels.EASY, easyMap);
+		monsterBalance.put(Levels.NORMAL, normalMap);
+		monsterBalance.put(Levels.HARD, hardMap);
+		
+		itemsBalance.put(ItemClasses.WEAK, weakMap);
+		itemsBalance.put(ItemClasses.MEDIUM, mediumMap);
+		itemsBalance.put(ItemClasses.STRONG, strongMap);
+				
+	
 		fillMap();
 
 		// test door pos detection
 		loadRooms();
 		updateRooms();
+		
+		/* send Map to other computer */
+		if (Game.getInstance().isLobbyHost()) {
+			sendMap();
+		} 
 
 		/* true-initialize passable */
 		/*
@@ -147,6 +244,13 @@ public class Map {
 	 */
 	public int getHeight() {
 		return this.size.height - 1;
+	}
+	
+	/**Returns overlay for network transfer.
+	 * @return overlay
+	 */
+	public Element[][] getOverlay() {
+		return this.overlay;
 	}
 
 	/**
@@ -264,19 +368,23 @@ public class Map {
 	 * @param fieldX
 	 * @param fieldY
 	 * @return
+	 * @throws SlickException 
 	 */
-	public boolean isFieldPassable(int fieldX, int fieldY) {
+	public boolean isFieldPassable(int fieldX, int fieldY) throws SlickException {
 		if (fieldX < 0 || fieldX > getWidth() || fieldY < 0
 				|| fieldY > getHeight()) {
+			return false;
+		}
+		if (fieldX == opponent.getPosition().x && fieldY == opponent.getPosition().y) {
 			return false;
 		}
 		if (overlay[fieldX][fieldY] == null) {
 			return true;
 		}
 		if (overlay[fieldX][fieldY] != null) {
-			if ((overlay[fieldX][fieldY].NAME.equals("DoorGroundTreasureChamber1") 
-					|| (overlay[fieldX][fieldY].NAME.equals("DoorGroundTreasureChamber2"))
-					&& this.player.getHasKey())) {
+			if (((overlay[fieldX][fieldY].NAME.equals("DoorGroundTreasureChamber1") 
+					|| (overlay[fieldX][fieldY].NAME.equals("DoorGroundTreasureChamber2")))
+					&& InventoryView.getInstance().hasKey())) {
 				return true;
 			}
 		}
@@ -290,7 +398,7 @@ public class Map {
 	 * If the monster looses the fight, delete it from map.<br>
 	 * Resets player to start, if he loses a fight.<br>
 	 * 
-	 * @return Equipment or null
+	 * @return Element or null
 	 * @throws SlickException 
 	 * @throws InterruptedException 
 	 */
@@ -298,80 +406,88 @@ public class Map {
 		Element e = null;
 		int x = player.getPosition().x;
 		int y = player.getPosition().y;
-
+		
+		int targetX = 0;
+		int targetY = 0;
+		
 		switch (player.getDirectionOfView()) {
 		case NORTH:
-			if (overlay[x][y - 1] != null) {
-				if ((overlay[x][y - 1] instanceof Potion) ||
-					  (overlay[x][y - 1] instanceof Equipment)) {
-					e = overlay[x][y - 1];
-					overlay[x][y - 1] = null;
-				} else if (overlay[x][y - 1] instanceof Creature) {
-					gameEnvironment.startFight((Creature) overlay[x][y - 1]);
-				} else if (overlay[x][y - 1].NAME.equals("Key")) {
-					if (!player.getHasKey()) {
-						player.setHasKey();
-						e = overlay[x][y - 1];
-						overlay[x][y - 1] = null;
-					}
-				}
-			}
+			targetX = x;
+			targetY = y - 1;
 			break;
 		case EAST:
-			if (overlay[x + 1][y] != null) {
-				if ((overlay[x + 1][y] instanceof Potion) ||
-					  (overlay[x + 1][y] instanceof Equipment)) {
-					e = overlay[x + 1][y];
-					overlay[x + 1][y] = null;
-				} else if (overlay[x + 1][y] instanceof Creature) {
-					gameEnvironment.startFight((Creature) overlay[x + 1][y]);
-				} else if (overlay[x + 1][y].NAME.equals("Key")) {
-					if (!player.getHasKey()) {
-						player.setHasKey();
-						e = overlay[x + 1][y];
-						overlay[x + 1][y] = null;
-					}
-				}
-			}
+			targetX = x + 1;
+			targetY = y;
 			break;
 		case SOUTH:
-			if (overlay[x][y + 1] != null) {
-				if ((overlay[x][y + 1] instanceof Potion) ||
-					  (overlay[x][y + 1] instanceof Equipment)) {
-					e = overlay[x][y + 1];
-					overlay[x][y + 1] = null;
-				} else if (overlay[x][y + 1] instanceof Creature) {
-					gameEnvironment.startFight((Creature) overlay[x][y + 1]);
-				} else if (overlay[x][y + 1].NAME.equals("Key")) {
-					if (!player.getHasKey()) {
-						player.setHasKey();
-						e = overlay[x][y + 1];
-						overlay[x][y + 1] = null;
-					}
-				}
-			}
+			targetX = x;
+			targetY = y + 1;
 			break;
 		case WEST:
-			if (overlay[x - 1][y] != null) {
-				if ((overlay[x - 1][y] instanceof Potion) ||
-					  (overlay[x - 1][y] instanceof Equipment)) {
-					e = overlay[x - 1][y];
-					overlay[x - 1][y] = null;
-				} else if (overlay[x - 1][y] instanceof Creature) {
-					gameEnvironment.startFight((Creature) overlay[x - 1][y]);
-				} else if (overlay[x - 1][y].NAME.equals("Key")) {
-					if (!player.getHasKey()) {
-						player.setHasKey();
-						e = overlay[x - 1][y];
-						overlay[x - 1][y] = null;
-					}
-				}
-			}
+			targetX = x - 1;
+			targetY = y;
 			break;
 		default:
 			break;
 		}
+				
+		if (overlay[targetX][targetY] != null) {
+			if ((overlay[targetX][targetY] instanceof Potion) ||
+				  (overlay[targetX][targetY] instanceof Equipment)) {
+				e = overlay[targetX][targetY];
+				overlay[targetX][targetY] = null;
+				networkManager.sendMessage(new NetworkMessage(targetX, targetY, overlay[targetX][targetY]));
+			} else if ((overlay[targetX][targetY] instanceof Creature)) {
+				/* avoid two players fighting the same enemy */
+				if (!(this.opponent.getEnemyPosition().x == targetX && this.opponent.getEnemyPosition().y == targetY)) {
+					gameEnvironment.startFight((Creature) overlay[targetX][targetY]);
+				}
+			} else if (overlay[targetX][targetY].NAME.equals("Key") && (!(InventoryView.getInstance().hasKey()))) {
+				e = overlay[targetX][targetY];
+				overlay[targetX][targetY] = null;
+				networkManager.sendMessage(new NetworkMessage(targetX, targetY, overlay[targetX][targetY]));
+			}
+		}
+		if (targetX == this.opponent.getPosition().x && targetY == this.opponent.getPosition().y) {
+			/* only start fight against other player if he isn't currently in a fight */
+			if (!this.opponent.isInFight()) {
+				gameEnvironment.startFight((Creature) opponent);
+			}
+		}
 
+		return e;
+	} 
+	
+	/**
+	 * Returns Element in front of player or null.
+	 * 
+	 * @return Element or null
+	 * @throws SlickException 
+	 * @throws InterruptedException 
+	 */
+	public Element checkInFrontOfPlayer(boolean checkNull) throws SlickException {
+		
+		Element e = null;
+		int x = player.getPosition().x;
+		int y = player.getPosition().y;
+
+		switch (player.getDirectionOfView()) {
+			case NORTH:
+				e = overlay[x][y - 1];
+				break;
+			case EAST:
+				e = overlay[x + 1][y];
+				break;
+			case SOUTH:
+				e = overlay[x][y + 1];
+				break;
+			case WEST:
+				e = overlay[x - 1][y];
+				break;
+			default:
+				break;
+		}
+		
 		return e;
 	}
 
@@ -508,9 +624,21 @@ public class Map {
 				/* detect room types and load according room */
 				RoomTypes type = detectRoomType(i, j);
 
-				rooms[i][j] = RoomFactory.createRoom(type);
+				rooms[i][j] = RoomFactory.createRoom(type, monsterBalance, itemsBalance, this, balanceOffsets);
 			}
 		}
+		
+		/*for (Entry<Levels, HashMap<String, Integer>> entry : monsterBalance.entrySet()) {
+			for (Entry<String, Integer> subentry : entry.getValue().entrySet()) {
+				System.out.println(entry.getKey() + " - " + subentry.getKey() + ": " + subentry.getValue());
+			}
+		}
+		
+		for (Entry<ItemClasses, HashMap<Item, Integer>> entry : itemsBalance.entrySet()) {
+			for (Entry<Item, Integer> subentry : entry.getValue().entrySet()) {
+				System.out.println(entry.getKey() + " - " + subentry.getKey().itemName + ": " + subentry.getValue());
+			}
+		}*/
 		
 		/* place keys for treasure chamber in random rooms */
 		placeKeys();
@@ -650,18 +778,107 @@ public class Map {
 		switch (player.getDirectionOfView()) {
 		case NORTH:
 			overlay[x][y - 1] = null;
+			networkManager.sendMessage(new NetworkMessage(x, y - 1, overlay[x][y - 1]));
 			break;
 		case EAST:
 			overlay[x + 1][y] = null;
+			networkManager.sendMessage(new NetworkMessage(x + 1, y, overlay[x + 1][y]));
 			break;
 		case SOUTH:
 			overlay[x][y + 1] = null;
+			networkManager.sendMessage(new NetworkMessage(x, y + 1, overlay[x][y + 1]));
 			break;
 		case WEST:
 			overlay[x - 1][y] = null;
+			networkManager.sendMessage(new NetworkMessage(x - 1, y, overlay[x - 1][y]));
 			break;
 		default:
 			break;
 		}
+	}
+	
+	/**Used to increase the balance counter for an added item or monster.
+	 * @param balanceMap
+	 * @param itemName
+	 */
+	public void increaseBalance(String balanceMap, String name, Item item){
+		
+		if (balanceMap.equals("monsterBalance")) {
+			for (Entry<Levels, HashMap<String, Integer>> entry : monsterBalance.entrySet()) {
+				if (entry.getValue().containsKey(name)){
+					entry.getValue().put(name, entry.getValue().get(name) + 1);
+				}
+			}
+		} else if (balanceMap.equals("itemsBalance")) {
+			for (Entry<ItemClasses, HashMap<Item, Integer>> entry : itemsBalance.entrySet()) {
+				if (entry.getValue().containsKey(item)){
+					entry.getValue().put(item, entry.getValue().get(item) + 1);
+				}
+			}
+		}
+	}
+	
+	/**Sends Map overlay to other player but sets all images to null.
+	 * 
+	 */
+	private void sendMap() {
+		networkManager.sendMessage(MapConverter.toNetworkMessage(this.overlay));
+	}
+	
+	/**Set overlay from network Classes.
+	 * @param overlay
+	 */
+	public void setOverlay(Element[][] overlay) {
+		this.overlay = overlay;
+	}
+	
+	/**Drops item on the map on the field in front of the player if the field is free.
+	 * @param element
+	 * @param x
+	 * @param y
+	 * @param source
+	 * @return
+	 * @throws SlickException 
+	 */
+	public int dropItem(Element element, int x, int y) throws SlickException {
+		
+		if (element == null) {
+			return 0;
+		}
+		
+		/* check if dragged item is dragged to armor section */
+		if (x > 0 && x < 480 && y > 0 
+				&& y < 384) {
+						
+			Element e = checkInFrontOfPlayer(true);
+					
+			/* dragged element cannot be dropped */
+			if (e != null) {
+				return 2;
+			} 
+			/* drop item on the map */
+			else {
+				switch (player.getDirectionOfView()) {
+					case NORTH:
+						overlay[player.getPosition().x][player.getPosition().y - 1] = element;
+						break;
+					case EAST:
+						overlay[player.getPosition().x + 1][player.getPosition().y] = element;
+						break;
+					case SOUTH:
+						overlay[player.getPosition().x][player.getPosition().y + 1] = element;
+						break;
+					case WEST:
+						overlay[player.getPosition().x - 1][player.getPosition().y] = element;
+						break;
+					default:
+						break;
+				}
+			}
+			
+			return 1;
+		}
+				
+		return 0;
 	}
 }

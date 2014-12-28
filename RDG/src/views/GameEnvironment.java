@@ -29,6 +29,9 @@ public class GameEnvironment extends View {
 	/* Reference to the player, for which the GameEnvironment is shown */
 	private Player player;
 	
+	/* Reference for drawing opponent */
+	private Player opponent;
+	
 	/*
 	 * Reference to the Shapes, which are shown in the GameEnvironment. Scope
 	 * Elements are passed from Map Class.
@@ -37,13 +40,16 @@ public class GameEnvironment extends View {
 	private Element[][] overlayScope;
 	
 	/* ArmorView is needed to interact with armory items */
-	ArmorView armorView = null;
+	private ArmorView armorView = null;
+	
+	/* Chat class used to display messages */
+	private Chat chat = null;
 	
 	/* instance of a Fight - to be loaded into fight thread */
 	private Fight fightInstance = null;
 	
 	/* the base Game class */
-	Game game;
+	private Game game;
 
 	/**
 	 * Constructs a GameEnvironment passing its origin as single x and y
@@ -60,8 +66,8 @@ public class GameEnvironment extends View {
 	 * @see GameEnvironment
 	 */
 	public GameEnvironment(String contextName, int originX, int originY,
-			Player player, ArmorView armorView, Game game) throws SlickException {
-		this(contextName, new Point(originX, originY), player, armorView, game);
+			Player player, Player opponent, ArmorView armorView, Game game, Chat chat) throws SlickException {
+		this(contextName, new Point(originX, originY), player, opponent, armorView, game, chat);
 	}
 
 	/**
@@ -77,9 +83,9 @@ public class GameEnvironment extends View {
 	 * @throws SlickException
 	 * @see GameEnvironment
 	 */
-	public GameEnvironment(String contextName, Point origin, Player player, ArmorView armorView, Game game)
+	public GameEnvironment(String contextName, Point origin, Player player, Player opponent, ArmorView armorView, Game game, Chat chat)
 			throws SlickException {
-		this(contextName, origin, new Dimension(640, 480), player, armorView, game);
+		this(contextName, origin, new Dimension(640, 480), player, opponent, armorView, game, chat);
 	}
 
 	/**
@@ -98,9 +104,9 @@ public class GameEnvironment extends View {
 	 * @see GameEnvironment
 	 */
 	public GameEnvironment(String contextName, int originX, int originY,
-			int width, int height, Player player, ArmorView armorView, Game game) throws SlickException {
+			int width, int height, Player player, Player opponent, ArmorView armorView, Game game, Chat chat) throws SlickException {
 		this(contextName, new Point(originX, originY), new Dimension(width,
-				height), player, armorView, game);
+				height), player, opponent, armorView, game, chat);
 	}
 
 	/**
@@ -117,11 +123,12 @@ public class GameEnvironment extends View {
 	 * @see GameEnvironment
 	 */
 	public GameEnvironment(String contextName, Point origin, Dimension size,
-			Player player, ArmorView armorView, Game game) throws SlickException {
+			Player player, Player opponent, ArmorView armorView, Game game, Chat chat) throws SlickException {
 		super(contextName, origin, size);
 		
 		this.game = game;
 		this.player = player;
+		this.opponent = opponent;
 				
 		if (size.width % BLOCK_SIZE != 0) {
 			System.out.println("WATCH OUT! GameEnvironment only works well, "
@@ -138,7 +145,9 @@ public class GameEnvironment extends View {
 		downright.y = (int) size.height / BLOCK_SIZE;
 
 		this.armorView = armorView;
-		this.fightInstance = new Fight(this.origin, this.size, this, player, armorView);
+		this.fightInstance = new Fight(this.origin, this.size, this, player, armorView, chat);
+		
+		this.chat = chat;
 		
 		update();
 	}
@@ -182,17 +191,17 @@ public class GameEnvironment extends View {
 					}
 				}
 			}
-
-			player.draw(container, graphics);
 			
-		}else {	// show Fight
+			/* draw player and opponent in player's scope */
+			player.draw(container, graphics, opponent);
+			
+		} else {	// show Fight
 			fightInstance.draw(container, graphics);
 		}
 	}
 
 	@Override
 	public void update() {
-		//map.update();	Warum???
 		backgroundScope = map.getBackgroundScope();
 		overlayScope = map.getOverlayScope();
 	}

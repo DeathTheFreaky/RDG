@@ -4,8 +4,8 @@
 		<Name>Instant Cure</Name>
 		<Item_Class>weak</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
-		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<Description>fills x HP immediatly</Description>
 		<Target>self</Target>
 		<Effect>hp</Effect>
@@ -18,8 +18,8 @@
 		<Name>Regeneration</Name>
 		<Item_Class>weak</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
-		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<Description>regenerates x HP over n rounds</Description>
 		<Target>self</Target>
 		<Effect>hp</Effect>
@@ -32,8 +32,8 @@
 		<Name>Antidote</Name>
 		<Item_Class>strong</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
-		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<Description>reverses poison effect</Description>
 		<Target>self</Target>
 		<Effect>hp</Effect>
@@ -46,8 +46,8 @@
 		<Name>Strength</Name>
 		<Item_Class>medium</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
-		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<Description>increases strength by x for n rounds</Description>
 		<Target>self</Target>
 		<Effect>strength</Effect>
@@ -60,8 +60,8 @@
 		<Name>Speed</Name>
 		<Item_Class>medium</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
-		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<Description>increases speed by x for n rounds</Description>
 		<Target>self</Target>
 		<Effect>speed</Effect>
@@ -74,8 +74,8 @@
 		<Name>Accuracy</Name>
 		<Item_Class>medium</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
-		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<Description>increases accuracy by x for n rounds</Description>
 		<Target>self</Target>
 		<Effect>accuracy</Effect>
@@ -88,8 +88,8 @@
 		<Name>Blindness </Name>
 		<Item_Class>medium</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
-		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<Description>decreases accuracy by x for n rounds</Description>
 		<Target>opponent</Target>
 		<Effect>accuracy</Effect>
@@ -102,8 +102,8 @@
 		<Name>Slowness</Name>
 		<Item_Class>medium</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
-		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<Description>descreases speed by x for n rounds</Description>
 		<Target>opponent</Target>
 		<Effect>speed</Effect>
@@ -116,8 +116,8 @@
 		<Name>Poison</Name>
 		<Item_Class>strong</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
-		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<Description>deals x damage for n rounds</Description>
 		<Target>opponent</Target>
 		<Effect>hp</Effect>
@@ -130,8 +130,8 @@
 		<Name>Weakness</Name>
 		<Item_Class>medium</Item_Class>
 		<Class_Multiplier>1</Class_Multiplier>
-		<Stats_Low_Multiplier>0.8</Stats_Low_Multiplier>
-		<Stats_High_Multiplier>1.2</Stats_High_Multiplier>
+		<Stats_Low_Multiplier>0.9</Stats_Low_Multiplier>
+		<Stats_High_Multiplier>1.1</Stats_High_Multiplier>
 		<Description>decreases strength by x for n rounds</Description>
 		<Target>opponent</Target>
 		<Effect>strength</Effect>

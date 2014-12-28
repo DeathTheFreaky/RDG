@@ -14,6 +14,7 @@
 	   <Kill_Bonus_Low>2</Kill_Bonus_Low>
 	   <Kill_Bonus_High>4</Kill_Bonus_High>
 	   <Image>monsters/rat.png</Image>
+	   <Image_Big>monsters/rat_big.png</Image_Big>
     </Monster>
 	<Monster>
        <Name>Spider</Name>
@@ -29,5 +30,6 @@
 	   <Kill_Bonus_Low>1</Kill_Bonus_Low>
 	   <Kill_Bonus_High>2</Kill_Bonus_High>
 	   <Image>monsters/spider.png</Image>
+	   <Image_Big>monsters/spider_big.png</Image_Big>
     </Monster>
 </Monsters>

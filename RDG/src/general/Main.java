@@ -7,9 +7,7 @@ import java.util.LinkedList;
 import javax.swing.JFrame;
 
 import lobby.Lobby;
-import gameEssentials.Game;
 
-import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.SlickException;
 
 import at.RDG.network.ArgumentOutOfRangeException;
@@ -27,12 +25,6 @@ public class Main {
 	 */
 	public static void main(String[] args) throws SlickException {
 
-		/*AppGameContainer app1 = new AppGameContainer(new Game("Battle Dungeon"));
-		app1.setDisplayMode(Game.WIDTH, Game.HEIGHT, false); // Breite, Höhe, ???
-		app1.setTargetFrameRate(30); // 60 Frames pro Sekunde
-		app1.setAlwaysRender(true); // Spiel wird auch ohne Fokus aktualisiert
-		app1.setShowFPS(false);
-		app1.start(); // startet die App*/
 		Lobby l =  new Lobby();
 		l.setVisible(true);
 		l.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -43,7 +35,7 @@ public class Main {
 	private static void server(int count) {
 		LobbyServer server = null;
 		try {
-			server = new LobbyServer("Neue Lobby " + count);
+			server = new LobbyServer("Neue Lobby " + count, 0);	// Stefan. Wusste nicht genau, wofür der int ist
 		} catch (ArgumentOutOfRangeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

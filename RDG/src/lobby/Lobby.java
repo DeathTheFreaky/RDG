@@ -86,7 +86,6 @@ public class Lobby extends JFrame {
                 "Do you really want to close the game?",
                 "Leave Game?",
                 JOptionPane.YES_NO_OPTION);
-		System.out.println(eingabe);
 		if(eingabe == 0) {	// Yes
 			this.dispose();
 		}

@@ -60,7 +60,7 @@ public class MonstersLoader {
 				Element eElement = (Element) nNode;
 				
 				//store current element's values
-				String name, levelStr, killBonusTypeStr, image;
+				String name, levelStr, killBonusTypeStr, image, imageBig;
 				Attributes killBonusType;
 				Levels level;
 				float classMultiplier, statsLowMultiplier, statsHighMultiplier, hp, strength, speed, accuracy, killBonusLow, killBonusHigh;
@@ -69,6 +69,7 @@ public class MonstersLoader {
 				levelStr = eElement.getElementsByTagName("Level").item(0).getTextContent();
 				killBonusTypeStr = eElement.getElementsByTagName("Kill_Bonus_Type").item(0).getTextContent();
 				image = eElement.getElementsByTagName("Image").item(0).getTextContent();
+				imageBig = eElement.getElementsByTagName("Image_Big").item(0).getTextContent();
 				statsLowMultiplier = Float.parseFloat(eElement.getElementsByTagName("Stats_Low_Multiplier").item(0).getTextContent());
 				statsHighMultiplier = Float.parseFloat(eElement.getElementsByTagName("Stats_High_Multiplier").item(0).getTextContent());
 				classMultiplier = Float.parseFloat(eElement.getElementsByTagName("Class_Multiplier").item(0).getTextContent());
@@ -109,7 +110,7 @@ public class MonstersLoader {
 				
 				
 				//put template on list of available templates
-				monsterTemplates.put(name, new MonsterTemplate(name, image,  level, killBonusType, 
+				monsterTemplates.put(name, new MonsterTemplate(name, image, imageBig, level, killBonusType, 
 						classMultiplier, statsLowMultiplier, statsHighMultiplier, hp, strength, speed, accuracy, killBonusLow, killBonusHigh));
 			}
 		}

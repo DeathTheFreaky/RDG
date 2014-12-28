@@ -139,16 +139,18 @@ public class ResourceManager {
 		TILES = new SpriteSheet(Game.IMAGEPATH + "/rooms/tileset.png", 32, 32);
 
 		IMAGES.put("Player1", new Image(Game.IMAGEPATH + "soldier_32x32.png"));
+		IMAGES.put("Player1_big", new Image(Game.IMAGEPATH + "player_big.png"));
 		IMAGES.put("Player2", new Image(Game.IMAGEPATH + "soldier_32x32.png"));
+		IMAGES.put("Player2_big", new Image(Game.IMAGEPATH + "player_big.png"));
 		IMAGES.put("Armor_Background", new Image(Game.IMAGEPATH
 				+ "warrior_160x160.png"));
-		IMAGES.put("Helmet", new Image(Game.IMAGEPATH + "Head.png"));
+		/*IMAGES.put("Helmet", new Image(Game.IMAGEPATH + "Head.png"));
 		IMAGES.put("Arms", new Image(Game.IMAGEPATH + "Arm.png"));
 		IMAGES.put("Cuirass", new Image(Game.IMAGEPATH + "Chest.png"));
 		IMAGES.put("Legs", new Image(Game.IMAGEPATH + "Legs.png"));
 		IMAGES.put("Shoes", new Image(Game.IMAGEPATH + "Feet.png"));
 		IMAGES.put("M_Weapon", new Image(Game.IMAGEPATH + "Weapon.png"));
-		IMAGES.put("S_Weapon", new Image(Game.IMAGEPATH + "Weapon2.png"));
+		IMAGES.put("S_Weapon", new Image(Game.IMAGEPATH + "Weapon2.png"));*/
 		
 		/* load key picture */ 
 		IMAGES.put("Key", new Image(Game.IMAGEPATH + "key.png"));
@@ -173,7 +175,10 @@ public class ResourceManager {
 				.getMonsterTemplates().entrySet()) {
 			IMAGES.put(entry.getKey(), new Image(Game.IMAGEPATH
 					+ entry.getValue().getImage()));
+			IMAGES.put(entry.getKey().concat("_Big"), new Image(Game.IMAGEPATH
+					+ entry.getValue().getImageBig()));
 		}
+		
 
 		/* Print which images are stored now */
 		/*

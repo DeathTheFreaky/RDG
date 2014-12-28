@@ -2,6 +2,7 @@ package general;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.newdawn.slick.SlickException;
@@ -32,12 +33,16 @@ public class RoomFactory {
 	/**
 	 * Creates a new Room with ground textures according to the room type.<br>
 	 * The room will be filled randomly with monsters and items.
+	 * @param map 
+	 * @param itemsBalance 
+	 * @param monsterBalance 
+	 * @param balanceOffsets 
 	 * 
 	 * @return an Instance of Room
 	 * @throws SlickException 
 	 * @see RoomFactory
 	 */
-	public static Room createRoom(RoomTypes type) throws SlickException {
+	public static Room createRoom(RoomTypes type, Map<Levels, HashMap<String, Integer>> monsterBalance, Map<ItemClasses, HashMap<Item, Integer>> itemsBalance, gameEssentials.Map map, Map<String, Integer> balanceOffsets) throws SlickException {
 		
 		ResourceManager resources = new ResourceManager().getInstance();
 		RoomTemplate tempTemplate = resources.ROOM_TEMPLATES.get(type);
@@ -54,14 +59,14 @@ public class RoomFactory {
 		}
 		
 		/* fill the room */
-		overlay = addMonster(type, overlay, tempTemplate);
-		overlay = addItems(type, overlay, tempTemplate);
+		overlay = addMonster(type, overlay, tempTemplate, monsterBalance, map, balanceOffsets);
+		overlay = addItems(type, overlay, tempTemplate, itemsBalance, map, balanceOffsets);
 		background = fillGround(type, background, size);
 
 		//for testing only
-		/*overlay[0][0] = ItemFactory.createWeapon("Longsword", 1);
-		overlay[0][1] = ItemFactory.createWeapon("Shield", 1);
-		overlay[0][0] = ItemFactory.createPotion("Poison", 1);
+		/*overlay[0][0] = ItemFactory.createPotion("Poison", 1);
+		overlay[0][1] = ItemFactory.createWeapon("Longsword", 1);
+		overlay[1][1] = ItemFactory.createWeapon("Sword", 1);
 		overlay[0][1] = ItemFactory.createPotion("Slowness", 1);*/
 		
 		return new Room(type, background, overlay);
@@ -74,12 +79,15 @@ public class RoomFactory {
 	 * 
 	 * @param type
 	 * @param overlay
+	 * @param map 
+	 * @param monsterBalance 
 	 * @param resources
 	 * @param map 
+	 * @param balanceOffsets 
 	 * @return an overlay with or without a placed monster
 	 * @throws SlickException 
 	 */
-	private static Element[][] addMonster(RoomTypes type, Element[][] overlay, RoomTemplate tempTemplate) throws SlickException {
+	private static Element[][] addMonster(RoomTypes type, Element[][] overlay, RoomTemplate tempTemplate, Map<Levels, HashMap<String, Integer>> monsterBalance, gameEssentials.Map map, Map<String, Integer> balanceOffsets) throws SlickException {
 		
 		Map<Levels, Float> monsterProbabilities = tempTemplate.getMonster();
 		int monsterCount = tempTemplate.getMonsterCount();
@@ -93,10 +101,11 @@ public class RoomFactory {
 			if (randPoint != null) { //no free field was found 
 				
 				/* get a random Monster, according to the monster levels allowed in this Room's definition*/ 
-				String monsterName = Chances.randomMonster(monsterProbabilities);
+				String monsterName = Chances.randomMonster(monsterProbabilities, monsterBalance, balanceOffsets);
 								
 				if (monsterName != null) { //no monster shall be placed
 					overlay[randPoint.x][randPoint.y] = MonsterFactory.createMonster(monsterName);
+					map.increaseBalance("monsterBalance", monsterName, null);
 				}
 			}
 			else {
@@ -114,11 +123,14 @@ public class RoomFactory {
 	 * 
 	 * @param type
 	 * @param overlay
+	 * @param map 
+	 * @param itemsBalance 
+	 * @param balanceOffsets 
 	 * @param resources
 	 * @return an overlay with randomly chosen items
 	 * @throws SlickException 
 	 */
-	private static Element[][] addItems(RoomTypes type, Element[][] overlay, RoomTemplate tempTemplate) throws SlickException {
+	private static Element[][] addItems(RoomTypes type, Element[][] overlay, RoomTemplate tempTemplate, Map<ItemClasses, HashMap<Item, Integer>> itemsBalance, gameEssentials.Map map, Map<String, Integer> balanceOffsets) throws SlickException {
 
 		Map<ItemClasses, Float> itemProbabilities = tempTemplate.getFind_probabilities();
 		int itemCount = tempTemplate.getItemCount();
@@ -132,11 +144,12 @@ public class RoomFactory {
 			if (randPoint != null) { //no free field was found 
 				
 				/* get a random Item, according to the item levels allowed in this Room's definition*/ 
-				Item itemName = Chances.randomItem(itemProbabilities);
+				Item item = Chances.randomItem(itemProbabilities, itemsBalance, balanceOffsets);
 								
-				if (itemName != null) { //no item shall be placed
+				if (item != null) { //no item shall be placed
 					//use itemMultiplier
-					overlay[randPoint.x][randPoint.y] = ItemFactory.createItem(itemName, tempTemplate.getItemMultiplier());
+					overlay[randPoint.x][randPoint.y] = ItemFactory.createItem(item, tempTemplate.getItemMultiplier());
+					map.increaseBalance("itemsBalance", null, item);
 				}
 			}
 			else {

@@ -27,6 +27,7 @@ public class LobbySearcher extends Thread {
 
 	private List<Serverinfo> lobbyList;
 	private Map<String, Object> serverMap;
+	private MulticastSocket socket = null;
 
 	/**
 	 * @see LobbySearcher
@@ -39,6 +40,15 @@ public class LobbySearcher extends Thread {
 		this.lobbyList = lobbyList;
 		this.serverMap = new HashMap<String, Object>();
 	}
+	
+	/**
+	 * @see Thread.interrupt
+	 */
+	@Override
+	public void interrupt(){
+		this.socket.close();
+		super.interrupt();
+	}
 
 	/**
 	 * The method is started if the thread is started and searches for Lobbies
@@ -49,29 +59,28 @@ public class LobbySearcher extends Thread {
 	public void run() {
 		// opens a new Multicast Socket on any open port, activates Broadcast
 		// Messages and sets the Time to Live of the Packet to 10.
-		MulticastSocket socket = null;
 		try {
-			socket = new MulticastSocket();
-			socket.setBroadcast(true);
-			socket.setTimeToLive(10);
+			this.socket = new MulticastSocket();
+			this.socket.setBroadcast(true);
+			this.socket.setTimeToLive(10);
 		} catch (SocketException e) {
 			Logger.getLogger(LobbySearcher.class.getName()).log(Level.SEVERE,
 					"Unable to create the MulticastSocket.", e);
-			if (!socket.isClosed())
-				socket.close();
+			if (!this.socket.isClosed())
+				this.socket.close();
 			Thread.currentThread().interrupt();
 		} catch (IOException e) {
 			Logger.getLogger(LobbySearcher.class.getName()).log(Level.SEVERE,
 					"Unable to create the MulticastSocket.", e);
-			if (!socket.isClosed())
-				socket.close();
+			if (!this.socket.isClosed())
+				this.socket.close();
 			Thread.currentThread().interrupt();
 		} finally {
 			// if the Socket was not bound the thread stops
-			if (!socket.isBound()) {
+			if (!this.socket.isBound()) {
 				Logger.getLogger(LobbySearcher.class.getName()).log(
 						Level.SEVERE, "Unable to bind the MulticastSocket.");
-				socket.close();
+				this.socket.close();
 				Thread.currentThread().interrupt();
 			}
 		}
@@ -81,12 +90,14 @@ public class LobbySearcher extends Thread {
 			// on all defined ports
 			DatagramPacket sendPacket = null;
 			for (int i = 0; i < LobbyStatics.SERVERPORTS.length; i++) {
+				if(Thread.interrupted())
+					break;
 				// send to global broadcast
 				try {
 					sendPacket = new DatagramPacket(new byte[] { (byte) 7 }, 1,
 							InetAddress.getByName("255.255.255.255"),
 							LobbyStatics.SERVERPORTS[i]);
-					socket.send(sendPacket);
+					this.socket.send(sendPacket);
 				} catch (UnknownHostException e) {
 					Logger.getLogger(LobbySearcher.class.getName())
 							.log(Level.SEVERE,
@@ -108,6 +119,8 @@ public class LobbySearcher extends Thread {
 							"Unable get network interfaces. SKIPPING.", e);
 				}
 				while (interfaces.hasMoreElements()) {
+					if(Thread.interrupted())
+						break;
 					NetworkInterface networkInterface = interfaces
 							.nextElement();
 
@@ -127,6 +140,8 @@ public class LobbySearcher extends Thread {
 
 					for (InterfaceAddress interfaceAddress : networkInterface
 							.getInterfaceAddresses()) {
+						if(Thread.interrupted())
+							break;
 						InetAddress broadcast = interfaceAddress.getBroadcast();
 						if (broadcast == null) {
 							continue;
@@ -137,7 +152,7 @@ public class LobbySearcher extends Thread {
 							sendPacket = new DatagramPacket(
 									new byte[] { (byte) 7 }, 1, broadcast,
 									LobbyStatics.SERVERPORTS[i]);
-							socket.send(sendPacket);
+							this.socket.send(sendPacket);
 						} catch (IOException e) {
 							Logger.getLogger(LobbySearcher.class.getName())
 									.log(Level.SEVERE,
@@ -161,7 +176,7 @@ public class LobbySearcher extends Thread {
 			byte[] buf = new byte[LobbyStatics.LOBBYNAMEMAXLENGTH * 3];
 			packet = new DatagramPacket(buf, buf.length);
 			try {
-				socket.receive(packet);
+				this.socket.receive(packet);
 			} catch (IOException e) {
 				Logger.getLogger(LobbySearcher.class.getName()).log(
 						Level.SEVERE, "Unable to receive packet. SKIPPING.", e);
@@ -207,7 +222,15 @@ public class LobbySearcher extends Thread {
 			}
 		}
 
-		socket.close();
+		this.socket.close();
+		this.socket = null;
+	}
+	
+	/**
+	 * @return list of all lobbies found so far
+	 */
+	public synchronized List<Serverinfo> getFilledLobbyList() {
+		return this.lobbyList;
 	}
 
 }
