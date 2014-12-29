@@ -74,6 +74,7 @@ public class LobbyServer extends Thread {
 	public void interrupt(){
 		this.socket.close();
 		super.interrupt();
+		Logger.getLogger(LobbyServer.class.getName()).log(Level.INFO, "The thread is interrupted and the socked is closed");
 	}
 	
 	/**
@@ -88,7 +89,7 @@ public class LobbyServer extends Thread {
 			for (int i = 0; i < LobbyStatics.SERVERPORTS.length; i++) {
 				this.socket = new MulticastSocket(LobbyStatics.SERVERPORTS[i]);
 				System.out.println(LobbyStatics.SERVERPORTS[i]);
-				System.out.println(this.socket.getPort());
+				System.out.println(this.socket.getLocalPort());
 				if (this.socket.isBound())
 					break;
 			}

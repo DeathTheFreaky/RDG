@@ -39,7 +39,9 @@ public class TestClient {
 			networkManager.searchLobby(lobbyList);
 			
 			while(lobbyList.size() == 0) {
-				lobbyList = networkManager.getLobbyList();
+				Thread.sleep(100);
+				//das ist nicht notwendig!!!
+				//lobbyList = networkManager.getLobbyList();
 			}
 			
 			networkManager.stopSearchLobby();
@@ -51,7 +53,7 @@ public class TestClient {
 			
 			System.out.println("is connected: " + networkManager.isConnected());
 			
-		} catch (IOException | UnableToStartConnectionException e) {
+		} catch (IOException | UnableToStartConnectionException | InterruptedException e) {
 			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
 					"Failed to obtain network socket.", e);
 			System.exit(1);

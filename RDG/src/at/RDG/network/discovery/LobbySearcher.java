@@ -48,6 +48,7 @@ public class LobbySearcher extends Thread {
 	public void interrupt(){
 		this.socket.close();
 		super.interrupt();
+		Logger.getLogger(LobbySearcher.class.getName()).log(Level.INFO, "The thread is interrupted and the socked is closed");
 	}
 
 	/**
@@ -179,7 +180,7 @@ public class LobbySearcher extends Thread {
 				this.socket.receive(packet);
 			} catch (IOException e) {
 				Logger.getLogger(LobbySearcher.class.getName()).log(
-						Level.SEVERE, "Unable to receive packet. SKIPPING.", e);
+						Level.WARNING, "Unable to receive packet. SKIPPING. Maybe the thread was interrupted.", e);
 				continue;
 			}
 
