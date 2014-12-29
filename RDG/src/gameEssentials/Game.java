@@ -598,6 +598,7 @@ public class Game extends BasicGame {
 				this.draggedItem = armorView.getItem(oldx, oldy);*/
 
 			if (!mouseOverMinimap) {
+				System.out.println("not over minimap");
 				this.draggedItem = inventoryView.getItem(oldx, oldy,
 						UsedClasses.Element);
 				if (draggedItem == null) {
@@ -620,6 +621,7 @@ public class Game extends BasicGame {
 		draggedY = newy;
 
 		if (mouseOverMinimap) {
+			System.out.println("mouse over minimap");
 			if (!draggingMinimap) {
 				draggingMinimap = true;
 				offsetX = oldx - minimap.positionX;
