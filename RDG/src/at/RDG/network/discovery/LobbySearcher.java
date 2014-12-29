@@ -225,5 +225,12 @@ public class LobbySearcher extends Thread {
 		this.socket.close();
 		this.socket = null;
 	}
+	
+	/**
+	 * @return list of all lobbies found so far
+	 */
+	public synchronized List<Serverinfo> getFilledLobbyList() {
+		return this.lobbyList;
+	}
 
 }

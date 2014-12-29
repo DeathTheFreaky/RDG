@@ -116,4 +116,11 @@ public class Message {
 		this.hour = hour;
 		this.minute = minute;
 	}
+	
+	/**
+	 * @return actual message text for network transfer
+	 */
+	public String getMessage() {
+		return this.message;
+	}
 }

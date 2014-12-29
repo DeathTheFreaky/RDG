@@ -5,6 +5,8 @@ import java.awt.Point;
 import java.util.HashMap;
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -17,9 +19,12 @@ import elements.Attack;
 import elements.Creature;
 import elements.Monster;
 import elements.Potion;
+import gameEssentials.Game;
 import gameEssentials.Player;
 import general.AttackFactory;
 import general.Chances;
+import general.Main;
+import general.Enums.ImageSize;
 import general.ItemFactory;
 import general.Enums.ArmorStatsAttributes;
 import general.Enums.ArmorStatsMode;
@@ -165,6 +170,8 @@ public class Fight extends View implements Runnable {
 		
 		this.chat = chat;
 		
+		this.humanFightHost = Game.getInstance().isLobbyHost();
+		
 		try {
 			this.nw = NetworkManager.getInstance();
 		} catch (IOException e) {
@@ -229,9 +236,26 @@ public class Fight extends View implements Runnable {
 		graphics.setColor(BLACK);
 		graphics.drawString(this.enemy.NAME, origin.x + border + barGap + 1 , origin.y
 				+ border + barGap - 25);
+		/* Player name */
 		graphics.drawString(this.player.NAME, fightWindowWidth - border - barGap - barWidth , 
 				fightWindowHeight - barGap + 10);
-
+		
+		/* Print Enemy and Player Image */
+		/* Enemy Image */
+		if (enemy != null) {
+			if (enemy instanceof Player) {
+				graphics.drawImage(resources.IMAGES.get("Player2_big"),
+						origin.x + fightWindowWidth - resources.IMAGES.get("Player2_big").getWidth() - 5, origin.y + border + 10);
+			} else {
+				graphics.drawImage(resources.IMAGES.get(enemy.NAME + "_Big"),
+					origin.x + fightWindowWidth - resources.IMAGES.get(enemy.NAME + "_Big").getWidth() - 5, origin.y + border + 10);
+			}
+		}
+		
+		/* Player Image */
+		graphics.drawImage(resources.IMAGES.get("Player1_big"), origin.x + border + 5,
+				origin.y + fightWindowHeight - resources.IMAGES.get("Player1_big").getHeight() + 5);
+		
 		// Fight Options
 		if (attackScreen == AttackScreens.MAIN) {
 			graphics.setColor(BLACK);
@@ -353,6 +377,25 @@ public class Fight extends View implements Runnable {
 			//wait for enemy to be set
 		}
 		
+		switch (((Player) this.player).getDirectionOfView()) {
+			case NORTH:
+				((Player) this.player).setEnemyPosition(((Player) this.player).getPosition().x, ((Player) this.player).getPosition().y - 1, true);
+				nw.sendMessage(new NetworkMessage(((Player) this.player).getPosition().x, ((Player) this.player).getPosition().y - 1));
+				break;
+			case EAST:
+				((Player) this.player).setEnemyPosition(((Player) this.player).getPosition().x + 1, ((Player) this.player).getPosition().y, true);
+				nw.sendMessage(new NetworkMessage(((Player) this.player).getPosition().x + 1, ((Player) this.player).getPosition().y));
+				break;
+			case SOUTH:
+				((Player) this.player).setEnemyPosition(((Player) this.player).getPosition().x, ((Player) this.player).getPosition().y + 1, true);
+				nw.sendMessage(new NetworkMessage(((Player) this.player).getPosition().x, ((Player) this.player).getPosition().y + 1));
+				break;
+			case WEST:
+				((Player) this.player).setEnemyPosition(((Player) this.player).getPosition().x - 1, ((Player) this.player).getPosition().y, true);
+				nw.sendMessage(new NetworkMessage(((Player) this.player).getPosition().x - 1, ((Player) this.player).getPosition().y));
+				break;
+		}
+		
 		chatMessage("Started fight: " + this.player.NAME + " vs " + this.enemy.NAME);
 
 		this.humanFight = false; //reset to false before checking if it is a human fight
@@ -376,6 +419,10 @@ public class Fight extends View implements Runnable {
 		
 		/* after a fight, reset the fighting instance's variables */
 		reset();
+		
+		/* reset position of fightenemy when fight ends */
+		((Player) this.player).setEnemyPosition(0, 0, false);
+		nw.sendMessage(new NetworkMessage(0, 0));
 		
 		gameEnvironment.fightEnds(myLoser);
 	}
@@ -572,7 +619,9 @@ public class Fight extends View implements Runnable {
 				
 				if (successfulCommunication == false) {
 					System.err.println("Initialization of human fight timed out...");
-					new Exception("Initialization of human fight failed");
+					Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
+							"Initialization of human fight failed", new Exception("Initialization of human fight failed"));
+					System.exit(1);
 				}
 				
 				//set stuff
@@ -676,7 +725,9 @@ public class Fight extends View implements Runnable {
 			
 			if (successfulCommunication == false) {
 				System.err.println("Obtaining the opponent's selected Potion timed out...");
-				new Exception("Obtaining the opponent's selected Potion failed");
+				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
+						"Obtaining the opponent's selected Potion failed", new Exception("Obtaining the opponent's selected Potion failed"));
+				System.exit(1);
 			}			
 		}
 		
@@ -745,7 +796,9 @@ public class Fight extends View implements Runnable {
 			
 			if (successfulCommunication == false) {
 				System.err.println("Waiting for enemyAttackDamage timed out...");
-				new Exception("Waiting for enemyAttackDamage failed");
+				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
+						"Waiting for enemyAttackDamage failed", new Exception("Waiting for enemyAttackDamage failed"));
+				System.exit(1);
 			}
 		}
 		
@@ -1064,7 +1117,9 @@ public class Fight extends View implements Runnable {
 			
 			if (successfulCommunication == false) {
 				System.err.println("Calculation of initial attack timed out...");
-				new Exception("Calculation of initial attack failed");
+				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
+						"Calculation of initial attack failed", new Exception("Calculation of initial attack failed"));
+				System.exit(1);
 			}
 			
 			/* reset Set variable */

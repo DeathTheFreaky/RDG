@@ -3,6 +3,7 @@ package views;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,8 +14,11 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 
+import at.RDG.network.NetworkManager;
+import at.RDG.network.communication.NetworkMessage;
 import views.chat.InputField;
 import views.chat.Message;
+import gameEssentials.Game;
 import general.Enums.Channels;
 
 /**
@@ -69,6 +73,9 @@ public class Chat extends View {
 	/* set font type */
 	Font font = new Font("Verdana", Font.BOLD, 11);
 	TrueTypeFont ttf = new TrueTypeFont(font, true);
+	
+	/* network manager for transferring messages to other pc */
+	NetworkManager networkManager;
 
 	/**
 	 * Constructs a Chat passing its origin's position as single x and y
@@ -140,10 +147,16 @@ public class Chat extends View {
 	public Chat(String contextName, Point origin, Dimension size,
 			GameContainer container) throws SlickException {
 		super(contextName, origin, size);
+		
+		try {
+			this.networkManager = NetworkManager.getInstance();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		positionX = origin.x * GameEnvironment.BLOCK_SIZE;
 		positionY = origin.y * GameEnvironment.BLOCK_SIZE;
-
+		
 		Calendar cal = Calendar.getInstance();
 
 		hour = cal.get(Calendar.HOUR_OF_DAY);
@@ -379,7 +392,7 @@ public class Chat extends View {
 	private void processMessage(Message message) {
 
 		if (message.getChannel() == Channels.PUBLIC) {
-			//send message to other computer
+			networkManager.sendMessage(new NetworkMessage(message.getMessage()));
 		}
 		
 		messages.add(message);

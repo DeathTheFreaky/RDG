@@ -13,10 +13,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.xml.sax.SAXException;
 
 import at.RDG.network.NetworkManager;
+import at.RDG.network.communication.MapConverter;
 import at.RDG.network.communication.NetworkMessage;
 import configLoader.Configloader;
 import elements.Creature;
@@ -29,12 +31,16 @@ import views.Chat;
 import views.GameEnvironment;
 import views.InventoryView;
 import views.Minimap;
+import views.View;
+import views.chat.Message;
 import general.Enums.AttackScreens;
 import general.Enums.Attacks;
+import general.Enums.Channels;
 import general.Enums.CreatureType;
 import general.Enums.ImageSize;
 import general.Enums.UsedClasses;
 import general.Enums.ViewingDirections;
+import general.ItemFactory;
 import general.Main;
 import general.ResourceManager;
 
@@ -100,6 +106,10 @@ public class Game extends BasicGame {
 	private boolean dragging = false;
 	/* flag, if the mouse is currently moving the minimap */
 	private boolean draggingMinimap = false;
+	/* check if item was dragged from inventory or armor view */
+	private View draggingSource;
+	private int draggingOldX;
+	private int draggingOldY;
 
 	/* For moving the player */
 	private ViewingDirections goTo = null;
@@ -118,6 +128,7 @@ public class Game extends BasicGame {
 	/* The Game for Player ... */
 	private String playerName;
 	private Player player;
+	private Player opponent;
 
 	/* Declares all Views for the Game */
 	private GameEnvironment gameEnvironment;
@@ -128,9 +139,6 @@ public class Game extends BasicGame {
 
 	/* Map which is needed for each Player */
 	private Map map;
-	
-	/* NetworkManager for transferring messages between two computers */
-	private NetworkManager nw = null;
 	
 	/* resource path */
 	public static final String IMAGEPATH = "./resources/images/";
@@ -152,6 +160,12 @@ public class Game extends BasicGame {
 	
 	/* fight Instance from gameEnvironment */
 	private Fight fightInstance = null;
+	
+	/* network manager for transferring data to other pc */
+	NetworkManager networkManager;
+	
+	/* instance of resource Manager for loading images */
+	private ResourceManager resourceManager;
 
 	/* Declare all classes, we need for the game (Factory, Resourceloader) */
 	// private ResourceManager resourceManager;
@@ -181,7 +195,7 @@ public class Game extends BasicGame {
 	private Game(String title, String playerName) throws IOException {
 		super(title);
 		this.playerName = playerName;
-		nw = NetworkManager.getInstance();
+		this.networkManager = NetworkManager.getInstance();
 	}
 	
 	/**Only returns existing instance of game or null if none instance exists yet.
@@ -234,6 +248,9 @@ public class Game extends BasicGame {
 		 * ConfigTestprinter configprinter = new
 		 * ConfigTestprinter(configloader); configprinter.print();
 		 */
+		
+		/* determined by network lobby  - TESTING only */
+		this.lobbyHost = networkManager.isLobbyHost();
 
 		/* Points in tile numbers */
 		gameEnvironmentOrigin = new Point(0, 0);
@@ -243,18 +260,30 @@ public class Game extends BasicGame {
 		minimapOrigin = new Point(20, 20);
 
 		/* Initialize Factory and Manager classes! */
-		new ResourceManager().getInstance();
+		resourceManager = new ResourceManager().getInstance();
 
 		/* network lobby must be called before this to detect player type */
-		CreatureType playerType = CreatureType.PLAYER1;
+		CreatureType playerType;
+		if (this.lobbyHost) {
+			playerType = CreatureType.PLAYER1;
+		}
+		else {
+			playerType = CreatureType.PLAYER2;
+		}
 		if (playerType == CreatureType.PLAYER1) {
 			player = new Player(playerName,
 					new ResourceManager().getInstance().IMAGES.get("Player1"),
-					gameEnvironmentOrigin, playerType);
+					gameEnvironmentOrigin, CreatureType.PLAYER1, true);
+			opponent = new Player("Testenemy",
+					new ResourceManager().getInstance().IMAGES.get("Player2"),
+					gameEnvironmentOrigin, CreatureType.PLAYER2, false);
 		} else if (playerType == CreatureType.PLAYER2) {
 			player = new Player(playerName,
 					new ResourceManager().getInstance().IMAGES.get("Player2"),
-					gameEnvironmentOrigin, playerType);
+					gameEnvironmentOrigin, CreatureType.PLAYER2, true);
+			opponent = new Player("Testenemy",
+					new ResourceManager().getInstance().IMAGES.get("Player1"),
+					gameEnvironmentOrigin, CreatureType.PLAYER1, false);
 		}
 		
 		/* Load the chat */
@@ -267,20 +296,23 @@ public class Game extends BasicGame {
 		
 		gameEnvironment = new GameEnvironment("GameEnvironment",
 				gameEnvironmentOrigin, new Dimension(GAME_ENVIRONMENT_WIDTH,
-						GAME_ENVIRONMENT_HEIGHT), player, armorView, this, chat);
+						GAME_ENVIRONMENT_HEIGHT), player, opponent, armorView, this, chat);
 
 		minimap = new Minimap("Minimap", gameEnvironmentOrigin.x
 				+ minimapOrigin.x, gameEnvironmentOrigin.y + minimapOrigin.y);
 
-		inventoryView = new InventoryView("Inventory", inventoryViewOrigin,
+		inventoryView = InventoryView.getInstance("Inventory", inventoryViewOrigin,
 				new Dimension(INVENTORY_WIDTH, INVENTORY_HEIGHT));
 		
 		/* Load Map and place the player */
 		map = new Map().getInstance();
 		map.setPlayer(player);
 		map.setGameEnvironment(gameEnvironment);
-		// map.fillMap();
 		
+		/* needs to be changed - only for testing purposes */
+		map.setOpponent(opponent);
+		// map.fillMap();
+				
 		this.fightInstance = gameEnvironment.getFightInstance();
 	}
 
@@ -310,30 +342,54 @@ public class Game extends BasicGame {
 	}
 
 	/**Process Network Messages according to their type.
+	 * @throws SlickException 
 	 * 
 	 */
-	private void processNetworkMessages() {
+	private void processNetworkMessages() throws SlickException {
 		
 		NetworkMessage message = null;
 		
-		while((message = nw.getNextMessage()) != null) {
+		while((message = networkManager.getNextMessage()) != null) {
 			switch(message.type) {
 				case CHAT:
-						
+					chat.newMessage(new Message(message.message, 0, 0, Channels.PRIVATE));
 					break;
 				case FIGHT:
-						fightInstance.processMessages(message);
+					fightInstance.processMessages(message);
 					break;
 				case GENERAL:
+						//still to be implemented
 					break;
-				case ITEMPICKUP:
+				case ITEM:
+					map.getOverlay()[message.itempos[0]][message.itempos[1]] = message.item;
 					break;
 				case MAP:
-						
+					map.setOverlay(MapConverter.toOverlay(message));
 					break;
-				case NETWORK:
+				case FIGHTPOSITION:
+					if (message.enemyPosX == 0 && message.enemyPosY == 0) {
+						map.getOpponent().setEnemyPosition(message.enemyPosX, message.enemyPosY, false); 
+					} else {
+						map.getOpponent().setEnemyPosition(message.enemyPosX, message.enemyPosY, true);
+					}
 					break;
 				case PLAYERPOSITION:
+					opponent.setPosition(message.playerpos[0], message.playerpos[1]);
+					Image image = opponent.getImage();
+					switch (message.playerdir) {
+						case WEST:
+							image.rotate(90);
+							break;
+						case SOUTH:
+							image.rotate(180f);
+							break;
+						case EAST:
+							image.rotate(-90f);
+							break;
+						default:
+							break;
+					}
+					opponent.setImage(image);
 					break;
 				default:
 					break;
@@ -362,6 +418,19 @@ public class Game extends BasicGame {
 	@Override
 	public void keyPressed(int key, char c) {
 		
+		
+			try {
+				if (key == 19) {
+					map.getOverlay()[1][1] = ItemFactory.createPotion("Poison", 1);
+				} else if (key == 20) {
+					map.getOverlay()[1][1].setImage(resourceManager.IMAGES.get("Strength"));
+				}
+			} catch (SlickException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		
 		/* Key Values for Players Movement! (a,s,d,w) */
 		if ((key == 30 || key == 31 || key == 32 || key == 17)
 				&& !fightInstance.isInFight()) {
@@ -389,12 +458,17 @@ public class Game extends BasicGame {
 			Element e = null;
 			try {
 				e = map.checkInFrontOfPlayer();
+				if (e != null) {
+					//inventoryView.storeEquipment((Equipment) e);
+					if (inventoryView.hasMoreRoom()) {
+						inventoryView.storeItem(e, armorView);
+					}
+					else {
+						map.dropItem(e, 1, 1);
+					}
+				}
 			} catch (SlickException e1) {
 				e1.printStackTrace();
-			}
-			if (e != null) {
-				//inventoryView.storeEquipment((Equipment) e);
-				inventoryView.storeItem(e, armorView);
 			}
 		} else if (key == 1) {
 			//set attackScreen in Fight.java to MAIN
@@ -480,6 +554,15 @@ public class Game extends BasicGame {
 						UsedClasses.Element);
 				if (draggedItem == null) {
 					this.draggedItem = armorView.getItem(oldx, oldy);
+					if (this.draggedItem != null) {
+						draggingSource = armorView;
+						draggingOldX = oldx;
+						draggingOldY = oldy;
+					}
+				} else {
+					draggingSource = inventoryView;
+					draggingOldX = oldx;
+					draggingOldY = oldy;
 				}
 				dragging = true;
 			}
@@ -490,7 +573,6 @@ public class Game extends BasicGame {
 
 		if (mouseOverMinimap) {
 			if (!draggingMinimap) {
-				System.out.println("Set new offsets");
 				draggingMinimap = true;
 				offsetX = oldx - minimap.positionX;
 				offsetY = oldy - minimap.positionY;
@@ -519,6 +601,7 @@ public class Game extends BasicGame {
 		if (button == 0) { // linke Maustaste
 			if (dragging) {
 				Element e;
+								
 				if (fightInstance.isInFight()) {
 					// only allow when potionTaking is active 
 					if (fightInstance.isPotionTakingActive()) {
@@ -533,11 +616,29 @@ public class Game extends BasicGame {
 				} else {
 
 					if (!draggingMinimap) {
-						if ((e = armorView.equipItem(draggedItem, x, y, inventoryView)) != null) {
-							inventoryView.storeItem(e, armorView);
+						try {
+							int mapDropRet = map.dropItem(this.draggedItem, x, y);
+							if (mapDropRet == 1) {
+				
+							} else {
+								if ((e = armorView.equipItem(draggedItem, x, y, inventoryView)) != null) {
+									if ((e = inventoryView.storeItem(e, armorView)) != null) {
+										if (draggingSource == inventoryView) {
+											map.dropItem(e, x, y);
+										} else if (draggingSource == armorView) {
+											armorView.equipItem(draggedItem, draggingOldX, draggingOldY, inventoryView);
+										}
+									} 
+								} 
+							}
+						} catch (SlickException e1) {
+							e1.printStackTrace();
 						}
 						dragging = false;
+						draggingSource = null;
 						draggedItem = null;
+						draggingOldX = 0;
+						draggingOldY = 0;
 					}
 				}
 				dragging = false;
@@ -654,5 +755,26 @@ public class Game extends BasicGame {
 	 */
 	public boolean isLobbyHost() {
 		return this.lobbyHost;
+	}
+	
+	/**
+	 * @return instance of network Manager
+	 */
+	public NetworkManager getNetworkManager() {
+		return this.networkManager;
+	}
+	
+	/**
+	 * @return the own Player
+	 */
+	public Player getPlayer() {
+		return this.player;
+	}
+	
+	/**
+	 * @return the opposing Player
+	 */
+	public Player getOpponent() {
+		return this.opponent;
 	}
 }

@@ -14,6 +14,7 @@ import elements.Element;
 import elements.Equipment;
 import elements.Potion;
 import elements.Weapon;
+import gameEssentials.Map;
 import general.Enums.Armor;
 import general.Enums.ImageSize;
 import general.Enums.ItemClasses;
@@ -27,6 +28,8 @@ import general.ResourceManager;
  * @see View
  */
 public class InventoryView extends View {
+	
+	private static InventoryView INSTANCE = null;
 
 	/* Some Values for positioning this View */
 	public int ORIGIN_X;
@@ -42,6 +45,13 @@ public class InventoryView extends View {
 
 	/* ResourceManager */
 	private ResourceManager resources;
+	
+	/* max items in inventory */
+	private final int maxItems = 24;
+	private int storedItemsCtr = 0;
+	
+	/* player can also aquire one key */
+	private boolean hasKey = false;
 
 	/**
 	 * Constructs an InventoryView passing its origin as single x and y
@@ -56,7 +66,7 @@ public class InventoryView extends View {
 	 * @throws SlickException
 	 * @see InventoryView
 	 */
-	public InventoryView(String contextName, int originX, int originY)
+	private InventoryView(String contextName, int originX, int originY)
 			throws SlickException {
 		this(contextName, new Point(originX, originY));
 	}
@@ -76,7 +86,7 @@ public class InventoryView extends View {
 	 * @throws SlickException
 	 * @see InventoryView
 	 */
-	public InventoryView(String contextName, Point origin)
+	private InventoryView(String contextName, Point origin)
 			throws SlickException {
 		this(contextName, origin, new Dimension(640, 480));
 	}
@@ -96,7 +106,7 @@ public class InventoryView extends View {
 	 * @throws SlickException
 	 * @see InventoryView
 	 */
-	public InventoryView(String contextName, int originX, int originY,
+	private InventoryView(String contextName, int originX, int originY,
 			int width, int height) throws SlickException {
 		this(contextName, new Point(originX, originY), new Dimension(width,
 				height));
@@ -114,7 +124,7 @@ public class InventoryView extends View {
 	 * @throws SlickException
 	 * @see InventoryView
 	 */
-	public InventoryView(String contextName, Point origin, Dimension size)
+	private InventoryView(String contextName, Point origin, Dimension size)
 			throws SlickException {
 		super(contextName, origin, size);
 
@@ -124,6 +134,7 @@ public class InventoryView extends View {
 		resources = new ResourceManager().getInstance();
 
 		items = new LinkedList<Element>();
+		
 		/*weapons = new LinkedList<Weapon>();
 		armaments = new LinkedList<Armament>();
 		armor = new LinkedList<Equipment>();
@@ -151,6 +162,25 @@ public class InventoryView extends View {
 				"dont know what type is for", ItemClasses.MEDIUM, 0f, 0f, 0f,
 				Armor.LEGS));*/
 		/* testing */
+	}
+	
+	/**This shall only be called for constructing the first inventory view.
+	 * @return the one and only instance of inventory view
+	 * @throws SlickException
+	 */
+	public static InventoryView getInstance(String contextName, Point origin, Dimension size) throws SlickException {
+		if (INSTANCE == null) {
+			INSTANCE = new InventoryView(contextName, origin, size);
+		}
+		return INSTANCE;
+	}
+	
+	/**
+	 * @return the one and only instance of inventory view
+	 * @throws SlickException
+	 */
+	public static InventoryView getInstance() throws SlickException {
+		return INSTANCE;
 	}
 
 	@Override
@@ -221,12 +251,21 @@ public class InventoryView extends View {
 			if ((x + y*4) < items.size()) {
 				Element e = items.get(x + y*4);
 				
-				/* only allow operation for specified class */
-				if (!(tempClass.isInstance(e))) {
-					return null;
-				} 
-				
-				items.remove(x + y*4);
+				if (!(e.NAME.equals("Key"))) {
+					
+					/* only allow operation for specified class */
+					if (!(tempClass.isInstance(e))) {
+						return null;
+					} 
+					
+					items.remove(x + y*4);
+										
+					if(e != null) {
+						this.storedItemsCtr--;
+					}
+				} else {
+					e = null;
+				}
 				
 				return e;
 			}
@@ -265,29 +304,58 @@ public class InventoryView extends View {
 	/**Add items to lists of items, weapons, armaments, potions, armor.
 	 * @param item
 	 */
-	public void storeItem(Element item, ArmorView armorView) {
+	public Element storeItem(Element item, ArmorView armorView) {
 		
-		System.out.println("itemname: " + item.NAME);
+		if (item == null) {
+			return null;
+		}
 		
-		if (item instanceof Weapon) {
-			/*weapons.add((Weapon) item);
-			armor.add((Equipment) item);*/
-			if (!(item.NAME.equals("Fists"))) {
-				items.add(item);
+		if (storedItemsCtr >= maxItems) {
+			return item;
+		} else {
+			if (item instanceof Weapon) {
+				/*weapons.add((Weapon) item);
+				armor.add((Equipment) item);*/
+				if (!(item.NAME.equals("Fists"))) {
+					items.add(item);
+					storedItemsCtr++;
+				}
+				armorView.addFists();
 			}
-			armorView.addFists();
+			else if (item instanceof Armament) {
+				/*armaments.add((Armament) item);
+				armor.add((Equipment) item);*/
+				items.add(item);
+				storedItemsCtr++;
+			}
+			else if (item instanceof Potion) {
+				/*potions.add((Potion) item);*/
+				items.add(item);
+				storedItemsCtr++;
+			}
+			else if (item.NAME.equals("Key") && this.hasKey == false) {
+				items.add(item);
+				this.hasKey = true;
+				storedItemsCtr++;
+			}
+			return null;
 		}
-		else if (item instanceof Armament) {
-			/*armaments.add((Armament) item);
-			armor.add((Equipment) item);*/
-			items.add(item);
+	}
+	
+	/**
+	 * @return true if there is still more room for items to be stored
+	 */
+	public boolean hasMoreRoom() {
+		if (this.storedItemsCtr < this.maxItems) {
+			return true;
 		}
-		else if (item instanceof Potion) {
-			/*potions.add((Potion) item);*/
-			items.add(item);
-		}
-		else if (item.NAME.equals("Key")) {
-			items.add(item);
-		}
+		return false;
+	}
+	
+	/**
+	 * @return true if player has already found the key for treasure chamber
+	 */
+	public boolean hasKey() {
+		return this.hasKey;
 	}
 }

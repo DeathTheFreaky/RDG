@@ -1,9 +1,11 @@
 package general;
 
+import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 
 import elements.Element;
+import general.Enums.ImageSize;
 
 /**The GroundFactory places ground textures randomly on the map tiles.<br><br>
  */
@@ -195,31 +197,31 @@ public class GroundFactory {
 		double random = Math.random();
 
 		if (random > 0.8888) {
-			return new Element("BrownGround", tiles.getSubImage(5, 4),
+			return new Element("GreenGround", tiles.getSubImage(5, 4),
 					positionX, positionY);
 		} else if (random > 0.7777) {
-			return new Element("BrownGround", tiles.getSubImage(6, 4),
+			return new Element("GreenGround", tiles.getSubImage(6, 4),
 					positionX, positionY);
 		} else if (random > 0.6666) {
-			return new Element("BrownGround", tiles.getSubImage(7, 4),
+			return new Element("GreenGround", tiles.getSubImage(7, 4),
 					positionX, positionY);
 		} else if (random > 0.5555) {
-			return new Element("BrownGround", tiles.getSubImage(5, 5),
+			return new Element("GreenGround", tiles.getSubImage(5, 5),
 					positionX, positionY);
 		} else if (random > 0.4444) {
-			return new Element("BrownGround", tiles.getSubImage(6, 5),
+			return new Element("GreenGround", tiles.getSubImage(6, 5),
 					positionX, positionY);
 		} else if (random > 0.3333) {
-			return new Element("BrownGround", tiles.getSubImage(7, 5),
+			return new Element("GreenGround", tiles.getSubImage(7, 5),
 					positionX, positionY);
 		} else if (random > 0.2222) {
-			return new Element("BrownGround", tiles.getSubImage(5, 6),
+			return new Element("GreenGround", tiles.getSubImage(5, 6),
 					positionX, positionY);
 		} else if (random > 0.1111) {
-			return new Element("BrownGround", tiles.getSubImage(6, 6),
+			return new Element("GreenGround", tiles.getSubImage(6, 6),
 					positionX, positionY);
 		} else {
-			return new Element("BrownGround", tiles.getSubImage(7, 6),
+			return new Element("GreenGround", tiles.getSubImage(7, 6),
 					positionX, positionY);
 		}
 	}
@@ -299,5 +301,39 @@ public class GroundFactory {
 		SpriteSheet tiles = resources.TILES;
 		
 		return new Element("DoorGroundTreasureChamber2", tiles.getSubImage(5, 3).getFlippedCopy(false, true), positionX, positionY);
+	}
+	
+
+	/**Returns random image of a tile in background spritesheet by its name.
+	 * @param name
+	 * @param positionX
+	 * @param positionY
+	 * @param imageSize
+	 * @return
+	 * @throws SlickException
+	 */
+	public static Image getTileByName(String name, int positionX, int positionY, ImageSize imageSize) throws SlickException {
+		
+		if (name.equals("GreyGround")) {
+			return createGreyGround(positionX, positionY).getImage(imageSize);
+		} else if (name.equals("GreyGround")) {
+			return createGreyGround(positionX, positionY).getImage(imageSize);
+		} else if (name.equals("DarkGreyGround")) {
+			return createDarkGreyGround(positionX, positionY).getImage(imageSize);
+		} else if (name.equals("YellowGroundOne")) {
+			return createYellowGroundOne(positionX, positionY).getImage(imageSize);
+		} else if (name.equals("YellowGroundTwo")) {
+			return createYellowGroundTwo(positionX, positionY).getImage(imageSize);
+		} else if (name.equals("GreenGround")) {
+			return createGreenGround(positionX, positionY).getImage(imageSize);
+		} else if (name.equals("BrownGround")) {
+			return createGreenGround(positionX, positionY).getImage(imageSize);
+		} else if (name.equals("DoorGroundTreasureChamber1")) {
+			return createGreenGround(positionX, positionY).getImage(imageSize);
+		} else if (name.equals("DoorGroundTreasureChamber2")) {
+			return createGreenGround(positionX, positionY).getImage(imageSize);
+		}
+		
+		return null;
 	}
 }

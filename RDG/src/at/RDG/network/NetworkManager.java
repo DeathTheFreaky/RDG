@@ -37,6 +37,7 @@ public class NetworkManager {
 	private NetworkWriter writer = null;
 	private NetworkReader reader = null;
 	private Thread acceptor;
+	private Boolean lobbyHost = false;
 
 	/**
 	 * @see NetworkManager
@@ -58,7 +59,7 @@ public class NetworkManager {
 	 *            NetworkMessage to send.
 	 */
 	public void sendMessage(NetworkMessage msg) {
-		if (!this.writer.isAlive())
+		if (this.writer == null || !this.writer.isAlive())
 			return;
 		// writes into the queue and notifies the writer thread that something
 		// is in the queue.
@@ -132,6 +133,9 @@ public class NetworkManager {
 			}
 		}
 		this.lserver.start();
+		
+		/* don't know where to set this -> once connection has been established */
+		setLobbyHost(true);
 	}
 
 	/**
@@ -219,5 +223,30 @@ public class NetworkManager {
 			INSTANCE = new NetworkManager();
 		}
 		return INSTANCE;
+	}
+	
+	/**
+	 * @return true if this Computer hosted the lobby
+	 */
+	public Boolean isLobbyHost() {
+		return this.lobbyHost;
+	}
+	
+	/**Sets Boolean to tell if this computer is the lobbyHost.
+	 * @param lobbyHost
+	 */
+	private void setLobbyHost(Boolean lobbyHost) {
+		this.lobbyHost = lobbyHost;
+	}
+	
+	/**
+	 * @return list of all lobbies found by searcher or null if no searcher is started 
+	 */
+	public List<Serverinfo> getLobbyList() {
+		if (this.searcher == null) {
+			return null;
+		} else {
+			return this.searcher.getFilledLobbyList();
+		}
 	}
 }
