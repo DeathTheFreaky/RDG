@@ -31,6 +31,9 @@ public class TestHost {
 	 */
 	public static void main(String[] args) throws SlickException {
 		
+		/* set to true once a tcp connection between both parties has been established */
+		boolean startGame = false;
+		
 		/* store if this is the lobbyHost in networkManager */
 		NetworkManager networkManager = null;
 		try {
@@ -39,9 +42,20 @@ public class TestHost {
 			/* TEST: lobbyHost */
 			networkManager.startLobby("Testlobby");
 			
-		} catch (IOException | IllegalThreadStateException | ArgumentOutOfRangeException | UnableToStartConnectionException e) {
+			while (startGame == false) {
+				
+				/* wait for client to establish connection */
+				if (networkManager.isConnected()) {
+					startGame = true;
+					/* stop lobby once connection has been established */
+					networkManager.stopLobby();
+				}
+				Thread.sleep(100);
+			}
+			
+		} catch (IOException | IllegalThreadStateException | ArgumentOutOfRangeException | UnableToStartConnectionException | InterruptedException e) {
 			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
-					"Failed to obtain network socket.", e);
+					"Failed to establish network connection.", e);
 			System.exit(1);
 		}
 				

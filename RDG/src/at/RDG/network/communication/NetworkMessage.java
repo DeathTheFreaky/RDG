@@ -51,6 +51,10 @@ public class NetworkMessage {
 	public final int enemyPosX;
 	public final int enemyPosY;
 	
+	//boolean value for general synchro trigger
+	public final boolean trigger;
+	public final String event;
+	
 	/**
 	 * The NetworkMessage predefined for network related messages.</br>
 	 * All other fields are null.
@@ -73,6 +77,8 @@ public class NetworkMessage {
 		this.overlay = null;
 		this.enemyPosX = 0;
 		this.enemyPosY = 0;
+		this.trigger = false;
+		this.event = null;
 	}
 	
 	/**
@@ -95,6 +101,8 @@ public class NetworkMessage {
 		this.overlay = null;
 		this.enemyPosX = 0;
 		this.enemyPosY = 0;
+		this.trigger = false;
+		this.event = null;
 	}
 	
 	/**
@@ -121,6 +129,8 @@ public class NetworkMessage {
 		this.overlay = null;
 		this.enemyPosX = 0;
 		this.enemyPosY = 0;
+		this.trigger = false;
+		this.event = null;
 	}
 	
 	/**
@@ -148,6 +158,8 @@ public class NetworkMessage {
 		this.overlay = null;
 		this.enemyPosX = 0;
 		this.enemyPosY = 0;
+		this.trigger = false;
+		this.event = null;
 	}
 	
 	/**
@@ -170,6 +182,8 @@ public class NetworkMessage {
 		this.overlay = null;
 		this.enemyPosX = 0;
 		this.enemyPosY = 0;
+		this.trigger = false;
+		this.event = null;
 	}
 	
 	/**The NetworkMessage predefined for initial map transfer.</br>
@@ -189,11 +203,14 @@ public class NetworkMessage {
 		this.overlay = overlay;
 		this.enemyPosX = 0;
 		this.enemyPosY = 0;
+		this.trigger = false;
+		this.event = null;
 	}
 	
 	/**The NetworkMessage predefined for telling other pc against whom the player currently fights.</br>
 	 * All other fields are null/0.
-	 * @param overlay
+	 * @param enemyX
+	 * @param enemyY
 	 */
 	public NetworkMessage(int enemyX, int enemyY) {
 		this.type = MessageType.FIGHTPOSITION;
@@ -206,8 +223,32 @@ public class NetworkMessage {
 		this.playerdir = null;
 		this.fightvalues = null;
 		this.overlay = null;
+		this.enemyPosX = enemyX;
+		this.enemyPosY = enemyY;
+		this.trigger = false;
+		this.event = null;
+	}
+	
+	/**The NetworkMessage predefined for telling other pc about general synchro events like the start of a human fight.</br>
+	 * All other field are null/0.
+	 * @param event
+	 * @param trigger
+	 */
+	public NetworkMessage(String event, boolean trigger) {
+		this.type = MessageType.GENERAL;
+		this.addr = null;
+		this.port = 0;
+		this.message = null;
+		this.itempos = null;
+		this.item = null;
+		this.playerpos = null;
+		this.playerdir = null;
+		this.fightvalues = null;
+		this.overlay = null;
 		this.enemyPosX = 0;
 		this.enemyPosY = 0;
+		this.trigger = trigger;
+		this.event = event;
 	}
 	
 	/**
@@ -225,7 +266,7 @@ public class NetworkMessage {
 	 * @param fightvalues A Map for fightvalues.
 	 * @param overlay A two dimensional {@link Element} array.
 	 */
-	public NetworkMessage(MessageType type, InetAddress addr, int port, String msg, int[] itempos, Element item, int[] playerpos, ViewingDirections playerdir, Map<String,Float> fightvalues, Element[][] overlay, int enemyPosX, int enemyPosY){
+	public NetworkMessage(MessageType type, InetAddress addr, int port, String msg, int[] itempos, Element item, int[] playerpos, ViewingDirections playerdir, Map<String,Float> fightvalues, Element[][] overlay, int enemyPosX, int enemyPosY, String event, boolean trigger){
 		this.type = type;
 		this.addr = addr;
 		this.port = port;
@@ -238,6 +279,8 @@ public class NetworkMessage {
 		this.overlay = overlay;
 		this.enemyPosX = enemyPosX;
 		this.enemyPosY = enemyPosY;
+		this.trigger = trigger;
+		this.event = event;
 	}
 	
 }

@@ -94,7 +94,7 @@ public class Game extends BasicGame {
 
 	/* Origins of the different Views in tile numbers */
 	/* gameEnvironment is needed for fight, because each fight is a new thread -> new instance */
-	private Point gameEnvironmentOrigin = new Point(0,0), chatOrigin, armorViewOrigin,
+	Point gameEnvironmentOrigin = new Point(0,0), chatOrigin, armorViewOrigin,
 			inventoryViewOrigin, minimapOrigin;
 
 	/* flag, if the mouse is over the chat (for scrolling) */
@@ -126,19 +126,19 @@ public class Game extends BasicGame {
 	private int offsetY = 0;
 
 	/* The Game for Player ... */
-	private String playerName;
-	private Player player;
-	private Player opponent;
+	String playerName;
+	Player player;
+	Player opponent;
 
 	/* Declares all Views for the Game */
-	private GameEnvironment gameEnvironment;
-	private Chat chat;
-	private ArmorView armorView;
-	private InventoryView inventoryView;
-	private Minimap minimap;
+	GameEnvironment gameEnvironment;
+	Chat chat;
+	ArmorView armorView;
+	InventoryView inventoryView;
+	Minimap minimap;
 
 	/* Map which is needed for each Player */
-	private Map map;
+	Map map;
 	
 	/* resource path */
 	public static final String IMAGEPATH = "./resources/images/";
@@ -147,25 +147,33 @@ public class Game extends BasicGame {
 	public static final String CONFIGPATH = "config/Results/";
 
 	// create instance of configloader
-	private Configloader configloader = null;
+	Configloader configloader = null;
 	
 	/* fight Thread  */
 	private Thread fightThread = null;
 	
 	/* needed for human fights - set to true if this is the lobby HOSTER */
-	private Boolean lobbyHost = false;
+	Boolean lobbyHost = false;
 	
 	/* list holding child threads */
 	private List<Thread> threadList = new ArrayList<Thread>();
 	
 	/* fight Instance from gameEnvironment */
-	private Fight fightInstance = null;
+	Fight fightInstance = null;
 	
 	/* network manager for transferring data to other pc */
 	NetworkManager networkManager;
 	
 	/* instance of resource Manager for loading images */
-	private ResourceManager resourceManager;
+	ResourceManager resourceManager;
+	
+	/* draw a loading screen before the game has finished loading all data */
+	private boolean loading = true;
+	private boolean startetLoading = false;
+	private boolean mapSet = false;
+	
+	/* game Container for access by gameLoad thread */
+	GameContainer container;
 
 	/* Declare all classes, we need for the game (Factory, Resourceloader) */
 	// private ResourceManager resourceManager;
@@ -232,110 +240,43 @@ public class Game extends BasicGame {
 
 	@Override
 	public void init(GameContainer container) throws SlickException {
-
-		/* load config - must be successful in order to continue */
-		try {
-			configloader = new Configloader().getInstance();
-		} catch (IllegalArgumentException | ParserConfigurationException
-				| SAXException | IOException e) {
-			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
-					"Parsing Configuration Files failed.", e);
-			System.exit(1);
-		}
-
-		// Test Printing
-		/*
-		 * ConfigTestprinter configprinter = new
-		 * ConfigTestprinter(configloader); configprinter.print();
-		 */
 		
-		/* determined by network lobby  - TESTING only */
-		this.lobbyHost = networkManager.isLobbyHost();
-
-		/* Points in tile numbers */
-		gameEnvironmentOrigin = new Point(0, 0);
-		chatOrigin = new Point(0, 12);
-		armorViewOrigin = new Point(15, 0);
-		inventoryViewOrigin = new Point(15, 12);
-		minimapOrigin = new Point(20, 20);
-
-		/* Initialize Factory and Manager classes! */
-		resourceManager = new ResourceManager().getInstance();
-
-		/* network lobby must be called before this to detect player type */
-		CreatureType playerType;
-		if (this.lobbyHost) {
-			playerType = CreatureType.PLAYER1;
-		}
-		else {
-			playerType = CreatureType.PLAYER2;
-		}
-		if (playerType == CreatureType.PLAYER1) {
-			player = new Player(playerName,
-					new ResourceManager().getInstance().IMAGES.get("Player1"),
-					gameEnvironmentOrigin, CreatureType.PLAYER1, true);
-			opponent = new Player("Testenemy",
-					new ResourceManager().getInstance().IMAGES.get("Player2"),
-					gameEnvironmentOrigin, CreatureType.PLAYER2, false);
-		} else if (playerType == CreatureType.PLAYER2) {
-			player = new Player(playerName,
-					new ResourceManager().getInstance().IMAGES.get("Player2"),
-					gameEnvironmentOrigin, CreatureType.PLAYER2, true);
-			opponent = new Player("Testenemy",
-					new ResourceManager().getInstance().IMAGES.get("Player1"),
-					gameEnvironmentOrigin, CreatureType.PLAYER1, false);
-		}
-		
-		/* Load the chat */
-		chat = new Chat("Chat", chatOrigin, new Dimension(CHAT_WIDTH,
-				CHAT_HEIGHT), container);
-		
-		/* Load Views - Dimension is specified in pixels */
-		armorView = new ArmorView("ArmorInventory", armorViewOrigin,
-				new Dimension(ARMOR_WIDTH, ARMOR_HEIGHT));
-		
-		gameEnvironment = new GameEnvironment("GameEnvironment",
-				gameEnvironmentOrigin, new Dimension(GAME_ENVIRONMENT_WIDTH,
-						GAME_ENVIRONMENT_HEIGHT), player, opponent, armorView, this, chat);
-
-		minimap = new Minimap("Minimap", gameEnvironmentOrigin.x
-				+ minimapOrigin.x, gameEnvironmentOrigin.y + minimapOrigin.y);
-
-		inventoryView = InventoryView.getInstance("Inventory", inventoryViewOrigin,
-				new Dimension(INVENTORY_WIDTH, INVENTORY_HEIGHT));
-		
-		/* Load Map and place the player */
-		map = new Map().getInstance();
-		map.setPlayer(player);
-		map.setGameEnvironment(gameEnvironment);
-		
-		/* needs to be changed - only for testing purposes */
-		map.setOpponent(opponent);
-		// map.fillMap();
-				
-		this.fightInstance = gameEnvironment.getFightInstance();
+		//load ressources in first game loop to show a loading screen
+		this.container = container;
 	}
 
 	@Override
 	public void update(GameContainer container, int delta)
 			throws SlickException {
-
+ 
 		/* run an Update */
 		if (timeToUpdate > UPDATE) {
-			if (updatesUntilPlayerUpdate == 0) {
-				player.update(goTo);
-				if (keyReleased) {
-					goTo = null;
-					keyReleased = false;
+			if (this.loading == true) {
+				if (this.startetLoading == true) {
+					GameLoad gameLoad = new GameLoad();
+					gameLoad.run();
+				} else {
+					this.startetLoading = true;
 				}
-				updatesUntilPlayerUpdate = 3;
+			} else {
+				if (this.mapSet) {
+					if (updatesUntilPlayerUpdate == 0) {
+						player.update(goTo);
+						if (keyReleased) {
+							goTo = null;
+							keyReleased = false;
+						}
+						updatesUntilPlayerUpdate = 3;
+					}
+					gameEnvironment.update();
+					chat.update();
+					
+					updatesUntilPlayerUpdate--;
+				}
+				
+				processNetworkMessages();
+				timeToUpdate = 0;
 			}
-			gameEnvironment.update();
-			chat.update();
-			processNetworkMessages();
-
-			timeToUpdate = 0;
-			updatesUntilPlayerUpdate--;
 		}
 
 		timeToUpdate += delta;
@@ -358,13 +299,15 @@ public class Game extends BasicGame {
 					fightInstance.processMessages(message);
 					break;
 				case GENERAL:
-						//still to be implemented
+						if (message.event.equals("humanFightStart") && message.trigger) {
+							gameEnvironment.startFight((Creature) opponent);
+						}
 					break;
 				case ITEM:
 					map.getOverlay()[message.itempos[0]][message.itempos[1]] = message.item;
 					break;
 				case MAP:
-					map.setOverlay(MapConverter.toOverlay(message));
+					map.setReceivedMapData(MapConverter.toOverlay(message));
 					break;
 				case FIGHTPOSITION:
 					if (message.enemyPosX == 0 && message.enemyPosY == 0) {
@@ -400,18 +343,26 @@ public class Game extends BasicGame {
 	@Override
 	public void render(GameContainer container, Graphics g)
 			throws SlickException {
+				
+		if (this.loading == true) {
+			g.drawString("Loading Game...", 250, 225);
+		} else {
+			if (this.mapSet) {
+				gameEnvironment.draw(container, g);
+				if (!(fightInstance.isInFight())) {
+					minimap.draw(container, g);
+				}
+				chat.draw(container, g);
+				armorView.draw(container, g);
+				inventoryView.draw(container, g);
 
-		gameEnvironment.draw(container, g);
-		if (!(fightInstance.isInFight())) {
-			minimap.draw(container, g);
-		}
-		chat.draw(container, g);
-		armorView.draw(container, g);
-		inventoryView.draw(container, g);
-
-		if (dragging && draggedItem != null) {
-			g.drawImage(draggedItem.getImage(ImageSize.d20x20), draggedX,
-					draggedY);
+				if (dragging && draggedItem != null) {
+					g.drawImage(draggedItem.getImage(ImageSize.d20x20), draggedX,
+							draggedY);
+				}
+			} else {
+				g.drawString("Loading Game...", 250, 225);
+			}
 		}
 	}
 
@@ -678,12 +629,14 @@ public class Game extends BasicGame {
 				&& newY <= HEIGHT) {
 			mouseOverChat = true;
 			mouseOverMinimap = false;
-		} else if (newX >= minimap.positionX
+		} else if (minimap != null) {
+			if (newX >= minimap.positionX
 				&& newX <= minimap.positionX + minimap.WIDTH
 				&& newY >= minimap.positionY
 				&& newY <= minimap.positionY + minimap.HEIGHT) {
-			mouseOverMinimap = true;
-			mouseOverChat = false;
+				mouseOverMinimap = true;
+				mouseOverChat = false;
+			}
 		} else {
 			mouseOverChat = false;
 			mouseOverMinimap = false;
@@ -776,5 +729,19 @@ public class Game extends BasicGame {
 	 */
 	public Player getOpponent() {
 		return this.opponent;
+	}
+	
+	/**Set loading boolean. Used by thread that loads game ressources.
+	 * @param loading
+	 */
+	public synchronized void setLoading(boolean loading) {
+		this.loading = loading;
+	}
+	
+	/**Set by map Class once all map data has been loaded.
+	 * @param mapSet
+	 */
+	public synchronized void setMapSet(boolean mapSet) {
+		this.mapSet = mapSet;
 	}
 }

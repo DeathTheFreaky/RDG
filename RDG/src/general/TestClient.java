@@ -28,6 +28,11 @@ public class TestClient {
 	 * @throws SlickException
 	 */
 	public static void main(String[] args) throws SlickException {
+		
+		/* set to true once a tcp connection between both parties has been established */
+		boolean startGame = false;
+		int tryConnCtr = 0;
+		int tryConnMax = 100;
 
 		/* store if this is the lobbyHost in networkManager */
 		NetworkManager networkManager = null;
@@ -46,14 +51,29 @@ public class TestClient {
 			
 			System.out.println(lobbyList.get(0).getLobbyName());
 			System.out.println(lobbyList.get(0).getPort());
-						
-			networkManager.connect(lobbyList.get(0));
 			
-			System.out.println("is connected: " + networkManager.isConnected());
+			while (startGame == false && tryConnCtr < tryConnMax) {
+				
+				networkManager.connect(lobbyList.get(0));
+				
+				/* wait for client to establish connection */
+				if (networkManager.isConnected()) {
+					startGame = true;
+				}
+				Thread.sleep(100);
+				
+				tryConnCtr++;
+			}
 			
-		} catch (IOException | UnableToStartConnectionException e) {
+			if (startGame == false) {
+				throw new Exception("Failed to establish connection with lobby Host");
+			}
+			
+			System.out.println("connection established!");
+			
+		} catch (Exception e) {
 			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
-					"Failed to obtain network socket.", e);
+					"Failed to establish network connection.", e);
 			System.exit(1);
 		}
 		

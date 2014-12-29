@@ -87,13 +87,16 @@ public class Map {
 	/* Network Manager for sending Map data */
 	NetworkManager networkManager = null;
 	
+	/* Game instance */
+	private Game game;
+	
 	/**
 	 * Constructs a Map.
 	 * 
 	 * @see Map
 	 */
 	public Map() {
-		
+		this.game = Game.getInstance();
 	}
 
 	/**
@@ -199,16 +202,12 @@ public class Map {
 		itemsBalance.put(ItemClasses.MEDIUM, mediumMap);
 		itemsBalance.put(ItemClasses.STRONG, strongMap);
 				
-	
-		fillMap();
-
-		// test door pos detection
-		loadRooms();
-		updateRooms();
-		
-		/* send Map to other computer */
-		if (Game.getInstance().isLobbyHost()) {
+		if (game.isLobbyHost()) {
+			fillWallsAndDoors(true);
+			loadRooms(true);
+			updateRooms(true);
 			sendMap();
+			game.setMapSet(true);
 		} 
 
 		/* true-initialize passable */
@@ -452,6 +451,7 @@ public class Map {
 			/* only start fight against other player if he isn't currently in a fight */
 			if (!this.opponent.isInFight()) {
 				gameEnvironment.startFight((Creature) opponent);
+				networkManager.sendMessage(new NetworkMessage("humanFightStart", true));
 			}
 		}
 
@@ -507,7 +507,7 @@ public class Map {
 	 * updates all background and overlay fields based on room data
 	 * 
 	 */
-	public void updateRooms() {
+	public void updateRooms(boolean lobbyHost) {
 		for (int i = 0; i < Game.ROOMSHOR; i++) {
 			for (int j = 0; j < Game.ROOMSVER; j++) {
 				for (int x = 0; x < Game.ROOMWIDTH; x++) {
@@ -517,7 +517,11 @@ public class Map {
 						int posy = j * (Game.ROOMHEIGHT + 1) + y + 1;
 
 						background[posx][posy] = rooms[i][j].background[x][y];
-						overlay[posx][posy] = rooms[i][j].overlay[x][y];
+						
+						/* do not overwrite overlay if this is the lobby client which has already received a fully filled overlay */
+						if (lobbyHost) {
+							overlay[posx][posy] = rooms[i][j].overlay[x][y];
+						}
 					}
 				}
 			}
@@ -616,7 +620,7 @@ public class Map {
 	 * @throws SlickException
 	 * 
 	 */
-	public void loadRooms() throws SlickException {
+	public void loadRooms(boolean lobbyHost) throws SlickException {
 
 		for (int i = 0; i < Game.ROOMSHOR; i++) {
 			for (int j = 0; j < Game.ROOMSVER; j++) {
@@ -624,33 +628,23 @@ public class Map {
 				/* detect room types and load according room */
 				RoomTypes type = detectRoomType(i, j);
 
-				rooms[i][j] = RoomFactory.createRoom(type, monsterBalance, itemsBalance, this, balanceOffsets);
+				rooms[i][j] = RoomFactory.createRoom(type, monsterBalance, itemsBalance, this, balanceOffsets, lobbyHost);
 			}
 		}
 		
-		/*for (Entry<Levels, HashMap<String, Integer>> entry : monsterBalance.entrySet()) {
-			for (Entry<String, Integer> subentry : entry.getValue().entrySet()) {
-				System.out.println(entry.getKey() + " - " + subentry.getKey() + ": " + subentry.getValue());
-			}
+		if (lobbyHost) {
+			/* place keys for treasure chamber in random rooms */
+			placeKeys();
 		}
-		
-		for (Entry<ItemClasses, HashMap<Item, Integer>> entry : itemsBalance.entrySet()) {
-			for (Entry<Item, Integer> subentry : entry.getValue().entrySet()) {
-				System.out.println(entry.getKey() + " - " + subentry.getKey().itemName + ": " + subentry.getValue());
-			}
-		}*/
-		
-		/* place keys for treasure chamber in random rooms */
-		placeKeys();
 	}
 
 	/**
-	 * Fills the map with rooms and their contents.
+	 * Fills the map with walls and doors.
 	 * 
 	 * @throws SlickException
 	 * 
 	 */
-	public void fillMap() throws SlickException {
+	public void fillWallsAndDoors(boolean lobbyHost) throws SlickException {
 
 		/* load walls and doors */
 		for (int i = 0; i <= getWidth(); i++) {
@@ -665,59 +659,80 @@ public class Map {
 					// passable[i][j] = false;
 				}
 
-				/*
-				 * add doors in the middle -> testing only -> shall be moved to
-				 * labyrinth algorithm
-				 */
-
-				/* horizontal doors */
-				if ((wallmodx == Game.ROOMWIDTH / 2 || wallmodx == Game.ROOMWIDTH / 2 + 1)
-						&& wallmody == 0 && j != 0 && j != getHeight()) {
-
-					int nodoory1 = getHeight() / 2 - (Game.ROOMHEIGHT / 2);
-					int nodoory2 = getHeight() / 2 + (Game.ROOMHEIGHT / 2 + 1);
-					int nodoorx1 = getWidth() / 2;
-					int nodoorx2 = getWidth() / 2 + 1;
-
-					if (!((i == nodoorx1 || i == nodoorx2) && ((j == nodoory1) || (j == nodoory2)))) {
-						overlay[i][j] = null;
-						background[i][j] = GroundFactory.createGreyGround(i, j);
-					}
-					// passable[i][j] = true;
-				}
-
-				/* vertical doors */
-				if (wallmodx == 0
-						&& i != 0
-						&& i != getWidth()
-						&& (wallmody == Game.ROOMHEIGHT / 2 || wallmody == Game.ROOMHEIGHT / 2 + 1)) {
-
-					int nodoory1 = getHeight() / 2;
-					int nodoory2 = getHeight() / 2 + 1;
-					int nodoorx1 = getWidth() / 2 - (Game.ROOMWIDTH / 2);
-					int nodoorx2 = getWidth() / 2 + (Game.ROOMWIDTH / 2 + 1);
-
-					if (!((i == nodoorx1 || i == nodoorx2) && ((j == nodoory1) || (j == nodoory2)))) {
-						overlay[i][j] = null;
-						background[i][j] = GroundFactory.createGreyGround(i, j);
-					}
+				
+				/* determine door position on host */
+				if (lobbyHost) {
+					
 					/*
-					 * place door texture on background and overlay -> if key is
-					 * obtained -> remove door textures from overlay temporarily
-					 * when hitting "E" key
+					 * add doors in the middle -> testing only -> shall be moved to
+					 * labyrinth algorithm
 					 */
-					else {
-						if (j == nodoory1) {
-							background[i][j] = GroundFactory.createDoorGround2(
-									i, j);
-							overlay[i][j] = GroundFactory.createDoorGround2(i,
-									j);
-						} else {
-							background[i][j] = GroundFactory.createDoorGround1(
-									i, j);
-							overlay[i][j] = GroundFactory.createDoorGround1(i,
-									j);
+					
+					/* horizontal doors */
+					if ((wallmodx == Game.ROOMWIDTH / 2 || wallmodx == Game.ROOMWIDTH / 2 + 1)
+							&& wallmody == 0 && j != 0 && j != getHeight()) {
+
+						int nodoory1 = getHeight() / 2 - (Game.ROOMHEIGHT / 2);
+						int nodoory2 = getHeight() / 2 + (Game.ROOMHEIGHT / 2 + 1);
+						int nodoorx1 = getWidth() / 2;
+						int nodoorx2 = getWidth() / 2 + 1;
+
+						if (!((i == nodoorx1 || i == nodoorx2) && ((j == nodoory1) || (j == nodoory2)))) {
+							overlay[i][j] = null;
+							background[i][j] = GroundFactory.createGreyGround(i, j);
 						}
+						// passable[i][j] = true;
+					}
+
+					/* vertical doors */
+					if (wallmodx == 0
+							&& i != 0
+							&& i != getWidth()
+							&& (wallmody == Game.ROOMHEIGHT / 2 || wallmody == Game.ROOMHEIGHT / 2 + 1)) {
+
+						int nodoory1 = getHeight() / 2;
+						int nodoory2 = getHeight() / 2 + 1;
+						int nodoorx1 = getWidth() / 2 - (Game.ROOMWIDTH / 2);
+						int nodoorx2 = getWidth() / 2 + (Game.ROOMWIDTH / 2 + 1);
+
+						if (!((i == nodoorx1 || i == nodoorx2) && ((j == nodoory1) || (j == nodoory2)))) {
+							overlay[i][j] = null;
+							background[i][j] = GroundFactory.createGreyGround(i, j);
+						}
+						/*
+						 * place door texture on background and overlay -> if key is
+						 * obtained -> remove door textures from overlay temporarily
+						 * when hitting "E" key
+						 */
+						else {
+							if (j == nodoory1) {
+								background[i][j] = GroundFactory.createDoorGround2(
+										i, j);
+								overlay[i][j] = GroundFactory.createDoorGround2(i,
+										j);
+							} else {
+								background[i][j] = GroundFactory.createDoorGround1(
+										i, j);
+								overlay[i][j] = GroundFactory.createDoorGround1(i,
+										j);
+							}
+						}
+					}
+				} 
+				
+				/* set doors for client */
+				else {
+					if (overlay[i][j].NAME.equals("GreyGround")) {
+						background[i][j] = GroundFactory.createGreyGround(i, j);
+						overlay[i][j] = null;
+					}
+					else if (overlay[i][j].NAME.equals("DoorGroundTreasureChamber1")) {
+						background[i][j] = GroundFactory.createDoorGround1(
+								i, j);
+					}
+					else if (overlay[i][j].NAME.equals("DoorGroundTreasureChamber2")) {
+						background[i][j] = GroundFactory.createDoorGround2(
+								i, j);
 					}
 				}
 			}
@@ -827,9 +842,14 @@ public class Map {
 	
 	/**Set overlay from network Classes.
 	 * @param overlay
+	 * @throws SlickException 
 	 */
-	public void setOverlay(Element[][] overlay) {
+	public synchronized void setReceivedMapData(Element[][] overlay) throws SlickException {
 		this.overlay = overlay;
+		fillWallsAndDoors(false);
+		loadRooms(false);
+		updateRooms(false);
+		game.setMapSet(true);
 	}
 	
 	/**Drops item on the map on the field in front of the player if the field is free.

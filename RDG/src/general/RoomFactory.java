@@ -42,7 +42,7 @@ public class RoomFactory {
 	 * @throws SlickException 
 	 * @see RoomFactory
 	 */
-	public static Room createRoom(RoomTypes type, Map<Levels, HashMap<String, Integer>> monsterBalance, Map<ItemClasses, HashMap<Item, Integer>> itemsBalance, gameEssentials.Map map, Map<String, Integer> balanceOffsets) throws SlickException {
+	public static Room createRoom(RoomTypes type, Map<Levels, HashMap<String, Integer>> monsterBalance, Map<ItemClasses, HashMap<Item, Integer>> itemsBalance, gameEssentials.Map map, Map<String, Integer> balanceOffsets, boolean fillContents) throws SlickException {
 		
 		ResourceManager resources = new ResourceManager().getInstance();
 		RoomTemplate tempTemplate = resources.ROOM_TEMPLATES.get(type);
@@ -59,8 +59,10 @@ public class RoomFactory {
 		}
 		
 		/* fill the room */
-		overlay = addMonster(type, overlay, tempTemplate, monsterBalance, map, balanceOffsets);
-		overlay = addItems(type, overlay, tempTemplate, itemsBalance, map, balanceOffsets);
+		if (fillContents) {
+			overlay = addMonster(type, overlay, tempTemplate, monsterBalance, map, balanceOffsets);
+			overlay = addItems(type, overlay, tempTemplate, itemsBalance, map, balanceOffsets);
+		}
 		background = fillGround(type, background, size);
 
 		//for testing only
