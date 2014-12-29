@@ -114,6 +114,13 @@ public class NetworkManager {
 				public void run() {
 					try {
 						socket = serverSocket.accept();
+						System.out.println("socket accepted");
+						writer = new NetworkWriter(socket, writeQueue);
+						writer.start();
+						System.out.println("HostWriter started");
+						reader = new NetworkReader(socket, readQueue);
+						reader.start();
+						System.out.println("HostReader started");
 					} catch (IOException e) {
 						Logger.getLogger(NetworkManager.class.getName())
 								.log(Level.SEVERE,
@@ -190,10 +197,13 @@ public class NetworkManager {
 			// connect to lobby and start the writer and reader for the socket.
 			this.socket = new Socket(lobbyInfo.getAddress(),
 					lobbyInfo.getPort());
+			System.out.println("ClientSocket created");
 			this.writer = new NetworkWriter(this.socket, this.writeQueue);
 			this.writer.start();
+			System.out.println("ClientWriter started");
 			this.reader = new NetworkReader(this.socket, this.readQueue);
 			this.reader.start();
+			System.out.println("ClientReader started");
 		} catch (IOException e) {
 			Logger.getLogger(NetworkManager.class.getName()).log(Level.SEVERE,
 					"Unable to connect to server.", e);

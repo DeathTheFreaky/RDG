@@ -41,6 +41,8 @@ public class NetworkReader extends Thread {
 		} catch (IOException e) {
 		} finally{
 			super.interrupt();
+			Logger.getLogger(NetworkReader.class.getName()).log(Level.INFO,
+					"Thread is interrupted and socket is closed.");
 		}
 	}
 	
