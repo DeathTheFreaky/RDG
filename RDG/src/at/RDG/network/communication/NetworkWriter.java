@@ -3,7 +3,7 @@ package at.RDG.network.communication;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 public class NetworkWriter extends Thread {
 
 	private ObjectOutputStream oos;
-	private Queue<NetworkMessage> writeQueue;
+	private BlockingQueue<NetworkMessage> writeQueue;
 	private Socket s;
 
 	/**
@@ -30,7 +30,7 @@ public class NetworkWriter extends Thread {
 	 *             The Exception is thrown if the output stream can`t be
 	 *             created.
 	 */
-	public NetworkWriter(Socket s, Queue<NetworkMessage> writeQueue)
+	public NetworkWriter(Socket s, BlockingQueue<NetworkMessage> writeQueue)
 			throws IOException {
 		this.s = s;
 		this.oos = new ObjectOutputStream(s.getOutputStream());
@@ -44,20 +44,22 @@ public class NetworkWriter extends Thread {
 	 */
 	@Override
 	public void run() {
-		synchronized (this) {
-			while (!Thread.interrupted()) {
-				// writes every object in the queue into the network stream
-				while (!writeQueue.isEmpty()) {
-					try {
-						this.oos.writeObject(this.writeQueue.poll());
-						this.oos.flush();
-					} catch (IOException e) {
-						Logger.getLogger(NetworkWriter.class.getName())
-								.log(Level.SEVERE,
-										"Unable to write the object into the network stream.",
-										e);
-					}
+		while (!Thread.interrupted()) {
+			// writes every object in the queue into the network stream
+			while (!writeQueue.isEmpty()) {
+				try {
+					this.oos.writeObject(this.writeQueue.take());
+					this.oos.flush();
+				} catch (IOException e) {
+					Logger.getLogger(NetworkWriter.class.getName())
+							.log(Level.SEVERE,
+									"Unable to write the object into the network stream.",
+									e);
+				} catch (InterruptedException e) {
+					continue;
 				}
+			}
+			synchronized (this) {
 				try {
 					this.wait();
 				} catch (InterruptedException e) {
@@ -67,10 +69,10 @@ public class NetworkWriter extends Thread {
 									e);
 				}
 			}
-			try {
-				this.s.close();
-			} catch (IOException e) {
-			}
+		}
+		try {
+			this.s.close();
+		} catch (IOException e) {
 		}
 	}
 }
