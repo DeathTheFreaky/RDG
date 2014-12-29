@@ -1,13 +1,19 @@
 package general;
 
+import gameEssentials.Game;
+
 import java.awt.Dimension;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 
 import lobby.Lobby;
 
+import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.SlickException;
 
 import at.RDG.network.ArgumentOutOfRangeException;
@@ -27,7 +33,33 @@ public class Main {
 	 */
 	public static void main(String[] args) throws SlickException {
 
+		/* store if this is the lobbyHost in networkManager */
+		NetworkManager networkManager = null;
+		try {
+			networkManager = NetworkManager.getInstance();
+			
+			/* TEST: lobbyHost */
+			networkManager.startLobby("Testlobby");
+			
+		} catch (IOException | IllegalThreadStateException | ArgumentOutOfRangeException | UnableToStartConnectionException e) {
+			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
+					"Failed to establish network connection.", e);
+			System.exit(1);
+		}
 		
+		AppGameContainer app1 = null;
+		try {
+			app1 = new AppGameContainer(Game.getInstance("Battle Dungeon"));
+		} catch (IOException e) {
+			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
+					"ServerSocket could not be created.", e);
+			System.exit(1);
+		} 
+		app1.setDisplayMode(Game.WIDTH, Game.HEIGHT, false); // Breite, Höhe, ???
+		app1.setTargetFrameRate(30); // 60 Frames pro Sekunde
+		app1.setAlwaysRender(true); // Spiel wird auch ohne Fokus aktualisiert
+		app1.setShowFPS(false);
+		app1.start(); // startet die App
 	}
 	
 	private static void server(int count) {
