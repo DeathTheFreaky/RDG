@@ -44,7 +44,9 @@ public class TestClient {
 			networkManager.searchLobby(lobbyList);
 			
 			while(lobbyList.size() == 0) {
-				lobbyList = networkManager.getLobbyList();
+				Thread.sleep(100);
+				//das ist nicht notwendig!!!
+				//lobbyList = networkManager.getLobbyList();
 			}
 			
 			networkManager.stopSearchLobby();

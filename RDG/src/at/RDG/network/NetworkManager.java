@@ -88,11 +88,15 @@ public class NetworkManager {
 	 *             Is thrown if the lobby was not able to start.
 	 * @throws IllegalThreadStateException
 	 *             Is thrown if the lobby is started more then once.
+	 * @throws IOException
+	 *             Is thrown if the server socket cannot be bound.
 	 */
 	public void startLobby(String lobbyName)
 			throws ArgumentOutOfRangeException,
-			UnableToStartConnectionException, IllegalThreadStateException {
+			UnableToStartConnectionException, IllegalThreadStateException,
+			IOException {
 		// starts thread to accept incomming connection
+		this.serverSocket.bind(null);
 		if (this.acceptor == null) {
 			this.acceptor = new Thread() {
 				@Override
@@ -102,38 +106,47 @@ public class NetworkManager {
 					} catch (IOException e) {
 					} finally {
 						super.interrupt();
+						Logger.getLogger(NetworkManager.class.getName()).log(Level.INFO, "The thread is interrupted and the socked is closed");
 					}
 				}
 
 				@Override
 				public void run() {
 					try {
-						serverSocket.bind(null);
 						socket = serverSocket.accept();
+						System.out.println("socket accepted");
+						writer = new NetworkWriter(socket, writeQueue);
+						writer.start();
+						System.out.println("HostWriter started");
+						reader = new NetworkReader(socket, readQueue);
+						reader.start();
+						System.out.println("HostReader started");
 					} catch (IOException e) {
-						Logger.getLogger(LobbyServer.class.getName())
+						Logger.getLogger(NetworkManager.class.getName())
 								.log(Level.SEVERE,
-										"Unable bind socket. Accept connection or thread was interrupted.",
+										"Unable accept connection or thread was interrupted.",
 										e);
 					}
 				}
 			};
 		}
 		this.acceptor.start();
-		//starts lobby thread
+		// starts lobby thread
 		if (this.lserver == null) {
 			try {
 				this.lserver = new LobbyServer(lobbyName,
 						this.serverSocket.getLocalPort());
 			} catch (NoSuchAlgorithmException e) {
-				Logger.getLogger(LobbyServer.class.getName()).log(Level.SEVERE,
-						"Unable to create UID for server.", e);
+				Logger.getLogger(NetworkManager.class.getName()).log(
+						Level.SEVERE, "Unable to create UID for server.", e);
 				throw new UnableToStartConnectionException(
 						"The LobbyServer is unable to start.");
 			}
 		}
 		this.lserver.start();
 		
+		System.out.println("ServerSocket Port: " + this.serverSocket.getLocalPort());
+
 		/* don't know where to set this -> once connection has been established */
 		setLobbyHost(true);
 	}
@@ -184,12 +197,15 @@ public class NetworkManager {
 			// connect to lobby and start the writer and reader for the socket.
 			this.socket = new Socket(lobbyInfo.getAddress(),
 					lobbyInfo.getPort());
+			System.out.println("ClientSocket created");
 			this.writer = new NetworkWriter(this.socket, this.writeQueue);
 			this.writer.start();
+			System.out.println("ClientWriter started");
 			this.reader = new NetworkReader(this.socket, this.readQueue);
 			this.reader.start();
+			System.out.println("ClientReader started");
 		} catch (IOException e) {
-			Logger.getLogger(LobbyServer.class.getName()).log(Level.SEVERE,
+			Logger.getLogger(NetworkManager.class.getName()).log(Level.SEVERE,
 					"Unable to connect to server.", e);
 			if (this.writer.isAlive())
 				this.writer.interrupt();
@@ -224,23 +240,26 @@ public class NetworkManager {
 		}
 		return INSTANCE;
 	}
-	
+
 	/**
 	 * @return true if this Computer hosted the lobby
 	 */
 	public Boolean isLobbyHost() {
 		return this.lobbyHost;
 	}
-	
-	/**Sets Boolean to tell if this computer is the lobbyHost.
+
+	/**
+	 * Sets Boolean to tell if this computer is the lobbyHost.
+	 * 
 	 * @param lobbyHost
 	 */
 	private void setLobbyHost(Boolean lobbyHost) {
 		this.lobbyHost = lobbyHost;
 	}
-	
+
 	/**
-	 * @return list of all lobbies found by searcher or null if no searcher is started 
+	 * @return list of all lobbies found by searcher or null if no searcher is
+	 *         started
 	 */
 	public List<Serverinfo> getLobbyList() {
 		if (this.searcher == null) {

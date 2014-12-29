@@ -7,8 +7,6 @@ import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import at.RDG.network.discovery.LobbySearcher;
-
 /**
  * The NetworkReader is a subclass of Thread which reads every incoming object
  * of the network stream and writes it into a queue.
@@ -43,6 +41,8 @@ public class NetworkReader extends Thread {
 		} catch (IOException e) {
 		} finally{
 			super.interrupt();
+			Logger.getLogger(NetworkReader.class.getName()).log(Level.INFO,
+					"Thread is interrupted and socket is closed.");
 		}
 	}
 	
@@ -58,10 +58,10 @@ public class NetworkReader extends Thread {
 			try {
 				this.readQueue.offer((NetworkMessage)this.ois.readObject());
 			} catch (IOException e) {
-				Logger.getLogger(LobbySearcher.class.getName()).log(Level.SEVERE,
+				Logger.getLogger(NetworkReader.class.getName()).log(Level.SEVERE,
 						"Unable to read the object from the network stream or add it to the queue.", e);
 			} catch (ClassNotFoundException e) {
-				Logger.getLogger(LobbySearcher.class.getName()).log(Level.SEVERE,
+				Logger.getLogger(NetworkReader.class.getName()).log(Level.SEVERE,
 						"Unable to read the object from the network stream.", e);
 			}
 		}
