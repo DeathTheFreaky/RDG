@@ -3,13 +3,15 @@ package at.RDG.network.communication;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * The NetworkReader is a subclass of Thread which reads every incoming object
- * of the network stream and writes it into a queue.
+ * of the network stream and writes it into a queue. It termitates it self if
+ * the connection gets lost.
  * 
  * @author Clemens
  */
@@ -61,7 +63,14 @@ public class NetworkReader extends Thread {
 			// reads the next object from the network stream and writes it into
 			// the queue.
 			try {
-				this.readQueue.put((NetworkMessage) this.ois.readObject());
+				NetworkMessage msg = (NetworkMessage) this.ois.readObject();
+				System.out.println("got msg");
+				this.readQueue.put(msg);
+			} catch (SocketException e) {
+				Logger.getLogger(NetworkReader.class.getName())
+						.log(Level.WARNING,
+								"Lost connection to Enemy. Shuting down NetworkReader.");
+				Thread.currentThread().interrupt();
 			} catch (IOException e) {
 
 				Logger.getLogger(NetworkReader.class.getName())

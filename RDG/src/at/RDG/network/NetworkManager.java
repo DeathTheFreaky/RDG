@@ -63,13 +63,16 @@ public class NetworkManager {
 			return;
 		// writes into the queue and notifies the writer thread that something
 		// is in the queue.
+		System.out.println("send msg start");
 		try {
-			this.writeQueue.put(msg);
+			this.writeQueue.put(msg);;
 		} catch (InterruptedException e) {
 		}
+		System.out.println("send msg on queue");
 		synchronized (this.writer) {
 			this.writer.notify();
 		}
+		System.out.println("semd msg notified");
 	}
 
 	/**
@@ -80,6 +83,8 @@ public class NetworkManager {
 	 */
 	public NetworkMessage getNextMessage() {
 		if(this.reader == null || !this.reader.isAlive())
+			return null;
+		if(this.readQueue.isEmpty())
 			return null;
 		try {
 			return this.readQueue.take();
@@ -229,12 +234,24 @@ public class NetworkManager {
 					"The connection is unable to start.");
 		}
 	}
+	
+	/**
+	 * stops the connection to the other player.
+	 */
+	public void stopConnection(){
+		if(this.writer.isAlive())
+			this.writer.interrupt();
+		if(this.reader.isAlive())
+			this.reader.interrupt();
+	}
 
 	/**
 	 * @return true if connected to another player and false if not.
 	 */
 	public boolean isConnected() {
-		return this.socket != null;
+		if(this.socket != null && this.socket.isConnected())
+			return true;
+		return false;
 	}
 
 	/**
