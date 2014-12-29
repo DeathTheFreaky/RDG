@@ -27,11 +27,7 @@ public class Main {
 	 */
 	public static void main(String[] args) throws SlickException {
 
-		Lobby l =  new Lobby();
-		l.setVisible(true);
-		l.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		l.setResizable(false);
-		l.setSize(new Dimension(400, 200));
+		
 	}
 	
 	private static void server(int count) {
