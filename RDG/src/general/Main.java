@@ -15,6 +15,8 @@ import org.newdawn.slick.SlickException;
 import org.xml.sax.SAXException;
 
 import at.RDG.network.ArgumentOutOfRangeException;
+import at.RDG.network.NetworkManager;
+import at.RDG.network.UnableToStartConnectionException;
 import at.RDG.network.discovery.LobbySearcher;
 import at.RDG.network.discovery.LobbyServer;
 import at.RDG.network.discovery.Serverinfo;
@@ -28,6 +30,20 @@ public class Main {
 	 * @throws SlickException
 	 */
 	public static void main(String[] args) throws SlickException {
+		
+		/* store if this is the lobbyHost in networkManager */
+		NetworkManager networkManager = null;
+		try {
+			networkManager = NetworkManager.getInstance();
+			
+			/* TEST: lobbyHost */
+			networkManager.startLobby("Testlobby");
+			
+		} catch (IOException | IllegalThreadStateException | ArgumentOutOfRangeException | UnableToStartConnectionException e) {
+			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
+					"Failed to establish network connection.", e);
+			System.exit(1);
+		}
 		
 		AppGameContainer app1 = null;
 		try {
