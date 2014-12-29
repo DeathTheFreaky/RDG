@@ -244,6 +244,104 @@ public class Game extends BasicGame {
 		//load ressources in first game loop to show a loading screen
 		this.container = container;
 	}
+	
+	/**Loads the game while drawing screen is shown.
+	 * 
+	 */
+	private void loadGame() {
+		
+		try {
+				
+			/* load config - must be successful in order to continue */
+			try {
+				this.configloader = new Configloader().getInstance();
+			} catch (IllegalArgumentException | ParserConfigurationException
+					| SAXException | IOException e) {
+				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
+						"Parsing Configuration Files failed.", e);
+				System.exit(1);
+			}
+	
+			// Test Printing
+			/*
+			 * ConfigTestprinter configprinter = new
+			 * ConfigTestprinter(configloader); configprinter.print();
+			 */
+			
+			/* determined by network lobby  - TESTING only */
+			this.lobbyHost = this.networkManager.isLobbyHost();
+	
+			/* Points in tile numbers */
+			this.gameEnvironmentOrigin = new Point(0, 0);
+			this.chatOrigin = new Point(0, 12);
+			this.armorViewOrigin = new Point(15, 0);
+			this.inventoryViewOrigin = new Point(15, 12);
+			this.minimapOrigin = new Point(20, 20);
+	
+			/* Initialize Factory and Manager classes! */
+			this.resourceManager = new ResourceManager().getInstance();
+	
+			/* network lobby must be called before this to detect player type */
+			CreatureType playerType;
+			if (this.lobbyHost) {
+				playerType = CreatureType.PLAYER1;
+			}
+			else {
+				playerType = CreatureType.PLAYER2;
+			}
+			if (playerType == CreatureType.PLAYER1) {
+				this.player = new Player(this.playerName,
+						new ResourceManager().getInstance().IMAGES.get("Player1"),
+						this.gameEnvironmentOrigin, CreatureType.PLAYER1, true);
+				this.opponent = new Player("Testenemy",
+						new ResourceManager().getInstance().IMAGES.get("Player2"),
+						this.gameEnvironmentOrigin, CreatureType.PLAYER2, false);
+			} else if (playerType == CreatureType.PLAYER2) {
+				this.player = new Player(this.playerName,
+						new ResourceManager().getInstance().IMAGES.get("Player2"),
+						this.gameEnvironmentOrigin, CreatureType.PLAYER2, true);
+				this.opponent = new Player("Testenemy",
+						new ResourceManager().getInstance().IMAGES.get("Player1"),
+						this.gameEnvironmentOrigin, CreatureType.PLAYER1, false);
+			}
+			
+			/* Load the chat */
+			this.chat = new Chat("Chat", this.chatOrigin, new Dimension(Game.CHAT_WIDTH,
+					Game.CHAT_HEIGHT), this.container);
+			
+			/* Load Views - Dimension is specified in pixels */
+			this.armorView = new ArmorView("ArmorInventory", this.armorViewOrigin,
+					new Dimension(Game.ARMOR_WIDTH, Game.ARMOR_HEIGHT));
+			
+			this.gameEnvironment = new GameEnvironment("GameEnvironment",
+					this.gameEnvironmentOrigin, new Dimension(Game.GAME_ENVIRONMENT_WIDTH,
+							Game.GAME_ENVIRONMENT_HEIGHT), this.player, this.opponent, this.armorView, this, this.chat);
+	
+			this.minimap = new Minimap("Minimap", this.gameEnvironmentOrigin.x
+					+ this.minimapOrigin.x, this.gameEnvironmentOrigin.y + this.minimapOrigin.y);
+	
+			this.inventoryView = InventoryView.getInstance("Inventory", this.inventoryViewOrigin,
+					new Dimension(Game.INVENTORY_WIDTH, Game.INVENTORY_HEIGHT));
+			
+			/* Load Map and place the player */
+			this.map = new Map().getInstance();
+			this.map.setPlayer(this.player);
+			this.map.setGameEnvironment(this.gameEnvironment);
+			
+			/* needs to be changed - only for testing purposes */
+			this.map.setOpponent(this.opponent);
+			// map.fillMap();
+					
+			this.fightInstance = this.gameEnvironment.getFightInstance();
+						
+			this.setLoading(false);
+			
+		} catch (SlickException e) {
+			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
+					"Failed to load game.", e);
+			System.exit(1);
+		}
+	}
 
 	@Override
 	public void update(GameContainer container, int delta)
@@ -253,8 +351,7 @@ public class Game extends BasicGame {
 		if (timeToUpdate > UPDATE) {
 			if (this.loading == true) {
 				if (this.startetLoading == true) {
-					GameLoad gameLoad = new GameLoad();
-					gameLoad.run();
+					loadGame();
 				} else {
 					this.startetLoading = true;
 				}
@@ -629,14 +726,12 @@ public class Game extends BasicGame {
 				&& newY <= HEIGHT) {
 			mouseOverChat = true;
 			mouseOverMinimap = false;
-		} else if (minimap != null) {
-			if (newX >= minimap.positionX
+		} else if (newX >= minimap.positionX
 				&& newX <= minimap.positionX + minimap.WIDTH
 				&& newY >= minimap.positionY
 				&& newY <= minimap.positionY + minimap.HEIGHT) {
 				mouseOverMinimap = true;
 				mouseOverChat = false;
-			}
 		} else {
 			mouseOverChat = false;
 			mouseOverMinimap = false;
