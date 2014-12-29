@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 /**
  * The NetworkReader is a subclass of Thread which reads every incoming object
  * of the network stream and writes it into a queue.
+ * It termitates it self if the connection gets lost.
  * 
  * @author Clemens
  */
@@ -61,12 +62,17 @@ public class NetworkReader extends Thread {
 			// reads the next object from the network stream and writes it into
 			// the queue.
 			try {
-				this.readQueue.put((NetworkMessage) this.ois.readObject());
+				NetworkMessage msg = (NetworkMessage) this.ois.readObject();
+				System.out.println("got msg");
+				this.readQueue.put(msg);
 			} catch (IOException e) {
 				Logger.getLogger(NetworkReader.class.getName())
 						.log(Level.SEVERE,
 								"Unable to read the object from the network stream or add it to the queue.",
 								e);
+				if(!s.isConnected()){
+					Thread.currentThread().interrupt();
+				}
 			} catch (ClassNotFoundException e) {
 				Logger.getLogger(NetworkReader.class.getName())
 						.log(Level.SEVERE,

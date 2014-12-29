@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 /**
  * The NetworkWriter is a subclass of Thread and when started it writes every
  * object in the queue into the network stream.
+ * It termitates itself if the connection gets lost.
  * 
  * @author Clemens
  */
@@ -47,21 +48,32 @@ public class NetworkWriter extends Thread {
 		while (!Thread.interrupted()) {
 			// writes every object in the queue into the network stream
 			while (!writeQueue.isEmpty()) {
+				System.out.println("not emty");
+				if(this.writeQueue.isEmpty())
+					break;
 				try {
 					this.oos.writeObject(this.writeQueue.take());
 					this.oos.flush();
+					System.out.println("msg sent");
 				} catch (IOException e) {
 					Logger.getLogger(NetworkWriter.class.getName())
 							.log(Level.SEVERE,
 									"Unable to write the object into the network stream.",
 									e);
+					if(!s.isConnected()){
+						Thread.currentThread().interrupt();
+					}
 				} catch (InterruptedException e) {
-					continue;
+					break;
 				}
+			}
+			if(Thread.interrupted()){
+				break;
 			}
 			synchronized (this) {
 				try {
 					this.wait();
+					System.out.println("stop wait");
 				} catch (InterruptedException e) {
 					Logger.getLogger(NetworkWriter.class.getName())
 							.log(Level.INFO,
