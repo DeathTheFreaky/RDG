@@ -356,7 +356,7 @@ public class Game extends BasicGame {
 					this.startetLoading = true;
 				}
 			} else {
-				if (this.mapSet) {
+				/*if (this.mapSet) {
 					if (updatesUntilPlayerUpdate == 0) {
 						player.update(goTo);
 						if (keyReleased) {
@@ -369,7 +369,7 @@ public class Game extends BasicGame {
 					chat.update();
 					
 					updatesUntilPlayerUpdate--;
-				}
+				}*/
 				
 				processNetworkMessages();
 				timeToUpdate = 0;
