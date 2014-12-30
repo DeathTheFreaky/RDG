@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,8 +28,8 @@ public class NetworkManager {
 
 	private static NetworkManager INSTANCE = null;
 
-	private Queue<NetworkMessage> writeQueue;
-	private Queue<NetworkMessage> readQueue;
+	private BlockingQueue<NetworkMessage> writeQueue;
+	private BlockingQueue<NetworkMessage> readQueue;
 	private ServerSocket serverSocket;
 	private Socket socket = null;
 	private LobbySearcher searcher = null;
@@ -46,8 +46,8 @@ public class NetworkManager {
 	 *             system and the ServerSocket was not able to bind.
 	 */
 	private NetworkManager() throws IOException {
-		this.writeQueue = new LinkedList<NetworkMessage>();
-		this.readQueue = new LinkedList<NetworkMessage>();
+		this.writeQueue = new LinkedBlockingQueue<NetworkMessage>();
+		this.readQueue = new LinkedBlockingQueue<NetworkMessage>();
 		this.serverSocket = new ServerSocket();
 	}
 
@@ -63,8 +63,16 @@ public class NetworkManager {
 			return;
 		// writes into the queue and notifies the writer thread that something
 		// is in the queue.
-		this.writeQueue.offer(msg);
-		this.writer.notify();
+		System.out.println("send msg start");
+		try {
+			this.writeQueue.put(msg);;
+		} catch (InterruptedException e) {
+		}
+		System.out.println("send msg on queue");
+		synchronized (this.writer) {
+			this.writer.notify();
+		}
+		System.out.println("semd msg notified");
 	}
 
 	/**
@@ -74,7 +82,15 @@ public class NetworkManager {
 	 *         message.</br>A message cannot be gotten 2 times.
 	 */
 	public NetworkMessage getNextMessage() {
-		return this.readQueue.poll();
+		if(this.reader == null || !this.reader.isAlive())
+			return null;
+		if(this.readQueue.isEmpty())
+			return null;
+		try {
+			return this.readQueue.take();
+		} catch (InterruptedException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -106,7 +122,9 @@ public class NetworkManager {
 					} catch (IOException e) {
 					} finally {
 						super.interrupt();
-						Logger.getLogger(NetworkManager.class.getName()).log(Level.INFO, "The thread is interrupted and the socked is closed");
+						Logger.getLogger(NetworkManager.class.getName())
+								.log(Level.INFO,
+										"The thread is interrupted and the socked is closed");
 					}
 				}
 
@@ -144,8 +162,9 @@ public class NetworkManager {
 			}
 		}
 		this.lserver.start();
-		
-		System.out.println("ServerSocket Port: " + this.serverSocket.getLocalPort());
+
+		System.out.println("ServerSocket Port: "
+				+ this.serverSocket.getLocalPort());
 
 		/* don't know where to set this -> once connection has been established */
 		setLobbyHost(true);
@@ -215,12 +234,24 @@ public class NetworkManager {
 					"The connection is unable to start.");
 		}
 	}
+	
+	/**
+	 * stops the connection to the other player.
+	 */
+	public void stopConnection(){
+		if(this.writer.isAlive())
+			this.writer.interrupt();
+		if(this.reader.isAlive())
+			this.reader.interrupt();
+	}
 
 	/**
 	 * @return true if connected to another player and false if not.
 	 */
 	public boolean isConnected() {
-		return this.socket != null;
+		if(this.socket != null && this.socket.isConnected())
+			return true;
+		return false;
 	}
 
 	/**

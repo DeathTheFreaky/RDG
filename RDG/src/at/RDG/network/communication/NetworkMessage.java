@@ -5,6 +5,7 @@ import general.Enums.Directions;
 import general.Enums.MessageType;
 import general.Enums.ViewingDirections;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Map;
 
@@ -14,8 +15,10 @@ import java.util.Map;
  * 
  * @author Clemens
  */
-public class NetworkMessage {
+public class NetworkMessage implements Serializable {
 	
+	private static final long serialVersionUID = -5279475516541779368L;
+
 	public final MessageType type;
 	
 	//for network
