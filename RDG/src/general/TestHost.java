@@ -61,7 +61,7 @@ public class TestHost {
 		
 		System.out.println("Starting Game");
 				
-		/*AppGameContainer app1 = null;
+		AppGameContainer app1 = null;
 		try {
 			app1 = new AppGameContainer(Game.getInstance("Battle Dungeon"));
 		} catch (IOException e) {
@@ -73,6 +73,6 @@ public class TestHost {
 		app1.setTargetFrameRate(30); // 60 Frames pro Sekunde
 		app1.setAlwaysRender(true); // Spiel wird auch ohne Fokus aktualisiert
 		app1.setShowFPS(false);
-		app1.start(); // startet die App*/
+		app1.start(); // startet die App
 	}
 }
