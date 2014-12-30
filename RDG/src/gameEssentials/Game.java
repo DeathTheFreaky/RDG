@@ -415,21 +415,7 @@ public class Game extends BasicGame {
 					break;
 				case PLAYERPOSITION:
 					opponent.setPosition(message.playerpos[0], message.playerpos[1]);
-					Image image = opponent.getImage();
-					switch (message.playerdir) {
-						case WEST:
-							image.rotate(90);
-							break;
-						case SOUTH:
-							image.rotate(180f);
-							break;
-						case EAST:
-							image.rotate(-90f);
-							break;
-						default:
-							break;
-					}
-					opponent.setImage(image);
+					opponent.setDirectionImage(message.playerdir);
 					break;
 				default:
 					break;
