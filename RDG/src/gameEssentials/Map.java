@@ -652,16 +652,14 @@ public class Map {
 
 				int wallmodx = i % (Game.ROOMWIDTH + 1);
 				int wallmody = j % (Game.ROOMHEIGHT + 1);
-
-				/* load walls and set them to not passable */
-				if (wallmodx == 0 || wallmody == 0) {
-					overlay[i][j] = GroundFactory.createDarkGreyGround(i, j);
-					// passable[i][j] = false;
-				}
-
 				
 				/* determine door position on host */
 				if (lobbyHost) {
+					
+					/* load walls and set them to not passable */
+					if (wallmodx == 0 || wallmody == 0) {
+						overlay[i][j] = GroundFactory.createDarkGreyGround(i, j);
+					}
 					
 					/*
 					 * add doors in the middle -> testing only -> shall be moved to
@@ -678,6 +676,7 @@ public class Map {
 						int nodoorx2 = getWidth() / 2 + 1;
 
 						if (!((i == nodoorx1 || i == nodoorx2) && ((j == nodoory1) || (j == nodoory2)))) {
+							
 							overlay[i][j] = null;
 							background[i][j] = GroundFactory.createGreyGround(i, j);
 						}
@@ -722,17 +721,26 @@ public class Map {
 				
 				/* set doors for client */
 				else {
-					if (overlay[i][j].NAME.equals("GreyGround")) {
-						background[i][j] = GroundFactory.createGreyGround(i, j);
-						overlay[i][j] = null;
+					if (overlay[i][j] != null) {
+						if (overlay[i][j].NAME.equals("GreyGround")) {
+							background[i][j] = GroundFactory.createGreyGround(i, j);
+							overlay[i][j] = null;
+						}
+						else if (overlay[i][j].NAME.equals("DoorGroundTreasureChamber1")) {
+							background[i][j] = GroundFactory.createDoorGround1(
+									i, j);
+						}
+						else if (overlay[i][j].NAME.equals("DoorGroundTreasureChamber2")) {
+							background[i][j] = GroundFactory.createDoorGround2(
+									i, j);
+						}
 					}
-					else if (overlay[i][j].NAME.equals("DoorGroundTreasureChamber1")) {
-						background[i][j] = GroundFactory.createDoorGround1(
-								i, j);
-					}
-					else if (overlay[i][j].NAME.equals("DoorGroundTreasureChamber2")) {
-						background[i][j] = GroundFactory.createDoorGround2(
-								i, j);
+					
+					/* grey ground info for doors needs to be set */
+					if (wallmodx == 0 || wallmody == 0) {
+						if (overlay[i][j] == null) {
+							background[i][j] = GroundFactory.createGreyGround(i, j);
+						}
 					}
 				}
 			}
@@ -834,9 +842,10 @@ public class Map {
 	}
 	
 	/**Sends Map overlay to other player but sets all images to null.
+	 * @throws SlickException 
 	 * 
 	 */
-	private void sendMap() {
+	private void sendMap() throws SlickException {
 		networkManager.sendMessage(MapConverter.toNetworkMessage(this.overlay));
 	}
 	

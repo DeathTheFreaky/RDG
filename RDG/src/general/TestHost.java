@@ -63,7 +63,7 @@ public class TestHost {
 				
 		AppGameContainer app1 = null;
 		try {
-			app1 = new AppGameContainer(Game.getInstance("Battle Dungeon"));
+			app1 = new AppGameContainer(Game.getInstance("Battle Dungeon Host"));
 		} catch (IOException e) {
 			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
 					"ServerSocket could not be created.", e);

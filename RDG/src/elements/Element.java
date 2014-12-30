@@ -2,6 +2,7 @@ package elements;
 import general.Enums.ImageSize;
 
 import java.awt.Point;
+import java.io.Serializable;
 import java.util.UUID;
 
 import org.newdawn.slick.Image;
@@ -13,8 +14,12 @@ import org.newdawn.slick.Image;
  * remembers different states for us.
  */
 
-public class Element {
+public class Element implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3204410593137427588L;
 	/* At the beginning, one cannot know if it is player 1 or player 2 -> make variables protected so they can be changed later on */
 
 	/* Here is the Image referenced */

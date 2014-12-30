@@ -4,6 +4,7 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
 import elements.Element;
+import gameEssentials.Game;
 import gameEssentials.Map;
 import general.GroundFactory;
 import general.ResourceManager;
@@ -18,13 +19,15 @@ public class MapConverter {
 	/**Converts Overlay into network message.
 	 * @param map
 	 * @return
+	 * @throws SlickException 
 	 */
-	public static NetworkMessage toNetworkMessage(Element[][] _overlay) {
+	public static NetworkMessage toNetworkMessage(Element[][] _overlay) throws SlickException {
 		
 		Element[][] overlay = new Element[_overlay.length][_overlay[0].length];
 				
 		for (int i = 0; i < _overlay.length; i++) {
 			for (int j = 0; j < _overlay[0].length; j++) {
+				
 				if (_overlay[i][j] != null) {
 					/* copy the element to be able to set its image to null */
 					overlay[i][j] = new Element(_overlay[i][j]);

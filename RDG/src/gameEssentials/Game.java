@@ -356,7 +356,7 @@ public class Game extends BasicGame {
 					this.startetLoading = true;
 				}
 			} else {
-				/*if (this.mapSet) {
+				if (this.mapSet) {
 					if (updatesUntilPlayerUpdate == 0) {
 						player.update(goTo);
 						if (keyReleased) {
@@ -369,7 +369,7 @@ public class Game extends BasicGame {
 					chat.update();
 					
 					updatesUntilPlayerUpdate--;
-				}*/
+				}
 				
 				processNetworkMessages();
 				timeToUpdate = 0;
@@ -711,12 +711,14 @@ public class Game extends BasicGame {
 				&& newY <= HEIGHT) {
 			mouseOverChat = true;
 			mouseOverMinimap = false;
-		} else if (newX >= minimap.positionX
+		} else if (minimap != null) {
+			if (newX >= minimap.positionX
 				&& newX <= minimap.positionX + minimap.WIDTH
 				&& newY >= minimap.positionY
 				&& newY <= minimap.positionY + minimap.HEIGHT) {
 				mouseOverMinimap = true;
 				mouseOverChat = false;
+			}
 		} else {
 			mouseOverChat = false;
 			mouseOverMinimap = false;

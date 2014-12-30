@@ -208,7 +208,7 @@ public class Chat extends View {
 						&& this.isFocused())
 					container.getInput().consumeEvent();
 				if (key == 28 && this.isFocused() && this.getText() != "") {
-					Chat.this.newMessage(new Message(this.getText(), Calendar
+					Chat.this.newMessage(new Message(Game.getInstance().getPlayer().NAME + ": " + this.getText(), Calendar
 							.getInstance(), Channels.PUBLIC));
 					this.setText("");
 					this.deactivate();
@@ -390,7 +390,7 @@ public class Chat extends View {
 	 * @param print
 	 */
 	private void processMessage(Message message) {
-
+		
 		if (message.getChannel() == Channels.PUBLIC) {
 			networkManager.sendMessage(new NetworkMessage(message.getMessage()));
 		}
