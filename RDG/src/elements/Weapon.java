@@ -20,6 +20,11 @@ public class Weapon extends Equipment {
 	/* do not set variables to public -> breaks encapsulation ??? */
 	/* make variables public for code reduction */
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5737013866825352445L;
+
 	/* used to determine which item can be found in which type of room -> see rooms config sheet */
 	public final ItemClasses ITEM_CLASS;
 	
@@ -72,6 +77,19 @@ public class Weapon extends Equipment {
 		this.DEFENSE = defense;
 		this.TYPE = type;
 		this.MAX = max;
+	}
+
+	public Weapon(Weapon weapon, Equipment equipment, Element element) {
+		
+		super(equipment, element); //what is a MAIN_WEAPON (vs SUB_WEAPON)?!?
+		
+		this.ITEM_CLASS = weapon.ITEM_CLASS;
+		this.ATTACK = weapon.ATTACK;
+		this.SPEED = weapon.SPEED;
+		this.ACCURACY = weapon.ACCURACY;
+		this.DEFENSE = weapon.DEFENSE;
+		this.TYPE = weapon.TYPE;
+		this.MAX = weapon.MAX;
 	}
 
 	@Override

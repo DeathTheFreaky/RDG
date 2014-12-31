@@ -401,7 +401,7 @@ public class Game extends BasicGame {
 						}
 					break;
 				case ITEM:
-					map.getOverlay()[message.itempos[0]][message.itempos[1]] = message.item;
+					map.getOverlay()[message.itempos[0]][message.itempos[1]] = MapConverter.fillImage(message.item, message.itempos[0], message.itempos[1]);
 					break;
 				case MAP:
 					map.setReceivedMapData(MapConverter.toOverlay(message));
@@ -711,14 +711,12 @@ public class Game extends BasicGame {
 				&& newY <= HEIGHT) {
 			mouseOverChat = true;
 			mouseOverMinimap = false;
-		} else if (minimap != null) {
-			if (newX >= minimap.positionX
+		} else if (newX >= minimap.positionX
 				&& newX <= minimap.positionX + minimap.WIDTH
 				&& newY >= minimap.positionY
 				&& newY <= minimap.positionY + minimap.HEIGHT) {
 				mouseOverMinimap = true;
 				mouseOverChat = false;
-			}
 		} else {
 			mouseOverChat = false;
 			mouseOverMinimap = false;

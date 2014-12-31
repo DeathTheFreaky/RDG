@@ -20,6 +20,11 @@ import general.Enums.ItemClasses;
  */
 public class Armament extends Equipment {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1599544918299157309L;
+
 	/* none of the variables shall change its value later on -> make them final */
 	/* do not set variables to public -> breaks encapsulation ??? */
 	/* make variables public for code reduction */
@@ -76,6 +81,17 @@ public class Armament extends Equipment {
 		this.ARMOR = armor;
 		this.SPEED = speed;
 		this.BONUS = bonus;
+	}
+
+	public Armament(Armament armament, Equipment equipment, Element element) {
+		
+		super(equipment, element);
+
+		this.ITEM_CLASS = armament.ITEM_CLASS;
+		this.TYPE = armament.TYPE;
+		this.ARMOR = armament.ARMOR;
+		this.SPEED = armament.SPEED;
+		this.BONUS = armament.BONUS;
 	}
 
 	@Override

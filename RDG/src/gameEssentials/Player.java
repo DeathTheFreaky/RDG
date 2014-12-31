@@ -2,6 +2,7 @@ package gameEssentials;
 
 import java.awt.Point;
 import java.io.IOException;
+import java.io.Serializable;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -21,7 +22,7 @@ import general.Enums.ViewingDirections;
  * Player stores all information associated with the player.
  * 
  */
-public class Player extends Creature {
+public class Player extends Creature implements Serializable {
 
 	/*
 	 * public enum Updates { KEY_PRESSED, KEY_RELEASED }
@@ -29,6 +30,11 @@ public class Player extends Creature {
 	 * public enum ViewingDirections { NORTH, EAST, SOUTH, WEST }
 	 */
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3543279322225953188L;
+	
 	/* is used for Players Movement and Rotation during Update */
 	private boolean up, right, down, left = false;
 	private boolean keyReleasedUp, keyReleasedDown, keyReleasedLeft,

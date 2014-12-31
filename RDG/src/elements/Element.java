@@ -19,7 +19,7 @@ public class Element implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -3204410593137427588L;
+	protected static final long serialVersionUID = -3204410593137427588L;
 	/* At the beginning, one cannot know if it is player 1 or player 2 -> make variables protected so they can be changed later on */
 
 	/* Here is the Image referenced */

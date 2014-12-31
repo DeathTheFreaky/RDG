@@ -13,8 +13,13 @@ import org.newdawn.slick.Image;
  * 
  * @see Element
  */
-public class Creature extends Element{
-	
+public class Creature extends Element {
+		
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4303972964803693361L;
+
 	/* Creature can either be Player or Monster */
 	public final CreatureType type;
 	
@@ -56,6 +61,27 @@ public class Creature extends Element{
 		this.orStrength = strength;
 		this.orAccuracy = accuracy;
 		this.orSpeed = speed;
+		
+		this.activePotions = new LinkedList<Potion>();
+	}
+	
+	/**Copy constructor for Creature.
+	 * @param creature
+	 * @param element
+	 */
+	public Creature(Creature creature, Element element) {
+		
+		super(element);
+		
+		this.type = creature.type;
+		this.hp = creature.hp;
+		this.strength = creature.strength;
+		this.speed = creature.speed;
+		this.accuracy = creature.accuracy;
+		this.orHp = creature.orHp;
+		this.orStrength = creature.orStrength;
+		this.orAccuracy = creature.orAccuracy;
+		this.orSpeed = creature.orSpeed;
 		
 		this.activePotions = new LinkedList<Potion>();
 	}

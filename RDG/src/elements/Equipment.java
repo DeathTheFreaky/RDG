@@ -11,6 +11,11 @@ import general.Enums.Armor;
  */
 public class Equipment extends Element {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3015256401232467688L;
+	
 	private Armor armorType;
 	
 	/**Constructs an Equipment.
@@ -24,6 +29,16 @@ public class Equipment extends Element {
 		super(equipmentName, image);
 		
 		this.armorType = armorType;
+	}
+	
+	/**Copy constructor for Equipment.
+	 * @param equipment
+	 * @param element
+	 */
+	public Equipment(Equipment equipment, Element element) {
+		super(element);
+		
+		this.armorType = equipment.armorType;
 	}
 	
 	/**

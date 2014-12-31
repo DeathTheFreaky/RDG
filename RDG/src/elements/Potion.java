@@ -5,8 +5,6 @@ import general.Enums.ItemClasses;
 import general.Enums.Modes;
 import general.Enums.Potions;
 import general.Enums.Targets;
-import general.Enums.WeaponTypes;
-
 import org.newdawn.slick.Image;
 
 /**Potion can be used to increase the player's attributes or to decrease the opponent's attributes.<br>
@@ -21,6 +19,11 @@ public class Potion extends Element {
 	/* none of the variables shall change its value later on -> make them final */
 	/* do not set variables to public -> breaks encapsulation ??? */
 	/* make variables public for code reduction */
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2994153046048117917L;
 
 	private final String itemDescription;
 	
@@ -84,6 +87,26 @@ public class Potion extends Element {
 		this.power = power;
 		this.DURATION = duration;
 		this.POTION_TYPE = Potions.POTION1;
+	}
+	
+	/**Copy constructor for Potion.
+	 * 
+	 * @param potion
+	 * @param copy
+	 * @see Potion
+	 */
+	public Potion(Potion potion, Element element) {
+		
+		super(element);
+		
+		this.itemDescription = potion.itemDescription;
+		this.ITEM_CLASS = potion.ITEM_CLASS;
+		this.EFFECT = potion.EFFECT;
+		this.TARGET = potion.TARGET;
+		this.MODE = potion.MODE;
+		this.power = potion.power;
+		this.DURATION = potion.DURATION;
+		this.POTION_TYPE = potion.POTION_TYPE;
 	}
 	
 	public String getDescription() {

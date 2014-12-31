@@ -19,6 +19,11 @@ public class Monster extends Creature {
 	/* do not set variables to public -> breaks encapsulation ??? */
 	/* make variables public for code reduction */
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3597325742931574375L;
+
 	/* Monster level is needed by Factory Class for Rooms to determine with which probability they can be found in which room */
 	public final Levels level;
 	
@@ -56,5 +61,19 @@ public class Monster extends Creature {
 		this.level = level;
 		this.killBonusType = killBonusType;
 		this.killBonus = killBonus;
+	}
+
+	/**Copy constructor for Monster.
+	 * @param monster
+	 * @param creature
+	 * @param element
+	 */
+	public Monster(Monster monster, Creature creature, Element element) {
+		
+		super(creature, element);
+		
+		this.level = monster.level;
+		this.killBonusType = monster.killBonusType;
+		this.killBonus = monster.killBonus;
 	}
 }

@@ -118,6 +118,7 @@ public class NetworkMessage implements Serializable {
 	 * @param itemposY The y position of the item on the map.
 	 */
 	public NetworkMessage(int itemposX, int itemposY, Element item){
+		//converter - set picture to null
 		this.type = MessageType.ITEM;
 		this.addr = null;
 		this.port = 0;
@@ -125,7 +126,7 @@ public class NetworkMessage implements Serializable {
 		this.itempos = new int[2];
 		this.itempos[0] = itemposX;
 		this.itempos[1] = itemposY;
-		this.item = item;
+		this.item = MapConverter.nullImage(item);
 		this.playerpos = null;
 		this.playerdir = null;
 		this.fightvalues = null;

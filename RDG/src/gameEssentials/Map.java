@@ -892,15 +892,19 @@ public class Map {
 				switch (player.getDirectionOfView()) {
 					case NORTH:
 						overlay[player.getPosition().x][player.getPosition().y - 1] = element;
+						networkManager.sendMessage(new NetworkMessage(player.getPosition().x, player.getPosition().y - 1, overlay[player.getPosition().x][player.getPosition().y - 1]));
 						break;
 					case EAST:
 						overlay[player.getPosition().x + 1][player.getPosition().y] = element;
+						networkManager.sendMessage(new NetworkMessage(player.getPosition().x + 1, player.getPosition().y, overlay[player.getPosition().x + 1][player.getPosition().y]));
 						break;
 					case SOUTH:
 						overlay[player.getPosition().x][player.getPosition().y + 1] = element;
+						networkManager.sendMessage(new NetworkMessage(player.getPosition().x, player.getPosition().y + 1, overlay[player.getPosition().x][player.getPosition().y + 1]));
 						break;
 					case WEST:
 						overlay[player.getPosition().x - 1][player.getPosition().y] = element;
+						networkManager.sendMessage(new NetworkMessage(player.getPosition().x - 1, player.getPosition().y, overlay[player.getPosition().x - 1][player.getPosition().y]));
 						break;
 					default:
 						break;
