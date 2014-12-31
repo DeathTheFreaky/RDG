@@ -65,6 +65,9 @@ public class Player extends Creature {
 	private int enemyX = 0;
 	private int enemyY = 0;
 	private boolean activeFight = false;
+	
+	/* array of images for enemyPlayer display */
+	private Image[] playerImages = new Image[4];
 
 	/**
 	 * Constructs a Player.<br>
@@ -116,7 +119,16 @@ public class Player extends Creature {
 		 * 2 and change type accordingly
 		 */
 		super(creatureName, image, type, 50, 25, 25, 25);
-
+		
+		/* create 4 images which are already rotated for each viewing direction */
+		playerImages[0] = image; //North
+		playerImages[1] = image.copy();
+		playerImages[2] = image.copy();
+		playerImages[3] = image.copy();
+		playerImages[1].rotate(90);
+		playerImages[2].rotate(180);
+		playerImages[3].rotate(270);
+		
 		this.originOfGameEnvironment = originOfGameEnvironment;
 		
 		/* network manager */
@@ -506,5 +518,25 @@ public class Player extends Creature {
 	 */
 	public boolean isInFight() {
 		return this.activeFight;
+	}
+	
+	/**Sets player image according to player's viewing direction. Used by network messages.
+	 * @param direction
+	 */
+	public void setDirectionImage(ViewingDirections direction) {
+		switch(direction) {
+			case NORTH:
+				this.image = playerImages[0];
+				break;
+			case EAST:
+				this.image = playerImages[1];
+				break;
+			case SOUTH:
+				this.image = playerImages[2];
+				break;
+			case WEST:
+				this.image = playerImages[3];
+				break;
+		}
 	}
 }

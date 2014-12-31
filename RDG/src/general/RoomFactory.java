@@ -183,7 +183,6 @@ public class RoomFactory {
 		/* fill background according to room type */
 		for (int i = 0; i <= size.width - 1; i++) {
 			for (int j = 0; j <= size.height - 1; j++) {
-
 				switch (type) {
 				case DEADEND:
 					background[i][j] = GroundFactory

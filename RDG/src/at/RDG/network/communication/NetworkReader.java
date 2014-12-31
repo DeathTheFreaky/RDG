@@ -72,7 +72,6 @@ public class NetworkReader extends Thread {
 								"Lost connection to Enemy. Shuting down NetworkReader.");
 				Thread.currentThread().interrupt();
 			} catch (IOException e) {
-
 				Logger.getLogger(NetworkReader.class.getName())
 						.log(Level.SEVERE,
 								"Unable to read the object from the network stream or add it to the queue.",
