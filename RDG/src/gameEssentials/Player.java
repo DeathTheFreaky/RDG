@@ -299,7 +299,6 @@ public class Player extends Creature {
 			lastViewingDirection = ViewingDirections.NORTH;
 			if (map.isFieldPassable(position.x, position.y - 1)) {
 				position.move(position.x, position.y - 1);
-				networkManager.sendMessage(new NetworkMessage(position.x, position.y, goTo));
 				moveCamera(Directions.UP);
 				map.setScopePositionForPlayer(cameraPosition);
 			}
@@ -324,7 +323,6 @@ public class Player extends Creature {
 			lastViewingDirection = ViewingDirections.WEST;
 			if (map.isFieldPassable(position.x - 1, position.y)) {
 				position.move(position.x - 1, position.y);
-				networkManager.sendMessage(new NetworkMessage(position.x, position.y, goTo));
 				moveCamera(Directions.LEFT);
 				map.setScopePositionForPlayer(cameraPosition);
 			}
@@ -349,7 +347,6 @@ public class Player extends Creature {
 			lastViewingDirection = ViewingDirections.SOUTH;
 			if (map.isFieldPassable(position.x, position.y + 1)) {
 				position.move(position.x, position.y + 1);
-				networkManager.sendMessage(new NetworkMessage(position.x, position.y, goTo));
 				moveCamera(Directions.DOWN);
 				map.setScopePositionForPlayer(cameraPosition);
 			}
@@ -374,7 +371,6 @@ public class Player extends Creature {
 			lastViewingDirection = ViewingDirections.EAST;
 			if (map.isFieldPassable(position.x + 1, position.y)) {
 				position.move(position.x + 1, position.y);
-				networkManager.sendMessage(new NetworkMessage(position.x, position.y, goTo));
 				moveCamera(Directions.RIGHT);
 				map.setScopePositionForPlayer(cameraPosition);
 			}
@@ -382,6 +378,9 @@ public class Player extends Creature {
 				right = false;
 				keyReleasedRight = false;
 			}
+		}
+		if (goTo != null) {
+			networkManager.sendMessage(new NetworkMessage(position.x, position.y, goTo));
 		}
 	}
 

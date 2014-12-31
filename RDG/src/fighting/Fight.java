@@ -3,6 +3,7 @@ package fighting;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Level;
@@ -517,7 +518,7 @@ public class Fight extends View implements Runnable {
 				this.attackScreen = AttackScreens.WAITING;
 			}
 			
-			System.out.println("firstAttack by " + creature1);
+			System.out.println("firstAttack by " + creature1.NAME);
 			
 			Thread.sleep(1000);
 			
@@ -596,37 +597,34 @@ public class Fight extends View implements Runnable {
 			sendData(FightSendType.ALL);
 			
 			/* humanFightHost shall be set when establishing a lobby connection */
-			if (this.humanFightHost == false) {
 				
-				int timeoutctr = 0;
-				boolean successfulCommunication = false;
+			System.err.println("waiting for enemy stats");
+			
+			int timeoutctr = 0;
+			boolean successfulCommunication = false;
+			
+			/* wait for fight host to set needed information */
+			while (timeoutctr <= 10) {
 				
-				/* wait for fight host to set needed information */
-				while (timeoutctr <= 10) {
-					
-					if (allSet == true) {
-						successfulCommunication = true;
-						break;
-					}
-					
-					if (timeoutctr == 10) {
-						break;
-					}
-					
-					timeoutctr++;
-					Thread.sleep(100);
+				if (allSet == true) {
+					successfulCommunication = true;
+					break;
 				}
 				
-				if (successfulCommunication == false) {
-					System.err.println("Initialization of human fight timed out...");
-					Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
-							"Initialization of human fight failed", new Exception("Initialization of human fight failed"));
-					System.exit(1);
+				if (timeoutctr == 10) {
+					break;
 				}
 				
-				//set stuff
-								
-			} 
+				timeoutctr++;
+				Thread.sleep(100);
+			}
+			
+			if (successfulCommunication == false) {
+				System.err.println("Initialization of human fight timed out...");
+				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
+						"Initialization of human fight failed", new Exception("Initialization of human fight failed"));
+				System.exit(1);
+			}
 			
 			return true;
 		}
@@ -650,6 +648,7 @@ public class Fight extends View implements Runnable {
 	
 		switch (type) {
 			case ALL:
+				System.err.println("sending all");
 				if (this.humanFightHost == true) {
 					data.put("slave", 1f); //other player is slave in determineFirstAttack 
 				} else {
@@ -665,6 +664,7 @@ public class Fight extends View implements Runnable {
 				data.put("armorSum", armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.ARMOR));
 				break;
 			case ATTACK:
+				System.err.println("sending attack and stats change");
 				data.put("activeAttack", tempMap.get("activeAttack"));
 				
 				if(tempMap.get("activeAttack") == 1f || tempMap.get("activeAttack") == 7f) {
@@ -681,8 +681,13 @@ public class Fight extends View implements Runnable {
 				} 
 				break;
 			case FIRST:
+				System.err.println("sending first");
 					data.put("firstPlayer", (float) this.thisPlayerisFirst);
 				break;
+		}
+		
+		for (Entry<String, Float> entry : data.entrySet()) {
+			System.out.println("     " + entry.getKey() + ": " + entry.getValue());
 		}
 		
 		/* send network message containing data */
@@ -771,36 +776,49 @@ public class Fight extends View implements Runnable {
 	 */
 	private void attackControl(Creature creature1, Creature creature2) throws InterruptedException {
 		
+		System.out.println(this.player);
+		System.out.println(creature1);
+				
 		/* if this is a human fight, wait for other party to send relevant data */
 		if (creature1 != this.player && (creature1 instanceof Player)) {
 			
+			System.err.println("waiting for enemie's attack");
+			
 			/* Wait for enemie's attack calculation */
-			int timeoutctr = 0;
-			boolean successfulCommunication = false;
+			/*int timeoutctr = 0;
+			boolean successfulCommunication = false;*/
 			
 			/* wait for fight host to set needed information */
-			while (timeoutctr <= 10) {
-				
+			//while (timeoutctr <= 10) {
+			while (!attackSet) {	
+			
 				if (attackSet == true) {
-					successfulCommunication = true;
+					//successfulCommunication = true;
 					break;
 				}
 				
-				if (timeoutctr == 10) {
+				/*if (timeoutctr == 10) {
 					break;
 				}
 				
-				timeoutctr++;
+				timeoutctr++;*/
 				Thread.sleep(100);
 			}
 			
-			if (successfulCommunication == false) {
+			/*if (successfulCommunication == false) {
 				System.err.println("Waiting for enemyAttackDamage timed out...");
 				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
 						"Waiting for enemyAttackDamage failed", new Exception("Waiting for enemyAttackDamage failed"));
 				System.exit(1);
-			}
+			}*/
 		}
+		
+		/* show main attack screen if it is the player's turn */
+		if (creature1 == this.player) {
+			this.attackScreen = AttackScreens.MAIN;
+		}
+		
+		System.err.println(this.attackScreen);
 		
 		float activeAttackNmb = 0;
 		
@@ -937,6 +955,8 @@ public class Fight extends View implements Runnable {
 			
 			/* send healthDamage, attributeDamage, activeAttack and other info*/
 			if (humanFight) {
+				tempMap.put("healthDamage", healthDamage);
+				tempMap.put("attributeDamage", attributeDamage);
 				sendData(FightSendType.ATTACK);
 			}
 		} else {
@@ -1116,9 +1136,9 @@ public class Fight extends View implements Runnable {
 			}
 			
 			if (successfulCommunication == false) {
-				System.err.println("Calculation of initial attack timed out...");
+				System.err.println("Calculation of attack timed out...");
 				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
-						"Calculation of initial attack failed", new Exception("Calculation of initial attack failed"));
+						"Calculation of initial attack failed", new Exception("Calculation of attack failed"));
 				System.exit(1);
 			}
 			
@@ -1744,6 +1764,7 @@ public class Fight extends View implements Runnable {
 	 * @param fightvalues
 	 */
 	private synchronized void setAll(Map<String, Float> fightvalues) {
+		System.err.println("setting All");
 		if (fightvalues.get("slave") == 1f) {
 			this.humanFightSlave = true;
 		} else {
@@ -1768,7 +1789,13 @@ public class Fight extends View implements Runnable {
 	 * @param fightvalues
 	 */
 	private synchronized void setFirst(Map<String, Float> fightvalues) {
-		this.thisPlayerisFirst = fightvalues.get("firstPlayer");
+		System.err.println("setting First");
+		/* if other pc says that he is first, the enemy (from this pc's pov) comes first */
+		if (fightvalues.get("firstPlayer") == 1f) {
+			this.thisPlayerisFirst = 2f;
+		} else {
+			this.thisPlayerisFirst = 1f;
+		}
 		this.firstSet = true;
 	}
 	
@@ -1776,6 +1803,7 @@ public class Fight extends View implements Runnable {
 	 * @param fightvalues
 	 */
 	private synchronized void setSet(Map<String, Float> fightvalues) {
+		System.err.println("setting Set");
 		this.enemyArmorSpeedMalusSum = fightvalues.get("armorSpeedMalusSum");
 		this.enemyWeaponSpeedMalusMax = fightvalues.get("weaponSpeedMalusMax");
 		this.enemyArmorSum = fightvalues.get("armorSum");
@@ -1785,17 +1813,34 @@ public class Fight extends View implements Runnable {
 	 * @param fightvalues
 	 */
 	private synchronized void setAttack(Map<String, Float> fightvalues) {
-		
+		System.err.println("setting Attack");
 		if(fightvalues.get("activeAttack") == 1f || fightvalues.get("activeAttack") == 7f) {
+			if (fightvalues.get("activeAttack") == 1f) {
+				this.activeAttackType = Attacks.TORSO;
+			}
+			if (fightvalues.get("activeAttack") == 7f) {
+				this.activeAttackType = Attacks.PARRY;
+			}
 			this.enemyAttackHealthDamage = fightvalues.get("healthDamage");
 		} else if (fightvalues.get("activeAttack") >= 2f && fightvalues.get("activeAttack") <= 4f) {
+			if (fightvalues.get("activeAttack") == 2f) {
+				this.activeAttackType = Attacks.HEAD;
+			}
+			if (fightvalues.get("activeAttack") == 3f) {
+				this.activeAttackType = Attacks.ARMS;
+			}
+			if (fightvalues.get("activeAttack") == 4f) {
+				this.activeAttackType = Attacks.LEGS;
+			}
 			this.enemyAttackHealthDamage = fightvalues.get("healthDamage");
 			this.enemyAttackAttributeDamage = fightvalues.get("attributeDamage");
 		} else if (fightvalues.get("activeAttack") == 5f) {
+			this.activeAttackType = Attacks.SET;
 			fightvalues.put("armorSpeedMalusSum", armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.SPEED));
 			fightvalues.put("weaponSpeedMalusMax", armorView.getStats(ArmorStatsTypes.WEAPONS, ArmorStatsMode.MAX, ArmorStatsAttributes.SPEED));
 			fightvalues.put("armorSum", armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.ARMOR));
 		} else if (fightvalues.get("activeAttack") == 6f) {
+			this.activeAttackType = Attacks.POTION;
 			for (String potionName : resources.POTIONS) {
 				if (fightvalues.containsKey(potionName)) {
 					try {

@@ -429,6 +429,8 @@ public class Map {
 		default:
 			break;
 		}
+		
+		System.out.println(overlay[targetX][targetY]);
 				
 		if (overlay[targetX][targetY] != null) {
 			if ((overlay[targetX][targetY] instanceof Potion) ||
@@ -515,7 +517,7 @@ public class Map {
 
 						int posx = i * (Game.ROOMWIDTH + 1) + x + 1;
 						int posy = j * (Game.ROOMHEIGHT + 1) + y + 1;
-
+						
 						background[posx][posy] = rooms[i][j].background[x][y];
 						
 						/* do not overwrite overlay if this is the lobby client which has already received a fully filled overlay */

@@ -329,9 +329,9 @@ public class GroundFactory {
 		} else if (name.equals("BrownGround")) {
 			return createGreenGround(positionX, positionY).getImage(imageSize);
 		} else if (name.equals("DoorGroundTreasureChamber1")) {
-			return createGreenGround(positionX, positionY).getImage(imageSize);
+			return createDoorGround1(positionX, positionY).getImage(imageSize);
 		} else if (name.equals("DoorGroundTreasureChamber2")) {
-			return createGreenGround(positionX, positionY).getImage(imageSize);
+			return createDoorGround2(positionX, positionY).getImage(imageSize);
 		}
 		
 		return null;
