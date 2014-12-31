@@ -600,11 +600,11 @@ public class Fight extends View implements Runnable {
 				
 			System.err.println("waiting for enemy stats");
 			
-			int timeoutctr = 0;
-			boolean successfulCommunication = false;
+			/*int timeoutctr = 0;
+			boolean successfulCommunication = false;*/
 			
 			/* wait for fight host to set needed information */
-			while (timeoutctr <= 10) {
+			/*while (timeoutctr <= 10) {
 				
 				if (allSet == true) {
 					successfulCommunication = true;
@@ -624,6 +624,10 @@ public class Fight extends View implements Runnable {
 				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
 						"Initialization of human fight failed", new Exception("Initialization of human fight failed"));
 				System.exit(1);
+			}*/
+			
+			while (!allSet) {
+				Thread.sleep(100);
 			}
 			
 			return true;
@@ -712,14 +716,14 @@ public class Fight extends View implements Runnable {
 		else {
 			
 			/* its the other human player's turn -> obtain the potion he selected */ 
-			int timeoutctr = 0;
-			boolean successfulCommunication  = false;
+			/*int timeoutctr = 0;
+			boolean successfulCommunication  = false;*/
 			
 			/* wait for fight host to set needed information */
-			while (timeoutctr <= 10) {
+			//while (timeoutctr <= 10) {
 				
 				/* wait for selectedPotion to be set via network */
-				if (this.selectedPotion != null) {
+				/*if (this.selectedPotion != null) {
 					successfulCommunication  = true;
 					break;
 				}
@@ -733,7 +737,11 @@ public class Fight extends View implements Runnable {
 				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
 						"Obtaining the opponent's selected Potion failed", new Exception("Obtaining the opponent's selected Potion failed"));
 				System.exit(1);
-			}			
+			}	*/		
+			
+			while (this.selectedPotion == null) {
+				Thread.sleep(100);
+			}
 		}
 		
 		return this.selectedPotion;
@@ -792,12 +800,12 @@ public class Fight extends View implements Runnable {
 			//while (timeoutctr <= 10) {
 			while (!attackSet) {	
 			
-				if (attackSet == true) {
-					//successfulCommunication = true;
+				/*if (attackSet == true) {
+					successfulCommunication = true;
 					break;
 				}
 				
-				/*if (timeoutctr == 10) {
+				if (timeoutctr == 10) {
 					break;
 				}
 				
@@ -1116,11 +1124,11 @@ public class Fight extends View implements Runnable {
 		/* this computer is the lobby hoster */
 		else {
 			
-			int timeoutctr = 0;
-			boolean successfulCommunication  = false;
+			//int timeoutctr = 0;
+			//boolean successfulCommunication  = false;
 			
 			/* wait for fight host to set needed information */
-			while (timeoutctr <= 10) {
+			/*while (timeoutctr <= 100) {
 				
 				if (firstSet) {
 					successfulCommunication  = true;
@@ -1133,13 +1141,17 @@ public class Fight extends View implements Runnable {
 				
 				timeoutctr++;
 				Thread.sleep(100);
-			}
+			}*/
 			
-			if (successfulCommunication == false) {
+			/*if (successfulCommunication == false) {
 				System.err.println("Calculation of attack timed out...");
 				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
-						"Calculation of initial attack failed", new Exception("Calculation of attack failed"));
+						"Calculation of attack failed", new Exception("Calculation of attack failed"));
 				System.exit(1);
+			}*/
+			
+			while (!firstSet) {
+				Thread.sleep(100);
 			}
 			
 			/* reset Set variable */
@@ -1749,6 +1761,7 @@ public class Fight extends View implements Runnable {
 	 * 
 	 */
 	public synchronized void processMessages(NetworkMessage message) {
+		System.out.println("Fight processes message");
 		if (message.fightvalues.containsKey("slave")) {
 			setAll(message.fightvalues);
 		} else if (message.fightvalues.containsKey("firstPlayer")) {
@@ -1756,6 +1769,7 @@ public class Fight extends View implements Runnable {
 		} else if (message.fightvalues.containsKey("activeAttack")) {
 			setAttack(message.fightvalues);
 		} else if (message.fightvalues.containsKey("armorSum")) {
+			//setAttack(message.fightvalues);
 			setSet(message.fightvalues);
 		}
 	}
