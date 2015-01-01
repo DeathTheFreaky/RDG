@@ -3,7 +3,6 @@ package fighting;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.HashMap;
-import java.util.Map.Entry;
 import java.io.IOException;
 import java.util.Map;
 
@@ -78,9 +77,6 @@ public class Fight extends View implements Runnable {
 	/* balancing of parrying */
 	private float parryMultiplier = 1.0f;
 
-	/* end of a fight */
-	private int end = 1;
-
 	/* Reference to the Game, where this Fight belongs to */
 	private GameEnvironment gameEnvironment;
 	
@@ -144,8 +140,6 @@ public class Fight extends View implements Runnable {
 		private float enemyAttackHealthDamage = 0;
 		private float enemyAttackAttributeDamage = 0;
 		
-		/* synchronize each attack round in multiplayer */
-		private boolean playerFinished = false;
 		private boolean enemyFinished = false;
 
 		
@@ -608,14 +602,11 @@ public class Fight extends View implements Runnable {
 		tempMap.clear();
 		sendData(FightSendType.SYNCHRO);
 		
-		playerFinished = true;
-		
 		/* wait for other computer to finish round */
 		while (this.enemyFinished == false) {
 			Thread.sleep(100);
 		}
 		
-		playerFinished = false;
 		enemyFinished = false;		
 	}
 
@@ -1269,16 +1260,12 @@ public class Fight extends View implements Runnable {
 		MinAvgMax defenderSpeed;
 		float randAttackerAccuracy;
 		float randDefenderSpeed;
-		float finishedFightsMult;
-		
 		/* results */
 		boolean hitSuccess;
 		
 		/* set finishedFightsMult Bonus for Monsters */
 		if (attacker instanceof Monster) {
-			finishedFightsMult = 1 + (finishedFights/finishedFightsDivisor);
 		} else {
-			finishedFightsMult = 1;
 		}
 			
 		/* perform calculations */
