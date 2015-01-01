@@ -49,13 +49,11 @@ public class NetworkWriter extends Thread {
 		while (!Thread.interrupted()) {
 			// writes every object in the queue into the network stream
 			while (!writeQueue.isEmpty()) {
-				System.out.println("not emty");
 				if (this.writeQueue.isEmpty())
 					break;
 				try {
 					this.oos.writeObject(this.writeQueue.take());
 					this.oos.flush();
-					System.out.println("msg sent");
 				} catch (SocketException e) {
 					Logger.getLogger(NetworkReader.class.getName())
 							.log(Level.WARNING,
@@ -76,7 +74,6 @@ public class NetworkWriter extends Thread {
 			synchronized (this) {
 				try {
 					this.wait();
-					System.out.println("stop wait");
 				} catch (InterruptedException e) {
 					Logger.getLogger(NetworkWriter.class.getName())
 							.log(Level.INFO,

@@ -63,16 +63,16 @@ public class NetworkManager {
 			return;
 		// writes into the queue and notifies the writer thread that something
 		// is in the queue.
-		System.out.println("send msg start");
+		//System.out.println("send msg start");
 		try {
-			this.writeQueue.put(msg);;
+			this.writeQueue.put(msg);
 		} catch (InterruptedException e) {
 		}
-		System.out.println("send msg on queue");
+		//System.out.println("send msg on queue");
 		synchronized (this.writer) {
 			this.writer.notify();
 		}
-		System.out.println("semd msg notified");
+		//System.out.println("semd msg notified");
 	}
 
 	/**

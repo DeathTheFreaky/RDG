@@ -395,14 +395,11 @@ public class ArmorView extends View {
 	 * @param set
 	 */
 	public void switchSet() {
-		System.out.println(this.set);
-		System.out.println("Set switch");
 		if (set) {
 			this.set = false;
 		} else {
 			this.set = true;
 		}
-		System.out.println(this.set);
 	}
 
 	/**
@@ -1158,7 +1155,6 @@ public class ArmorView extends View {
 						}
 					}
 					if (mode == ArmorStatsMode.AVERAGE) {
-						System.out.println(e.NAME);
 						if (att == ArmorStatsAttributes.ACCURACY) {
 							value = value + ((Weapon) e).ACCURACY;
 							itemCtr++;

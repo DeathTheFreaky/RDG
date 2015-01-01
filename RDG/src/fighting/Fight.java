@@ -6,9 +6,6 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.io.IOException;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -24,8 +21,6 @@ import gameEssentials.Game;
 import gameEssentials.Player;
 import general.AttackFactory;
 import general.Chances;
-import general.Main;
-import general.Enums.ImageSize;
 import general.ItemFactory;
 import general.Enums.ArmorStatsAttributes;
 import general.Enums.ArmorStatsMode;
@@ -328,16 +323,16 @@ public class Fight extends View implements Runnable {
 			if (attackScreen == AttackScreens.MAIN) {
 				
 				switch (attackOption) {
-					case OPTION1: System.out.println("Attack");
+					case OPTION1: 
 						attackScreen = AttackScreens.ATTACK;
 						break;
-					case OPTION2: System.out.println("Parry");
+					case OPTION2: 
 						this.activeAttackType = Attacks.PARRY;
 						break;
-					case OPTION3: System.out.println("Change Set");
+					case OPTION3:
 						this.activeAttackType = Attacks.SET;
 						break;
-					case OPTION4: System.out.println("Potion");
+					case OPTION4: 
 						//activeAttackType is set in Armor View -> drinkPotion()
 						this.potionTakingActive = true;
 						break;
@@ -346,16 +341,16 @@ public class Fight extends View implements Runnable {
 			} else if (attackScreen == AttackScreens.ATTACK) {
 				
 				switch (attackOption) {
-					case OPTION1: System.out.println("Chest");
+					case OPTION1: 
 						this.activeAttackType = Attacks.TORSO;
 						break;
-					case OPTION2: System.out.println("Head");
+					case OPTION2:
 						this.activeAttackType = Attacks.HEAD;
 						break;
-					case OPTION3: System.out.println("Arms");
+					case OPTION3: 
 						this.activeAttackType = Attacks.ARMS;
 						break;
-					case OPTION4: System.out.println("Legs");
+					case OPTION4: 
 						this.activeAttackType = Attacks.LEGS;
 						break;
 				}
@@ -481,7 +476,7 @@ public class Fight extends View implements Runnable {
 	 */
 	private Creature fight() throws InterruptedException {
 		
-		System.out.println("\n\n\n");
+		/*System.out.println("\n\n\n");
 		
 		System.out.println("Player's health: " + this.player.getHp());
 		
@@ -491,12 +486,12 @@ public class Fight extends View implements Runnable {
 		System.out.println("Opponent's health: " + this.enemy.getHp());
 		
 		System.out.println(this.enemy + " has " + this.enemy.getHp() + " health,\n " + this.enemy.getAccuracy() + " accuracy,\n " 
-				+ this.enemy.getSpeed() + " speed,\n " + this.enemy.getStrength() + " strength" );
+				+ this.enemy.getSpeed() + " speed,\n " + this.enemy.getStrength() + " strength" );*/
 		
 		/* Determine if this is a human fight. */
 		this.humanFight = humanFightInitialization();
 		
-		System.out.println("humanFight: " + this.humanFight);
+		//System.out.println("humanFight: " + this.humanFight);
 		
 		/* Main fight loop */
 		while (player.getHp() > 0 && enemy.getHp() > 0) { // as long as nobody died
@@ -595,7 +590,7 @@ public class Fight extends View implements Runnable {
 	 */
 	private boolean humanFightInitialization() throws InterruptedException {
 		
-		System.out.println(("human Fight initialization"));
+		//System.out.println(("human Fight initialization"));
 		
 		if (this.enemy instanceof Player) {
 			
@@ -650,9 +645,7 @@ public class Fight extends View implements Runnable {
 	 * 
 	 */
 	private void sendData(FightSendType type) throws InterruptedException {
-		
-		System.out.println("Sending Stats");
-		
+				
 		/* data to be sent */
 		HashMap<String, Float> data = new HashMap<String, Float>();
 	
@@ -688,7 +681,6 @@ public class Fight extends View implements Runnable {
 					data.put("weaponSpeedMalusMax", armorView.getStats(ArmorStatsTypes.WEAPONS, ArmorStatsMode.MAX, ArmorStatsAttributes.SPEED));
 					data.put("armorSum", armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.ARMOR));
 				} else if (tempMap.get("activeAttack") == 6f) {
-					System.out.println("SELECTED POTION: " + this.selectedPotion);
 					data.put(this.selectedPotion.NAME, this.selectedPotion.power);
 				} 
 				break;
@@ -720,7 +712,6 @@ public class Fight extends View implements Runnable {
 						
 		if ((!humanFight) || (creature1 == this.player)) {
 			this.selectedPotion = armorView.getSelectedPotion();
-			System.out.println("getSelectedPotion power: " + this.selectedPotion.power);
 		}
 		else {
 			
@@ -792,10 +783,7 @@ public class Fight extends View implements Runnable {
 	 * @throws InterruptedException 
 	 */
 	private void attackControl(Creature creature1, Creature creature2) throws InterruptedException {
-		
-		System.out.println(this.player);
-		System.out.println(creature1);
-				
+						
 		/* if this is a human fight, wait for other party to send relevant data */
 		if (creature1 != this.player && (creature1 instanceof Player)) {
 			
@@ -829,9 +817,7 @@ public class Fight extends View implements Runnable {
 				System.exit(1);
 			}*/
 		}
-		
-		System.err.println(this.attackScreen);
-		
+				
 		float activeAttackNmb = 0;
 		
 		/* player chooses what to do */
@@ -868,7 +854,6 @@ public class Fight extends View implements Runnable {
 				
 				/* only switch sets if this is the player's turn */
 				if (creature1 == this.player) {
-					System.out.println("Switching sets");
 					armorView.switchSet();
 					chatMessage(creature1.NAME + " chose SWITCH SET", true);
 				}
@@ -1099,9 +1084,7 @@ public class Fight extends View implements Runnable {
 	 * @throws InterruptedException 
 	 */
 	private Float determineFirstAttack() throws InterruptedException {
-		
-		System.out.println("determineFirstAttack"); 
-		
+				
 		/* this computer is not the lobby hoster */
 		if (humanFightSlave == false) {
 			
@@ -1115,7 +1098,7 @@ public class Fight extends View implements Runnable {
 			randAttackerSpeed = Chances.randomFloat(speedBasedSuccessRetVal.attacker.min, speedBasedSuccessRetVal.attacker.max);
 			randDefenderSpeed = Chances.randomFloat(speedBasedSuccessRetVal.defender.min, speedBasedSuccessRetVal.defender.max);
 			
-			System.out.println("randAttackerSpeed: " + randAttackerSpeed + ", randDefenderSpeed: " + randDefenderSpeed);
+			//System.out.println("randAttackerSpeed: " + randAttackerSpeed + ", randDefenderSpeed: " + randDefenderSpeed);
 			
 			/* determine which player comes first */
 			if (randAttackerSpeed >= randDefenderSpeed) {
@@ -1184,8 +1167,6 @@ public class Fight extends View implements Runnable {
 	 */
 	private boolean parrySuccess(Creature attacker, Creature defender) throws InterruptedException {
 
-		System.out.println("parrySuccess");
-
 		/* variables */
 		AttDefMinAvgMax speedBasedSuccessRetVal;
 		float randAttackerSpeed;
@@ -1197,7 +1178,7 @@ public class Fight extends View implements Runnable {
 		randAttackerSpeed = Chances.randomFloat(speedBasedSuccessRetVal.attacker.min, speedBasedSuccessRetVal.attacker.max);
 		randDefenderSpeed = Chances.randomFloat(speedBasedSuccessRetVal.defender.min, speedBasedSuccessRetVal.defender.max);
 		
-		System.out.println("randAttackerSpeed: " + randAttackerSpeed + ", randDefenderSpeed: " + randDefenderSpeed);
+		//System.out.println("randAttackerSpeed: " + randAttackerSpeed + ", randDefenderSpeed: " + randDefenderSpeed);
 		
 		/* determine which player comes first */
 		if (randAttackerSpeed >= randDefenderSpeed) {
@@ -1244,9 +1225,7 @@ public class Fight extends View implements Runnable {
 	 * @throws InterruptedException 
 	 */
 	private boolean calcHitSuccess(Creature attacker, Creature defender) throws InterruptedException {
-		
-		System.out.println("calcHitSuccess");
-		
+				
 		/* constants */
 		float randAccuracyLow = 0.5f;
 		float randAccuracyHigh = 1.5f;
@@ -1280,7 +1259,7 @@ public class Fight extends View implements Runnable {
 		randAttackerAccuracy = Chances.randomFloat(attackerAccuracy.min, attackerAccuracy.max);
 		randDefenderSpeed = Chances.randomFloat(defenderSpeed.min, defenderSpeed.max);
 		
-		System.out.println("randAttackerAccuracy: " + randAttackerAccuracy + ", randDefenderSpeed: " + randDefenderSpeed);
+		//System.out.println("randAttackerAccuracy: " + randAttackerAccuracy + ", randDefenderSpeed: " + randDefenderSpeed);
 		
 		/* determine hitSuccess - always hit after successful parry */
 		if (randAttackerAccuracy >= randDefenderSpeed || parryMultiplier > 1.0f) {
@@ -1442,7 +1421,7 @@ public class Fight extends View implements Runnable {
 		}
 		defender.setHp(hp);
 		
-		System.out.println(defender + " now has " + defender.getHp() + " health");
+		//System.out.println(defender + " now has " + defender.getHp() + " health");
 	}
 	
 	/**Update an opponent's attributes in reaction to an attack.
@@ -1451,8 +1430,8 @@ public class Fight extends View implements Runnable {
 	 */
 	private void updateAttributes(Creature defender, float attributeDamage) {
 
-		System.out.println(defender + " now has " + defender.getHp() + " health,\n " + defender.getAccuracy() + " accuracy,\n " 
-				+ defender.getSpeed() + " speed,\n " + defender.getStrength() + " strength" );
+		/*System.out.println(defender + " now has " + defender.getHp() + " health,\n " + defender.getAccuracy() + " accuracy,\n " 
+				+ defender.getSpeed() + " speed,\n " + defender.getStrength() + " strength" );*/
 		
 		switch(activeAttack.effect) {
 			case HP:
@@ -1492,23 +1471,14 @@ public class Fight extends View implements Runnable {
 			//SEND OUR CALCULATED ATTACK DAMAGE VALUES TO OTHER PARTIE -> message(attributeDamage, value)
 		}
 		
-		System.out.println(defender + " now has " + defender.getHp() + " health,\n " + defender.getAccuracy() + " accuracy,\n " 
-				+ defender.getSpeed() + " speed,\n " + defender.getStrength() + " strength" );
+		/* System.out.println(defender + " now has " + defender.getHp() + " health,\n " + defender.getAccuracy() + " accuracy,\n " 
+				+ defender.getSpeed() + " speed,\n " + defender.getStrength() + " strength" ); */
 	}
 	
 	/**
 	 * Is called every time the player uses a potion (directly or indirectly).
 	 */
 	private void usePotion(Creature potionTaker, Creature opponent, Potion potion) {
-		
-		System.out.println("TRYING TO USE POTION " + potion.NAME);
-		System.out.println("WITH POWER" + potion.power);
-		
-		if (potionTaker == this.player) {
-			System.out.println("POTIONTAKER: SELF");
-		} else {
-			System.out.println("POTIONTAKER: OPPONENT");
-		}
 
 		/* if player uses antidote / removes the first poison in the list */
 		if (potion.MODE == Modes.LIFT) {
@@ -1532,7 +1502,6 @@ public class Fight extends View implements Runnable {
 				chatMessage(potionTaker.NAME + " uses " + potion.NAME + " against " + opponent.NAME);
 				opponent.addActivePotions(potion);
 				if (potion.MODE == Modes.TDECR) {
-					System.out.println("Temporary decrease on potion with power " + potion.power);
 					potionDecrease(opponent, potion);
 				}
 			}
@@ -1547,7 +1516,6 @@ public class Fight extends View implements Runnable {
 
 		/* apply all non temporary potion effects */
 		for (Potion potion : creature.getActivePotions()) {
-			System.out.println("in list of active potions: " + potion.NAME + " - " + potion.power);
 			potion.DURATION--;
 			switch(potion.MODE) {
 			case INCR: 
@@ -1576,8 +1544,8 @@ public class Fight extends View implements Runnable {
 				
 		chatMessage("Reverting effect of " + potion.NAME + " for " + creature.NAME);
 		
-		System.out.println(creature + " before reverting has " + creature.getHp() + " health,\n " + creature.getAccuracy() + " accuracy,\n " 
-				+ creature.getSpeed() + " speed,\n " + creature.getStrength() + " strength" );
+		/*System.out.println(creature + " before reverting has " + creature.getHp() + " health,\n " + creature.getAccuracy() + " accuracy,\n " 
+				+ creature.getSpeed() + " speed,\n " + creature.getStrength() + " strength" );*/
 
 		if (potion.MODE == Modes.TINCR) {
 			potionDecrease(creature, potion);
@@ -1585,8 +1553,8 @@ public class Fight extends View implements Runnable {
 			potionIncrease(creature, potion);
 		}
 		
-		System.out.println(creature + " after reverting has " + creature.getHp() + " health,\n " + creature.getAccuracy() + " accuracy,\n " 
-				+ creature.getSpeed() + " speed,\n " + creature.getStrength() + " strength" );
+		/*System.out.println(creature + " after reverting has " + creature.getHp() + " health,\n " + creature.getAccuracy() + " accuracy,\n " 
+				+ creature.getSpeed() + " speed,\n " + creature.getStrength() + " strength" );*/
 	}
 	
 	/**
@@ -1596,9 +1564,7 @@ public class Fight extends View implements Runnable {
 	 * @param potion
 	 */
 	private void potionDecrease(Creature creature, Potion potion) {
-		
-		System.out.println("in PotionDecrease has power " + potion.power);
-				
+						
 		/* constants */
 		float finishedFightsDivisor = 50f;
 		
@@ -1609,10 +1575,6 @@ public class Fight extends View implements Runnable {
 		}
 		
 		if (potion.DURATION > 0) {
-			System.out.println("in PotionDecrease with duration > 0 has power " + potion.power);
-			float tempval = round(potion.power, 1) * finishedFightsMult;
-			System.out.println("finishedFightsMult: " + finishedFightsMult);
-			System.out.println("tempval: " + tempval);
 			chatMessage(potion.NAME + " decreasing " + creature.NAME + "'s " + potion.EFFECT + " by " + round(potion.power, 1) * finishedFightsMult);
 		}
 			
@@ -1715,8 +1677,8 @@ public class Fight extends View implements Runnable {
 				break;
 		}
 		
-		System.out.println(this.player + " now has " + this.player.getOrHp() + " health,\n " + this.player.getOrAccuracy() + " accuracy,\n " 
-				+ this.player.getOrSpeed() + " speed,\n " + this.player.getOrStrength() + " strength" );
+		/* System.out.println(this.player + " now has " + this.player.getOrHp() + " health,\n " + this.player.getOrAccuracy() + " accuracy,\n " 
+				+ this.player.getOrSpeed() + " speed,\n " + this.player.getOrStrength() + " strength" ); */
 		
 		return;
 	}
@@ -1787,7 +1749,6 @@ public class Fight extends View implements Runnable {
 	 * 
 	 */
 	public synchronized void processMessages(NetworkMessage message) {
-		System.out.println("Fight processes message");
 		if (message.fightvalues.containsKey("slave")) {
 			setAll(message.fightvalues);
 		} else if (message.fightvalues.containsKey("firstPlayer")) {
@@ -1816,7 +1777,6 @@ public class Fight extends View implements Runnable {
 		this.enemy.setStrength(fightvalues.get("strength"));
 		this.enemy.setOrStrength(fightvalues.get("strength"));
 		this.enemyFightsMultiplier = fightvalues.get("fightsMultiplier");
-		System.out.println("enemyFightsMultiplier set to " + this.enemyFightsMultiplier);
 		this.enemyArmorSpeedMalusSum = fightvalues.get("armorSpeedMalusSum");
 		this.enemyWeaponSpeedMalusMax = fightvalues.get("weaponSpeedMalusMax");
 		this.enemyArmorSum = fightvalues.get("armorSum");
@@ -1863,27 +1823,18 @@ public class Fight extends View implements Runnable {
 			this.enemyAttackHealthDamage = fightvalues.get("healthDamage");
 			this.enemyAttackAttributeDamage = fightvalues.get("attributeDamage");
 		} else if (fightvalues.get("activeAttack") == 5f) {
-			System.out.println("    setting set");
 			this.activeAttackType = Attacks.SET;
 			this.enemyArmorSpeedMalusSum = fightvalues.get("armorSpeedMalusSum");
 			this.enemyWeaponSpeedMalusMax = fightvalues.get("weaponSpeedMalusMax");
 			this.enemyArmorSum = fightvalues.get("armorSum");
-			System.out.println("enemyArmorSpeedMalusSum: " + this.enemyArmorSpeedMalusSum);
-			System.out.println("enemyWeaponSpeedMalusMax: " + this.enemyWeaponSpeedMalusMax);
-			System.out.println("enemyArmorSum: " + this.enemyArmorSum);
 		} else if (fightvalues.get("activeAttack") == 6f) {
 			System.out.println("    setting potion");
 			this.activeAttackType = Attacks.POTION;
-			for (Entry<String, Float> entry : fightvalues.entrySet()) {
-				System.out.println("     " + entry.getKey() + ": " + entry.getValue());
-			}
 			for (String potionName : resources.POTIONS) {
 				if (fightvalues.containsKey(potionName)) {
 					try {
 						this.selectedPotion = ItemFactory.createPotion(potionName, 1);
 						this.selectedPotion.power = fightvalues.get(potionName);
-						System.out.println("Name of Potion: " + this.selectedPotion.NAME);
-						System.out.println("Power of Potion: " + this.selectedPotion.power);
 					} catch (SlickException e) {
 						e.printStackTrace();
 					}
@@ -1924,15 +1875,12 @@ public class Fight extends View implements Runnable {
 	 * @return rounded value for n places
 	 */
 	private float round(float value, int places) {
-		
-		System.out.println("round value of " + value);
-		
+				
 	    if (places < 0) throw new IllegalArgumentException();
 
 	    long factor = (long) Math.pow(10, places);
 	    value = value * factor;
 	    long tmp = Math.round(value);
-	    System.out.println("round returing " + (float) tmp / factor + " for value " + value);
 	    return (float) tmp / factor;
 	}
 

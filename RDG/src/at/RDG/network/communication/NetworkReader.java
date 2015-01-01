@@ -64,7 +64,6 @@ public class NetworkReader extends Thread {
 			// the queue.
 			try {
 				NetworkMessage msg = (NetworkMessage) this.ois.readObject();
-				System.out.println("got msg");
 				this.readQueue.put(msg);
 			} catch (SocketException e) {
 				Logger.getLogger(NetworkReader.class.getName())

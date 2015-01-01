@@ -66,8 +66,8 @@ public class RoomFactory {
 		background = fillGround(type, background, size);
 
 		//for testing only
-		overlay[0][0] = ItemFactory.createPotion("Weakness", 1);
-		/*overlay[0][1] = ItemFactory.createWeapon("Longsword", 1);
+		/*overlay[0][0] = ItemFactory.createPotion("Weakness", 1);
+		overlay[0][1] = ItemFactory.createWeapon("Longsword", 1);
 		overlay[1][1] = ItemFactory.createWeapon("Sword", 1);
 		overlay[0][1] = ItemFactory.createPotion("Slowness", 1);*/
 		
