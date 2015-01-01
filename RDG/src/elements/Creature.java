@@ -223,6 +223,7 @@ public class Creature extends Element {
 	 * @param potion
 	 */
 	public void addActivePotions(Potion potion) {
+		System.out.println("ADDING ACTIVEPOTION WITH POWER " + potion.power);
 		activePotions.add(potion);
 	}
 	

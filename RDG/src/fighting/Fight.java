@@ -525,6 +525,8 @@ public class Fight extends View implements Runnable {
 			/* perform Attack of creature first in round */
 			attackControl(creature1, creature2);
 			
+			System.out.println("finished attackControl1");
+			
 			/* potion effects for a creature are applied after its attack */
 			potionEffects(creature1);
 			
@@ -551,6 +553,8 @@ public class Fight extends View implements Runnable {
 			/* perform Attack of creature first in round */
 			attackControl(creature2, creature1);
 			
+			System.out.println("finished attackControl 2");
+			
 			Thread.sleep(1000);
 			
 			/* potion effects for a creature are applied after its attack */
@@ -570,7 +574,9 @@ public class Fight extends View implements Runnable {
 		} else {
 			fightLoser = enemy;
 			//give attribute bonus to winner of the fight
-			attributeBonusForWinner((Monster) fightLoser);
+			if (fightLoser instanceof Monster) {
+				attributeBonusForWinner((Monster) fightLoser);
+			}
 			//set bonussed original values as new normal player values
 			player.resetOriginals(); 
 		}
@@ -653,6 +659,7 @@ public class Fight extends View implements Runnable {
 		switch (type) {
 			case ALL:
 				System.err.println("sending all");
+				float finishedFightsDivisorPotions = 50f;
 				if (this.humanFightHost == true) {
 					data.put("slave", 1f); //other player is slave in determineFirstAttack 
 				} else {
@@ -662,7 +669,7 @@ public class Fight extends View implements Runnable {
 				data.put("accuracy", this.player.getAccuracy());
 				data.put("speed", this.player.getSpeed());
 				data.put("strength", this.player.getStrength());
-				data.put("fightsMultiplier", this.finishedFights);
+				data.put("fightsMultiplier", 1 + (this.finishedFights/finishedFightsDivisorPotions));
 				data.put("armorSpeedMalusSum", armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.SPEED));
 				data.put("weaponSpeedMalusMax", armorView.getStats(ArmorStatsTypes.WEAPONS, ArmorStatsMode.MAX, ArmorStatsAttributes.SPEED));
 				data.put("armorSum", armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.ARMOR));
@@ -681,7 +688,8 @@ public class Fight extends View implements Runnable {
 					data.put("weaponSpeedMalusMax", armorView.getStats(ArmorStatsTypes.WEAPONS, ArmorStatsMode.MAX, ArmorStatsAttributes.SPEED));
 					data.put("armorSum", armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.ARMOR));
 				} else if (tempMap.get("activeAttack") == 6f) {
-					data.put("selectedPotion", this.selectedPotion.power);
+					System.out.println("SELECTED POTION: " + this.selectedPotion);
+					data.put(this.selectedPotion.NAME, this.selectedPotion.power);
 				} 
 				break;
 			case FIRST:
@@ -712,6 +720,7 @@ public class Fight extends View implements Runnable {
 						
 		if ((!humanFight) || (creature1 == this.player)) {
 			this.selectedPotion = armorView.getSelectedPotion();
+			System.out.println("getSelectedPotion power: " + this.selectedPotion.power);
 		}
 		else {
 			
@@ -821,11 +830,6 @@ public class Fight extends View implements Runnable {
 			}*/
 		}
 		
-		/* show main attack screen if it is the player's turn */
-		if (creature1 == this.player) {
-			this.attackScreen = AttackScreens.MAIN;
-		}
-		
 		System.err.println(this.attackScreen);
 		
 		float activeAttackNmb = 0;
@@ -877,15 +881,13 @@ public class Fight extends View implements Runnable {
 				}
 				
 				/* select potion */	
-				selectedPotion = getSelectedPotion(creature1);	
+				this.selectedPotion = getSelectedPotion(creature1);	
 								
 				if (selectedPotion != null) {
 					/* manage the handling of a drunk potion */
 					usePotion(creature1, creature2, selectedPotion);
 				}
 				
-				/* reset selectedPotion */
-				selectedPotion = null;
 				activeAttackNmb = 6f;
 				break;
 			case PARRY:
@@ -921,11 +923,18 @@ public class Fight extends View implements Runnable {
 		}
 		
 		/* actual attack */
-		attack(creature1, creature2);
+		if (activeAttackNmb > 6f || activeAttackNmb < 5f) {
+			attack(creature1, creature2);
+		} else if (creature1 == this.player && this.humanFight) {
+			sendData(FightSendType.ATTACK);
+		}
 		
 		/* parryMultiplier is used on every attack and only temporarily increased when a creature chooses to parry
 		 * -> so it needs to be reset */
 		parryMultiplier = 1.0f;	
+		
+		/* reset selectedPotion */
+		selectedPotion = null;
 		
 	}
 	
@@ -1491,6 +1500,15 @@ public class Fight extends View implements Runnable {
 	 * Is called every time the player uses a potion (directly or indirectly).
 	 */
 	private void usePotion(Creature potionTaker, Creature opponent, Potion potion) {
+		
+		System.out.println("TRYING TO USE POTION " + potion.NAME);
+		System.out.println("WITH POWER" + potion.power);
+		
+		if (potionTaker == this.player) {
+			System.out.println("POTIONTAKER: SELF");
+		} else {
+			System.out.println("POTIONTAKER: OPPONENT");
+		}
 
 		/* if player uses antidote / removes the first poison in the list */
 		if (potion.MODE == Modes.LIFT) {
@@ -1514,6 +1532,7 @@ public class Fight extends View implements Runnable {
 				chatMessage(potionTaker.NAME + " uses " + potion.NAME + " against " + opponent.NAME);
 				opponent.addActivePotions(potion);
 				if (potion.MODE == Modes.TDECR) {
+					System.out.println("Temporary decrease on potion with power " + potion.power);
 					potionDecrease(opponent, potion);
 				}
 			}
@@ -1528,6 +1547,7 @@ public class Fight extends View implements Runnable {
 
 		/* apply all non temporary potion effects */
 		for (Potion potion : creature.getActivePotions()) {
+			System.out.println("in list of active potions: " + potion.NAME + " - " + potion.power);
 			potion.DURATION--;
 			switch(potion.MODE) {
 			case INCR: 
@@ -1576,17 +1596,23 @@ public class Fight extends View implements Runnable {
 	 * @param potion
 	 */
 	private void potionDecrease(Creature creature, Potion potion) {
+		
+		System.out.println("in PotionDecrease has power " + potion.power);
 				
 		/* constants */
 		float finishedFightsDivisor = 50f;
 		
 		/* variables */
 		float finishedFightsMult = 1 + (finishedFights / finishedFightsDivisor);
-		if (creature == this.enemy && (creature instanceof Player)) {
+		if (creature == this.player && (creature instanceof Player)) { //this.player cause decrease is on opponent
 			finishedFightsMult = enemyFightsMultiplier;
 		}
 		
 		if (potion.DURATION > 0) {
+			System.out.println("in PotionDecrease with duration > 0 has power " + potion.power);
+			float tempval = round(potion.power, 1) * finishedFightsMult;
+			System.out.println("finishedFightsMult: " + finishedFightsMult);
+			System.out.println("tempval: " + tempval);
 			chatMessage(potion.NAME + " decreasing " + creature.NAME + "'s " + potion.EFFECT + " by " + round(potion.power, 1) * finishedFightsMult);
 		}
 			
@@ -1768,10 +1794,7 @@ public class Fight extends View implements Runnable {
 			setFirst(message.fightvalues);
 		} else if (message.fightvalues.containsKey("activeAttack")) {
 			setAttack(message.fightvalues);
-		} else if (message.fightvalues.containsKey("armorSum")) {
-			//setAttack(message.fightvalues);
-			setSet(message.fightvalues);
-		}
+		} 
 	}
 	
 	/**Set initializing data at begin of human fight.
@@ -1793,6 +1816,7 @@ public class Fight extends View implements Runnable {
 		this.enemy.setStrength(fightvalues.get("strength"));
 		this.enemy.setOrStrength(fightvalues.get("strength"));
 		this.enemyFightsMultiplier = fightvalues.get("fightsMultiplier");
+		System.out.println("enemyFightsMultiplier set to " + this.enemyFightsMultiplier);
 		this.enemyArmorSpeedMalusSum = fightvalues.get("armorSpeedMalusSum");
 		this.enemyWeaponSpeedMalusMax = fightvalues.get("weaponSpeedMalusMax");
 		this.enemyArmorSum = fightvalues.get("armorSum");
@@ -1813,21 +1837,11 @@ public class Fight extends View implements Runnable {
 		this.firstSet = true;
 	}
 	
-	/**Set stats data from equipped items when other player changes set.
-	 * @param fightvalues
-	 */
-	private synchronized void setSet(Map<String, Float> fightvalues) {
-		System.err.println("setting Set");
-		this.enemyArmorSpeedMalusSum = fightvalues.get("armorSpeedMalusSum");
-		this.enemyWeaponSpeedMalusMax = fightvalues.get("weaponSpeedMalusMax");
-		this.enemyArmorSum = fightvalues.get("armorSum");
-	}
-	
 	/**Set after each attack performed by other human player.
 	 * @param fightvalues
 	 */
 	private synchronized void setAttack(Map<String, Float> fightvalues) {
-		System.err.println("setting Attack");
+		System.err.println("setting Attack " + fightvalues.get("activeAttack"));
 		if(fightvalues.get("activeAttack") == 1f || fightvalues.get("activeAttack") == 7f) {
 			if (fightvalues.get("activeAttack") == 1f) {
 				this.activeAttackType = Attacks.TORSO;
@@ -1849,17 +1863,27 @@ public class Fight extends View implements Runnable {
 			this.enemyAttackHealthDamage = fightvalues.get("healthDamage");
 			this.enemyAttackAttributeDamage = fightvalues.get("attributeDamage");
 		} else if (fightvalues.get("activeAttack") == 5f) {
+			System.out.println("    setting set");
 			this.activeAttackType = Attacks.SET;
-			fightvalues.put("armorSpeedMalusSum", armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.SPEED));
-			fightvalues.put("weaponSpeedMalusMax", armorView.getStats(ArmorStatsTypes.WEAPONS, ArmorStatsMode.MAX, ArmorStatsAttributes.SPEED));
-			fightvalues.put("armorSum", armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.ARMOR));
+			this.enemyArmorSpeedMalusSum = fightvalues.get("armorSpeedMalusSum");
+			this.enemyWeaponSpeedMalusMax = fightvalues.get("weaponSpeedMalusMax");
+			this.enemyArmorSum = fightvalues.get("armorSum");
+			System.out.println("enemyArmorSpeedMalusSum: " + this.enemyArmorSpeedMalusSum);
+			System.out.println("enemyWeaponSpeedMalusMax: " + this.enemyWeaponSpeedMalusMax);
+			System.out.println("enemyArmorSum: " + this.enemyArmorSum);
 		} else if (fightvalues.get("activeAttack") == 6f) {
+			System.out.println("    setting potion");
 			this.activeAttackType = Attacks.POTION;
+			for (Entry<String, Float> entry : fightvalues.entrySet()) {
+				System.out.println("     " + entry.getKey() + ": " + entry.getValue());
+			}
 			for (String potionName : resources.POTIONS) {
 				if (fightvalues.containsKey(potionName)) {
 					try {
 						this.selectedPotion = ItemFactory.createPotion(potionName, 1);
 						this.selectedPotion.power = fightvalues.get(potionName);
+						System.out.println("Name of Potion: " + this.selectedPotion.NAME);
+						System.out.println("Power of Potion: " + this.selectedPotion.power);
 					} catch (SlickException e) {
 						e.printStackTrace();
 					}
@@ -1900,11 +1924,15 @@ public class Fight extends View implements Runnable {
 	 * @return rounded value for n places
 	 */
 	private float round(float value, int places) {
+		
+		System.out.println("round value of " + value);
+		
 	    if (places < 0) throw new IllegalArgumentException();
 
 	    long factor = (long) Math.pow(10, places);
 	    value = value * factor;
 	    long tmp = Math.round(value);
+	    System.out.println("round returing " + (float) tmp / factor + " for value " + value);
 	    return (float) tmp / factor;
 	}
 

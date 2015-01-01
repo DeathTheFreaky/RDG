@@ -396,9 +396,9 @@ public class Game extends BasicGame {
 					fightInstance.processMessages(message);
 					break;
 				case GENERAL:
-						if (message.event.equals("humanFightStart") && message.trigger) {
-							gameEnvironment.startFight((Creature) opponent);
-						}
+					if (message.event.equals("humanFightStart") && message.trigger) {
+						gameEnvironment.startFight((Creature) opponent);
+					}
 					break;
 				case ITEM:
 					map.getOverlay()[message.itempos[0]][message.itempos[1]] = MapConverter.fillImage(message.item, message.itempos[0], message.itempos[1]);
