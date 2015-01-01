@@ -1,6 +1,7 @@
 package gameEssentials;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Point;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,10 +12,11 @@ import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.newdawn.slick.BasicGame;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.TrueTypeFont;
 import org.xml.sax.SAXException;
 
 import at.RDG.network.NetworkManager;
@@ -174,6 +176,14 @@ public class Game extends BasicGame {
 	
 	/* game Container for access by gameLoad thread */
 	GameContainer container;
+
+	/* shown when human player has defeated other human player */
+	private String endScreen = null;
+	private int endCtr = 50; //50*100ms = 5 seconds
+	private boolean endFightStarted = false;
+	
+	/* after x counts, force a human fight */
+	private int timeLeftCtr = 6000; //6000 equals 10 mins -> 6000 * 100ms
 
 	/* Declare all classes, we need for the game (Factory, Resourceloader) */
 	// private ResourceManager resourceManager;
@@ -349,6 +359,28 @@ public class Game extends BasicGame {
  
 		/* run an Update */
 		if (timeToUpdate > UPDATE) {
+			
+			/* force a human fight when time runs out */
+			if (timeLeftCtr <= 0) {
+				if (!this.opponent.isInFight()) {
+					if (lobbyHost && endFightStarted == false) {
+						
+						/* load fight instance into new thread for fight to be carried out */
+						if (fightThread == null) {
+							fightThread = new Thread(fightInstance);
+						}
+						
+						/* start the fight and set the enemy */
+						fightThread.start();
+						fightInstance.setEnemy(opponent);
+						networkManager.sendMessage(new NetworkMessage("humanFightStart", true));
+						
+						endFightStarted = true;
+					}
+				}
+			}
+			timeLeftCtr--;
+			
 			if (this.loading == true) {
 				if (this.startetLoading == true) {
 					loadGame();
@@ -357,18 +389,27 @@ public class Game extends BasicGame {
 				}
 			} else {
 				if (this.mapSet) {
-					if (updatesUntilPlayerUpdate == 0) {
-						player.update(goTo);
-						if (keyReleased) {
-							goTo = null;
-							keyReleased = false;
+					if (this.endScreen == null) {
+						if (updatesUntilPlayerUpdate == 0) {
+							player.update(goTo);
+							if (keyReleased) {
+								goTo = null;
+								keyReleased = false;
+							}
+							updatesUntilPlayerUpdate = 3;
 						}
-						updatesUntilPlayerUpdate = 3;
+						gameEnvironment.update();
+						chat.update();
+						
+						updatesUntilPlayerUpdate--;
+					} else {
+						if (this.endCtr == 0) {
+							//return to main menu - how?
+							System.exit(0);
+						} else {
+							this.endCtr--;
+						}
 					}
-					gameEnvironment.update();
-					chat.update();
-					
-					updatesUntilPlayerUpdate--;
 				}
 				
 				processNetworkMessages();
@@ -398,6 +439,8 @@ public class Game extends BasicGame {
 				case GENERAL:
 					if (message.event.equals("humanFightStart") && message.trigger) {
 						gameEnvironment.startFight((Creature) opponent);
+					} else if (message.event.equals("roundSynchro")) {
+						fightInstance.setEnemyFinished();
 					}
 					break;
 				case ITEM:
@@ -426,22 +469,30 @@ public class Game extends BasicGame {
 	@Override
 	public void render(GameContainer container, Graphics g)
 			throws SlickException {
-				
+		
 		if (this.loading == true) {
 			g.drawString("Loading Game...", 250, 225);
 		} else {
 			if (this.mapSet) {
-				gameEnvironment.draw(container, g);
-				if (!(fightInstance.isInFight())) {
-					minimap.draw(container, g);
-				}
-				chat.draw(container, g);
-				armorView.draw(container, g);
-				inventoryView.draw(container, g);
+				if (this.endScreen == null) {
+					gameEnvironment.draw(container, g);
+					if (!(fightInstance.isInFight())) {
+						minimap.draw(container, g);
+					}
+					chat.draw(container, g);
+					armorView.draw(container, g);
+					inventoryView.draw(container, g);
 
-				if (dragging && draggedItem != null) {
-					g.drawImage(draggedItem.getImage(ImageSize.d20x20), draggedX,
-							draggedY);
+					if (dragging && draggedItem != null) {
+						g.drawImage(draggedItem.getImage(ImageSize.d20x20), draggedX,
+								draggedY);
+					}
+				} else {
+					g.setColor(Color.white);
+					Font font = new Font("Verdana", Font.BOLD, 20);
+					TrueTypeFont ttf = new TrueTypeFont(font, true);
+					g.setFont(ttf);
+					g.drawString(this.endScreen, 255, 225);
 				}
 			} else {
 				g.drawString("Loading Game...", 250, 225);
@@ -711,12 +762,18 @@ public class Game extends BasicGame {
 				&& newY <= HEIGHT) {
 			mouseOverChat = true;
 			mouseOverMinimap = false;
-		} else if (newX >= minimap.positionX
+		}
+		if (minimap != null) {
+			if (newX >= minimap.positionX
 				&& newX <= minimap.positionX + minimap.WIDTH
 				&& newY >= minimap.positionY
 				&& newY <= minimap.positionY + minimap.HEIGHT) {
 				mouseOverMinimap = true;
 				mouseOverChat = false;
+			} else {
+				mouseOverChat = false;
+				mouseOverMinimap = false;
+			}
 		} else {
 			mouseOverChat = false;
 			mouseOverMinimap = false;
@@ -823,5 +880,12 @@ public class Game extends BasicGame {
 	 */
 	public synchronized void setMapSet(boolean mapSet) {
 		this.mapSet = mapSet;
+	}
+
+	/**Set to end to display end screen when fight has finished.
+	 * @param string
+	 */
+	public synchronized void setEnd(String string) {
+		this.endScreen = string;		
 	}
 }

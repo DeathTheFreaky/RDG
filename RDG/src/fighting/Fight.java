@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.io.IOException;
 import java.util.Map;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -142,6 +143,10 @@ public class Fight extends View implements Runnable {
 		private Potion selectedPotion = null;
 		private float enemyAttackHealthDamage = 0;
 		private float enemyAttackAttributeDamage = 0;
+		
+		/* synchronize each attack round in multiplayer */
+		private boolean playerFinished = false;
+		private boolean enemyFinished = false;
 
 		
 	/**Constructs a Fight Instance, which will provide an environment for all fights a player engages in.
@@ -373,6 +378,9 @@ public class Fight extends View implements Runnable {
 			//wait for enemy to be set
 		}
 		
+		/* remember enemy creature to end game for human fights */
+		Creature myEnemy = this.enemy;
+		
 		switch (((Player) this.player).getDirectionOfView()) {
 			case NORTH:
 				((Player) this.player).setEnemyPosition(((Player) this.player).getPosition().x, ((Player) this.player).getPosition().y - 1, true);
@@ -402,7 +410,7 @@ public class Fight extends View implements Runnable {
 			System.err.println("Fight was interrupted");
 			e.printStackTrace();
 		}
-		
+		 
 		/* increase finishedFights Ctr only when player won the fight */
 		if (this.player != myLoser) {
 			finishedFights++;
@@ -421,6 +429,14 @@ public class Fight extends View implements Runnable {
 		nw.sendMessage(new NetworkMessage(0, 0));
 		
 		gameEnvironment.fightEnds(myLoser);
+		
+		if (myEnemy instanceof Player) {
+			if (this.player != myLoser) {
+				Game.getInstance().setEnd("Victory!");
+			} else {
+				Game.getInstance().setEnd("Defeat!");
+			}
+		}
 	}
 	
 	/**Sets the enemy creature for a fight.
@@ -450,7 +466,7 @@ public class Fight extends View implements Runnable {
 	 */
 	private void resetRoundVariables() {
 		
-		this.thisPlayerisFirst = 0f;
+		this.thisPlayerisFirst = 0f; // do not use -> blocking state in multiplayer
 		this.attackSet = false;
 		this.activeAttackType = null;
 		selectedPotion = null;
@@ -498,10 +514,10 @@ public class Fight extends View implements Runnable {
 			
 			Creature creature1 = null; //player1 comes first in a round
 			Creature creature2 = null;
-			
+						
 			/* Determine which creature gets the first Attack in a fight. */
 			float firstAttackTemp =  determineFirstAttack();
-			
+									
 			if (firstAttackTemp == 1) {
 				creature1 = this.player;
 				creature2 = this.enemy;
@@ -512,29 +528,25 @@ public class Fight extends View implements Runnable {
 				creature2 = this.player;
 				this.attackScreen = AttackScreens.WAITING;
 			}
-			
-			System.out.println("firstAttack by " + creature1.NAME);
-			
+						
 			Thread.sleep(1000);
-			
+						
 			/* perform Attack of creature first in round */
 			attackControl(creature1, creature2);
-			
-			System.out.println("finished attackControl1");
-			
+						
 			/* potion effects for a creature are applied after its attack */
 			potionEffects(creature1);
-			
+						
 			if (player.getHp() <= 0) {
 				break;
 			} else if (enemy.getHp() <= 0){
 				break;
 			}
-			
+						
 			/* set to null between attacks of player and enemy to determine if attack was already chosen */
 			activeAttack = null;
 			activeAttackType = null;
-			
+						
 			/* change attack screen */
 			if (firstAttackTemp == 1) {
 				this.attackScreen = AttackScreens.WAITING;
@@ -544,19 +556,22 @@ public class Fight extends View implements Runnable {
 			}
 			
 			Thread.sleep(1000);
-			
+						
 			/* perform Attack of creature first in round */
 			attackControl(creature2, creature1);
-			
-			System.out.println("finished attackControl 2");
-			
+						
 			Thread.sleep(1000);
 			
 			/* potion effects for a creature are applied after its attack */
 			potionEffects(creature2);
-			
+						
 			/* reset variables that need to be changed each round */
 			resetRoundVariables();
+			
+			/* synchronize end of each round in human fight */
+			if (this.humanFight) {
+				roundSynchro();
+			}
 		}
 		
 		/* determine who lost the fight */
@@ -584,6 +599,26 @@ public class Fight extends View implements Runnable {
 		return fightLoser;
 	}
 	
+	/**Synchronize two computers at the end of each round.
+	 * @throws InterruptedException 
+	 * 
+	 */
+	private void roundSynchro() throws InterruptedException {
+		
+		tempMap.clear();
+		sendData(FightSendType.SYNCHRO);
+		
+		playerFinished = true;
+		
+		/* wait for other computer to finish round */
+		while (this.enemyFinished == false) {
+			Thread.sleep(100);
+		}
+		
+		playerFinished = false;
+		enemyFinished = false;		
+	}
+
 	/**Waits for and manages humanFightInitialization.
 	 * @return true if it is a humenFight
 	 * @throws InterruptedException 
@@ -598,9 +633,7 @@ public class Fight extends View implements Runnable {
 			sendData(FightSendType.ALL);
 			
 			/* humanFightHost shall be set when establishing a lobby connection */
-				
-			System.err.println("waiting for enemy stats");
-			
+							
 			/*int timeoutctr = 0;
 			boolean successfulCommunication = false;*/
 			
@@ -651,7 +684,6 @@ public class Fight extends View implements Runnable {
 	
 		switch (type) {
 			case ALL:
-				System.err.println("sending all");
 				float finishedFightsDivisorPotions = 50f;
 				if (this.humanFightHost == true) {
 					data.put("slave", 1f); //other player is slave in determineFirstAttack 
@@ -668,7 +700,6 @@ public class Fight extends View implements Runnable {
 				data.put("armorSum", armorView.getStats(ArmorStatsTypes.ARMAMENT, ArmorStatsMode.SUM, ArmorStatsAttributes.ARMOR));
 				break;
 			case ATTACK:
-				System.err.println("sending attack and stats change");
 				data.put("activeAttack", tempMap.get("activeAttack"));
 				
 				if(tempMap.get("activeAttack") == 1f || tempMap.get("activeAttack") == 7f) {
@@ -685,17 +716,19 @@ public class Fight extends View implements Runnable {
 				} 
 				break;
 			case FIRST:
-				System.err.println("sending first");
 					data.put("firstPlayer", (float) this.thisPlayerisFirst);
 				break;
 		}
 		
-		for (Entry<String, Float> entry : data.entrySet()) {
-			System.out.println("     " + entry.getKey() + ": " + entry.getValue());
+		if (type == FightSendType.SYNCHRO) {
+			
+			nw.sendMessage(new NetworkMessage("roundSynchro", true));
+			
+		} else {
+			
+			/* send network message containing data */
+			nw.sendMessage(new NetworkMessage(data));
 		}
-		
-		/* send network message containing data */
-		nw.sendMessage(new NetworkMessage(data));
 		
 		/* reset data to be sent */
 		tempMap.clear();
@@ -786,9 +819,7 @@ public class Fight extends View implements Runnable {
 						
 		/* if this is a human fight, wait for other party to send relevant data */
 		if (creature1 != this.player && (creature1 instanceof Player)) {
-			
-			System.err.println("waiting for enemie's attack");
-			
+						
 			/* Wait for enemie's attack calculation */
 			/*int timeoutctr = 0;
 			boolean successfulCommunication = false;*/
@@ -1762,7 +1793,6 @@ public class Fight extends View implements Runnable {
 	 * @param fightvalues
 	 */
 	private synchronized void setAll(Map<String, Float> fightvalues) {
-		System.err.println("setting All");
 		if (fightvalues.get("slave") == 1f) {
 			this.humanFightSlave = true;
 		} else {
@@ -1787,7 +1817,6 @@ public class Fight extends View implements Runnable {
 	 * @param fightvalues
 	 */
 	private synchronized void setFirst(Map<String, Float> fightvalues) {
-		System.err.println("setting First");
 		/* if other pc says that he is first, the enemy (from this pc's pov) comes first */
 		if (fightvalues.get("firstPlayer") == 1f) {
 			this.thisPlayerisFirst = 2f;
@@ -1801,7 +1830,6 @@ public class Fight extends View implements Runnable {
 	 * @param fightvalues
 	 */
 	private synchronized void setAttack(Map<String, Float> fightvalues) {
-		System.err.println("setting Attack " + fightvalues.get("activeAttack"));
 		if(fightvalues.get("activeAttack") == 1f || fightvalues.get("activeAttack") == 7f) {
 			if (fightvalues.get("activeAttack") == 1f) {
 				this.activeAttackType = Attacks.TORSO;
@@ -1828,7 +1856,6 @@ public class Fight extends View implements Runnable {
 			this.enemyWeaponSpeedMalusMax = fightvalues.get("weaponSpeedMalusMax");
 			this.enemyArmorSum = fightvalues.get("armorSum");
 		} else if (fightvalues.get("activeAttack") == 6f) {
-			System.out.println("    setting potion");
 			this.activeAttackType = Attacks.POTION;
 			for (String potionName : resources.POTIONS) {
 				if (fightvalues.containsKey(potionName)) {
@@ -1889,5 +1916,12 @@ public class Fight extends View implements Runnable {
 	 */
 	public void setActiveAttackType(Attacks attack) {
 		this.activeAttackType = attack;
+	}
+	
+	/**Sets enemyFinished at end of each human fight round.
+	 * 
+	 */
+	public void setEnemyFinished() {
+		this.enemyFinished = true;
 	}
 }

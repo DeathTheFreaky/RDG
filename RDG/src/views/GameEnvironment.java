@@ -39,12 +39,6 @@ public class GameEnvironment extends View {
 	private Element[][] backgroundScope;
 	private Element[][] overlayScope;
 	
-	/* ArmorView is needed to interact with armory items */
-	private ArmorView armorView = null;
-	
-	/* Chat class used to display messages */
-	private Chat chat = null;
-	
 	/* instance of a Fight - to be loaded into fight thread */
 	private Fight fightInstance = null;
 	
@@ -144,10 +138,7 @@ public class GameEnvironment extends View {
 		downright.x = (int) size.width / BLOCK_SIZE;
 		downright.y = (int) size.height / BLOCK_SIZE;
 
-		this.armorView = armorView;
 		this.fightInstance = new Fight(this.origin, this.size, this, player, armorView, chat);
-		
-		this.chat = chat;
 		
 		update();
 	}

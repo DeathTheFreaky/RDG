@@ -429,9 +429,7 @@ public class Map {
 		default:
 			break;
 		}
-		
-		System.out.println(overlay[targetX][targetY]);
-				
+						
 		if (overlay[targetX][targetY] != null) {
 			if ((overlay[targetX][targetY] instanceof Potion) ||
 				  (overlay[targetX][targetY] instanceof Equipment)) {
