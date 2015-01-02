@@ -794,8 +794,8 @@ public class Map {
 					angle = 0f;
 				break;
 			case EAST:
-					doorx1 = (roomX + 1) * (Game.ROOMHEIGHT + 1);
-					doorx2 = (roomX + 1) * (Game.ROOMHEIGHT + 1);
+					doorx1 = (roomX + 1) * (Game.ROOMWIDTH + 1);
+					doorx2 = (roomX + 1) * (Game.ROOMWIDTH + 1);
 					doory1 = roomY * (Game.ROOMHEIGHT + 1) + (Game.ROOMHEIGHT / 2);
 					doory2 = roomY * (Game.ROOMHEIGHT + 1) + (Game.ROOMHEIGHT / 2) + 1;
 					angle = 90f;
@@ -808,8 +808,8 @@ public class Map {
 					angle = 180f;
 				break;
 			case WEST:
-					doorx1 = roomX * (Game.ROOMHEIGHT + 1);
-					doorx2 = roomX * (Game.ROOMHEIGHT + 1);
+					doorx1 = roomX * (Game.ROOMWIDTH + 1);
+					doorx2 = roomX * (Game.ROOMWIDTH + 1);
 					doory1 = roomY * (Game.ROOMHEIGHT + 1) + (Game.ROOMHEIGHT / 2);
 					doory2 = roomY * (Game.ROOMHEIGHT + 1) + (Game.ROOMHEIGHT / 2) + 1;
 					angle = 270f;
