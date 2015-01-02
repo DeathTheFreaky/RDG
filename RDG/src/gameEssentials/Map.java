@@ -758,6 +758,7 @@ public class Map {
 		if (lobbyHost) {
 			Maze maze = Maze.getInstance();
 			maze.setSize(Game.ROOMSHOR, Game.ROOMSVER);
+			maze.setAmountCorrectPaths(2);
 			maze.setTreasureRoom(true);
 			maze.generate();
 			//roomloop
