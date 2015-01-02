@@ -1,6 +1,6 @@
 package at.RDG.network;
 
-public class ArgumentOutOfRangeException extends Exception {
+public class ArgumentOutOfRangeException extends IllegalArgumentException {
 	
 	private static final long serialVersionUID = 7155848811526182777L;
 
