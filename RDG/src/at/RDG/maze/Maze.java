@@ -27,6 +27,8 @@ public class Maze {
 	private int endY = 8;
 	
 	private boolean treasureRoom = false;
+	private int treasureX;
+	private int treasureY;
 	
 	private int correctPaths = 1;
 
@@ -44,6 +46,8 @@ public class Maze {
 		this.endSet = new HashSet<MazeRoom>();
 		this.notFinishedEndSet = new HashSet<MazeRoom>();
 		this.freeSet = new HashSet<MazeRoom>();
+		this.treasureX = this.sizeX/2;
+		this.treasureY = this.sizeY/2;
 	}
 
 	/**
@@ -70,6 +74,9 @@ public class Maze {
 
 		this.endX = this.sizeX - 1;
 		this.endY = this.sizeY - 1;
+		
+		this.treasureX = this.sizeX/2;
+		this.treasureY = this.sizeY/2;
 	}
 
 	/**
@@ -167,7 +174,7 @@ public class Maze {
 		}
 		
 		if(this.treasureRoom){
-			this.freeSet.remove(this.maze[(this.sizeX/2)][(this.sizeY/2)]);
+			this.freeSet.remove(this.maze[this.treasureX][this.treasureY]);
 		}
 		
 		while(!this.freeSet.isEmpty()){
@@ -202,6 +209,12 @@ public class Maze {
 				break;
 			if(this.openRandomDoor(borderEndSet, this.startSet, borderStartSet, true))
 				paths++;
+		}
+		
+		if(this.treasureRoom){
+			MazeRoom r = maze[this.treasureX][this.treasureY];
+			r.openDoor(ViewingDirections.EAST);
+			r.openDoor(ViewingDirections.WEST);
 		}
 	}
 
@@ -270,6 +283,14 @@ public class Maze {
 		if(posX < 0 || posX > (this.sizeX-1) || posY < 0 || posY > (this.sizeY-1))
 			return null;
 		return this.maze[posX][posY];
+	}
+	
+	public int getTreasureRoomX(){
+		return this.treasureX;
+	}
+	
+	public int getTreasureRoomY(){
+		return this.treasureY;
 	}
 	
 	/**

@@ -9,12 +9,12 @@ import java.util.Map.Entry;
 
 import org.newdawn.slick.SlickException;
 
+import views.GameEnvironment;
+import views.InventoryView;
+import at.RDG.maze.Maze;
 import at.RDG.network.NetworkManager;
 import at.RDG.network.communication.MapConverter;
 import at.RDG.network.communication.NetworkMessage;
-import views.GameEnvironment;
-import views.InventoryView;
-import views.View;
 import elements.Creature;
 import elements.Element;
 import elements.Equipment;
@@ -756,10 +756,16 @@ public class Map {
 		}
 		
 		if (lobbyHost) {
+			Maze maze = Maze.getInstance();
+			maze.setSize(Game.ROOMSHOR, Game.ROOMSVER);
+			maze.setTreasureRoom(true);
+			maze.generate();
 			//roomloop
 			for (int i = 0; i < Game.ROOMSHOR; i++) {
 				for (int j = 0; j < Game.ROOMSVER; j++) {
-					setDoors();
+					for(ViewingDirections d : maze.getRoom(i, j).getOpenDoors()){
+						setDoors(i, j, d);
+					}
 				}
 			}
 		}
@@ -811,7 +817,7 @@ public class Map {
 		}
 		
 		/* treasure chamber */
-		if (roomX == Game.ROOMSHOR / 2 && roomY == Game.ROOMSVER / 2) {
+		if (roomX == Maze.getInstance().getTreasureRoomX() && roomY == Maze.getInstance().getTreasureRoomY()) {
 			background[doorx1][doory1] = GroundFactory.createDoorGround1(
 					doorx1, doory1, angle);
 			overlay[doorx1][doory1] = GroundFactory.createDoorGround1(
