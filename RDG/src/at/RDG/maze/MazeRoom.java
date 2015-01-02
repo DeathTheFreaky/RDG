@@ -14,7 +14,7 @@ public class MazeRoom {
 	private int posX;
 	private int posY;
 	
-	public MazeRoom(int posX, int posY){
+	MazeRoom(int posX, int posY){
 		this.posX = posX;
 		this.posY = posY;
 		if(allDirs.isEmpty()){
@@ -25,7 +25,7 @@ public class MazeRoom {
 		}
 	}
 	
-	public MazeRoom openDoor(ViewingDirections dir){
+	MazeRoom openDoor(ViewingDirections dir){
 		this.opendoors.add(dir);
 		MazeRoom r = null;
 		switch(dir){
@@ -53,7 +53,7 @@ public class MazeRoom {
 		this.opendoors.add(dir);
 	}
 	
-	public MazeRoom closeDoor(ViewingDirections dir){
+	MazeRoom closeDoor(ViewingDirections dir){
 		this.opendoors.remove(dir);
 		MazeRoom r = null;
 		switch(dir){
@@ -85,13 +85,17 @@ public class MazeRoom {
 		return this.opendoors.contains(dir);
 	}
 	
+	public ViewingDirections[] getOpenDoors(){
+		return this.opendoors.toArray(new ViewingDirections[this.opendoors.size()]);
+	}
+	
 	public ViewingDirections[] getClosedDoors(){
 		Set<ViewingDirections> temp = new HashSet<ViewingDirections>(allDirs);
 		temp.removeAll(this.opendoors);
 		return temp.toArray(new ViewingDirections[temp.size()]);
 	}
 	
-	public MazeRoom getAdjacentRoom(ViewingDirections dir){
+	MazeRoom getAdjacentRoom(ViewingDirections dir){
 		MazeRoom r = null;
 		switch(dir){
 		case NORTH:

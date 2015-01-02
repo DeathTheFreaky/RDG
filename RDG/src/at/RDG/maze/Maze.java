@@ -208,7 +208,7 @@ public class Maze {
 	/**
 	 * Prints the maze with ASCII symbols into the console if it was generated.
 	 */
-	public void print() {
+	private void print() {
 		if(this.maze == null)
 			return;
 		StringBuilder sb = new StringBuilder();
@@ -280,11 +280,6 @@ public class Maze {
 			INSTANCE = new Maze();
 		return INSTANCE;
 	}
-	
-	public static <T extends Enum<?>> T randomEnum(Class<T> enums){
-        int x = random.nextInt(enums.getEnumConstants().length);
-        return enums.getEnumConstants()[x];
-    }
 	
 	private boolean openRandomDoor(Set<MazeRoom> notFinished, Set<MazeRoom> additional, Set<MazeRoom> compare){
 		return openRandomDoor(notFinished,additional,compare,false);
