@@ -70,17 +70,21 @@ public class NetworkReader extends Thread {
 						.log(Level.WARNING,
 								"Lost connection to Enemy. Shuting down NetworkReader.");
 				Thread.currentThread().interrupt();
+				System.exit(1);
 			} catch (IOException e) {
 				Logger.getLogger(NetworkReader.class.getName())
 						.log(Level.SEVERE,
 								"Unable to read the object from the network stream or add it to the queue.",
 								e);
+				System.exit(1);
 			} catch (ClassNotFoundException e) {
 				Logger.getLogger(NetworkReader.class.getName())
 						.log(Level.SEVERE,
 								"Unable to read the object from the network stream.",
 								e);
+				System.exit(1);
 			} catch (InterruptedException e) {
+				System.exit(1);
 			}
 		}
 	}
