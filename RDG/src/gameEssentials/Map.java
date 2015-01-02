@@ -25,6 +25,7 @@ import general.Chances;
 import general.Enums.ItemClasses;
 import general.Enums.Levels;
 import general.Enums.RoomTypes;
+import general.Enums.ViewingDirections;
 import general.GroundFactory;
 import general.ResourceManager;
 import general.RoomFactory;
@@ -203,7 +204,7 @@ public class Map {
 		itemsBalance.put(ItemClasses.STRONG, strongMap);
 				
 		if (game.isLobbyHost()) {
-			fillWallsAndDoors(true);
+			fillWalls(true);
 			loadRooms(true);
 			updateRooms(true);
 			sendMap();
@@ -644,7 +645,7 @@ public class Map {
 	 * @throws SlickException
 	 * 
 	 */
-	public void fillWallsAndDoors(boolean lobbyHost) throws SlickException {
+	public void fillWalls(boolean lobbyHost) throws SlickException {
 
 		/* load walls and doors */
 		for (int i = 0; i <= getWidth(); i++) {
@@ -653,69 +654,14 @@ public class Map {
 				int wallmodx = i % (Game.ROOMWIDTH + 1);
 				int wallmody = j % (Game.ROOMHEIGHT + 1);
 				
+				int roomX = i / (Game.ROOMWIDTH + 1);
+				
 				/* determine door position on host */
 				if (lobbyHost) {
 					
 					/* load walls and set them to not passable */
 					if (wallmodx == 0 || wallmody == 0) {
 						overlay[i][j] = GroundFactory.createDarkGreyGround(i, j);
-					}
-					
-					/*
-					 * add doors in the middle -> testing only -> shall be moved to
-					 * labyrinth algorithm
-					 */
-					
-					/* horizontal doors */
-					if ((wallmodx == Game.ROOMWIDTH / 2 || wallmodx == Game.ROOMWIDTH / 2 + 1)
-							&& wallmody == 0 && j != 0 && j != getHeight()) {
-
-						int nodoory1 = getHeight() / 2 - (Game.ROOMHEIGHT / 2);
-						int nodoory2 = getHeight() / 2 + (Game.ROOMHEIGHT / 2 + 1);
-						int nodoorx1 = getWidth() / 2;
-						int nodoorx2 = getWidth() / 2 + 1;
-
-						if (!((i == nodoorx1 || i == nodoorx2) && ((j == nodoory1) || (j == nodoory2)))) {
-							
-							overlay[i][j] = null;
-							background[i][j] = GroundFactory.createGreyGround(i, j);
-						}
-						// passable[i][j] = true;
-					}
-
-					/* vertical doors */
-					if (wallmodx == 0
-							&& i != 0
-							&& i != getWidth()
-							&& (wallmody == Game.ROOMHEIGHT / 2 || wallmody == Game.ROOMHEIGHT / 2 + 1)) {
-
-						int nodoory1 = getHeight() / 2;
-						int nodoory2 = getHeight() / 2 + 1;
-						int nodoorx1 = getWidth() / 2 - (Game.ROOMWIDTH / 2);
-						int nodoorx2 = getWidth() / 2 + (Game.ROOMWIDTH / 2 + 1);
-
-						if (!((i == nodoorx1 || i == nodoorx2) && ((j == nodoory1) || (j == nodoory2)))) {
-							overlay[i][j] = null;
-							background[i][j] = GroundFactory.createGreyGround(i, j);
-						}
-						/*
-						 * place door texture on background and overlay -> if key is
-						 * obtained -> remove door textures from overlay temporarily
-						 * when hitting "E" key
-						 */
-						else {
-							if (j == nodoory1) {
-								background[i][j] = GroundFactory.createDoorGround2(
-										i, j);
-								overlay[i][j] = GroundFactory.createDoorGround2(i,
-										j);
-							} else {
-								background[i][j] = GroundFactory.createDoorGround1(
-										i, j);
-								overlay[i][j] = GroundFactory.createDoorGround1(i,
-										j);
-							}
-						}
 					}
 				} 
 				
@@ -727,12 +673,75 @@ public class Map {
 							overlay[i][j] = null;
 						}
 						else if (overlay[i][j].NAME.equals("DoorGroundTreasureChamber1")) {
+							float angle = 0;
+							
+							/* walls */
+							boolean y1 = j == (getHeight() - 1) / 2 - Game.ROOMHEIGHT/2;
+							boolean y2 = j == (getHeight() - 1) / 2 + Game.ROOMHEIGHT/2;
+							boolean x1 = i == (getWidth() - 1) / 2 - Game.ROOMWIDTH/2;
+							boolean x2 = i == (getWidth() - 1) / 2 + Game.ROOMWIDTH/2;
+							
+							/* doors */
+							boolean b1 = j == (getHeight() - 1) / 2;
+							boolean b2 = j == (getHeight() - 1) / 2 + 1;
+							boolean a1 = i == (getWidth() - 1) / 2;
+							boolean a2 = i == (getWidth() - 1) / 2 + 1;
+							
+							if (y1 && a1) {
+								angle = 0f;
+							} else if (y1 && a2) {
+								angle = 0f;
+							} else if (x2 && b1) {
+								angle = 90f;
+							} else if (x2 && b2) {
+								angle = 90f;
+							} else if (y2 && a1) {
+								angle = 180f;
+							} else if (y2 && a2) {
+								angle = 180f;
+							} else if (x1 && b1) {
+								angle = 270f;
+							} else if (x1 && b2) {
+								angle = 270f;
+							}
 							background[i][j] = GroundFactory.createDoorGround1(
-									i, j);
+									i, j, angle);
 						}
 						else if (overlay[i][j].NAME.equals("DoorGroundTreasureChamber2")) {
+							
+							float angle = 0;
+							
+							/* walls */
+							boolean y1 = j == (getHeight() - 1) / 2 - Game.ROOMHEIGHT/2;
+							boolean y2 = j == (getHeight() - 1) / 2 + Game.ROOMHEIGHT/2;
+							boolean x1 = i == (getWidth() - 1) / 2 - Game.ROOMWIDTH/2;
+							boolean x2 = i == (getWidth() - 1) / 2 + Game.ROOMWIDTH/2;
+							
+							/* doors */
+							boolean b1 = j == (getHeight() - 1) / 2;
+							boolean b2 = j == (getHeight() - 1) / 2 + 1;
+							boolean a1 = i == (getWidth() - 1) / 2;
+							boolean a2 = i == (getWidth() - 1) / 2 + 1;
+							
+							if (y1 && a1) {
+								angle = 0f;
+							} else if (y1 && a2) {
+								angle = 0f;
+							} else if (x2 && b1) {
+								angle = 90f;
+							} else if (x2 && b2) {
+								angle = 90f;
+							} else if (y2 && a1) {
+								angle = 180f;
+							} else if (y2 && a2) {
+								angle = 180f;
+							} else if (x1 && b1) {
+								angle = 270f;
+							} else if (x1 && b2) {
+								angle = 270f;
+							}
 							background[i][j] = GroundFactory.createDoorGround2(
-									i, j);
+									i, j, angle);
 						}
 					}
 					
@@ -744,6 +753,80 @@ public class Map {
 					}
 				}
 			}
+		}
+		
+		if (lobbyHost) {
+			//roomloop
+			for (int i = 0; i < Game.ROOMSHOR; i++) {
+				for (int j = 0; j < Game.ROOMSVER; j++) {
+					setDoors();
+				}
+			}
+		}
+	}
+	
+	/**Creates doors in walls.
+	 * @param roomX
+	 * @param roomY
+	 * @param direction
+	 * @throws SlickException
+	 */
+	public void setDoors(int roomX, int roomY, ViewingDirections direction) throws SlickException {
+		
+		int doorx1 = 0;
+		int doorx2 = 0;
+		int doory1 = 0;
+		int doory2 = 0;
+		float angle = 0;
+		
+		switch (direction) {
+			case NORTH:
+					doory1 = roomY * (Game.ROOMHEIGHT + 1);
+					doory2 = roomY * (Game.ROOMHEIGHT + 1);
+					doorx1 = roomX * (Game.ROOMWIDTH + 1) + (Game.ROOMWIDTH / 2);
+					doorx2 = roomX * (Game.ROOMWIDTH + 1) + (Game.ROOMWIDTH / 2) + 1;
+					angle = 0f;
+				break;
+			case EAST:
+					doorx1 = (roomX + 1) * (Game.ROOMHEIGHT + 1);
+					doorx2 = (roomX + 1) * (Game.ROOMHEIGHT + 1);
+					doory1 = roomY * (Game.ROOMHEIGHT + 1) + (Game.ROOMHEIGHT / 2);
+					doory2 = roomY * (Game.ROOMHEIGHT + 1) + (Game.ROOMHEIGHT / 2) + 1;
+					angle = 90f;
+				break;
+			case SOUTH:
+					doory1 = (roomY + 1) * (Game.ROOMHEIGHT + 1);
+					doory2 = (roomY + 1) * (Game.ROOMHEIGHT + 1);
+					doorx1 = roomX * (Game.ROOMWIDTH + 1) + (Game.ROOMWIDTH / 2);
+					doorx2 = roomX * (Game.ROOMWIDTH + 1) + (Game.ROOMWIDTH / 2) + 1;
+					angle = 180f;
+				break;
+			case WEST:
+					doorx1 = roomX * (Game.ROOMHEIGHT + 1);
+					doorx2 = roomX * (Game.ROOMHEIGHT + 1);
+					doory1 = roomY * (Game.ROOMHEIGHT + 1) + (Game.ROOMHEIGHT / 2);
+					doory2 = roomY * (Game.ROOMHEIGHT + 1) + (Game.ROOMHEIGHT / 2) + 1;
+					angle = 270f;
+				break;
+		}
+		
+		/* treasure chamber */
+		if (roomX == Game.ROOMSHOR / 2 && roomY == Game.ROOMSVER / 2) {
+			background[doorx1][doory1] = GroundFactory.createDoorGround1(
+					doorx1, doory1, angle);
+			overlay[doorx1][doory1] = GroundFactory.createDoorGround1(
+					doorx1, doory1, angle);
+			background[doorx2][doory2] = GroundFactory.createDoorGround2(
+					doorx2, doory2, angle);
+			overlay[doorx2][doory2] = GroundFactory.createDoorGround2(
+					doorx2, doory2, angle);
+		} 
+		/* normal door */
+		else {
+			background[doorx1][doory1] = GroundFactory.createGreyGround(doorx1, doory1);
+			overlay[doorx1][doory1] = null;
+			background[doorx2][doory2] = GroundFactory.createGreyGround(doorx2, doory2);
+			overlay[doorx2][doory2] = null;
 		}
 	}
 
@@ -855,7 +938,7 @@ public class Map {
 	 */
 	public synchronized void setReceivedMapData(Element[][] overlay) throws SlickException {
 		this.overlay = overlay;
-		fillWallsAndDoors(false);
+		fillWalls(false);
 		loadRooms(false);
 		updateRooms(false);
 		game.setMapSet(true);
