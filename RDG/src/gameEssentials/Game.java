@@ -81,8 +81,8 @@ public class Game extends BasicGame {
 	public static final int SCOPEHEIGHT = 12;
 
 	/* room numbers */
-	public static int ROOMSHOR = 3;
-	public static int ROOMSVER = 3;
+	public static int ROOMSHOR = 9;
+	public static int ROOMSVER = 9;
 
 	/* number of tries when looking for a free field in a room */
 	public static int MAXTRIES = 15;

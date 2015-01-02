@@ -676,16 +676,16 @@ public class Map {
 							float angle = 0;
 							
 							/* walls */
-							boolean y1 = j == (getHeight() - 1) / 2 - Game.ROOMHEIGHT/2;
-							boolean y2 = j == (getHeight() - 1) / 2 + Game.ROOMHEIGHT/2;
-							boolean x1 = i == (getWidth() - 1) / 2 - Game.ROOMWIDTH/2;
-							boolean x2 = i == (getWidth() - 1) / 2 + Game.ROOMWIDTH/2;
+							boolean y1 = j == getHeight() / 2 - Game.ROOMHEIGHT/2;
+							boolean y2 = j == getHeight() / 2 + Game.ROOMHEIGHT/2;
+							boolean x1 = i == getWidth() / 2 - Game.ROOMWIDTH/2;
+							boolean x2 = i == getWidth() / 2 + Game.ROOMWIDTH/2;
 							
 							/* doors */
-							boolean b1 = j == (getHeight() - 1) / 2;
-							boolean b2 = j == (getHeight() - 1) / 2 + 1;
-							boolean a1 = i == (getWidth() - 1) / 2;
-							boolean a2 = i == (getWidth() - 1) / 2 + 1;
+							boolean b1 = j == getHeight() / 2;
+							boolean b2 = j == getHeight() / 2 + 1;
+							boolean a1 = i == getWidth() / 2;
+							boolean a2 = i == getWidth() / 2 + 1;
 							
 							if (y1 && a1) {
 								angle = 0f;
