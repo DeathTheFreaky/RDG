@@ -476,9 +476,9 @@ public class Game extends BasicGame {
 			if (this.mapSet) {
 				if (this.endScreen == null) {
 					gameEnvironment.draw(container, g);
-					if (!(fightInstance.isInFight())) {
+					/*if (!(fightInstance.isInFight())) {
 						minimap.draw(container, g);
-					}
+					}*/
 					chat.draw(container, g);
 					armorView.draw(container, g);
 					inventoryView.draw(container, g);
@@ -768,7 +768,8 @@ public class Game extends BasicGame {
 				&& newX <= minimap.positionX + minimap.WIDTH
 				&& newY >= minimap.positionY
 				&& newY <= minimap.positionY + minimap.HEIGHT) {
-				mouseOverMinimap = true;
+				//mouseOverMinimap = true;
+				mouseOverMinimap = false; //uncomment when minimap is activated
 				mouseOverChat = false;
 			} else {
 				mouseOverChat = false;
