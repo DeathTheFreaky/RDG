@@ -294,7 +294,7 @@ public class Maze {
 		//gets a random room
 		MazeRoom r = rooms[random.nextInt(rooms.length)];
 		//gets all closed doors of that random room if there are non it removes the room from the not finished set and returns
-		ViewingDirections[] closedDoors = r.getClosedDoors();
+		ViewingDirections[] closedDoors = r.getClosedDoorsArray();
 		if(closedDoors.length == 0){
 			notFinished.remove(r);
 			return false;

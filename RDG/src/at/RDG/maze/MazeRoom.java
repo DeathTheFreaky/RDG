@@ -85,11 +85,21 @@ public class MazeRoom {
 		return this.opendoors.contains(dir);
 	}
 	
-	public ViewingDirections[] getOpenDoors(){
+	public Set<ViewingDirections> getOpenDoors(){
+		return this.opendoors;
+	}
+	
+	public Set<ViewingDirections> getClosedDoors(){
+		Set<ViewingDirections> temp = new HashSet<ViewingDirections>(allDirs);
+		temp.removeAll(this.opendoors);
+		return temp;
+	}
+	
+	public ViewingDirections[] getOpenDoorsArray(){
 		return this.opendoors.toArray(new ViewingDirections[this.opendoors.size()]);
 	}
 	
-	public ViewingDirections[] getClosedDoors(){
+	public ViewingDirections[] getClosedDoorsArray(){
 		Set<ViewingDirections> temp = new HashSet<ViewingDirections>(allDirs);
 		temp.removeAll(this.opendoors);
 		return temp.toArray(new ViewingDirections[temp.size()]);
