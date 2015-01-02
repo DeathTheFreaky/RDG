@@ -279,12 +279,15 @@ public class GroundFactory {
 	 * @return
 	 * @throws SlickException 
 	 */
-	public static Element createDoorGround1(int positionX, int positionY) throws SlickException {
+	public static Element createDoorGround1(int positionX, int positionY, float angle) throws SlickException {
 
 		ResourceManager resources = new ResourceManager().getInstance();
 		SpriteSheet tiles = resources.TILES;
+		
+		Image doorImg = tiles.getSubImage(5, 3);
+		doorImg.rotate(angle);
 
-		return new Element("DoorGroundTreasureChamber1", tiles.getSubImage(5, 3), positionX, positionY);
+		return new Element("DoorGroundTreasureChamber1", doorImg, positionX, positionY);
 	}
 	
 	/**Creates door grounds with images taken from tiles Spritesheet.<br>
@@ -295,12 +298,15 @@ public class GroundFactory {
 	 * @return
 	 * @throws SlickException 
 	 */
-	public static Element createDoorGround2(int positionX, int positionY) throws SlickException {
+	public static Element createDoorGround2(int positionX, int positionY, float angle) throws SlickException {
 
 		ResourceManager resources = new ResourceManager().getInstance();
 		SpriteSheet tiles = resources.TILES;
 		
-		return new Element("DoorGroundTreasureChamber2", tiles.getSubImage(5, 3).getFlippedCopy(false, true), positionX, positionY);
+		Image doorImg = tiles.getSubImage(5, 3).getFlippedCopy(false, true);
+		doorImg.rotate(angle);
+		
+		return new Element("DoorGroundTreasureChamber2", doorImg, positionX, positionY);
 	}
 	
 
@@ -329,9 +335,9 @@ public class GroundFactory {
 		} else if (name.equals("BrownGround")) {
 			return createGreenGround(positionX, positionY).getImage(imageSize);
 		} else if (name.equals("DoorGroundTreasureChamber1")) {
-			return createDoorGround1(positionX, positionY).getImage(imageSize);
+			return createDoorGround1(positionX, positionY, 0).getImage(imageSize);
 		} else if (name.equals("DoorGroundTreasureChamber2")) {
-			return createDoorGround2(positionX, positionY).getImage(imageSize);
+			return createDoorGround2(positionX, positionY, 0).getImage(imageSize);
 		}
 		
 		return null;
