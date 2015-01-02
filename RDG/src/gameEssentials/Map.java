@@ -768,6 +768,9 @@ public class Map {
 					}
 				}
 			}
+			for(ViewingDirections d : maze.getRoom(maze.getTreasureRoomX(), maze.getTreasureRoomY()).getOpenDoors()){
+				setDoors(maze.getTreasureRoomX(), maze.getTreasureRoomY(), d);
+			}
 		}
 	}
 	
