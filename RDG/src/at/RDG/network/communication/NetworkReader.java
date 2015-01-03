@@ -73,7 +73,7 @@ public class NetworkReader extends Thread {
 			} catch (SocketException e) {
 				Logger.getLogger(NetworkReader.class.getName())
 						.log(Level.WARNING,
-								"Lost connection to Enemy. Shuting down NetworkReader.");
+								"Lost connection to Enemy. Shutting down NetworkReader.");
 				Thread.currentThread().interrupt();
 				Game.getInstance().quitGame();
 			} catch (IOException e) {

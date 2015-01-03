@@ -86,7 +86,6 @@ public class LobbyListener implements MouseListener {
 			if(((JButton) e.getComponent()).getActionCommand() == "createLobby" && !Lobby.gameRunning) {
 				String playername = frame.switchScreen(Scenes.CREATED_LOBBY);
 				if (playername != null) {
-					System.out.println("playername is: " + playername);
 					new Thread(createLobbyThread).start();
 					createLobbyThread.setPlayerName(playername);
 				}

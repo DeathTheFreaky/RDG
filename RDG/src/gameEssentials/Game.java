@@ -555,6 +555,14 @@ public class Game extends BasicGame {
 			}
 		}
 	}
+	
+	@Override
+    public boolean closeRequested()
+    {
+		/* quitGame() causes lobby to quit network connection and exits game with slicks exit method */
+		quitGame();
+		return false;
+    }
 
 	@Override
 	public void keyPressed(int key, char c) {
