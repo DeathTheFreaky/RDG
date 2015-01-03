@@ -265,4 +265,13 @@ public class Lobby extends JFrame {
 		
 		new Thread(new NewGame()).start();
 	}
+
+	/**At the end of game, quit the connection.
+	 * 
+	 */
+	public static void quitConnection() {
+		System.out.println("quitting connection");
+		network.stopConnection();
+		System.out.println("Am i connected after quitting connection? " + network.isConnected());
+	}
 }

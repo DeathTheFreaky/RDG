@@ -2,6 +2,7 @@ package at.RDG.network.communication;
 
 import gameEssentials.Game;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
@@ -67,6 +68,8 @@ public class NetworkReader extends Thread {
 			try {
 				NetworkMessage msg = (NetworkMessage) this.ois.readObject();
 				this.readQueue.put(msg);
+			} catch (EOFException e) {
+				Game.getInstance().quitGame();
 			} catch (SocketException e) {
 				Logger.getLogger(NetworkReader.class.getName())
 						.log(Level.WARNING,
@@ -87,7 +90,7 @@ public class NetworkReader extends Thread {
 				Game.getInstance().quitGame();
 			} catch (InterruptedException e) {
 				Game.getInstance().quitGame();
-			}
+			} 
 		}
 	}
 }
