@@ -183,7 +183,7 @@ public class Game extends BasicGame {
 	private boolean endFightStarted = false;
 	
 	/* after x counts, force a human fight */
-	private int timeLeftCtr = 6000; //6000 equals 10 mins -> 6000 * 100ms
+	private int timeLeftCtr = 10; //6000 equals 10 mins -> 6000 * 100ms
 	
 	/* quits the game */
 	private boolean running = true;

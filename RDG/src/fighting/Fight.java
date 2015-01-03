@@ -3,6 +3,7 @@ package fighting;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.io.IOException;
 import java.util.Map;
 
@@ -713,9 +714,15 @@ public class Fight extends View implements Runnable {
 		
 		if (type == FightSendType.SYNCHRO) {
 			
+			System.out.println("Synchro");
+			
 			nw.sendMessage(new NetworkMessage("roundSynchro", true));
 			
 		} else {
+			
+			for (Entry<String, Float> entry : data.entrySet()) {
+				System.out.println("     " + entry.getKey() + " - " + entry.getValue());
+			}
 			
 			/* send network message containing data */
 			nw.sendMessage(new NetworkMessage(data));
@@ -917,6 +924,8 @@ public class Fight extends View implements Runnable {
 					if (creature1 == this.player) {
 						chatMessage(creature1.NAME + "'s PARRY was unsuccessful", true);
 					}
+					parryMultiplier = 0.0f;
+					activeAttack = attacks.get(Attacks.TORSO);
 				}
 				activeAttackNmb = 7f;
 				break;
@@ -1823,8 +1832,10 @@ public class Fight extends View implements Runnable {
 			}
 			if (fightvalues.get("activeAttack") == 7f) {
 				this.activeAttackType = Attacks.PARRY;
+				System.out.println("parry in setAttack");
 			}
 			this.enemyAttackHealthDamage = fightvalues.get("healthDamage");
+			System.out.println("healthDamage in setAttack: " + this.enemyAttackHealthDamage);
 		} else if (fightvalues.get("activeAttack") >= 2f && fightvalues.get("activeAttack") <= 4f) {
 			if (fightvalues.get("activeAttack") == 2f) {
 				this.activeAttackType = Attacks.HEAD;
