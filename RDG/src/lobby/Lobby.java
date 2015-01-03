@@ -229,13 +229,23 @@ public class Lobby extends JFrame {
 		for (int i = 0; i < model.getRowCount(); i++) {
 			model.removeRow(i);
 		}
-
+		
 		for (Serverinfo s : lobbies) {
-			model.addRow(new Object[] { s.getLobbyName() });
+			model.addRow(new Object[] { s.getLobbyName(), s.getAddress().toString().replace("/", "") });
 		}
 		if (model.getRowCount() == 0) {
 			model.addRow(new Object[] { "There are no Lobbies!" });
 		}
+
+		this.revalidate();
+	}
+	
+	public void showSearchingLobbies() {
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		for (int i = 0; i < model.getRowCount(); i++) {
+			model.removeRow(i);
+		}
+		model.addRow(new Object[] { "Searching Lobbies..." });
 
 		this.revalidate();
 	}
@@ -246,6 +256,7 @@ public class Lobby extends JFrame {
 			model.removeRow(i);
 		}
 		model.addColumn("", new Object[] { "Searching for Lobbies..." });
+		model.addColumn("", new Object[] { "" });
 	}
 	
 	public void startClient() throws SlickException {
