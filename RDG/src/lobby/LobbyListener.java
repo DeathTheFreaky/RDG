@@ -83,10 +83,14 @@ public class LobbyListener implements MouseListener {
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
 		if(e.getComponent() instanceof JButton) {
-			if(((JButton) e.getComponent()).getActionCommand() == "createLobby") {
-				frame.switchScreen(Scenes.CREATED_LOBBY);
-				new Thread(createLobbyThread).start();
-			}else if(((JButton) e.getComponent()).getActionCommand() == "searchLobby") {
+			if(((JButton) e.getComponent()).getActionCommand() == "createLobby" && !Lobby.gameRunning) {
+				String playername = frame.switchScreen(Scenes.CREATED_LOBBY);
+				if (playername != null) {
+					System.out.println("playername is: " + playername);
+					new Thread(createLobbyThread).start();
+					createLobbyThread.setPlayerName(playername);
+				}
+			}else if(((JButton) e.getComponent()).getActionCommand() == "searchLobby" && !Lobby.gameRunning) {
 				new Thread(searchLobbyThread).start();
 				//frame.showAllLobbies();
 				frame.switchScreen(Scenes.SEARCH_LOBBY);
@@ -96,6 +100,7 @@ public class LobbyListener implements MouseListener {
 			}else if(((JButton) e.getComponent()).getActionCommand() == "exit") {
 				frame.leaveGame();
 			}else if(((JButton) e.getComponent()).getActionCommand() == "return") {
+				Lobby.lobbiesShown = false;
 				createLobbyThread.quit();
 				searchLobbyThread.quit();
 				frame.switchScreen(Scenes.MENU);

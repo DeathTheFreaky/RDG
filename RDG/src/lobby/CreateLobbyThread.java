@@ -6,6 +6,11 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 import org.newdawn.slick.SlickException;
 
 import at.RDG.network.ArgumentOutOfRangeException;
@@ -17,6 +22,7 @@ public class CreateLobbyThread implements Runnable {
 
 	private boolean quit;
 	private Lobby frame;
+	private String playername = null;
 	
 	public CreateLobbyThread(Lobby l) {
 		// TODO Auto-generated constructor stub
@@ -43,13 +49,15 @@ public class CreateLobbyThread implements Runnable {
 			/* TEST: lobbyHost */
 			networkManager.startLobby(Lobby.lobbyName);
 			
-			while (startGame == false) {
+			while (startGame == false || playername == null) {
 				
 				/* wait for client to establish connection */
 				if (networkManager.isConnected()) {
+					
 					startGame = true;
-					//LobbyListener.createLobby();
-					frame.startClient();
+					
+					frame.startClient(playername);
+					
 					/* stop lobby once connection has been established */
 					networkManager.stopLobby();
 				}
@@ -74,6 +82,13 @@ public class CreateLobbyThread implements Runnable {
 
 	public void quit() {
 		this.quit = true;
+	}
+
+	/**Sets playername
+	 * @param playername
+	 */
+	public synchronized void setPlayerName(String playername) {
+		this.playername = playername;
 	}
 	
 }
