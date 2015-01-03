@@ -189,7 +189,7 @@ public class Game extends BasicGame {
 	
 	/* after x counts, force a human fight */
 	private int gameLength = 10; //in minutes
-	private int timeLeftCtr = gameLength * 1; //UPDATE: 100ms * 10 * 60s * 10min => gameLength * 60000 -> 600000 ms = 600s = 10min
+	private int timeLeftCtr = gameLength * 1; //UPDATE: 100ms * 10 * 60s * 10min => gameLength * 600 -> 600000 ms = 600s = 10min
 	
 	/* quit game */
 	private boolean running = true;
