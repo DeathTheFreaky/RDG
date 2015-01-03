@@ -183,6 +183,7 @@ public class Lobby extends JFrame {
 				//game was not running
 			}
 			this.dispose();
+			System.exit(0); //actually close all open windows by exiting jvm
 		}
 	}
 

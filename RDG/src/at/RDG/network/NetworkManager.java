@@ -236,6 +236,9 @@ public class NetworkManager {
 	 * stops the connection to the other player.
 	 */
 	public void stopConnection() {
+		
+		/* please ensure that socket is closed -> method is called when quitting the game to release socket and network resources // Flo */
+		
 		if (this.writer.isAlive())
 			this.writer.interrupt();
 		if (this.reader.isAlive())
