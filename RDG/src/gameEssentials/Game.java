@@ -184,6 +184,9 @@ public class Game extends BasicGame {
 	
 	/* after x counts, force a human fight */
 	private int timeLeftCtr = 6000; //6000 equals 10 mins -> 6000 * 100ms
+	
+	/* quits the game */
+	private boolean running = true;
 
 	/* Declare all classes, we need for the game (Factory, Resourceloader) */
 	// private ResourceManager resourceManager;
@@ -360,6 +363,10 @@ public class Game extends BasicGame {
 		/* run an Update */
 		if (timeToUpdate > UPDATE) {
 			
+			if (!running) {
+				container.exit();
+			}
+			
 			/* force a human fight when time runs out */
 			if (timeLeftCtr <= 0) {
 				if (!this.opponent.isInFight()) {
@@ -405,7 +412,7 @@ public class Game extends BasicGame {
 					} else {
 						if (this.endCtr == 0) {
 							//return to main menu - how?
-							System.exit(0);
+							container.exit();
 						} else {
 							this.endCtr--;
 						}
@@ -888,5 +895,12 @@ public class Game extends BasicGame {
 	 */
 	public synchronized void setEnd(String string) {
 		this.endScreen = string;		
+	}
+	
+	/**Quits the game.
+	 * 
+	 */
+	public synchronized void quitGame() {
+		this.running = false;
 	}
 }

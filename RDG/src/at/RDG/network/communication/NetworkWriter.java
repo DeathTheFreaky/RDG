@@ -1,5 +1,7 @@
 package at.RDG.network.communication;
 
+import gameEssentials.Game;
+
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -59,15 +61,15 @@ public class NetworkWriter extends Thread {
 							.log(Level.WARNING,
 									"Lost connection to Enemy. Shuting down NetworkReader.");
 					Thread.currentThread().interrupt();
-					System.exit(1);
+					Game.getInstance().quitGame();
 				} catch (IOException e) {
 					Logger.getLogger(NetworkWriter.class.getName())
 							.log(Level.SEVERE,
 									"Unable to write the object into the network stream.",
 									e);
-					System.exit(1);
+					Game.getInstance().quitGame();
 				} catch (InterruptedException e) {
-					System.exit(1);
+					Game.getInstance().quitGame();
 					break;
 				}
 			}
@@ -82,7 +84,7 @@ public class NetworkWriter extends Thread {
 							.log(Level.INFO,
 									"NetworkWriter got interrupted and stops operating",
 									e);
-					System.exit(1);
+					Game.getInstance().quitGame();
 				}
 			}
 		}
