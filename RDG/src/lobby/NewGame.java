@@ -33,6 +33,9 @@ public class NewGame implements Runnable {
 				options, options[0]);
 		String playerName = txt.getText();
 		
+		if (playerName.equals("")) {
+			playerName = "Default Player";
+		}
 		
 		// TODO Auto-generated method stub
 		AppGameContainer app1 = null;

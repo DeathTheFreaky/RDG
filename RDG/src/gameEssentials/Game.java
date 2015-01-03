@@ -1,42 +1,10 @@
 package gameEssentials;
 
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Point;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.TrueTypeFont;
-import org.xml.sax.SAXException;
-
-import at.RDG.network.NetworkManager;
-import at.RDG.network.communication.MapConverter;
-import at.RDG.network.communication.NetworkMessage;
-import configLoader.Configloader;
 import elements.Creature;
 import elements.Element;
 import elements.Monster;
 import elements.Potion;
 import fighting.Fight;
-import views.ArmorView;
-import views.Chat;
-import views.GameEnvironment;
-import views.InventoryView;
-import views.Minimap;
-import views.View;
-import views.chat.Message;
 import general.Enums.AttackScreens;
 import general.Enums.Attacks;
 import general.Enums.Channels;
@@ -47,6 +15,40 @@ import general.Enums.ViewingDirections;
 import general.ItemFactory;
 import general.Main;
 import general.ResourceManager;
+
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Point;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import lobby.Lobby;
+
+import org.newdawn.slick.BasicGame;
+import org.newdawn.slick.Color;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.TrueTypeFont;
+import org.xml.sax.SAXException;
+
+import views.ArmorView;
+import views.Chat;
+import views.GameEnvironment;
+import views.InventoryView;
+import views.Minimap;
+import views.View;
+import views.chat.Message;
+import at.RDG.network.NetworkManager;
+import at.RDG.network.communication.MapConverter;
+import at.RDG.network.communication.NetworkMessage;
+import configLoader.Configloader;
 
 /**
  * Game class stores the main configuration parameters of a game and defines
@@ -187,7 +189,7 @@ public class Game extends BasicGame {
 	
 	/* after x counts, force a human fight */
 	private int gameLength = 10; //in minutes
-	private int timeLeftCtr = gameLength * 600; //6000 equals 10 mins -> 6000 * 100ms
+	private int timeLeftCtr = gameLength * 1; //6000 equals 10 mins -> 6000 * 100ms
 	
 	/* quit game */
 	private boolean running = true;
@@ -277,7 +279,7 @@ public class Game extends BasicGame {
 					| SAXException | IOException e) {
 				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
 						"Parsing Configuration Files failed.", e);
-				Game.getInstance().getGameContainer().exit();
+				quitGame();
 			}
 	
 			// Test Printing
@@ -373,6 +375,7 @@ public class Game extends BasicGame {
 			}
 			
 			if (!running) {
+				Lobby.quitConnection();
 				container.exit();
 			}
 			
@@ -421,7 +424,7 @@ public class Game extends BasicGame {
 					} else {
 						if (this.endCtr == 0) {
 							//return to main menu - how?
-							container.exit();
+							quitGame();
 						} else {
 							this.endCtr--;
 						}

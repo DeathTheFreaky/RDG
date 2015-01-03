@@ -35,6 +35,11 @@ public class CreateLobbyThread implements Runnable {
 		try {
 			networkManager = NetworkManager.getInstance();
 			
+			/* when playing two games in a row */
+			if (networkManager.isConnected()) {
+				System.out.println("i am still connected!");
+			}
+			
 			/* TEST: lobbyHost */
 			networkManager.startLobby(Lobby.lobbyName);
 			
@@ -46,10 +51,11 @@ public class CreateLobbyThread implements Runnable {
 					//LobbyListener.createLobby();
 					frame.startClient();
 					/* stop lobby once connection has been established */
-					//networkManager.stopLobby();
+					networkManager.stopLobby();
 				}
 				
 				if(quit) {
+					networkManager.stopLobby();
 					break;
 				}
 				
