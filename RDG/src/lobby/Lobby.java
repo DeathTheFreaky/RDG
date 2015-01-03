@@ -210,6 +210,9 @@ public class Lobby extends JFrame {
 					JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
 					options, options[0]);
 			lobbyName = txt.getText();
+			if (lobbyName.equals("")) {
+				lobbyName = "Default Lobby";
+			}
 			cl.next(container);
 			break;
 		case MENU:
