@@ -917,6 +917,8 @@ public class Fight extends View implements Runnable {
 					if (creature1 == this.player) {
 						chatMessage(creature1.NAME + "'s PARRY was unsuccessful", true);
 					}
+					parryMultiplier = 0.0f;
+					activeAttack = attacks.get(Attacks.TORSO);
 				}
 				activeAttackNmb = 7f;
 				break;
