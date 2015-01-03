@@ -82,6 +82,10 @@ public class NetworkManager {
 	 *         message.</br>A message cannot be gotten 2 times.
 	 */
 	public NetworkMessage getNextMessage() {
+		/*if (this.reader != null) {
+			System.out.println("reader is alive? " + this.reader.isAlive());
+		}*/
+		
 		if (this.reader == null || !this.reader.isAlive())
 			return null;
 		if (this.readQueue.isEmpty())
