@@ -188,6 +188,9 @@ public class Game extends BasicGame {
 	/* after x counts, force a human fight */
 	private int gameLength = 10; //in minutes
 	private int timeLeftCtr = gameLength * 600; //6000 equals 10 mins -> 6000 * 100ms
+	
+	/* quit game */
+	private boolean running = true;
 
 	/* Declare all classes, we need for the game (Factory, Resourceloader) */
 	// private ResourceManager resourceManager;
@@ -361,9 +364,13 @@ public class Game extends BasicGame {
 	@Override
 	public void update(GameContainer container, int delta)
 			throws SlickException {
- 
+		 
 		/* run an Update */
 		if (timeToUpdate > UPDATE) {
+			
+			if (!running) {
+				container.exit();
+			}
 			
 			/* force a human fight when time runs out */
 			if (timeLeftCtr <= 0) {
@@ -937,5 +944,12 @@ public class Game extends BasicGame {
 	 */
 	public GameContainer getGameContainer () {
 		return this.container;
+	}
+	
+	/**Quits the game.
+	 * 
+	 */
+	public synchronized void quitGame() {
+		this.running = false;
 	}
 }
