@@ -51,7 +51,7 @@ public class LobbyListener implements MouseListener {
 		scroll = new JScrollPane(instr);
 		scroll.setPreferredSize(new Dimension(550, 600));
 		
-		createLobbyThread = new CreateLobbyThread();
+		createLobbyThread = new CreateLobbyThread(frame);
 		searchLobbyThread = new SearchLobbyThread(frame);
 	}
 

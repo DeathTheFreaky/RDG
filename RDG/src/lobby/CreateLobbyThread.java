@@ -16,6 +16,12 @@ import at.RDG.network.UnableToStartConnectionException;
 public class CreateLobbyThread implements Runnable {
 
 	private boolean quit;
+	private Lobby frame;
+	
+	public CreateLobbyThread(Lobby l) {
+		// TODO Auto-generated constructor stub
+		this.frame = l;
+	}
 	
 	@Override
 	public void run() {
@@ -38,7 +44,7 @@ public class CreateLobbyThread implements Runnable {
 				if (networkManager.isConnected()) {
 					startGame = true;
 					//LobbyListener.createLobby();
-					Lobby.startClient();
+					frame.startClient();
 					/* stop lobby once connection has been established */
 					//networkManager.stopLobby();
 				}

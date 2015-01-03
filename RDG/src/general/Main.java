@@ -27,7 +27,6 @@ public class Main {
 
 		Lobby l =  new Lobby();
 		l.setVisible(true);
-		l.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		l.setResizable(false);
 		l.setSize(new Dimension(400, 200));
 	}

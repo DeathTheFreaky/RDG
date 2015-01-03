@@ -14,6 +14,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -82,6 +84,12 @@ public class Lobby extends JFrame {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		this.addWindowListener(new WindowAdapter() { 
+            public void windowClosing(WindowEvent event1) { 
+            	System.out.println("S");
+            } 
+        }); 
 		
 		container = getContentPane();
 		container.setLayout(new CardLayout());
@@ -237,19 +245,10 @@ public class Lobby extends JFrame {
 		model.addColumn("", new Object[] { "Searching for Lobbies..." });
 	}
 	
-	public static void startClient() throws SlickException {
-		AppGameContainer app1 = null;
-		try {
-			app1 = new AppGameContainer(Game.getInstance("Battle Dungeon Client"));
-		} catch (IOException e) {
-			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
-					"ServerSocket could not be created.", e);
-			System.exit(1);
-		} 
-		app1.setDisplayMode(Game.WIDTH, Game.HEIGHT, false); // Breite, Höhe, ???
-		app1.setTargetFrameRate(30); // 60 Frames pro Sekunde
-		app1.setAlwaysRender(true); // Spiel wird auch ohne Fokus aktualisiert
-		app1.setShowFPS(false);
-		app1.start();
+	public void startClient() throws SlickException {
+		this.switchScreen(Scenes.MENU);
+		//Lobby.this.setVisible(false);
+		
+		new Thread(new NewGame()).start();
 	}
 }
