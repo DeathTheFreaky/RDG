@@ -25,7 +25,7 @@ public class NewGame implements Runnable {
 		AppGameContainer app1 = null;
 		try {
 			Lobby.gameRunning = true;
-			app1 = new AppGameContainer(Game.getInstance("Battle Dungeon", playerName));
+			app1 = new AppGameContainer(Game.getInstance("Room Duelling Game", playerName));
 			app1.setDisplayMode(Game.WIDTH, Game.HEIGHT, false); // Breite, Höhe, ???
 			app1.setTargetFrameRate(30); // 60 Frames pro Sekunde
 			app1.setAlwaysRender(true); // Spiel wird auch ohne Fokus aktualisiert
