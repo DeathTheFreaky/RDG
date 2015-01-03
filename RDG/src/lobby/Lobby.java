@@ -37,6 +37,9 @@ public class Lobby extends JFrame {
 	public static List<Serverinfo> lobbies = new LinkedList<Serverinfo>();
 	public static String lobbyName = "DefaultLobbyName";
 	
+	/* force CreateLobbyThread and SearchLobbyThred to close */
+	public static boolean isRunning = true;
+	
 	private static NetworkManager network;
 
 	public enum Scenes {
