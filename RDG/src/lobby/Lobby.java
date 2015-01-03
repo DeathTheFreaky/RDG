@@ -206,7 +206,7 @@ public class Lobby extends JFrame {
 			JTextField txt = new JTextField(10);
 			panel.add(lbl);
 			panel.add(txt);
-			JOptionPane.showOptionDialog(null, panel, "The Title",
+			JOptionPane.showOptionDialog(null, panel, "Lobby Name",
 					JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
 					options, options[0]);
 			lobbyName = txt.getText();

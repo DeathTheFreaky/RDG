@@ -44,6 +44,6 @@ public class Enums {
 	public enum FightSendType{ALL, ATTACK, SET, FIRST, SYNCHRO};
 	
 	public enum ImageSize {d32x32, d20x20}
-	public enum MessageType {CHAT, PLAYERPOSITION, MAP, GENERAL, NETWORK, FIGHT, ITEM, FIGHTPOSITION}
+	public enum MessageType {CHAT, PLAYERPOSITION, MAP, GENERAL, NETWORK, FIGHT, ITEM, FIGHTPOSITION, STRING}
 
 }

@@ -58,6 +58,10 @@ public class NetworkMessage implements Serializable {
 	public final boolean trigger;
 	public final String event;
 	
+	//sending playername
+	public String eventString;
+	public String nwString;
+	
 	/**
 	 * The NetworkMessage predefined for network related messages.</br>
 	 * All other fields are null.
@@ -82,6 +86,8 @@ public class NetworkMessage implements Serializable {
 		this.enemyPosY = 0;
 		this.trigger = false;
 		this.event = null;
+		this.eventString = null;
+		this.nwString = null;
 	}
 	
 	/**
@@ -106,6 +112,8 @@ public class NetworkMessage implements Serializable {
 		this.enemyPosY = 0;
 		this.trigger = false;
 		this.event = null;
+		this.eventString = null;
+		this.nwString = null;
 	}
 	
 	/**
@@ -135,6 +143,8 @@ public class NetworkMessage implements Serializable {
 		this.enemyPosY = 0;
 		this.trigger = false;
 		this.event = null;
+		this.eventString = null;
+		this.nwString = null;
 	}
 	
 	/**
@@ -164,6 +174,8 @@ public class NetworkMessage implements Serializable {
 		this.enemyPosY = 0;
 		this.trigger = false;
 		this.event = null;
+		this.eventString = null;
+		this.nwString = null;
 	}
 	
 	/**
@@ -188,6 +200,8 @@ public class NetworkMessage implements Serializable {
 		this.enemyPosY = 0;
 		this.trigger = false;
 		this.event = null;
+		this.eventString = null;
+		this.nwString = null;
 	}
 	
 	/**The NetworkMessage predefined for initial map transfer.</br>
@@ -209,6 +223,8 @@ public class NetworkMessage implements Serializable {
 		this.enemyPosY = 0;
 		this.trigger = false;
 		this.event = null;
+		this.eventString = null;
+		this.nwString = null;
 	}
 	
 	/**The NetworkMessage predefined for telling other pc against whom the player currently fights.</br>
@@ -231,6 +247,32 @@ public class NetworkMessage implements Serializable {
 		this.enemyPosY = enemyY;
 		this.trigger = false;
 		this.event = null;
+		this.eventString = null;
+		this.nwString = null;
+	}
+	
+	/**The NetworkMessage predefined for sending strings for events to other computer.</br>
+	 * All other fields are null/0.
+	 * @param event
+	 * @param value
+	 */
+	public NetworkMessage(String event, String value) {
+		this.type = MessageType.STRING;
+		this.addr = null;
+		this.port = 0;
+		this.message = null;
+		this.itempos = null;
+		this.item = null;
+		this.playerpos = null;
+		this.playerdir = null;
+		this.fightvalues = null;
+		this.overlay = null;
+		this.enemyPosX = 0;
+		this.enemyPosY = 0;
+		this.trigger = false;
+		this.event = null;
+		this.eventString = event;
+		this.nwString = value;
 	}
 	
 	/**The NetworkMessage predefined for telling other pc about general synchro events like the start of a human fight.</br>
@@ -253,6 +295,8 @@ public class NetworkMessage implements Serializable {
 		this.enemyPosY = 0;
 		this.trigger = trigger;
 		this.event = event;
+		this.eventString = null;
+		this.nwString = null;
 	}
 	
 	/**
@@ -270,7 +314,7 @@ public class NetworkMessage implements Serializable {
 	 * @param fightvalues A Map for fightvalues.
 	 * @param overlay A two dimensional {@link Element} array.
 	 */
-	public NetworkMessage(MessageType type, InetAddress addr, int port, String msg, int[] itempos, Element item, int[] playerpos, ViewingDirections playerdir, Map<String,Float> fightvalues, Element[][] overlay, int enemyPosX, int enemyPosY, String event, boolean trigger){
+	public NetworkMessage(MessageType type, InetAddress addr, int port, String msg, int[] itempos, Element item, int[] playerpos, ViewingDirections playerdir, Map<String,Float> fightvalues, Element[][] overlay, int enemyPosX, int enemyPosY, String event, boolean trigger, String eventString, String nwString){
 		this.type = type;
 		this.addr = addr;
 		this.port = port;
@@ -285,6 +329,8 @@ public class NetworkMessage implements Serializable {
 		this.enemyPosY = enemyPosY;
 		this.trigger = trigger;
 		this.event = event;
+		this.eventString = eventString;
+		this.nwString = nwString;
 	}
 	
 }
