@@ -1,5 +1,7 @@
 package lobby;
 
+import gameEssentials.Game;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Container;
@@ -13,6 +15,7 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -22,6 +25,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+
 import org.newdawn.slick.SlickException;
 
 import at.RDG.network.NetworkManager;
@@ -170,6 +174,11 @@ public class Lobby extends JFrame {
 				"Do you really want to close the game?", "Leave Game?",
 				JOptionPane.YES_NO_OPTION);
 		if (eingabe == 0) { // Yes
+			try {
+				Game.getInstance().quitGame();
+			} catch (NullPointerException e) {
+				//game was not running
+			}
 			this.dispose();
 		}
 	}
