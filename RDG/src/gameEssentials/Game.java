@@ -274,7 +274,7 @@ public class Game extends BasicGame {
 					| SAXException | IOException e) {
 				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
 						"Parsing Configuration Files failed.", e);
-				System.exit(1);
+				Game.getInstance().getGameContainer().exit();
 			}
 	
 			// Test Printing
@@ -354,7 +354,7 @@ public class Game extends BasicGame {
 		} catch (SlickException e) {
 			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
 					"Failed to load game.", e);
-			System.exit(1);
+			Game.getInstance().getGameContainer().exit();
 		}
 	}
 
@@ -410,7 +410,7 @@ public class Game extends BasicGame {
 					} else {
 						if (this.endCtr == 0) {
 							//return to main menu - how?
-							System.exit(0);
+							container.exit();
 						} else {
 							this.endCtr--;
 						}
@@ -930,5 +930,12 @@ public class Game extends BasicGame {
 	 */
 	public synchronized void setEnd(String string) {
 		this.endScreen = string;		
+	}
+	
+	/**
+	 * @return game Container
+	 */
+	public GameContainer getGameContainer () {
+		return this.container;
 	}
 }
