@@ -10,6 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import lobby.Lobby;
 import at.RDG.network.communication.NetworkMessage;
 import at.RDG.network.communication.NetworkReader;
 import at.RDG.network.communication.NetworkWriter;
@@ -218,9 +219,10 @@ public class NetworkManager {
 			this.reader = new NetworkReader(this.socket, this.readQueue);
 			this.reader.start();
 			System.out.println("ClientReader started");
-		} catch (IOException e) {
+		} catch (IOException|NullPointerException e) {
 			Logger.getLogger(NetworkManager.class.getName()).log(Level.SEVERE,
 					"Unable to connect to server.", e);
+			Lobby.showLobbyClosed();
 			if (this.writer.isAlive())
 				this.writer.interrupt();
 			if (this.reader.isAlive())

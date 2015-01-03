@@ -1,16 +1,10 @@
 package lobby;
 
-import gameEssentials.Game;
-import general.Main;
-
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -19,22 +13,15 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
-
-import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.SlickException;
 
 import at.RDG.network.NetworkManager;
@@ -52,8 +39,6 @@ public class Lobby extends JFrame {
 		MENU, CREATED_LOBBY, SEARCH_LOBBY, INSTRUCTIONS
 	}
 
-	private GridBagConstraints constraints;
-
 	private Container container;
 	private LobbyListener listener;
 
@@ -70,13 +55,8 @@ public class Lobby extends JFrame {
 	private JLabel allLobbies;
 	private JButton returnToMenu;
 	private JButton returnToMenu2;
-	private JLabel instr;
-
 	private JScrollPane scroll;
-	private JListModel list;
-	private JTable table;
-	private JScrollPane scrollPane;
-
+	private static JTable table;
 	public Lobby() {
 		try {
 			network = NetworkManager.getInstance();
@@ -160,11 +140,10 @@ public class Lobby extends JFrame {
 					try {
 						try {
 							network.connect(lobbies.get(table.getSelectedRow()));
+							startClient();
 						} catch (UnableToStartConnectionException e1) {
-							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
-						startClient();
 					} catch (SlickException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -248,6 +227,15 @@ public class Lobby extends JFrame {
 		model.addRow(new Object[] { "Searching Lobbies..." });
 
 		this.revalidate();
+	}
+	
+	public static void showLobbyClosed() {
+		System.out.println("Showing lobby closed");
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		for (int i = 0; i < model.getRowCount(); i++) {
+			model.removeRow(i);
+		}
+		model.addRow(new Object[] { "Lobby closed in the meantime..." });
 	}
 
 	private void resetTable() {
