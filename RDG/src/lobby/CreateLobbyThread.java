@@ -50,6 +50,7 @@ public class CreateLobbyThread implements Runnable {
 				}
 				
 				if(quit) {
+					networkManager.stopLobby();
 					break;
 				}
 				
