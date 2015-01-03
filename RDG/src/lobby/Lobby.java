@@ -76,7 +76,7 @@ public class Lobby extends JFrame {
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() { 
             public void windowClosing(WindowEvent event1) { 
-            	System.out.println("S");
+            	leaveGame();
             } 
         }); 
 		

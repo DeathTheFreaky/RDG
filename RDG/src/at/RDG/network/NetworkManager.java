@@ -253,7 +253,7 @@ public class NetworkManager {
 	 * @return true if connected to another player and false if not.
 	 */
 	public boolean isConnected() {
-		if (this.socket != null && this.socket.isConnected())
+		if (this.socket != null && this.socket.isConnected() && !this.socket.isClosed())
 			return true;
 		return false;
 	}
