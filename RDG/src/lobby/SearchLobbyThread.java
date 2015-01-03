@@ -35,6 +35,8 @@ public class SearchLobbyThread implements Runnable {
 			int j = 0;
 			while(j < 50) {
 				Thread.sleep(100);
+				if(this.quit)
+					break;
 				j++;
 			}
 			

@@ -48,7 +48,6 @@ public class NetworkManager {
 	private NetworkManager() throws IOException {
 		this.writeQueue = new LinkedBlockingQueue<NetworkMessage>();
 		this.readQueue = new LinkedBlockingQueue<NetworkMessage>();
-		this.serverSocket = new ServerSocket();
 	}
 
 	/**
@@ -63,16 +62,16 @@ public class NetworkManager {
 			return;
 		// writes into the queue and notifies the writer thread that something
 		// is in the queue.
-		//System.out.println("send msg start");
+		// System.out.println("send msg start");
 		try {
 			this.writeQueue.put(msg);
 		} catch (InterruptedException e) {
 		}
-		//System.out.println("send msg on queue");
+		// System.out.println("send msg on queue");
 		synchronized (this.writer) {
 			this.writer.notify();
 		}
-		//System.out.println("semd msg notified");
+		// System.out.println("semd msg notified");
 	}
 
 	/**
@@ -82,9 +81,9 @@ public class NetworkManager {
 	 *         message.</br>A message cannot be gotten 2 times.
 	 */
 	public NetworkMessage getNextMessage() {
-		if(this.reader == null || !this.reader.isAlive())
+		if (this.reader == null || !this.reader.isAlive())
 			return null;
-		if(this.readQueue.isEmpty())
+		if (this.readQueue.isEmpty())
 			return null;
 		try {
 			return this.readQueue.take();
@@ -112,55 +111,52 @@ public class NetworkManager {
 			UnableToStartConnectionException, IllegalThreadStateException,
 			IOException {
 		// starts thread to accept incomming connection
-		this.serverSocket.bind(null);
-		if (this.acceptor == null) {
-			this.acceptor = new Thread() {
-				@Override
-				public void interrupt() {
-					try {
-						serverSocket.close();
-					} catch (IOException e) {
-					} finally {
-						super.interrupt();
-						Logger.getLogger(NetworkManager.class.getName())
-								.log(Level.INFO,
-										"The thread is interrupted and the socked is closed");
-					}
+		this.serverSocket = new ServerSocket(0);
+		this.acceptor = new Thread() {
+			@Override
+			public void interrupt() {
+				try {
+					serverSocket.close();
+				} catch (IOException e) {
+				} finally {
+					super.interrupt();
+					Logger.getLogger(NetworkManager.class.getName())
+							.log(Level.INFO,
+									"The thread is interrupted and the socked is closed");
 				}
+			}
 
-				@Override
-				public void run() {
-					try {
-						socket = serverSocket.accept();
-						System.out.println("socket accepted");
-						writer = new NetworkWriter(socket, writeQueue);
-						writer.start();
-						System.out.println("HostWriter started");
-						reader = new NetworkReader(socket, readQueue);
-						reader.start();
-						System.out.println("HostReader started");
-					} catch (IOException e) {
-						Logger.getLogger(NetworkManager.class.getName())
-								.log(Level.SEVERE,
-										"Unable accept connection or thread was interrupted.",
-										e);
-					}
+			@Override
+			public void run() {
+				try {
+					socket = serverSocket.accept();
+					System.out.println("socket accepted");
+					writer = new NetworkWriter(socket, writeQueue);
+					writer.start();
+					System.out.println("HostWriter started");
+					reader = new NetworkReader(socket, readQueue);
+					reader.start();
+					System.out.println("HostReader started");
+				} catch (IOException e) {
+					Logger.getLogger(NetworkManager.class.getName())
+							.log(Level.SEVERE,
+									"Unable accept connection or thread was interrupted.",
+									e);
 				}
-			};
-		}
+			}
+		};
 		this.acceptor.start();
 		// starts lobby thread
-		if (this.lserver == null) {
-			try {
-				this.lserver = new LobbyServer(lobbyName,
-						this.serverSocket.getLocalPort());
-			} catch (NoSuchAlgorithmException e) {
-				Logger.getLogger(NetworkManager.class.getName()).log(
-						Level.SEVERE, "Unable to create UID for server.", e);
-				throw new UnableToStartConnectionException(
-						"The LobbyServer is unable to start.");
-			}
+		try {
+			this.lserver = new LobbyServer(lobbyName,
+					this.serverSocket.getLocalPort());
+		} catch (NoSuchAlgorithmException e) {
+			Logger.getLogger(NetworkManager.class.getName()).log(Level.SEVERE,
+					"Unable to create UID for server.", e);
+			throw new UnableToStartConnectionException(
+					"The LobbyServer is unable to start.");
 		}
+
 		this.lserver.start();
 
 		System.out.println("ServerSocket Port: "
@@ -188,8 +184,7 @@ public class NetworkManager {
 	 */
 	public void searchLobby(List<Serverinfo> lobbyList)
 			throws IllegalThreadStateException {
-		if (this.searcher == null)
-			this.searcher = new LobbySearcher(lobbyList);
+		this.searcher = new LobbySearcher(lobbyList);
 		this.searcher.start();
 	}
 
@@ -234,14 +229,14 @@ public class NetworkManager {
 					"The connection is unable to start.");
 		}
 	}
-	
+
 	/**
 	 * stops the connection to the other player.
 	 */
-	public void stopConnection(){
-		if(this.writer.isAlive())
+	public void stopConnection() {
+		if (this.writer.isAlive())
 			this.writer.interrupt();
-		if(this.reader.isAlive())
+		if (this.reader.isAlive())
 			this.reader.interrupt();
 	}
 
@@ -249,7 +244,7 @@ public class NetworkManager {
 	 * @return true if connected to another player and false if not.
 	 */
 	public boolean isConnected() {
-		if(this.socket != null && this.socket.isConnected())
+		if (this.socket != null && this.socket.isConnected())
 			return true;
 		return false;
 	}
