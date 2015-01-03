@@ -5,6 +5,8 @@ import java.awt.Font;
 import java.awt.Point;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -173,6 +175,7 @@ public class Game extends BasicGame {
 	private boolean loading = true;
 	private boolean startetLoading = false;
 	private boolean mapSet = false;
+	private boolean opponentNameSet = false;
 	
 	/* game Container for access by gameLoad thread */
 	GameContainer container;
@@ -183,9 +186,10 @@ public class Game extends BasicGame {
 	private boolean endFightStarted = false;
 	
 	/* after x counts, force a human fight */
-	private int timeLeftCtr = 10; //6000 equals 10 mins -> 6000 * 100ms
+	private int gameLength = 10; //in minutes
+	private int timeLeftCtr = gameLength * 600; //6000 equals 10 mins -> 6000 * 100ms
 	
-	/* quits the game */
+	/* quit game */
 	private boolean running = true;
 
 	/* Declare all classes, we need for the game (Factory, Resourceloader) */
@@ -217,6 +221,7 @@ public class Game extends BasicGame {
 		super(title);
 		this.playerName = playerName;
 		this.networkManager = NetworkManager.getInstance();
+		networkManager.sendMessage(new NetworkMessage("playerName", this.playerName));
 	}
 	
 	/**Only returns existing instance of game or null if none instance exists yet.
@@ -272,7 +277,7 @@ public class Game extends BasicGame {
 					| SAXException | IOException e) {
 				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
 						"Parsing Configuration Files failed.", e);
-				System.exit(1);
+				Game.getInstance().getGameContainer().exit();
 			}
 	
 			// Test Printing
@@ -352,16 +357,20 @@ public class Game extends BasicGame {
 		} catch (SlickException e) {
 			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
 					"Failed to load game.", e);
-			System.exit(1);
+			Game.getInstance().getGameContainer().exit();
 		}
 	}
 
 	@Override
 	public void update(GameContainer container, int delta)
 			throws SlickException {
- 
+		 
 		/* run an Update */
 		if (timeToUpdate > UPDATE) {
+			
+			if (!running) {
+				container.exit();
+			}
 			
 			if (!running) {
 				container.exit();
@@ -395,7 +404,7 @@ public class Game extends BasicGame {
 					this.startetLoading = true;
 				}
 			} else {
-				if (this.mapSet) {
+				if (this.mapSet && this.opponentNameSet) {
 					if (this.endScreen == null) {
 						if (updatesUntilPlayerUpdate == 0) {
 							player.update(goTo);
@@ -450,6 +459,43 @@ public class Game extends BasicGame {
 						fightInstance.setEnemyFinished();
 					}
 					break;
+				case STRING:	
+					if (message.eventString.equals("playerName")) {
+						this.opponent.setPlayerName(message.nwString);
+						
+						Calendar cal = Calendar.getInstance();
+
+						int hour = cal.get(Calendar.HOUR_OF_DAY);
+						int minute = cal.get(Calendar.MINUTE);
+
+						/*
+						 * print a welcoming message and use an instance of Calendar class to
+						 * get current time
+						 */
+						
+						chat.newMessage(new Message("New Game Started! " + this.player.NAME + " vs " + this.opponent.NAME, cal));
+						/* print end of this game session */
+						/*
+						 * if game session overlaps a full hour, react accordingly -> use up
+						 * minutes until full hour is reached, increase hour, increase remaining
+						 * minutes starting form 0
+						 */
+						if (minute >= 45) {
+							chat.newMessage(new Message(
+									"Instance ends at "
+											+ ((hour + 1) > 23 ? "00" : (hour + 1))
+											+ ":"
+											+ ((minute - 45) > 9 ? (minute - 45) : "0"
+													+ (minute - 45)), cal));
+						} else {
+							chat.newMessage(new Message("Instance ends at " + hour + ":"
+									+ (minute + this.gameLength), cal));
+						}
+						
+						this.opponentNameSet = true;
+						
+					}
+					break;
 				case ITEM:
 					map.getOverlay()[message.itempos[0]][message.itempos[1]] = MapConverter.fillImage(message.item, message.itempos[0], message.itempos[1]);
 					break;
@@ -480,7 +526,7 @@ public class Game extends BasicGame {
 		if (this.loading == true) {
 			g.drawString("Loading Game...", 250, 225);
 		} else {
-			if (this.mapSet) {
+			if (this.mapSet && this.opponentNameSet) {
 				if (this.endScreen == null) {
 					gameEnvironment.draw(container, g);
 					/*if (!(fightInstance.isInFight())) {
@@ -897,6 +943,13 @@ public class Game extends BasicGame {
 		this.endScreen = string;		
 	}
 	
+	/**
+	 * @return game Container
+	 */
+	public GameContainer getGameContainer () {
+		return this.container;
+	}
+
 	/**Quits the game.
 	 * 
 	 */

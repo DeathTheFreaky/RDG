@@ -544,4 +544,11 @@ public class Player extends Creature implements Serializable {
 				break;
 		}
 	}
+	
+	/**Sets the player's name.
+	 * @param name
+	 */
+	public void setPlayerName(String name) {
+		this.NAME = name;
+	}
 }

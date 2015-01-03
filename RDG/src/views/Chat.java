@@ -164,30 +164,6 @@ public class Chat extends View {
 
 		messages = new LinkedList<Message>();
 
-		/*
-		 * print a welcoming message and use an instance of Calendar class to
-		 * get current time
-		 */
-		
-		newMessage(new Message("New Game Started! Player vs. Opponent", cal));
-		/* print end of this game session */
-		/*
-		 * if game session overlaps a full hour, react accordingly -> use up
-		 * minutes until full hour is reached, increase hour, increase remaining
-		 * minutes starting form 0
-		 */
-		if (minute >= 45) {
-			newMessage(new Message(
-					"Instance ends at "
-							+ ((hour + 1) > 23 ? "00" : (hour + 1))
-							+ ":"
-							+ ((minute - 45) > 9 ? (minute - 45) : "0"
-									+ (minute - 45)), cal));
-		} else {
-			newMessage(new Message("Instance ends at " + hour + ":"
-					+ (minute + 15), cal));
-		}
-
 		/* set first 4 messages to be shown */
 		for (int i = 0; i < MAXIMUM_MESSAGES; i++) {
 			if (i < 4) {
