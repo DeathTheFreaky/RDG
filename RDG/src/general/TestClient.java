@@ -43,22 +43,28 @@ public class TestClient {
 			List<Serverinfo> lobbyList = new LinkedList<Serverinfo>();
 			networkManager.searchLobby(lobbyList);
 			
-			while(lobbyList.size() == 0) {
+			int j = 0;
+			while(j < 50) {
 				Thread.sleep(100);
 				//das ist nicht notwendig!!!
 				//lobbyList = networkManager.getLobbyList();
+				j++;
 			}
 			
 			networkManager.stopSearchLobby();
 			
-			System.out.println(lobbyList.get(0).getLobbyName());
+			for(Serverinfo s : lobbyList) {
+				System.out.println("Lobby: " + s.getLobbyName());
+			}
+			
+			/*System.out.println(lobbyList.get(0).getLobbyName());
 			System.out.println(lobbyList.get(0).getPort());
 			
 			while (startGame == false && tryConnCtr < tryConnMax) {
 				
 				networkManager.connect(lobbyList.get(0));
 				
-				/* wait for client to establish connection */
+				/* wait for client to establish connection *
 				if (networkManager.isConnected()) {
 					startGame = true;
 				}
@@ -71,7 +77,7 @@ public class TestClient {
 				throw new Exception("Failed to establish connection with lobby Host");
 			}
 			
-			System.out.println("connection established!");
+			System.out.println("connection established!");*/
 			
 		} catch (Exception e) {
 			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
@@ -81,7 +87,7 @@ public class TestClient {
 		
 		System.out.println("Starting Game");
 		
-		AppGameContainer app1 = null;
+		/*AppGameContainer app1 = null;
 		try {
 			app1 = new AppGameContainer(Game.getInstance("Battle Dungeon Client"));
 		} catch (IOException e) {
@@ -93,6 +99,6 @@ public class TestClient {
 		app1.setTargetFrameRate(30); // 60 Frames pro Sekunde
 		app1.setAlwaysRender(true); // Spiel wird auch ohne Fokus aktualisiert
 		app1.setShowFPS(false);
-		app1.start(); // startet die App
+		app1.start(); // startet die App*/
 	}
 }
