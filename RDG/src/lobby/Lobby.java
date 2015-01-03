@@ -333,7 +333,7 @@ public class Lobby extends JFrame {
 	 * 
 	 */
 	public static void quitConnection() {
-		System.out.println("quitting connection");
+		System.out.println("trying to quit connection!");
 		Lobby.gameRunning = false;
 		network.stopConnection();
 		System.out.println("Am i connected after quitting connection? " + network.isConnected());
