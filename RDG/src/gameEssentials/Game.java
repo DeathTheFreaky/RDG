@@ -390,11 +390,13 @@ public class Game extends BasicGame {
 						}
 						
 						/* start the fight and set the enemy */
-						fightThread.start();
-						fightInstance.setEnemy(opponent);
-						networkManager.sendMessage(new NetworkMessage("humanFightStart", true));
-						
-						endFightStarted = true;
+						if (!fightInstance.isInFight()) {
+							fightThread.start();
+							fightInstance.setEnemy(opponent);
+							networkManager.sendMessage(new NetworkMessage("humanFightStart", true));
+							
+							endFightStarted = true;
+						}
 					}
 				}
 			}
