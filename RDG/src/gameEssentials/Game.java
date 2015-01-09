@@ -704,6 +704,10 @@ public class Game extends BasicGame {
 			} else {
 				armorView.changeTab(x, y);
 			}
+			
+			/* end showing descriptions when mouse is clicked */
+			inventoryView.endShowingDescription();
+			armorView.endShowingDescription();
 		}
 	}
 
@@ -721,6 +725,10 @@ public class Game extends BasicGame {
 		 * versa -> equip and unequip weapon
 		 */
 		if (!dragging) {
+			
+			inventoryView.endShowingDescription();
+			armorView.endShowingDescription();
+			
 			if (fightInstance.isInFight()) {
 				if (fightInstance.isPotionTakingActive()) {
 					this.draggedItem = armorView.getItem(oldx, oldy);
