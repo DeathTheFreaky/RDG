@@ -1,6 +1,7 @@
 package views;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Point;
 import java.util.LinkedList;
 
@@ -9,17 +10,13 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
+import views.font.TrueTypeFont;
 import elements.Armament;
 import elements.Element;
-import elements.Equipment;
 import elements.Potion;
 import elements.Weapon;
-import gameEssentials.Map;
-import general.Enums.Armor;
 import general.Enums.ImageSize;
-import general.Enums.ItemClasses;
 import general.Enums.UsedClasses;
-import general.Enums.WeaponTypes;
 import general.ResourceManager;
 
 /**
@@ -28,7 +25,7 @@ import general.ResourceManager;
  * @see View
  */
 public class InventoryView extends View {
-	
+
 	private static InventoryView INSTANCE = null;
 
 	/* Some Values for positioning this View */
@@ -37,29 +34,42 @@ public class InventoryView extends View {
 	private final int border = 5;
 
 	/* Collection for all Items, saved in Inventory */
-	/*private LinkedList<Weapon> weapons;
-	private LinkedList<Armament> armaments;
-	private LinkedList<Potion> potions;
-	private LinkedList<Equipment> armor;*/
+	/*
+	 * private LinkedList<Weapon> weapons; private LinkedList<Armament>
+	 * armaments; private LinkedList<Potion> potions; private
+	 * LinkedList<Equipment> armor;
+	 */
 	private LinkedList<Element> items;
 
 	/* ResourceManager */
 	private ResourceManager resources;
-	
+
+	/* Font */
+	private TrueTypeFont font;
+	private Font awtFont;
+
 	/* max items in inventory */
 	private final int maxItems = 24;
 	private int storedItemsCtr = 0;
-	
+
 	/* player can also aquire one key */
 	private boolean hasKey = false;
-	
+
 	/* important for showing descriptions */
 	private String description;
 	private boolean showDescription = false;
-	
+	private int descriptionWidth = 0;
+	private int descriptionHeight = 0;
+
 	/* Colors */
 	private final Color DARK_GREY = new Color(0.2f, 0.2f, 0.2f);
 	private final Color BLUE = new Color(0f, 0f, 1f);
+	private final Color BLACK = new Color(0f, 0f, 0f);
+	private final Color WHITE = new Color(1f, 1f, 1f);
+
+	/* Mouse Position */
+	private int mousePositionX;
+	private int mousePositionY;
 
 	/**
 	 * Constructs an InventoryView passing its origin as single x and y
@@ -142,47 +152,25 @@ public class InventoryView extends View {
 		resources = new ResourceManager().getInstance();
 
 		items = new LinkedList<Element>();
-		
-		/*weapons = new LinkedList<Weapon>();
-		armaments = new LinkedList<Armament>();
-		armor = new LinkedList<Equipment>();
-		potions = new LinkedList<Potion>();*/
 
-		/* for testing */
-		/*items.add(new Weapon("Dolch", resources.IMAGES.get("M_Weapon"), 0f, 0f,
-				0f, 0f, ItemClasses.MEDIUM, WeaponTypes.SINGLEHAND, 0));
-		items.add(new Weapon("Schwert", resources.IMAGES.get("S_Weapon"), 0f,
-				0f, 0f, 0f, ItemClasses.MEDIUM, WeaponTypes.SINGLEHAND, 0));
-
-		items.add(new Armament("Helmet", resources.IMAGES.get("Helmet"),
-				"dont know what type is for", ItemClasses.MEDIUM, 0f, 0f, 0f,
-				Armor.HEAD));
-		items.add(new Armament("Chest", resources.IMAGES.get("Cuirass"),
-				"dont know what type is for", ItemClasses.MEDIUM, 0f, 0f, 0f,
-				Armor.CHEST));
-		items.add(new Armament("Arms", resources.IMAGES.get("Arms"),
-				"dont know what type is for", ItemClasses.MEDIUM, 0f, 0f, 0f,
-				Armor.ARMS));
-		items.add(new Armament("Shoes", resources.IMAGES.get("Shoes"),
-				"dont know what type is for", ItemClasses.MEDIUM, 0f, 0f, 0f,
-				Armor.FEET));
-		items.add(new Armament("Legs", resources.IMAGES.get("Legs"),
-				"dont know what type is for", ItemClasses.MEDIUM, 0f, 0f, 0f,
-				Armor.LEGS));*/
-		/* testing */
+		awtFont = new Font("Times New Roman", Font.BOLD, 12);
+		font = new TrueTypeFont(awtFont, true);
 	}
-	
-	/**This shall only be called for constructing the first inventory view.
+
+	/**
+	 * This shall only be called for constructing the first inventory view.
+	 * 
 	 * @return the one and only instance of inventory view
 	 * @throws SlickException
 	 */
-	public static InventoryView getInstance(String contextName, Point origin, Dimension size) throws SlickException {
+	public static InventoryView getInstance(String contextName, Point origin,
+			Dimension size) throws SlickException {
 		if (INSTANCE == null) {
 			INSTANCE = new InventoryView(contextName, origin, size);
 		}
 		return INSTANCE;
 	}
-	
+
 	/**
 	 * @return the one and only instance of inventory view
 	 * @throws SlickException
@@ -202,14 +190,27 @@ public class InventoryView extends View {
 		int x = 0, y = 0;
 
 		for (Element e : items) {
-			graphics.drawImage(e.getImage(ImageSize.d20x20), 10 + ORIGIN_X + x * 40, 10
-					+ ORIGIN_Y + y * 40);
+			graphics.drawImage(e.getImage(ImageSize.d20x20), 10 + ORIGIN_X + x
+					* 40, 10 + ORIGIN_Y + y * 40);
 			if (x == 3) {
 				x = 0;
 				y++;
 			} else {
 				x++;
 			}
+		}
+
+		if (showDescription) {
+			font.drawString(mousePositionX - descriptionWidth
+					+ descriptionWidth / 3, mousePositionY - descriptionHeight,
+					description, BLACK, TrueTypeFont.ALIGN_CENTER);
+			graphics.setColor(WHITE);
+			graphics.fillRect(mousePositionX - descriptionWidth - 50,
+					mousePositionY - descriptionHeight - 5,
+					descriptionWidth + 70, descriptionHeight + 10);
+			font.drawString(mousePositionX - descriptionWidth
+					+ descriptionWidth / 3, mousePositionY - descriptionHeight,
+					description, BLACK, TrueTypeFont.ALIGN_CENTER);
 		}
 
 	}
@@ -220,24 +221,26 @@ public class InventoryView extends View {
 	}
 
 	/* 160:240 */
-	/**Returns the selected Item from Inventory screen.
+	/**
+	 * Returns the selected Item from Inventory screen.
 	 * 
 	 * @param mouseX
 	 * @param mouseY
 	 * @return
 	 */
-	public Element getItem(int mouseX, int mouseY, UsedClasses classname) {		
-		
+	public Element getItem(int mouseX, int mouseY, UsedClasses classname) {
+
 		if (mouseX > ORIGIN_X && mouseX < ORIGIN_X + size.width
 				&& mouseY > ORIGIN_Y && mouseY < ORIGIN_Y + size.height) {
-						
+
 			Class<?> tempClass = null;
 			try {
-				tempClass = Class.forName( "elements." + classname);
+				tempClass = Class.forName("elements." + classname);
 			} catch (ClassNotFoundException e1) {
-				System.out.println("Only element classes are allowed in inventory interaction!");
+				System.out
+						.println("Only element classes are allowed in inventory interaction!");
 			}
-									
+
 			int x = 0, y = 0;
 			for (int i = 0; i < items.size(); i++) {
 
@@ -255,95 +258,119 @@ public class InventoryView extends View {
 					x++;
 				}
 			}
-			
-			if ((x + y*4) < items.size()) {
-				Element e = items.get(x + y*4);
-				
+
+			if ((x + y * 4) < items.size()) {
+				Element e = items.get(x + y * 4);
+
 				if (!(e.NAME.equals("Key"))) {
-					
+
 					/* only allow operation for specified class */
 					if (!(tempClass.isInstance(e))) {
 						return null;
-					} 
-					
-					items.remove(x + y*4);
-										
-					if(e != null) {
+					}
+
+					items.remove(x + y * 4);
+
+					if (e != null) {
 						this.storedItemsCtr--;
 					}
 				} else {
 					e = null;
 				}
-				
+
 				return e;
 			}
 		}
 		return null;
 	}
-	
+
 	public void showDescription(int mouseX, int mouseY) {
+		this.mousePositionX = mouseX;
+		this.mousePositionY = mouseY;
+
+		this.descriptionWidth = 0;
+		this.descriptionHeight = 0;
+
 		int x = 0, y = 0;
 		for (int i = 0; i < items.size(); i++) {
 
-			if (mouseX > ORIGIN_X + x * 40
-					&& mouseX < ORIGIN_X + x * 40 + 40
+			if (mouseX > ORIGIN_X + x * 40 && mouseX < ORIGIN_X + x * 40 + 40
 					&& mouseY > ORIGIN_Y + y * 40
 					&& mouseY < ORIGIN_Y + y * 40 + 40) {
+				int length = 0;
+				String longest = "";
 				description = items.get(i).getDescription();
+				String s[] = description.split("\n");
+				int height = s.length;
+				for (String st : s) {
+					if (st.length() > length) {
+						longest = st;
+					}
+				}
+
+				this.descriptionWidth = font.getWidth(longest);
+				this.descriptionHeight = font.getHeight(longest) * height;
+
 				showDescription = true;
 				break;
 			}
-			if(i == items.size()-1) {
+			if (i == items.size() - 1) {
 				showDescription = false;
+				this.descriptionWidth = 0;
+				this.descriptionHeight = 0;
+			}
+			x++;
+			if (x == 4) {
+				x = 0;
+				y++;
 			}
 		}
-		System.out.println("Show description: " + description);
 	}
-	
+
 	public void endShowingDescription() {
 		this.showDescription = false;
-		System.out.println("End showing description");
+		this.descriptionWidth = 0;
+		this.descriptionHeight = 0;
 	}
-	
+
 	/*
-	public void storeEquipment(Equipment equipment) {
-		armor.add(equipment);
-	} */ //Flo: deprecated -> replaced by storeItem
-	
-	
-	/**Add items to lists of items, weapons, armaments, potions, armor.
+	 * public void storeEquipment(Equipment equipment) { armor.add(equipment); }
+	 */// Flo: deprecated -> replaced by storeItem
+
+	/**
+	 * Add items to lists of items, weapons, armaments, potions, armor.
+	 * 
 	 * @param item
 	 */
 	public Element storeItem(Element item, ArmorView armorView) {
-		
+
 		if (item == null) {
 			return null;
 		}
-		
+
 		if (storedItemsCtr >= maxItems) {
 			return item;
 		} else {
 			if (item instanceof Weapon) {
-				/*weapons.add((Weapon) item);
-				armor.add((Equipment) item);*/
+				/*
+				 * weapons.add((Weapon) item); armor.add((Equipment) item);
+				 */
 				if (!(item.NAME.equals("Fists"))) {
 					items.add(item);
 					storedItemsCtr++;
 				}
 				armorView.addFists();
-			}
-			else if (item instanceof Armament) {
-				/*armaments.add((Armament) item);
-				armor.add((Equipment) item);*/
+			} else if (item instanceof Armament) {
+				/*
+				 * armaments.add((Armament) item); armor.add((Equipment) item);
+				 */
 				items.add(item);
 				storedItemsCtr++;
-			}
-			else if (item instanceof Potion) {
-				/*potions.add((Potion) item);*/
+			} else if (item instanceof Potion) {
+				/* potions.add((Potion) item); */
 				items.add(item);
 				storedItemsCtr++;
-			}
-			else if (item.NAME.equals("Key") && this.hasKey == false) {
+			} else if (item.NAME.equals("Key") && this.hasKey == false) {
 				items.add(item);
 				this.hasKey = true;
 				storedItemsCtr++;
@@ -351,7 +378,7 @@ public class InventoryView extends View {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * @return true if there is still more room for items to be stored
 	 */
@@ -361,12 +388,12 @@ public class InventoryView extends View {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * @return true if player has already found the key for treasure chamber
 	 */
 	public boolean hasKey() {
 		return this.hasKey;
 	}
-	
+
 }

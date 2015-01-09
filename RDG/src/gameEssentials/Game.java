@@ -605,7 +605,7 @@ public class Game extends BasicGame {
 	@Override
 	public void keyPressed(int key, char c) {
 
-		try {
+		/*try {
 			if (key == 19) {
 				map.getOverlay()[1][1] = ItemFactory.createPotion("Poison", 1);
 			} else if (key == 20) {
@@ -615,7 +615,7 @@ public class Game extends BasicGame {
 		} catch (SlickException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 
 		/* Key Values for Players Movement! (a,s,d,w) */
 		if ((key == 30 || key == 31 || key == 32 || key == 17)
@@ -895,8 +895,10 @@ public class Game extends BasicGame {
 				&& newX < GAME_ENVIRONMENT_WIDTH + INVENTORY_WIDTH
 				&& newY > ARMOR_HEIGHT
 				&& newY < ARMOR_HEIGHT + INVENTORY_HEIGHT) {
+			if(inventoryView != null) 
 			inventoryView.showDescription(newX, newY);
 		} else {
+			if(inventoryView != null) 
 			inventoryView.endShowingDescription();
 		}
 
@@ -904,8 +906,10 @@ public class Game extends BasicGame {
 		if (newX > GAME_ENVIRONMENT_WIDTH
 				&& newX < GAME_ENVIRONMENT_WIDTH + INVENTORY_WIDTH && newY > 0
 				&& newY < ARMOR_HEIGHT) {
+			if(armorView != null) 
 			armorView.showDescription(newX, newY);
 		} else {
+			if(armorView != null)
 			armorView.endShowingDescription();
 		}
 
