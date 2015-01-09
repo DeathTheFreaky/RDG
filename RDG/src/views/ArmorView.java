@@ -50,12 +50,36 @@ public class ArmorView extends View {
 	private int tab2Y;
 	private int textPositionX;
 	private int textPositionY;
+	
+	/* positions of items */
+	private int headX = ORIGIN_X + 100;
+	private int headY = ORIGIN_Y + 5 + tabHeight + 10;
+	private int main_wX = ORIGIN_X + 20;
+	private int main_wY = ORIGIN_Y + 75 + tabHeight + 10;
+	private int sub_wX = ORIGIN_X + 125;
+	private int sub_wY = ORIGIN_Y + 60 + tabHeight + 10;
+	private int chestX = ORIGIN_X + 120;
+	private int chestY = ORIGIN_Y + 30 + tabHeight + 10;
+	private int armX = ORIGIN_X + 30;
+	private int armY = ORIGIN_Y + 45 + tabHeight + 10;
+	private int legX = ORIGIN_X + 125;
+	private int legY = ORIGIN_Y + 100 + tabHeight + 10;
+	private int feetX = ORIGIN_X + 35;
+	private int feetY = ORIGIN_Y + 115 + tabHeight + 10;
+	
+	/* Mouse Position */
+	private int mousePositionX;
+	private int mousePositionY;
 
 	/* width/height of ArmorImages */
 	private final int IMAGE_SIZE = 20;
 
 	/* Represents Set1 or Set2 */
 	private boolean set = true;
+	
+	/* if the mouse is over an element and the description shall be shown */
+	private String description;
+	private boolean showDescription = false;
 	
 	/* HashMap for all equipped Armor */
 	HashMap<Armor, Equipment> armor1;
@@ -94,7 +118,13 @@ public class ArmorView extends View {
 	/* fallback weapon: fists */
 	Weapon fists1 = null;
 	Weapon fists2 = null;
-
+	
+	/* Colors */
+	private final Color BLACK = new Color(0f, 0f, 0f);
+	private final Color GREY = new Color(0.5f, 0.5f, 0.5f);
+	private final Color DARK_GREY = new Color(0.25f, 0.25f, 0.25f);
+	private final Color RED = new Color(1f, 0f, 0f);
+	
 	/**
 	 * Constructs an ArmorView passing its origin as single x and y coordinates
 	 * in tile numbers.<br>
@@ -204,25 +234,25 @@ public class ArmorView extends View {
 	public void draw(GameContainer container, Graphics graphics) {
 		
 		/* grey background */
-		graphics.setColor(new Color(0.5f, 0.5f, 0.5f));
+		graphics.setColor(GREY);
 		graphics.fillRect(ORIGIN_X, ORIGIN_Y, size.width, tabHeight + 5);
 
 		/* draw sets */
-		graphics.setColor(new Color(1f, 0f, 0f));
+		graphics.setColor(RED);
 		if (set) {
 			graphics.fillRect(tab1X, tab1Y, tabWidth, tabHeight);
 			graphics.fillRect(tab2X, tab2Y, tabWidth, tabHeight - 2);
-			graphics.setColor(new Color(0f, 0f, 0f));
+			graphics.setColor(BLACK);
 			graphics.drawString("SET 1", textPositionX, textPositionY);
 		} else {
 			graphics.fillRect(tab1X, tab1Y, tabWidth, tabHeight - 2);
 			graphics.fillRect(tab2X, tab2Y, tabWidth, tabHeight);
-			graphics.setColor(new Color(0f, 0f, 0f));
+			graphics.setColor(BLACK);
 			graphics.drawString("SET 2", textPositionX, textPositionY);
 		}
 		
 		/* red field */
-		graphics.setColor(new Color(1f, 0f, 0f));
+		graphics.setColor(RED);
 		graphics.fillRect(ORIGIN_X, ORIGIN_Y + 30, size.width, size.height - 2
 				* (tabHeight - 5));
 
@@ -231,20 +261,20 @@ public class ArmorView extends View {
 				ORIGIN_Y + tabHeight + 10);
 		
 		/* potion section */
-		graphics.setColor(new Color(0.5f, 0.5f, 0.5f));
+		graphics.setColor(GREY);
 		graphics.fillRect(ORIGIN_X, ORIGIN_Y + size.height - tabHeight - 5,
 				size.width, tabHeight + 5);
 		
 		/* test potion section */
-		graphics.setColor(new Color(0.25f, 0.25f, 0.25f));
+		graphics.setColor(DARK_GREY);
 		graphics.fillRect(ORIGIN_X + size.width/2 - tabWidth/2, ORIGIN_Y + size.height - tabHeight - 3,
 				tabWidth, tabHeight);
 		
-		graphics.setColor(new Color(0.25f, 0.25f, 0.25f));
+		graphics.setColor(DARK_GREY);
 		graphics.fillRect(ORIGIN_X + size.width/2 - tabWidth/2 - tabWidth - 2, ORIGIN_Y + size.height - tabHeight - 3,
 				tabWidth, tabHeight);
 		
-		graphics.setColor(new Color(0.25f, 0.25f, 0.25f));
+		graphics.setColor(DARK_GREY);
 		graphics.fillRect(ORIGIN_X + size.width/2 + tabWidth/2 + 2, ORIGIN_Y + size.height - tabHeight - 3,
 				tabWidth, tabHeight);
 
@@ -349,6 +379,11 @@ public class ArmorView extends View {
 						break;
 				}
 			}
+		}
+		
+		if(showDescription) {
+			// hier anzeigen+
+			graphics.drawString(description, mousePositionX, mousePositionY);
 		}
 	}
 
@@ -1187,4 +1222,68 @@ public class ArmorView extends View {
 		
 		return value;
 	}	
+	
+	public void showDescription(int mouseX, int mouseY) {
+		
+		this.mousePositionX = mouseX;
+		this.mousePositionY = mouseY;
+
+		if(mouseX > main_wX && mouseX < main_wX+20 && mouseY > main_wY && mouseY < main_wY+20) {
+			showDescription = true;
+			if(set) {
+				description = armor1.get(Armor.MAIN_WEAPON).toString();
+			}else {
+				description = armor2.get(Armor.MAIN_WEAPON).toString();
+			}
+		}else if(mouseX > sub_wX && mouseX < sub_wX+20 && mouseY > sub_wY && mouseY < sub_wY+20) {
+			showDescription = true;
+			if(set) {
+				description = armor1.get(Armor.SUB_WEAPON).toString();
+			}else {
+				description = armor2.get(Armor.SUB_WEAPON).toString();
+			}
+		}else if(mouseX > chestX && mouseX < chestX+20 && mouseY > chestY && mouseY < chestY+20) {
+			showDescription = true;
+			if(set) {
+				description = armor1.get(Armor.CHEST).toString();
+			}else {
+				description = armor2.get(Armor.CHEST).toString();
+			}
+		}else if(mouseX > headX && mouseX < headX+20 && mouseY > headY && mouseY < headY+20) {
+			showDescription = true;
+			if(set) {
+				description = armor1.get(Armor.HEAD).toString();
+			}else {
+				description = armor2.get(Armor.HEAD).toString();
+			}
+		}else if(mouseX > armX && mouseX < armX+20 && mouseY > armY && mouseY < armY+20) {
+			showDescription = true;
+			if(set) {
+				description = armor1.get(Armor.ARMS).toString();
+			}else {
+				description = armor2.get(Armor.ARMS).toString();
+			}
+		}else if(mouseX > legX && mouseX < legX+20 && mouseY > legY && mouseY < legY+20) {
+			showDescription = true;
+			if(set) {
+				description = armor1.get(Armor.LEGS).toString();
+			}else {
+				description = armor2.get(Armor.LEGS).toString();
+			}
+		}else if(mouseX > feetX && mouseX < feetX+20 && mouseY > feetY && mouseY < feetY+20) {
+			showDescription = true;
+			if(set) {
+				description = armor1.get(Armor.FEET).toString();
+			}else {
+				description = armor2.get(Armor.FEET).toString();
+			}
+		}else {
+			showDescription = false;
+		}
+	}
+	
+	public void endShowingDescription() {
+		showDescription = false;
+	}
+
 }

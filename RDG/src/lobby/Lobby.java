@@ -84,7 +84,7 @@ public class Lobby extends JFrame {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() { 
             public void windowClosing(WindowEvent event1) { 
             	System.out.println("S");
@@ -247,8 +247,9 @@ public class Lobby extends JFrame {
 	
 	public void startClient() throws SlickException {
 		this.switchScreen(Scenes.MENU);
-		//Lobby.this.setVisible(false);
+		this.setVisible(false);
 		
-		new Thread(new NewGame()).start();
+		new Thread(new NewGame(this)).start();
 	}
+	
 }

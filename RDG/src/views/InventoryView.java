@@ -52,6 +52,14 @@ public class InventoryView extends View {
 	
 	/* player can also aquire one key */
 	private boolean hasKey = false;
+	
+	/* important for showing descriptions */
+	private String description;
+	private boolean showDescription = false;
+	
+	/* Colors */
+	private final Color DARK_GREY = new Color(0.2f, 0.2f, 0.2f);
+	private final Color BLUE = new Color(0f, 0f, 1f);
 
 	/**
 	 * Constructs an InventoryView passing its origin as single x and y
@@ -185,9 +193,9 @@ public class InventoryView extends View {
 
 	@Override
 	public void draw(GameContainer container, Graphics graphics) {
-		graphics.setColor(new Color(0.2f, 0.2f, 0.2f));
+		graphics.setColor(DARK_GREY);
 		graphics.fillRect(ORIGIN_X, ORIGIN_Y, size.width, size.height);
-		graphics.setColor(new Color(0f, 0f, 1f));
+		graphics.setColor(BLUE);
 		graphics.fillRect(ORIGIN_X + border, ORIGIN_Y + border, size.width - 2
 				* border, size.height - 2 * border);
 
@@ -281,18 +289,20 @@ public class InventoryView extends View {
 					&& mouseX < ORIGIN_X + x * 40 + 40
 					&& mouseY > ORIGIN_Y + y * 40
 					&& mouseY < ORIGIN_Y + y * 40 + 40) {
+				description = items.get(i).getDescription();
+				showDescription = true;
 				break;
 			}
-
-			if (i % 4 == 0 && i != 0) {
-				y++;
-				x = 0;
-			} else {
-				x++;
+			if(i == items.size()-1) {
+				showDescription = false;
 			}
 		}
-		
-		String description = items.get(x + y*4).getDescription();
+		System.out.println("Show description: " + description);
+	}
+	
+	public void endShowingDescription() {
+		this.showDescription = false;
+		System.out.println("End showing description");
 	}
 	
 	/*
@@ -358,4 +368,5 @@ public class InventoryView extends View {
 	public boolean hasKey() {
 		return this.hasKey;
 	}
+	
 }

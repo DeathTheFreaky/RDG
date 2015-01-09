@@ -53,7 +53,7 @@ import general.ResourceManager;
  * @see BasicGame
  */
 public class Game extends BasicGame {
-	
+
 	/* game Instance */
 	private static Game INSTANCE = null;
 
@@ -95,8 +95,11 @@ public class Game extends BasicGame {
 	private int updatesUntilPlayerUpdate = 10;
 
 	/* Origins of the different Views in tile numbers */
-	/* gameEnvironment is needed for fight, because each fight is a new thread -> new instance */
-	Point gameEnvironmentOrigin = new Point(0,0), chatOrigin, armorViewOrigin,
+	/*
+	 * gameEnvironment is needed for fight, because each fight is a new thread
+	 * -> new instance
+	 */
+	Point gameEnvironmentOrigin = new Point(0, 0), chatOrigin, armorViewOrigin,
 			inventoryViewOrigin, minimapOrigin;
 
 	/* flag, if the mouse is over the chat (for scrolling) */
@@ -141,7 +144,7 @@ public class Game extends BasicGame {
 
 	/* Map which is needed for each Player */
 	Map map;
-	
+
 	/* resource path */
 	public static final String IMAGEPATH = "./resources/images/";
 
@@ -150,40 +153,40 @@ public class Game extends BasicGame {
 
 	// create instance of configloader
 	Configloader configloader = null;
-	
-	/* fight Thread  */
+
+	/* fight Thread */
 	private Thread fightThread = null;
-	
+
 	/* needed for human fights - set to true if this is the lobby HOSTER */
 	Boolean lobbyHost = false;
-	
+
 	/* list holding child threads */
 	private List<Thread> threadList = new ArrayList<Thread>();
-	
+
 	/* fight Instance from gameEnvironment */
 	Fight fightInstance = null;
-	
+
 	/* network manager for transferring data to other pc */
 	NetworkManager networkManager;
-	
+
 	/* instance of resource Manager for loading images */
 	ResourceManager resourceManager;
-	
+
 	/* draw a loading screen before the game has finished loading all data */
 	private boolean loading = true;
 	private boolean startetLoading = false;
 	private boolean mapSet = false;
-	
+
 	/* game Container for access by gameLoad thread */
 	GameContainer container;
 
 	/* shown when human player has defeated other human player */
 	private String endScreen = null;
-	private int endCtr = 50; //50*100ms = 5 seconds
+	private int endCtr = 50; // 50*100ms = 5 seconds
 	private boolean endFightStarted = false;
-	
+
 	/* after x counts, force a human fight */
-	private int timeLeftCtr = 6000; //6000 equals 10 mins -> 6000 * 100ms
+	private int timeLeftCtr = 6000; // 6000 equals 10 mins -> 6000 * 100ms
 
 	/* Declare all classes, we need for the game (Factory, Resourceloader) */
 	// private ResourceManager resourceManager;
@@ -194,7 +197,7 @@ public class Game extends BasicGame {
 	 * "Find out if its Player 1 or Player2"
 	 * 
 	 * @param title
-	 * @throws IOException 
+	 * @throws IOException
 	 * @see Game
 	 */
 	private Game(String title) throws IOException {
@@ -207,7 +210,7 @@ public class Game extends BasicGame {
 	 * 
 	 * @param title
 	 * @param playerName
-	 * @throws IOException 
+	 * @throws IOException
 	 * @see Game
 	 */
 	private Game(String title, String playerName) throws IOException {
@@ -215,18 +218,23 @@ public class Game extends BasicGame {
 		this.playerName = playerName;
 		this.networkManager = NetworkManager.getInstance();
 	}
-	
-	/**Only returns existing instance of game or null if none instance exists yet.
+
+	/**
+	 * Only returns existing instance of game or null if none instance exists
+	 * yet.
+	 * 
 	 * @return
 	 */
 	public static Game getInstance() {
 		return INSTANCE;
 	}
-	
-	/**Get Instance of Game.
+
+	/**
+	 * Get Instance of Game.
+	 * 
 	 * @param title
 	 * @return
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public static Game getInstance(String title) throws IOException {
 		if (INSTANCE == null) {
@@ -234,14 +242,17 @@ public class Game extends BasicGame {
 		}
 		return INSTANCE;
 	}
-	
-	/**Get Instance of Game.
+
+	/**
+	 * Get Instance of Game.
+	 * 
 	 * @param title
 	 * @param playerName
 	 * @return
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	public static Game getInstance(String title, String playerName) throws IOException {
+	public static Game getInstance(String title, String playerName)
+			throws IOException {
 		if (INSTANCE == null) {
 			INSTANCE = new Game(title, playerName);
 		}
@@ -250,18 +261,19 @@ public class Game extends BasicGame {
 
 	@Override
 	public void init(GameContainer container) throws SlickException {
-		
-		//load ressources in first game loop to show a loading screen
+
+		// load ressources in first game loop to show a loading screen
 		this.container = container;
 	}
-	
-	/**Loads the game while drawing screen is shown.
+
+	/**
+	 * Loads the game while drawing screen is shown.
 	 * 
 	 */
 	private void loadGame() {
-		
+
 		try {
-				
+
 			/* load config - must be successful in order to continue */
 			try {
 				this.configloader = new Configloader().getInstance();
@@ -271,81 +283,89 @@ public class Game extends BasicGame {
 						"Parsing Configuration Files failed.", e);
 				System.exit(1);
 			}
-	
+
 			// Test Printing
 			/*
 			 * ConfigTestprinter configprinter = new
 			 * ConfigTestprinter(configloader); configprinter.print();
 			 */
-			
-			/* determined by network lobby  - TESTING only */
+
+			/* determined by network lobby - TESTING only */
 			this.lobbyHost = this.networkManager.isLobbyHost();
-	
+
 			/* Points in tile numbers */
 			this.gameEnvironmentOrigin = new Point(0, 0);
 			this.chatOrigin = new Point(0, 12);
 			this.armorViewOrigin = new Point(15, 0);
 			this.inventoryViewOrigin = new Point(15, 12);
 			this.minimapOrigin = new Point(20, 20);
-	
+
 			/* Initialize Factory and Manager classes! */
 			this.resourceManager = new ResourceManager().getInstance();
-	
+
 			/* network lobby must be called before this to detect player type */
 			CreatureType playerType;
 			if (this.lobbyHost) {
 				playerType = CreatureType.PLAYER1;
-			}
-			else {
+			} else {
 				playerType = CreatureType.PLAYER2;
 			}
 			if (playerType == CreatureType.PLAYER1) {
 				this.player = new Player(this.playerName,
-						new ResourceManager().getInstance().IMAGES.get("Player1"),
-						this.gameEnvironmentOrigin, CreatureType.PLAYER1, true);
+						new ResourceManager().getInstance().IMAGES
+								.get("Player1"), this.gameEnvironmentOrigin,
+						CreatureType.PLAYER1, true);
 				this.opponent = new Player("Testenemy",
-						new ResourceManager().getInstance().IMAGES.get("Player2"),
-						this.gameEnvironmentOrigin, CreatureType.PLAYER2, false);
+						new ResourceManager().getInstance().IMAGES
+								.get("Player2"), this.gameEnvironmentOrigin,
+						CreatureType.PLAYER2, false);
 			} else if (playerType == CreatureType.PLAYER2) {
 				this.player = new Player(this.playerName,
-						new ResourceManager().getInstance().IMAGES.get("Player2"),
-						this.gameEnvironmentOrigin, CreatureType.PLAYER2, true);
+						new ResourceManager().getInstance().IMAGES
+								.get("Player2"), this.gameEnvironmentOrigin,
+						CreatureType.PLAYER2, true);
 				this.opponent = new Player("Testenemy",
-						new ResourceManager().getInstance().IMAGES.get("Player1"),
-						this.gameEnvironmentOrigin, CreatureType.PLAYER1, false);
+						new ResourceManager().getInstance().IMAGES
+								.get("Player1"), this.gameEnvironmentOrigin,
+						CreatureType.PLAYER1, false);
 			}
-			
+
 			/* Load the chat */
-			this.chat = new Chat("Chat", this.chatOrigin, new Dimension(Game.CHAT_WIDTH,
-					Game.CHAT_HEIGHT), this.container);
-			
+			this.chat = new Chat("Chat", this.chatOrigin, new Dimension(
+					Game.CHAT_WIDTH, Game.CHAT_HEIGHT), this.container);
+
 			/* Load Views - Dimension is specified in pixels */
-			this.armorView = new ArmorView("ArmorInventory", this.armorViewOrigin,
-					new Dimension(Game.ARMOR_WIDTH, Game.ARMOR_HEIGHT));
-			
+			this.armorView = new ArmorView("ArmorInventory",
+					this.armorViewOrigin, new Dimension(Game.ARMOR_WIDTH,
+							Game.ARMOR_HEIGHT));
+
 			this.gameEnvironment = new GameEnvironment("GameEnvironment",
-					this.gameEnvironmentOrigin, new Dimension(Game.GAME_ENVIRONMENT_WIDTH,
-							Game.GAME_ENVIRONMENT_HEIGHT), this.player, this.opponent, this.armorView, this, this.chat);
-	
+					this.gameEnvironmentOrigin, new Dimension(
+							Game.GAME_ENVIRONMENT_WIDTH,
+							Game.GAME_ENVIRONMENT_HEIGHT), this.player,
+					this.opponent, this.armorView, this, this.chat);
+
 			this.minimap = new Minimap("Minimap", this.gameEnvironmentOrigin.x
-					+ this.minimapOrigin.x, this.gameEnvironmentOrigin.y + this.minimapOrigin.y);
-	
-			this.inventoryView = InventoryView.getInstance("Inventory", this.inventoryViewOrigin,
-					new Dimension(Game.INVENTORY_WIDTH, Game.INVENTORY_HEIGHT));
-			
+					+ this.minimapOrigin.x, this.gameEnvironmentOrigin.y
+					+ this.minimapOrigin.y);
+
+			this.inventoryView = InventoryView.getInstance("Inventory",
+					this.inventoryViewOrigin, new Dimension(
+							Game.INVENTORY_WIDTH, Game.INVENTORY_HEIGHT));
+
 			/* Load Map and place the player */
 			this.map = new Map().getInstance();
 			this.map.setPlayer(this.player);
 			this.map.setGameEnvironment(this.gameEnvironment);
-			
+
 			/* needs to be changed - only for testing purposes */
 			this.map.setOpponent(this.opponent);
 			// map.fillMap();
-					
+
 			this.fightInstance = this.gameEnvironment.getFightInstance();
-						
+
 			this.setLoading(false);
-			
+
 		} catch (SlickException e) {
 			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
 					"Failed to load game.", e);
@@ -356,31 +376,35 @@ public class Game extends BasicGame {
 	@Override
 	public void update(GameContainer container, int delta)
 			throws SlickException {
- 
+
 		/* run an Update */
 		if (timeToUpdate > UPDATE) {
-			
+
 			/* force a human fight when time runs out */
 			if (timeLeftCtr <= 0) {
 				if (!this.opponent.isInFight()) {
 					if (lobbyHost && endFightStarted == false) {
-						
-						/* load fight instance into new thread for fight to be carried out */
+
+						/*
+						 * load fight instance into new thread for fight to be
+						 * carried out
+						 */
 						if (fightThread == null) {
 							fightThread = new Thread(fightInstance);
 						}
-						
+
 						/* start the fight and set the enemy */
 						fightThread.start();
 						fightInstance.setEnemy(opponent);
-						networkManager.sendMessage(new NetworkMessage("humanFightStart", true));
-						
+						networkManager.sendMessage(new NetworkMessage(
+								"humanFightStart", true));
+
 						endFightStarted = true;
 					}
 				}
 			}
 			timeLeftCtr--;
-			
+
 			if (this.loading == true) {
 				if (this.startetLoading == true) {
 					loadGame();
@@ -400,18 +424,18 @@ public class Game extends BasicGame {
 						}
 						gameEnvironment.update();
 						chat.update();
-						
+
 						updatesUntilPlayerUpdate--;
 					} else {
 						if (this.endCtr == 0) {
-							//return to main menu - how?
+							// return to main menu - how?
 							System.exit(0);
 						} else {
 							this.endCtr--;
 						}
 					}
 				}
-				
+
 				processNetworkMessages();
 				timeToUpdate = 0;
 			}
@@ -420,48 +444,55 @@ public class Game extends BasicGame {
 		timeToUpdate += delta;
 	}
 
-	/**Process Network Messages according to their type.
-	 * @throws SlickException 
+	/**
+	 * Process Network Messages according to their type.
+	 * 
+	 * @throws SlickException
 	 * 
 	 */
 	private void processNetworkMessages() throws SlickException {
-		
+
 		NetworkMessage message = null;
-		
-		while((message = networkManager.getNextMessage()) != null) {
-			switch(message.type) {
-				case CHAT:
-					chat.newMessage(new Message(message.message, 0, 0, Channels.PRIVATE));
-					break;
-				case FIGHT:
-					fightInstance.processMessages(message);
-					break;
-				case GENERAL:
-					if (message.event.equals("humanFightStart") && message.trigger) {
-						gameEnvironment.startFight((Creature) opponent);
-					} else if (message.event.equals("roundSynchro")) {
-						fightInstance.setEnemyFinished();
-					}
-					break;
-				case ITEM:
-					map.getOverlay()[message.itempos[0]][message.itempos[1]] = MapConverter.fillImage(message.item, message.itempos[0], message.itempos[1]);
-					break;
-				case MAP:
-					map.setReceivedMapData(MapConverter.toOverlay(message));
-					break;
-				case FIGHTPOSITION:
-					if (message.enemyPosX == 0 && message.enemyPosY == 0) {
-						map.getOpponent().setEnemyPosition(message.enemyPosX, message.enemyPosY, false); 
-					} else {
-						map.getOpponent().setEnemyPosition(message.enemyPosX, message.enemyPosY, true);
-					}
-					break;
-				case PLAYERPOSITION:
-					opponent.setPosition(message.playerpos[0], message.playerpos[1]);
-					opponent.setDirectionImage(message.playerdir);
-					break;
-				default:
-					break;
+
+		while ((message = networkManager.getNextMessage()) != null) {
+			switch (message.type) {
+			case CHAT:
+				chat.newMessage(new Message(message.message, 0, 0,
+						Channels.PRIVATE));
+				break;
+			case FIGHT:
+				fightInstance.processMessages(message);
+				break;
+			case GENERAL:
+				if (message.event.equals("humanFightStart") && message.trigger) {
+					gameEnvironment.startFight((Creature) opponent);
+				} else if (message.event.equals("roundSynchro")) {
+					fightInstance.setEnemyFinished();
+				}
+				break;
+			case ITEM:
+				map.getOverlay()[message.itempos[0]][message.itempos[1]] = MapConverter
+						.fillImage(message.item, message.itempos[0],
+								message.itempos[1]);
+				break;
+			case MAP:
+				map.setReceivedMapData(MapConverter.toOverlay(message));
+				break;
+			case FIGHTPOSITION:
+				if (message.enemyPosX == 0 && message.enemyPosY == 0) {
+					map.getOpponent().setEnemyPosition(message.enemyPosX,
+							message.enemyPosY, false);
+				} else {
+					map.getOpponent().setEnemyPosition(message.enemyPosX,
+							message.enemyPosY, true);
+				}
+				break;
+			case PLAYERPOSITION:
+				opponent.setPosition(message.playerpos[0], message.playerpos[1]);
+				opponent.setDirectionImage(message.playerdir);
+				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -469,23 +500,24 @@ public class Game extends BasicGame {
 	@Override
 	public void render(GameContainer container, Graphics g)
 			throws SlickException {
-		
+
 		if (this.loading == true) {
 			g.drawString("Loading Game...", 250, 225);
 		} else {
 			if (this.mapSet) {
 				if (this.endScreen == null) {
 					gameEnvironment.draw(container, g);
-					/*if (!(fightInstance.isInFight())) {
-						minimap.draw(container, g);
-					}*/
+					/*
+					 * if (!(fightInstance.isInFight())) {
+					 * minimap.draw(container, g); }
+					 */
 					chat.draw(container, g);
 					armorView.draw(container, g);
 					inventoryView.draw(container, g);
 
 					if (dragging && draggedItem != null) {
-						g.drawImage(draggedItem.getImage(ImageSize.d20x20), draggedX,
-								draggedY);
+						g.drawImage(draggedItem.getImage(ImageSize.d20x20),
+								draggedX, draggedY);
 					}
 				} else {
 					g.setColor(Color.white);
@@ -502,20 +534,19 @@ public class Game extends BasicGame {
 
 	@Override
 	public void keyPressed(int key, char c) {
-		
-		
-			try {
-				if (key == 19) {
-					map.getOverlay()[1][1] = ItemFactory.createPotion("Poison", 1);
-				} else if (key == 20) {
-					map.getOverlay()[1][1].setImage(resourceManager.IMAGES.get("Strength"));
-				}
-			} catch (SlickException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+
+		try {
+			if (key == 19) {
+				map.getOverlay()[1][1] = ItemFactory.createPotion("Poison", 1);
+			} else if (key == 20) {
+				map.getOverlay()[1][1].setImage(resourceManager.IMAGES
+						.get("Strength"));
 			}
-		
-		
+		} catch (SlickException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		/* Key Values for Players Movement! (a,s,d,w) */
 		if ((key == 30 || key == 31 || key == 32 || key == 17)
 				&& !fightInstance.isInFight()) {
@@ -544,11 +575,10 @@ public class Game extends BasicGame {
 			try {
 				e = map.checkInFrontOfPlayer();
 				if (e != null) {
-					//inventoryView.storeEquipment((Equipment) e);
+					// inventoryView.storeEquipment((Equipment) e);
 					if (inventoryView.hasMoreRoom()) {
 						inventoryView.storeItem(e, armorView);
-					}
-					else {
+					} else {
 						map.dropItem(e, 1, 1);
 					}
 				}
@@ -556,7 +586,7 @@ public class Game extends BasicGame {
 				e1.printStackTrace();
 			}
 		} else if (key == 1) {
-			//set attackScreen in Fight.java to MAIN
+			// set attackScreen in Fight.java to MAIN
 			if (fightInstance.isInFight()) {
 				if (fightInstance.getAttackScreens() != AttackScreens.WAITING) {
 					fightInstance.setAttackScreen(AttackScreens.MAIN);
@@ -588,20 +618,20 @@ public class Game extends BasicGame {
 
 	@Override
 	public void mouseClicked(int button, int x, int y, int clickCount) {
-				
-		/* All views' mouse click implementation are called.
-		 * Wrong ones do nothing */
+
+		/*
+		 * All views' mouse click implementation are called. Wrong ones do
+		 * nothing
+		 */
 		if (button == 0) { // linke Maustaste
-			
+
 			if (fightInstance.isInFight()) {
 				if (!(fightInstance.isChangeTabActive())) {
 					fightInstance.handleFightOptions(x, y);
-				}
-				else if (fightInstance.isChangeTabActive()) {
+				} else if (fightInstance.isChangeTabActive()) {
 					armorView.changeTab(x, y);
 				}
-			}
-			else {
+			} else {
 				armorView.changeTab(x, y);
 			}
 		}
@@ -629,10 +659,13 @@ public class Game extends BasicGame {
 				return;
 			}
 
-			/*this.draggedItem = inventoryView.getItem(oldx, oldy, UsedClasses.Element);
-			
-			if (draggedItem == null) {
-				this.draggedItem = armorView.getItem(oldx, oldy);*/
+			/*
+			 * this.draggedItem = inventoryView.getItem(oldx, oldy,
+			 * UsedClasses.Element);
+			 * 
+			 * if (draggedItem == null) { this.draggedItem =
+			 * armorView.getItem(oldx, oldy);
+			 */
 
 			if (!mouseOverMinimap) {
 				this.draggedItem = inventoryView.getItem(oldx, oldy,
@@ -685,35 +718,42 @@ public class Game extends BasicGame {
 		if (button == 0) { // linke Maustaste
 			if (dragging) {
 				Element e;
-								
+
 				if (fightInstance.isInFight()) {
-					// only allow when potionTaking is active 
+					// only allow when potionTaking is active
 					if (fightInstance.isPotionTakingActive()) {
-						if ((e = armorView.drinkPotion((Potion) draggedItem, x, y, inventoryView)) != null) {
+						if ((e = armorView.drinkPotion((Potion) draggedItem, x,
+								y, inventoryView)) != null) {
 							armorView.backPotion((Potion) e);
 						} else {
 							fightInstance.setActiveAttackType(Attacks.POTION);
 							fightInstance.setPotionTakingActive(false);
-							fightInstance.setAttackScreen(AttackScreens.WAITING);
+							fightInstance
+									.setAttackScreen(AttackScreens.WAITING);
 						}
 					}
 				} else {
 
 					if (!draggingMinimap) {
 						try {
-							int mapDropRet = map.dropItem(this.draggedItem, x, y);
+							int mapDropRet = map.dropItem(this.draggedItem, x,
+									y);
 							if (mapDropRet == 1) {
-				
+
 							} else {
-								if ((e = armorView.equipItem(draggedItem, x, y, inventoryView)) != null) {
-									if ((e = inventoryView.storeItem(e, armorView)) != null) {
+								if ((e = armorView.equipItem(draggedItem, x, y,
+										inventoryView)) != null) {
+									if ((e = inventoryView.storeItem(e,
+											armorView)) != null) {
 										if (draggingSource == inventoryView) {
 											map.dropItem(e, x, y);
 										} else if (draggingSource == armorView) {
-											armorView.equipItem(draggedItem, draggingOldX, draggingOldY, inventoryView);
+											armorView.equipItem(draggedItem,
+													draggingOldX, draggingOldY,
+													inventoryView);
 										}
-									} 
-								} 
+									}
+								}
 							}
 						} catch (SlickException e1) {
 							e1.printStackTrace();
@@ -727,7 +767,7 @@ public class Game extends BasicGame {
 				}
 				dragging = false;
 				draggedItem = null;
-				//armorView.addFists();
+				// armorView.addFists();
 			}
 
 			if (draggingMinimap) {
@@ -765,11 +805,11 @@ public class Game extends BasicGame {
 		}
 		if (minimap != null) {
 			if (newX >= minimap.positionX
-				&& newX <= minimap.positionX + minimap.WIDTH
-				&& newY >= minimap.positionY
-				&& newY <= minimap.positionY + minimap.HEIGHT) {
-				//mouseOverMinimap = true;
-				mouseOverMinimap = false; //uncomment when minimap is activated
+					&& newX <= minimap.positionX + minimap.WIDTH
+					&& newY >= minimap.positionY
+					&& newY <= minimap.positionY + minimap.HEIGHT) {
+				// mouseOverMinimap = true;
+				mouseOverMinimap = false; // uncomment when minimap is activated
 				mouseOverChat = false;
 			} else {
 				mouseOverChat = false;
@@ -785,14 +825,18 @@ public class Game extends BasicGame {
 				&& newX < GAME_ENVIRONMENT_WIDTH + INVENTORY_WIDTH
 				&& newY > ARMOR_HEIGHT
 				&& newY < ARMOR_HEIGHT + INVENTORY_HEIGHT) {
-
+			inventoryView.showDescription(newX, newY);
+		} else {
+			inventoryView.endShowingDescription();
 		}
 
 		// Im Armor view
 		if (newX > GAME_ENVIRONMENT_WIDTH
 				&& newX < GAME_ENVIRONMENT_WIDTH + INVENTORY_WIDTH && newY > 0
 				&& newY < ARMOR_HEIGHT) {
-
+			armorView.showDescription(newX, newY);
+		} else {
+			armorView.endShowingDescription();
 		}
 
 	}
@@ -805,88 +849,102 @@ public class Game extends BasicGame {
 			chat.scroll(scroll);
 		}
 	}
-	
-	/**Returns the currently active Fight Thread or null if no fight is active.
+
+	/**
+	 * Returns the currently active Fight Thread or null if no fight is active.
 	 * (thread that needs to be started more than once).
+	 * 
 	 * @return fight Instance
 	 */
 	public Thread getFightThread() {
 		return fightThread;
 	}
-	
-	/**Sets fight Thread.
+
+	/**
+	 * Sets fight Thread.
+	 * 
 	 * @param t
 	 */
 	public void setFightThread(Thread t) {
 		fightThread = t;
 	}
 
-	/**Called by gameEnvironment when a fight ends.<br>
+	/**
+	 * Called by gameEnvironment when a fight ends.<br>
 	 * Takes action based on who lost the fight.
+	 * 
 	 * @param looser
 	 */
 	public void fightEnds(Creature looser) {
-		
+
 		fightThread = null;
-		//do we need for thread to join - they should end before game anyhow?!?
-		
-		//do stuff with looser
+		// do we need for thread to join - they should end before game anyhow?!?
+
+		// do stuff with looser
 		if (looser == this.player) {
 			this.player.resetPlayerPosition();
 		} else if (looser instanceof Monster) {
 			map.removeContentInFrontOfPlayer();
 		} else {
-			
-			//YOU HAVE WON THE GAME - SWITCH GAME STATE
+
+			// YOU HAVE WON THE GAME - SWITCH GAME STATE
 		}
 	}
-	
-	/**Checks if the computer is the lobbyHost.
+
+	/**
+	 * Checks if the computer is the lobbyHost.
+	 * 
 	 * @return true if this computer hosted the lobby
 	 */
 	public boolean isLobbyHost() {
 		return this.lobbyHost;
 	}
-	
+
 	/**
 	 * @return instance of network Manager
 	 */
 	public NetworkManager getNetworkManager() {
 		return this.networkManager;
 	}
-	
+
 	/**
 	 * @return the own Player
 	 */
 	public Player getPlayer() {
 		return this.player;
 	}
-	
+
 	/**
 	 * @return the opposing Player
 	 */
 	public Player getOpponent() {
 		return this.opponent;
 	}
-	
-	/**Set loading boolean. Used by thread that loads game ressources.
+
+	/**
+	 * Set loading boolean. Used by thread that loads game ressources.
+	 * 
 	 * @param loading
 	 */
 	public synchronized void setLoading(boolean loading) {
 		this.loading = loading;
 	}
-	
-	/**Set by map Class once all map data has been loaded.
+
+	/**
+	 * Set by map Class once all map data has been loaded.
+	 * 
 	 * @param mapSet
 	 */
 	public synchronized void setMapSet(boolean mapSet) {
 		this.mapSet = mapSet;
 	}
 
-	/**Set to end to display end screen when fight has finished.
+	/**
+	 * Set to end to display end screen when fight has finished.
+	 * 
 	 * @param string
 	 */
 	public synchronized void setEnd(String string) {
-		this.endScreen = string;		
+		this.endScreen = string;
 	}
 }

@@ -13,6 +13,13 @@ import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.SlickException;
 
 public class NewGame implements Runnable {
+	
+	private Lobby lobby;
+	
+	public NewGame(Lobby l) {
+		// TODO Auto-generated constructor stub
+		this.lobby = l;
+	}
 
 	@Override
 	public void run() {
@@ -35,6 +42,7 @@ public class NewGame implements Runnable {
 			e.printStackTrace();
 		} 
 		
+		lobby.setVisible(true);
 	}
 
 }
