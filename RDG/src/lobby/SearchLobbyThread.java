@@ -30,11 +30,17 @@ public class SearchLobbyThread implements Runnable {
 		try {
 			networkManager = NetworkManager.getInstance();
 			
+			Lobby.lobbies.clear();
+			
+			frame.showSearchingLobbies();
+			
 			networkManager.searchLobby(Lobby.lobbies);
 			
 			int j = 0;
 			while(j < 50) {
 				Thread.sleep(100);
+				if(this.quit)
+					break;
 				j++;
 			}
 			

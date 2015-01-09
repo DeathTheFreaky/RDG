@@ -1,15 +1,34 @@
 package gameEssentials;
 
+import elements.Creature;
+import elements.Element;
+import elements.Monster;
+import elements.Potion;
+import fighting.Fight;
+import general.Enums.AttackScreens;
+import general.Enums.Attacks;
+import general.Enums.Channels;
+import general.Enums.CreatureType;
+import general.Enums.ImageSize;
+import general.Enums.UsedClasses;
+import general.Enums.ViewingDirections;
+import general.ItemFactory;
+import general.Main;
+import general.ResourceManager;
+
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.ParserConfigurationException;
+
+import lobby.Lobby;
 
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.Color;
@@ -19,15 +38,6 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.xml.sax.SAXException;
 
-import at.RDG.network.NetworkManager;
-import at.RDG.network.communication.MapConverter;
-import at.RDG.network.communication.NetworkMessage;
-import configLoader.Configloader;
-import elements.Creature;
-import elements.Element;
-import elements.Monster;
-import elements.Potion;
-import fighting.Fight;
 import views.ArmorView;
 import views.Chat;
 import views.GameEnvironment;
@@ -45,6 +55,10 @@ import general.Enums.ViewingDirections;
 import general.ItemFactory;
 import general.Main;
 import general.ResourceManager;
+import at.RDG.network.NetworkManager;
+import at.RDG.network.communication.MapConverter;
+import at.RDG.network.communication.NetworkMessage;
+import configLoader.Configloader;
 
 /**
  * Game class stores the main configuration parameters of a game and defines
@@ -177,6 +191,8 @@ public class Game extends BasicGame {
 	private boolean startetLoading = false;
 	private boolean mapSet = false;
 
+	private boolean opponentNameSet = false;
+	
 	/* game Container for access by gameLoad thread */
 	GameContainer container;
 
@@ -184,9 +200,13 @@ public class Game extends BasicGame {
 	private String endScreen = null;
 	private int endCtr = 50; // 50*100ms = 5 seconds
 	private boolean endFightStarted = false;
-
+	
 	/* after x counts, force a human fight */
-	private int timeLeftCtr = 6000; // 6000 equals 10 mins -> 6000 * 100ms
+	private int gameLength = 10; //in minutes
+	private int timeLeftCtr = gameLength * 600; //UPDATE: 100ms * 10 * 60s * 10min => gameLength * 600 -> 600000 ms = 600s = 10min
+	
+	/* quit game */
+	private boolean running = true;
 
 	/* Declare all classes, we need for the game (Factory, Resourceloader) */
 	// private ResourceManager resourceManager;
@@ -217,6 +237,7 @@ public class Game extends BasicGame {
 		super(title);
 		this.playerName = playerName;
 		this.networkManager = NetworkManager.getInstance();
+		networkManager.sendMessage(new NetworkMessage("playerName", this.playerName));
 	}
 
 	/**
@@ -281,7 +302,7 @@ public class Game extends BasicGame {
 					| SAXException | IOException e) {
 				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
 						"Parsing Configuration Files failed.", e);
-				System.exit(1);
+				quitGame();
 			}
 
 			// Test Printing
@@ -369,17 +390,25 @@ public class Game extends BasicGame {
 		} catch (SlickException e) {
 			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
 					"Failed to load game.", e);
-			System.exit(1);
+			Game.getInstance().getGameContainer().exit();
 		}
 	}
 
 	@Override
 	public void update(GameContainer container, int delta)
 			throws SlickException {
-
 		/* run an Update */
 		if (timeToUpdate > UPDATE) {
-
+			
+			if (!running) {
+				container.exit();
+			}
+			
+			if (!running) {
+				Lobby.quitConnection();
+				container.exit();
+			}
+			
 			/* force a human fight when time runs out */
 			if (timeLeftCtr <= 0) {
 				if (!this.opponent.isInFight()) {
@@ -394,12 +423,13 @@ public class Game extends BasicGame {
 						}
 
 						/* start the fight and set the enemy */
-						fightThread.start();
-						fightInstance.setEnemy(opponent);
-						networkManager.sendMessage(new NetworkMessage(
-								"humanFightStart", true));
-
-						endFightStarted = true;
+						if (!fightInstance.isInFight()) {
+							fightThread.start();
+							fightInstance.setEnemy(opponent);
+							networkManager.sendMessage(new NetworkMessage("humanFightStart", true));
+							
+							endFightStarted = true;
+						}
 					}
 				}
 			}
@@ -412,7 +442,7 @@ public class Game extends BasicGame {
 					this.startetLoading = true;
 				}
 			} else {
-				if (this.mapSet) {
+				if (this.mapSet && this.opponentNameSet) {
 					if (this.endScreen == null) {
 						if (updatesUntilPlayerUpdate == 0) {
 							player.update(goTo);
@@ -428,8 +458,8 @@ public class Game extends BasicGame {
 						updatesUntilPlayerUpdate--;
 					} else {
 						if (this.endCtr == 0) {
-							// return to main menu - how?
-							System.exit(0);
+							//return to main menu - how?
+							quitGame();
 						} else {
 							this.endCtr--;
 						}
@@ -453,46 +483,78 @@ public class Game extends BasicGame {
 	private void processNetworkMessages() throws SlickException {
 
 		NetworkMessage message = null;
+		
+		while((message = networkManager.getNextMessage()) != null) {
+			switch(message.type) {
+				case CHAT:
+					chat.newMessage(new Message(message.message, 0, 0, Channels.PRIVATE));
+					break;
+				case FIGHT:
+					fightInstance.processMessages(message);
+					break;
+				case GENERAL:
+					if (message.event.equals("humanFightStart") && message.trigger) {
+						gameEnvironment.startFight((Creature) opponent);
+					} else if (message.event.equals("roundSynchro")) {
+						fightInstance.setEnemyFinished();
+					}
+					break;
+				case STRING:	
+					if (message.eventString.equals("playerName")) {
+						this.opponent.setPlayerName(message.nwString);
+						
+						Calendar cal = Calendar.getInstance();
 
-		while ((message = networkManager.getNextMessage()) != null) {
-			switch (message.type) {
-			case CHAT:
-				chat.newMessage(new Message(message.message, 0, 0,
-						Channels.PRIVATE));
-				break;
-			case FIGHT:
-				fightInstance.processMessages(message);
-				break;
-			case GENERAL:
-				if (message.event.equals("humanFightStart") && message.trigger) {
-					gameEnvironment.startFight((Creature) opponent);
-				} else if (message.event.equals("roundSynchro")) {
-					fightInstance.setEnemyFinished();
-				}
-				break;
-			case ITEM:
-				map.getOverlay()[message.itempos[0]][message.itempos[1]] = MapConverter
-						.fillImage(message.item, message.itempos[0],
-								message.itempos[1]);
-				break;
-			case MAP:
-				map.setReceivedMapData(MapConverter.toOverlay(message));
-				break;
-			case FIGHTPOSITION:
-				if (message.enemyPosX == 0 && message.enemyPosY == 0) {
-					map.getOpponent().setEnemyPosition(message.enemyPosX,
-							message.enemyPosY, false);
-				} else {
-					map.getOpponent().setEnemyPosition(message.enemyPosX,
-							message.enemyPosY, true);
-				}
-				break;
-			case PLAYERPOSITION:
-				opponent.setPosition(message.playerpos[0], message.playerpos[1]);
-				opponent.setDirectionImage(message.playerdir);
-				break;
-			default:
-				break;
+						int hour = cal.get(Calendar.HOUR_OF_DAY);
+						int minute = cal.get(Calendar.MINUTE);
+
+						/*
+						 * print a welcoming message and use an instance of Calendar class to
+						 * get current time
+						 */
+						
+						chat.newMessage(new Message("New Game Started! " + this.player.NAME + " vs " + this.opponent.NAME, cal));
+						/* print end of this game session */
+						/*
+						 * if game session overlaps a full hour, react accordingly -> use up
+						 * minutes until full hour is reached, increase hour, increase remaining
+						 * minutes starting form 0
+						 */
+						if (minute >= 45) {
+							chat.newMessage(new Message(
+									"Instance ends at "
+											+ ((hour + 1) > 23 ? "00" : (hour + 1))
+											+ ":"
+											+ ((minute - 45) > 9 ? (minute - 45) : "0"
+													+ (minute - 45)), cal));
+						} else {
+							chat.newMessage(new Message("Instance ends at " + hour + ":"
+									+ (minute + this.gameLength), cal));
+						}
+						
+						this.opponentNameSet = true;
+						
+					}
+					break;
+				case ITEM:
+					map.getOverlay()[message.itempos[0]][message.itempos[1]] = MapConverter.fillImage(message.item, message.itempos[0], message.itempos[1]);
+					break;
+				case MAP:
+					map.setReceivedMapData(MapConverter.toOverlay(message));
+					break;
+				case FIGHTPOSITION:
+					if (message.enemyPosX == 0 && message.enemyPosY == 0) {
+						map.getOpponent().setEnemyPosition(message.enemyPosX, message.enemyPosY, false); 
+					} else {
+						map.getOpponent().setEnemyPosition(message.enemyPosX, message.enemyPosY, true);
+					}
+					break;
+				case PLAYERPOSITION:
+					opponent.setPosition(message.playerpos[0], message.playerpos[1]);
+					opponent.setDirectionImage(message.playerdir);
+					break;
+				default:
+					break;
 			}
 		}
 	}
@@ -504,7 +566,7 @@ public class Game extends BasicGame {
 		if (this.loading == true) {
 			g.drawString("Loading Game...", 250, 225);
 		} else {
-			if (this.mapSet) {
+			if (this.mapSet && this.opponentNameSet) {
 				if (this.endScreen == null) {
 					gameEnvironment.draw(container, g);
 					/*
@@ -531,6 +593,14 @@ public class Game extends BasicGame {
 			}
 		}
 	}
+	
+	@Override
+    public boolean closeRequested()
+    {
+		/* quitGame() causes lobby to quit network connection and exits game with slicks exit method */
+		quitGame();
+		return false;
+    }
 
 	@Override
 	public void keyPressed(int key, char c) {
@@ -946,5 +1016,19 @@ public class Game extends BasicGame {
 	 */
 	public synchronized void setEnd(String string) {
 		this.endScreen = string;
+	}
+	
+	/**
+	 * @return game Container
+	 */
+	public GameContainer getGameContainer () {
+		return this.container;
+	}
+
+	/**Quits the game.
+	 * 
+	 */
+	public synchronized void quitGame() {
+		this.running = false;
 	}
 }

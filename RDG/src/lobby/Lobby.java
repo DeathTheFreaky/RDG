@@ -1,16 +1,11 @@
 package lobby;
 
 import gameEssentials.Game;
-import general.Main;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -19,22 +14,17 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 
-import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.SlickException;
 
 import at.RDG.network.NetworkManager;
@@ -46,13 +36,17 @@ public class Lobby extends JFrame {
 	public static List<Serverinfo> lobbies = new LinkedList<Serverinfo>();
 	public static String lobbyName = "DefaultLobbyName";
 	
+	/* prevent user from clicking create lobby or searching lobby while game is running */
+	public static boolean gameRunning = false;
+	
+	/* only ask for playerName when double click is on a lobby */
+	public static boolean lobbiesShown = false;
+	
 	private static NetworkManager network;
 
 	public enum Scenes {
 		MENU, CREATED_LOBBY, SEARCH_LOBBY, INSTRUCTIONS
 	}
-
-	private GridBagConstraints constraints;
 
 	private Container container;
 	private LobbyListener listener;
@@ -70,13 +64,8 @@ public class Lobby extends JFrame {
 	private JLabel allLobbies;
 	private JButton returnToMenu;
 	private JButton returnToMenu2;
-	private JLabel instr;
-
 	private JScrollPane scroll;
-	private JListModel list;
-	private JTable table;
-	private JScrollPane scrollPane;
-
+	private static JTable table;
 	public Lobby() {
 		try {
 			network = NetworkManager.getInstance();
@@ -87,7 +76,7 @@ public class Lobby extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() { 
             public void windowClosing(WindowEvent event1) { 
-            	System.out.println("S");
+            	leaveGame();
             } 
         }); 
 		
@@ -159,12 +148,36 @@ public class Lobby extends JFrame {
 				if (e.getClickCount() == 2) {
 					try {
 						try {
-							network.connect(lobbies.get(table.getSelectedRow()));
+							
+							if (lobbiesShown) {
+								String[] options = { "OK" };
+								JPanel panel = new JPanel();
+								JLabel lbl = new JLabel("Enter Player Name: ");
+								JTextField txt = new JTextField(10);
+								panel.add(lbl);
+								panel.add(txt);
+								int returnVal = JOptionPane.showOptionDialog(null, panel, "Player Name",
+										JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+										options, options[0]);
+								String playerName;
+								
+								if (returnVal != JOptionPane.CLOSED_OPTION) {
+									
+									playerName = txt.getText();
+									
+									if (playerName.equals("")) {
+										playerName = "Default Player";
+									}
+									
+									network.connect(lobbies.get(table.getSelectedRow()));
+									
+									startClient(playerName);
+								}
+							}
+							
 						} catch (UnableToStartConnectionException e1) {
-							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
-						startClient();
 					} catch (SlickException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -191,12 +204,19 @@ public class Lobby extends JFrame {
 				"Do you really want to close the game?", "Leave Game?",
 				JOptionPane.YES_NO_OPTION);
 		if (eingabe == 0) { // Yes
+			try {
+				Game.getInstance().quitGame();
+			} catch (NullPointerException e) {
+				//game was not running
+			}
 			this.dispose();
+			System.exit(0); //actually close all open windows by exiting jvm
 		}
 	}
 
-	public void switchScreen(Scenes s) {
+	public String switchScreen(Scenes s) {
 		CardLayout cl = (CardLayout) container.getLayout();
+		String retString = null;
 
 		switch (s) {
 		case CREATED_LOBBY:
@@ -206,11 +226,42 @@ public class Lobby extends JFrame {
 			JTextField txt = new JTextField(10);
 			panel.add(lbl);
 			panel.add(txt);
-			JOptionPane.showOptionDialog(null, panel, "The Title",
+
+		    int returnVal = JOptionPane.showOptionDialog(null, panel, "Lobby Name",
 					JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
 					options, options[0]);
-			lobbyName = txt.getText();
-			cl.next(container);
+		    
+		    if (returnVal != JOptionPane.CLOSED_OPTION) {
+		    	lobbyName = txt.getText();
+				if (lobbyName.equals("")) {
+					lobbyName = "Default Lobby";
+				}
+				
+				String[] optionsP = { "OK" };
+				JPanel panelP = new JPanel();
+				JLabel lblP = new JLabel("Enter Player Name: ");
+				JTextField txtP = new JTextField(10);
+				panelP.add(lblP);
+				panelP.add(txtP);
+				int returnValP = JOptionPane.showOptionDialog(null, panelP, "Player Name",
+						JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+						optionsP, optionsP[0]);
+				String playerName;
+				
+				if (returnValP != JOptionPane.CLOSED_OPTION) {
+					
+					playerName = txtP.getText();
+					
+					if (playerName.equals("")) {
+						playerName = "Default Player";
+					}
+					
+					retString = playerName;
+										
+					cl.next(container);
+				}
+    	    }
+		    
 			break;
 		case MENU:
 			cl.first(container);
@@ -219,6 +270,8 @@ public class Lobby extends JFrame {
 			cl.last(container);
 			break;
 		}
+		
+		return retString;
 	}
 
 	public void showAllLobbies() {
@@ -226,15 +279,38 @@ public class Lobby extends JFrame {
 		for (int i = 0; i < model.getRowCount(); i++) {
 			model.removeRow(i);
 		}
-
+		
 		for (Serverinfo s : lobbies) {
-			model.addRow(new Object[] { s.getLobbyName() });
+			model.addRow(new Object[] { s.getLobbyName(), s.getAddress().toString().replace("/", "") });
 		}
 		if (model.getRowCount() == 0) {
 			model.addRow(new Object[] { "There are no Lobbies!" });
+			lobbiesShown = false;
+		} else {
+			lobbiesShown = true;
 		}
 
 		this.revalidate();
+	}
+	
+	public void showSearchingLobbies() {
+		lobbiesShown = false;
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		for (int i = 0; i < model.getRowCount(); i++) {
+			model.removeRow(i);
+		}
+		model.addRow(new Object[] { "Searching Lobbies..." });
+
+		this.revalidate();
+	}
+	
+	public static void showLobbyClosed() {
+		lobbiesShown = false;
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		for (int i = 0; i < model.getRowCount(); i++) {
+			model.removeRow(i);
+		}
+		model.addRow(new Object[] { "Lobby closed in the meantime..." });
 	}
 
 	private void resetTable() {
@@ -243,13 +319,24 @@ public class Lobby extends JFrame {
 			model.removeRow(i);
 		}
 		model.addColumn("", new Object[] { "Searching for Lobbies..." });
+		model.addColumn("", new Object[] { "" });
 	}
 	
-	public void startClient() throws SlickException {
+	public void startClient(String playerName) throws SlickException {
 		this.switchScreen(Scenes.MENU);
 		this.setVisible(false);
 		
-		new Thread(new NewGame(this)).start();
+		new Thread(new NewGame(playerName, this)).start();
+	}
+
+	/**At the end of game, quit the connection and set gameRunning to false.
+	 * 
+	 */
+	public static void quitConnection() {
+		System.out.println("trying to quit connection!");
+		Lobby.gameRunning = false;
+		network.stopConnection();
+		System.out.println("Am i connected after quitting connection? " + network.isConnected());
 	}
 	
 }
