@@ -111,6 +111,6 @@ public class Potion extends Element {
 	
 	public String getDescription() {
 		
-		return NAME + ":\n" + itemDescription + "\npower: " + power + "\nduration: " + DURATION + " rounds";
+		return NAME + ":\n" + itemDescription + "\n" + "Power: " + power + "\n" + "Duration: " + DURATION + " rounds";
 	}
 }
