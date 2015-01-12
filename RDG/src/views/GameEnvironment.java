@@ -3,6 +3,7 @@ package views;
 import java.awt.Dimension;
 import java.awt.Point;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -13,6 +14,7 @@ import elements.Monster;
 import fighting.Fight;
 import gameEssentials.Game;
 import gameEssentials.Player;
+import general.Enums.Armor;
 import general.Enums.ImageSize;
 import general.MonsterFactory;
 
@@ -44,6 +46,10 @@ public class GameEnvironment extends View {
 	
 	/* the base Game class */
 	private Game game;
+	
+	/* Colors */
+	private final Color WHITE = new Color(1f, 1f, 1f, 0.5f);
+	private final Color BLACK = new Color(0f, 0f, 0f);
 
 	/**
 	 * Constructs a GameEnvironment passing its origin as single x and y
@@ -185,6 +191,16 @@ public class GameEnvironment extends View {
 			
 			/* draw player and opponent in player's scope */
 			player.draw(container, graphics, opponent);
+			
+			/* draw the players stats */
+			float stats[] = ArmorView.getValues();
+			graphics.setColor(WHITE);
+			graphics.fillRect(Game.GAME_ENVIRONMENT_WIDTH-150, 0, 145, 110);
+			graphics.setColor(BLACK);
+			String st = "Player Stats:\nATTACK:" + stats[ArmorView.ATTACK] + "\nSPEED:"
+					+ stats[ArmorView.SPEED] + "\nACCURACY:" + stats[ArmorView.ACCURACY] + 
+					"\nDEFENSE:" + stats[ArmorView.DEFENSE];
+			graphics.drawString(st, Game.GAME_ENVIRONMENT_WIDTH-145, 5);
 			
 		} else {	// show Fight
 			fightInstance.draw(container, graphics);

@@ -94,6 +94,13 @@ public class ArmorView extends View {
 	private boolean showDescription = false;
 	private int descriptionWidth = 0;
 	private int descriptionHeight = 0;
+	
+	/* Values of Player (Attack, Speed, Accuracy, Defense) */
+	public final static int ATTACK = 0;
+	public final static int SPEED = 1;
+	public final static int ACCURACY = 2;
+	public final static int DEFENSE = 3;
+	private static float[] values = new float[4];
 
 	/* HashMap for all equipped Armor */
 	HashMap<Armor, Equipment> armor1;
@@ -437,7 +444,100 @@ public class ArmorView extends View {
 
 	@Override
 	public void update() {
-
+		values[ATTACK] = 0;
+		values[ACCURACY] = 0;
+		values[DEFENSE] = 0;
+		values[SPEED] = 0;
+		
+		if(set) {
+			if(armor1.get(Armor.MAIN_WEAPON) != null) {
+				values[ATTACK] += ((Weapon) armor1.get(Armor.MAIN_WEAPON)).ATTACK;
+				values[ACCURACY] += ((Weapon) armor1.get(Armor.MAIN_WEAPON)).ACCURACY;
+				values[SPEED] += ((Weapon) armor1.get(Armor.MAIN_WEAPON)).SPEED;
+				values[DEFENSE] += ((Weapon) armor1.get(Armor.MAIN_WEAPON)).DEFENSE;
+			}
+			
+			if(armor1.get(Armor.SUB_WEAPON) != null) {
+				values[ATTACK] += ((Weapon) armor1.get(Armor.SUB_WEAPON)).ATTACK;
+				values[ACCURACY] += ((Weapon) armor1.get(Armor.SUB_WEAPON)).ACCURACY;
+				values[SPEED] += ((Weapon) armor1.get(Armor.SUB_WEAPON)).SPEED;
+				values[DEFENSE] += ((Weapon) armor1.get(Armor.SUB_WEAPON)).DEFENSE;
+			}
+			
+			if(armor1.get(Armor.HEAD) != null) {
+				values[DEFENSE] += ((Armament) armor1.get(Armor.HEAD)).ARMOR;
+				values[SPEED] -= ((Armament) armor1.get(Armor.HEAD)).SPEED;
+			}
+			
+			if(armor1.get(Armor.CHEST) != null) {
+				values[DEFENSE] += ((Armament) armor1.get(Armor.CHEST)).ARMOR;
+				values[SPEED] -= ((Armament) armor1.get(Armor.CHEST)).SPEED;
+			}
+			
+			if(armor1.get(Armor.ARMS) != null) {
+				values[DEFENSE] += ((Armament) armor1.get(Armor.ARMS)).ARMOR;
+				values[SPEED] -= ((Armament) armor1.get(Armor.ARMS)).SPEED;
+			}
+			
+			if(armor1.get(Armor.LEGS) != null) {
+				values[DEFENSE] += ((Armament) armor1.get(Armor.LEGS)).ARMOR;
+				values[SPEED] -= ((Armament) armor1.get(Armor.LEGS)).SPEED;
+			}
+			
+			if(armor1.get(Armor.FEET) != null) {
+				values[DEFENSE] += ((Armament) armor1.get(Armor.FEET)).ARMOR;
+				values[SPEED] -= ((Armament) armor1.get(Armor.FEET)).SPEED;
+			}
+		}else {
+			if(armor2.get(Armor.MAIN_WEAPON) != null) {
+				values[ATTACK] += ((Weapon) armor2.get(Armor.MAIN_WEAPON)).ATTACK;
+				values[ACCURACY] += ((Weapon) armor2.get(Armor.MAIN_WEAPON)).ACCURACY;
+				values[SPEED] += ((Weapon) armor2.get(Armor.MAIN_WEAPON)).SPEED;
+				values[DEFENSE] += ((Weapon) armor2.get(Armor.MAIN_WEAPON)).DEFENSE;
+			}
+			
+			if(armor2.get(Armor.SUB_WEAPON) != null) {
+				values[ATTACK] += ((Weapon) armor2.get(Armor.SUB_WEAPON)).ATTACK;
+				values[ACCURACY] += ((Weapon) armor2.get(Armor.SUB_WEAPON)).ACCURACY;
+				values[SPEED] += ((Weapon) armor2.get(Armor.SUB_WEAPON)).SPEED;
+				values[DEFENSE] += ((Weapon) armor2.get(Armor.SUB_WEAPON)).DEFENSE;
+			}
+			
+			if(armor2.get(Armor.HEAD) != null) {
+				values[DEFENSE] += ((Armament) armor2.get(Armor.HEAD)).ARMOR;
+				values[SPEED] -= ((Armament) armor2.get(Armor.HEAD)).SPEED;
+			}
+			
+			if(armor2.get(Armor.CHEST) != null) {
+				values[DEFENSE] += ((Armament) armor2.get(Armor.CHEST)).ARMOR;
+				values[SPEED] -= ((Armament) armor2.get(Armor.CHEST)).SPEED;
+			}
+			
+			if(armor2.get(Armor.ARMS) != null) {
+				values[DEFENSE] += ((Armament) armor2.get(Armor.ARMS)).ARMOR;
+				values[SPEED] -= ((Armament) armor2.get(Armor.ARMS)).SPEED;
+			}
+			
+			if(armor2.get(Armor.LEGS) != null) {
+				values[DEFENSE] += ((Armament) armor2.get(Armor.LEGS)).ARMOR;
+				values[SPEED] -= ((Armament) armor2.get(Armor.LEGS)).SPEED;
+			}
+			
+			if(armor2.get(Armor.FEET) != null) {
+				values[DEFENSE] += ((Armament) armor2.get(Armor.FEET)).ARMOR;
+				values[SPEED] -= ((Armament) armor2.get(Armor.FEET)).SPEED;
+			}
+		}
+		
+		int mem = 0;
+		mem = (int) (values[ATTACK] * 100);
+		values[ATTACK] = ((float) mem)/100f;
+		mem = (int) (values[SPEED] * 100);
+		values[SPEED] = ((float) mem)/100f;
+		mem = (int) (values[ACCURACY] * 100);
+		values[ACCURACY] = ((float) mem)/100f;
+		mem = (int) (values[DEFENSE] * 100);
+		values[DEFENSE] = ((float) mem)/100f;
 	}
 
 	/**
@@ -1448,6 +1548,10 @@ public class ArmorView extends View {
 		showDescription = false;
 		this.descriptionWidth = 0;
 		this.descriptionHeight = 0;
+	}
+	
+	public static float[] getValues() {
+		return values;
 	}
 
 }

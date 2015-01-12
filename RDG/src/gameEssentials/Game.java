@@ -454,6 +454,7 @@ public class Game extends BasicGame {
 						}
 						gameEnvironment.update();
 						chat.update();
+						armorView.update();
 
 						updatesUntilPlayerUpdate--;
 					} else {
