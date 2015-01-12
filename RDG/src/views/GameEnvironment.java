@@ -17,6 +17,7 @@ import gameEssentials.Player;
 import general.Enums.Armor;
 import general.Enums.ImageSize;
 import general.MonsterFactory;
+import general.ResourceManager;
 
 /**
  * GameEnvironment extends a View in the GameEnvironment context.
@@ -50,6 +51,9 @@ public class GameEnvironment extends View {
 	/* Colors */
 	private final Color WHITE = new Color(1f, 1f, 1f, 0.5f);
 	private final Color BLACK = new Color(0f, 0f, 0f);
+	
+	/* resource manager for stat images */
+	private ResourceManager resources = new ResourceManager().getInstance();
 
 	/**
 	 * Constructs a GameEnvironment passing its origin as single x and y
@@ -195,12 +199,23 @@ public class GameEnvironment extends View {
 			/* draw the players stats */
 			float stats[] = ArmorView.getValues();
 			graphics.setColor(WHITE);
-			graphics.fillRect(Game.GAME_ENVIRONMENT_WIDTH-150, 0, 145, 110);
+			graphics.fillRect(0, 0, Game.GAME_ENVIRONMENT_WIDTH, 31);
 			graphics.setColor(BLACK);
-			String st = "Player Stats:\nATTACK:" + stats[ArmorView.ATTACK] + "\nSPEED:"
+			/*String st = "Player Stats:\nATTACK:" + stats[ArmorView.ATTACK] + "\nSPEED:"
 					+ stats[ArmorView.SPEED] + "\nACCURACY:" + stats[ArmorView.ACCURACY] + 
-					"\nDEFENSE:" + stats[ArmorView.DEFENSE];
-			graphics.drawString(st, Game.GAME_ENVIRONMENT_WIDTH-145, 5);
+					"\nDEFENSE:" + stats[ArmorView.DEFENSE];*/
+			
+			String accuracy = Float.toString(round(this.player.getOrAccuracy(), 1));
+			String speed = Float.toString(round(this.player.getOrSpeed(), 1));
+			String strength = Float.toString(round(this.player.getOrStrength(), 1));
+			
+			graphics.drawString(this.player.NAME, 6, 7);
+			graphics.drawImage(resources.IMAGES.get("Accuracy_Stats").getScaledCopy(32,32), Game.GAME_ENVIRONMENT_WIDTH - 80, 0);
+			graphics.drawString(accuracy, Game.GAME_ENVIRONMENT_WIDTH - 45, 7);
+			graphics.drawImage(resources.IMAGES.get("Strength_Stats").getScaledCopy(32,32), Game.GAME_ENVIRONMENT_WIDTH - 160, 0);
+			graphics.drawString(speed, Game.GAME_ENVIRONMENT_WIDTH - 125, 7);
+			graphics.drawImage(resources.IMAGES.get("Speed_Stats").getScaledCopy(32,32), Game.GAME_ENVIRONMENT_WIDTH - 240, 0);
+			graphics.drawString(strength, Game.GAME_ENVIRONMENT_WIDTH - 205, 7);
 			
 		} else {	// show Fight
 			fightInstance.draw(container, graphics);
@@ -247,5 +262,20 @@ public class GameEnvironment extends View {
 	 */
 	public Fight getFightInstance() {
 		return fightInstance;
+	}
+	
+	/**Used for rounding of float values.
+	 * @param value
+	 * @param places
+	 * @return rounded value for n places
+	 */
+	private float round(float value, int places) {
+				
+	    if (places < 0) throw new IllegalArgumentException();
+
+	    long factor = (long) Math.pow(10, places);
+	    value = value * factor;
+	    long tmp = Math.round(value);
+	    return (float) tmp / factor;
 	}
 }

@@ -145,13 +145,9 @@ public class ResourceManager {
 		IMAGES.put("Player2_big", new Image(Game.IMAGEPATH + "player_big.png"));
 		IMAGES.put("Armor_Background", new Image(Game.IMAGEPATH
 				+ "warrior_160x160.png"));
-		/*IMAGES.put("Helmet", new Image(Game.IMAGEPATH + "Head.png"));
-		IMAGES.put("Arms", new Image(Game.IMAGEPATH + "Arm.png"));
-		IMAGES.put("Cuirass", new Image(Game.IMAGEPATH + "Chest.png"));
-		IMAGES.put("Legs", new Image(Game.IMAGEPATH + "Legs.png"));
-		IMAGES.put("Shoes", new Image(Game.IMAGEPATH + "Feet.png"));
-		IMAGES.put("M_Weapon", new Image(Game.IMAGEPATH + "Weapon.png"));
-		IMAGES.put("S_Weapon", new Image(Game.IMAGEPATH + "Weapon2.png"));*/
+		IMAGES.put("Accuracy_Stats", new Image(Game.IMAGEPATH + "accuracy_stats.png"));
+		IMAGES.put("Strength_Stats", new Image(Game.IMAGEPATH + "strength_stats.png"));
+		IMAGES.put("Speed_Stats", new Image(Game.IMAGEPATH + "speed_stats.png"));
 		
 		/* load key picture */ 
 		IMAGES.put("Key", new Image(Game.IMAGEPATH + "key.png"));

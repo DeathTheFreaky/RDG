@@ -225,8 +225,11 @@ public class Game extends BasicGame {
 	 */
 	private Game(String title, String playerName) throws IOException {
 		super(title);
+		System.out.println("constructing game");
 		this.playerName = playerName;
+		System.out.println("getting instance of networkmanager (already exists - created by lobby)");
 		this.networkManager = NetworkManager.getInstance();
+		System.out.println("trying to send playername to other computer");
 		networkManager.sendMessage(new NetworkMessage("playerName", this.playerName));
 	}
 
@@ -284,6 +287,8 @@ public class Game extends BasicGame {
 	private void loadGame() {
 
 		try {
+			
+			System.out.println("loading game");
 			
 			/* set enddate for displaying in chat message */
 			enddate.setTimeInMillis(endtime);
