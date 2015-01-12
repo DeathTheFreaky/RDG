@@ -1035,4 +1035,13 @@ public class Game extends BasicGame {
 	public synchronized void quitGame() {
 		this.running = false;
 	}
+
+	/**Resets game after a round has finished.<br>
+	 * Has no effect if no Instance of Game exists yet.
+	 */
+	public static void reset() {
+		if (Game.INSTANCE != null) {
+			Game.INSTANCE = null;
+		}
+	}
 }
