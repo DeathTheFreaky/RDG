@@ -26,7 +26,6 @@ public class NewGame implements Runnable {
 		// TODO Auto-generated method stub
 		AppGameContainer app1 = null;
 		try {
-			System.out.println("lobby starting new game");
 			Lobby.gameRunning = true;
 			app1 = new AppGameContainer(Game.getInstance("Room Duelling Game", playerName));
 			app1.setDisplayMode(Game.WIDTH, Game.HEIGHT, false); // Breite, Höhe, ???
@@ -34,8 +33,9 @@ public class NewGame implements Runnable {
 			app1.setAlwaysRender(true); // Spiel wird auch ohne Fokus aktualisiert
 			app1.setShowFPS(false);
 			app1.setForceExit(false);
-			System.out.println("lobby just before game start");
 			app1.start();
+			app1.destroy(); //has no effect to bug 
+			
 			Lobby.gameRunning = false;
 		} catch (IOException e) {
 			Lobby.gameRunning = false;

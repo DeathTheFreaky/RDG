@@ -224,14 +224,9 @@ public class Game extends BasicGame {
 	 */
 	private Game(String title, String playerName) throws IOException {
 		super(title);
-		System.out.println("constructing game");
 		this.playerName = playerName;
-		System.out.println("getting instance of networkmanager (already exists - created by lobby)");
 		this.networkManager = NetworkManager.getInstance();
-		System.out.println("trying to send playername to other computer");
 		networkManager.sendMessage(new NetworkMessage("playerName", this.playerName));
-		
-		
 	}
 
 	/**
@@ -317,8 +312,6 @@ public class Game extends BasicGame {
 				quitGame();
 			}
 			
-			System.out.println("configloader: " + this.configloader);
-
 			// Test Printing
 			/*
 			 * ConfigTestprinter configprinter = new
@@ -359,8 +352,6 @@ public class Game extends BasicGame {
 				quitGame();
 			}
 			
-			System.out.println("resourceManager: " + this.resourceManager);
-
 			/* network lobby must be called before this to detect player type */
 			CreatureType playerType;
 			if (this.lobbyHost) {
@@ -387,9 +378,6 @@ public class Game extends BasicGame {
 								.get("Player1"), this.gameEnvironmentOrigin,
 						CreatureType.PLAYER1, false);
 			}
-			
-			System.out.println("player: " + this.player);
-			System.out.println("opponent: " + this.opponent);
 
 			/* Load the chat */
 			this.chat = new Chat("Chat", this.chatOrigin, new Dimension(
@@ -414,8 +402,6 @@ public class Game extends BasicGame {
 					this.inventoryViewOrigin, new Dimension(
 							Game.INVENTORY_WIDTH, Game.INVENTORY_HEIGHT));
 			
-			System.out.println("inventoryView: " + this.inventoryView);
-
 			/* Load Map and place the player */
 			this.map = new Map().getInstance();
 			this.map.setPlayer(this.player);
@@ -541,6 +527,8 @@ public class Game extends BasicGame {
 				case STRING:	
 					if (message.eventString.equals("playerName")) {
 						this.opponent.setPlayerName(message.nwString);
+						
+						System.out.println("opponent's name: " + message.nwString);
 						
 						Calendar cal = Calendar.getInstance();
 
@@ -1091,8 +1079,8 @@ public class Game extends BasicGame {
 			Game.INSTANCE = null;
 			Map.reset();
 			Maze.reset();
-			ResourceManager.reset();
-			Configloader.reset();
+			//ResourceManager.reset();
+			//Configloader.reset();
 			InventoryView.reset();
 			AttackFactory.reset();
 		}

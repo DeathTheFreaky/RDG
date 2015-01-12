@@ -202,9 +202,7 @@ public class Map {
 		itemsBalance.put(ItemClasses.WEAK, weakMap);
 		itemsBalance.put(ItemClasses.MEDIUM, mediumMap);
 		itemsBalance.put(ItemClasses.STRONG, strongMap);
-		
-		System.out.println("Am i the lobbyhost? " + game.isLobbyHost());
-				
+						
 		if (game.isLobbyHost()) {
 			fillWalls(true);
 			loadRooms(true);
@@ -631,8 +629,6 @@ public class Map {
 				/* detect room types and load according room */
 				RoomTypes type = detectRoomType(i, j);
 				
-				System.out.println("detected room type: " + type);
-
 				rooms[i][j] = RoomFactory.createRoom(type, monsterBalance, itemsBalance, this, balanceOffsets, lobbyHost);
 			}
 		}

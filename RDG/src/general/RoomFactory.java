@@ -46,9 +46,6 @@ public class RoomFactory {
 		
 		ResourceManager resources = new ResourceManager().getInstance();
 		RoomTemplate tempTemplate = resources.ROOM_TEMPLATES.get(type);
-		
-		System.out.println("resources.ROOM_TEMPLATES: " + resources.ROOM_TEMPLATES);
-		System.out.println("got room Template: " + resources.ROOM_TEMPLATES.get(type));
 
 		Dimension size = new Dimension(Game.ROOMWIDTH, Game.ROOMHEIGHT);
 		Element[][] background = new Element[Game.ROOMWIDTH][Game.ROOMHEIGHT];
@@ -94,7 +91,6 @@ public class RoomFactory {
 	 */
 	private static Element[][] addMonster(RoomTypes type, Element[][] overlay, RoomTemplate tempTemplate, Map<Levels, HashMap<String, Integer>> monsterBalance, gameEssentials.Map map, Map<String, Integer> balanceOffsets) throws SlickException {
 		
-		System.out.println("tempTemplate: " + tempTemplate);
 		Map<Levels, Float> monsterProbabilities = tempTemplate.getMonster();
 		int monsterCount = tempTemplate.getMonsterCount();
 						
