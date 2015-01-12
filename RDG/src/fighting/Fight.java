@@ -1,6 +1,7 @@
 package fighting;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Point;
 import java.util.HashMap;
 import java.io.IOException;
@@ -40,6 +41,7 @@ import views.Chat;
 import views.GameEnvironment;
 import views.View;
 import views.chat.Message;
+import views.font.TrueTypeFont;
 
 public class Fight extends View implements Runnable {
 
@@ -53,6 +55,10 @@ public class Fight extends View implements Runnable {
 	private final Color WHITE = new Color(1.0f, 1.0f, 1.0f);
 	private final Color PINK = new Color(1f, 0.5f, 0.8f);
 	private final Color RED = new Color(1f, 0.0f, 0.0f);
+	
+	/* set font type */
+	Font font = new Font("Verdana", Font.BOLD, 11);
+	TrueTypeFont ttf = new TrueTypeFont(font, true);
 
 	/* positioning values */
 	private final int border = 5;
@@ -176,6 +182,9 @@ public class Fight extends View implements Runnable {
 	
 	@Override
 	public void draw(GameContainer container, Graphics graphics) {
+		
+		/* set font */
+		graphics.setFont(ttf);
 
 		/* BACKGROUND */
 		graphics.setColor(GRAY);

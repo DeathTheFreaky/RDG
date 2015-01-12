@@ -218,10 +218,12 @@ public class Chat extends View {
 		input.render(container, graphics);
 
 		graphics.setColor(BLACK);
+		graphics.setFont(ttf);
 		// graphics.setColor(new Color(0f, 0f, 0f));
 		int i = 0;
 		for (Message m : messages) {
 			if (shown[i] == true) {
+				
 				graphics.drawString(m.print(), origin.x
 						* GameEnvironment.BLOCK_SIZE + 10, origin.y
 						* GameEnvironment.BLOCK_SIZE + zeile * 14 + 5);
@@ -239,9 +241,10 @@ public class Chat extends View {
 				- inputFieldHeight - strokeSize, timeSpace, inputFieldHeight);
 
 		graphics.setColor(BLACK);
+		
 		graphics.drawString("<" + (hour>9?Integer.toString(hour):"0"+hour) + ":"
-				+ (minute > 9 ? minute : ("0" + minute)) + ">", strokeSize + 2,
-				positionY + size.height - inputFieldHeight - strokeSize);
+				+ (minute > 9 ? minute : ("0" + minute)) + ">", strokeSize + 2, positionY + size.height - inputFieldHeight - strokeSize);
+
 	}
 
 	@Override

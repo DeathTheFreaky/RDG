@@ -1,12 +1,14 @@
 package views;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Point;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.TrueTypeFont;
 
 import elements.Creature;
 import elements.Element;
@@ -51,6 +53,10 @@ public class GameEnvironment extends View {
 	/* Colors */
 	private final Color WHITE = new Color(1f, 1f, 1f, 0.5f);
 	private final Color BLACK = new Color(0f, 0f, 0f);
+	
+	/* set font type */
+	Font font = new Font("Verdana", Font.BOLD, 11);
+	TrueTypeFont ttf = new TrueTypeFont(font, true);
 	
 	/* resource manager for stat images */
 	private ResourceManager resources = new ResourceManager().getInstance();
@@ -155,6 +161,8 @@ public class GameEnvironment extends View {
 
 	@Override
 	public void draw(GameContainer container, Graphics graphics) {
+		
+		graphics.setFont(ttf);
 		
 		/* if the player is not in a current fight */
 		if (!fightInstance.isInFight()) {

@@ -610,8 +610,7 @@ public class Game extends BasicGame {
 						g.setColor(Color.white);
 						Font font = new Font("Verdana", Font.BOLD, 20);
 						TrueTypeFont ttf = new TrueTypeFont(font, true);
-						g.setFont(ttf);
-						g.drawString(this.endScreen, 255, 225);
+						ttf.drawString(255, 225, this.endScreen);
 					}
 				} else {
 					g.drawString("Loading Game...", 250, 225);

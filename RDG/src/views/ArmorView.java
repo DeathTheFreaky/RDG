@@ -82,7 +82,9 @@ public class ArmorView extends View {
 	/* Font */
 	private TrueTypeFont font;
 	private Font awtFont;
-
+	Font fontSet;
+	TrueTypeFont ttfSet;
+	
 	/* width/height of ArmorImages */
 	private final int IMAGE_SIZE = 20;
 
@@ -257,6 +259,8 @@ public class ArmorView extends View {
 
 		awtFont = new Font("Times New Roman", Font.BOLD, 12);
 		font = new TrueTypeFont(awtFont, true);
+		fontSet = new Font("Verdana", Font.BOLD, 14);
+		ttfSet = new TrueTypeFont(fontSet, true);
 
 		headX = ORIGIN_X + 100;
 		headY = ORIGIN_Y + 5 + tabHeight + 10;
@@ -293,11 +297,13 @@ public class ArmorView extends View {
 			graphics.fillRect(tab1X, tab1Y, tabWidth, tabHeight);
 			graphics.fillRect(tab2X, tab2Y, tabWidth, tabHeight - 2);
 			graphics.setColor(BLACK);
+			graphics.setFont(ttfSet);
 			graphics.drawString("SET 1", textPositionX, textPositionY);
 		} else {
 			graphics.fillRect(tab1X, tab1Y, tabWidth, tabHeight - 2);
 			graphics.fillRect(tab2X, tab2Y, tabWidth, tabHeight);
 			graphics.setColor(BLACK);
+			graphics.setFont(ttfSet);
 			graphics.drawString("SET 2", textPositionX, textPositionY);
 		}
 
