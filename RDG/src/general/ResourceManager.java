@@ -173,10 +173,10 @@ public class ResourceManager {
 		
 
 		/* Print which images are stored now */
-		/*
-		 * for(String s : IMAGES.keySet()) { System.out.println("Key: " + s +
-		 * ", Value: " + IMAGES.get(s)); }
-		 */
+		
+		 /*for(String s : IMAGES.keySet()) { 
+			 System.out.println("Key: " + s + ", Value: " + IMAGES.get(s)); 
+		 }*/
 	}
 
 	/**
@@ -357,5 +357,15 @@ public class ResourceManager {
 			INSTANCE = new ResourceManager();
 			INSTANCE.loadResources();
 		}
+	}
+	
+	/**Destroys all Ressources once they are not needed any longer (game ends).
+	 * @throws SlickException
+	 */
+	public void destroyAllResources() throws SlickException {
+		for (Entry <String, Image> entry : IMAGES.entrySet()) {
+			entry.getValue().destroy();
+		}
+		TILES.destroy();
 	}
 }

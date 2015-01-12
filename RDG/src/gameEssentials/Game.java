@@ -430,6 +430,7 @@ public class Game extends BasicGame {
 		if (timeToUpdate > UPDATE) {
 						
 			if (!running) {
+				resourceManager.destroyAllResources();
 				Lobby.quitConnection();
 				container.exit();
 			}
@@ -527,9 +528,7 @@ public class Game extends BasicGame {
 				case STRING:	
 					if (message.eventString.equals("playerName")) {
 						this.opponent.setPlayerName(message.nwString);
-						
-						System.out.println("opponent's name: " + message.nwString);
-						
+												
 						Calendar cal = Calendar.getInstance();
 
 						int hour = cal.get(Calendar.HOUR_OF_DAY);
@@ -1079,8 +1078,8 @@ public class Game extends BasicGame {
 			Game.INSTANCE = null;
 			Map.reset();
 			Maze.reset();
-			//ResourceManager.reset();
-			//Configloader.reset();
+			ResourceManager.reset();
+			Configloader.reset();
 			InventoryView.reset();
 			AttackFactory.reset();
 		}
