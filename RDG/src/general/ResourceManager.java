@@ -9,6 +9,7 @@ import general.Enums.RoomTypes;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -154,7 +155,7 @@ public class ResourceManager {
 		
 		/* load key picture */ 
 		IMAGES.put("Key", new Image(Game.IMAGEPATH + "key.png"));
-		
+				
 		/* load images from paths stored in config loader */
 		for (Entry<String, ArmamentTemplate> entry : configloader
 				.getArmamentTemplates().entrySet()) {

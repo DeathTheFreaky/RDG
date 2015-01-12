@@ -203,7 +203,7 @@ public class Game extends BasicGame {
 	
 	/* after x counts, force a human fight */
 	private int gameLength = 10; //in minutes
-	private int timeLeftCtr = gameLength * 600; //UPDATE: 100ms * 10 * 60s * 10min => gameLength * 600 -> 600000 ms = 600s = 10min
+	private int timeLeftCtr = gameLength * 10; //UPDATE: 100ms * 10 * 60s * 10min => gameLength * 600 -> 600000 ms = 600s = 10min
 	
 	/* quit game */
 	private boolean running = true;
@@ -411,7 +411,9 @@ public class Game extends BasicGame {
 			
 			/* force a human fight when time runs out */
 			if (timeLeftCtr <= 0) {
+				System.out.println("no time left");
 				if (!this.opponent.isInFight()) {
+					System.out.println("opponent is not in a fight");
 					if (lobbyHost && endFightStarted == false) {
 
 						/*
@@ -424,6 +426,7 @@ public class Game extends BasicGame {
 
 						/* start the fight and set the enemy */
 						if (!fightInstance.isInFight()) {
+							System.out.println("player is not in a fight");
 							fightThread.start();
 							fightInstance.setEnemy(opponent);
 							networkManager.sendMessage(new NetworkMessage("humanFightStart", true));
