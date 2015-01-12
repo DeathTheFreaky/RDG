@@ -115,6 +115,9 @@ public class NetworkManager {
 			throws ArgumentOutOfRangeException,
 			UnableToStartConnectionException, IllegalThreadStateException,
 			IOException {
+		
+		this.lobbyHost = true;
+		
 		// starts thread to accept incomming connection
 		this.serverSocket = new ServerSocket(0);
 		this.acceptor = new Thread() {
@@ -166,9 +169,6 @@ public class NetworkManager {
 
 		System.out.println("ServerSocket Port: "
 				+ this.serverSocket.getLocalPort());
-
-		/* don't know where to set this -> once connection has been established */
-		setLobbyHost(true);
 	}
 
 	/**
@@ -189,6 +189,7 @@ public class NetworkManager {
 	 */
 	public void searchLobby(List<Serverinfo> lobbyList)
 			throws IllegalThreadStateException {
+		setLobbyHost(false);
 		this.searcher = new LobbySearcher(lobbyList);
 		this.searcher.start();
 	}
@@ -302,5 +303,10 @@ public class NetworkManager {
 		} else {
 			return this.searcher.getFilledLobbyList();
 		}
+	}
+	
+	/* resets lobbyHost to false */
+	public void resetLobbyHost() {
+		this.lobbyHost = false;
 	}
 }

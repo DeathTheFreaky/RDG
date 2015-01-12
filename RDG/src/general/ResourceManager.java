@@ -97,12 +97,7 @@ public class ResourceManager {
 	private void loadResources() throws SlickException {
 
 		/* load config data */
-		try {
-			configloader = new Configloader().getInstance();
-		} catch (IllegalArgumentException | ParserConfigurationException
-				| SAXException | IOException e) {
-			e.printStackTrace();
-		}
+		configloader = new Configloader().getInstance();
 
 		if (configloader == null) {
 			throw new NullPointerException("Configloader must be set!");
@@ -340,13 +335,27 @@ public class ResourceManager {
 	 * all Ressources.<br>
 	 * 
 	 * @return the one and only instance of ResourceManager
+	 */
+	public ResourceManager getInstance() {
+		return INSTANCE;
+	}
+	
+	/**Resets Resource Manager after a round has finished.<br>
+	 * Has no effect if no Instance of Resource Manager exists yet.
+	 */
+	public static void reset() {
+		if (ResourceManager.INSTANCE != null) {
+			ResourceManager.INSTANCE = null;
+		}
+	}
+
+	/**Loads ResourceManager for the first time. Should be called from main.
 	 * @throws SlickException
 	 */
-	public ResourceManager getInstance() throws SlickException {
+	public static void init() throws SlickException {
 		if (INSTANCE == null) {
 			INSTANCE = new ResourceManager();
 			INSTANCE.loadResources();
 		}
-		return INSTANCE;
 	}
 }

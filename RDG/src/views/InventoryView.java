@@ -15,6 +15,7 @@ import elements.Armament;
 import elements.Element;
 import elements.Potion;
 import elements.Weapon;
+import gameEssentials.Map;
 import general.Enums.ImageSize;
 import general.Enums.UsedClasses;
 import general.ResourceManager;
@@ -395,6 +396,15 @@ public class InventoryView extends View {
 	 */
 	public boolean hasKey() {
 		return this.hasKey;
+	}
+	
+	/**Resets map after a round has finished.<br>
+	 * Has no effect if no Instance of Map exists yet.
+	 */
+	public static void reset() {
+		if (InventoryView.INSTANCE != null) {
+			InventoryView.INSTANCE = null;
+		}
 	}
 
 }

@@ -71,8 +71,7 @@ public class AttackFactory {
 				
 				attacks.put(entry.getKey(), tempAttack);
 			}
-		} catch (IllegalArgumentException | SlickException
-				| ParserConfigurationException | SAXException | IOException e) {
+		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		}
 	}
@@ -109,6 +108,15 @@ public class AttackFactory {
 	public Map<Attacks, Attack> getAllAttacks() {
 		
 		return attacks;
+	}
+	
+	/**Resets AttackFactory after a round has finished.<br>
+	 * Has no effect if no Instance of AttackFactory exists yet.
+	 */
+	public static void reset() {
+		if (AttackFactory.FACTORY != null) {
+			AttackFactory.FACTORY = null;
+		}
 	}
 }
 

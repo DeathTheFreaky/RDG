@@ -1,5 +1,6 @@
 package at.RDG.maze;
 
+import gameEssentials.Map;
 import general.Enums.ViewingDirections;
 
 import java.util.HashSet;
@@ -350,6 +351,15 @@ public class Maze {
 		if(freeRooms == 0)
 			notFinished.remove(r);
 		return true;
+	}
+	
+	/**Resets maze after a round has finished.<br>
+	 * Has no effect if no Instance of Maze exists yet.
+	 */
+	public static void reset() {
+		if (Maze.INSTANCE != null) {
+			Maze.INSTANCE = null;
+		}
 	}
 
 }

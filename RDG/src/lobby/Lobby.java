@@ -339,6 +339,7 @@ public class Lobby extends JFrame {
 		System.out.println("Am i connected after quitting connection? " + network.isConnected());
 		System.out.println("destroying previous game");
 		Game.reset();
+		network.resetLobbyHost();
 	}
 	
 }

@@ -12,6 +12,7 @@ import general.Enums.CreatureType;
 import general.Enums.ImageSize;
 import general.Enums.UsedClasses;
 import general.Enums.ViewingDirections;
+import general.AttackFactory;
 import general.Main;
 import general.ResourceManager;
 
@@ -44,6 +45,7 @@ import views.InventoryView;
 import views.Minimap;
 import views.View;
 import views.chat.Message;
+import at.RDG.maze.Maze;
 import at.RDG.network.NetworkManager;
 import at.RDG.network.communication.MapConverter;
 import at.RDG.network.communication.NetworkMessage;
@@ -151,9 +153,6 @@ public class Game extends BasicGame {
 	/* resource path */
 	public static final String IMAGEPATH = "./resources/images/";
 
-	// path to config files
-	public static final String CONFIGPATH = "config/Results/";
-
 	// create instance of configloader
 	Configloader configloader = null;
 
@@ -231,6 +230,8 @@ public class Game extends BasicGame {
 		this.networkManager = NetworkManager.getInstance();
 		System.out.println("trying to send playername to other computer");
 		networkManager.sendMessage(new NetworkMessage("playerName", this.playerName));
+		
+		
 	}
 
 	/**
@@ -287,21 +288,36 @@ public class Game extends BasicGame {
 	private void loadGame() {
 
 		try {
-			
-			System.out.println("loading game");
-			
+						
 			/* set enddate for displaying in chat message */
 			enddate.setTimeInMillis(endtime);
-
+			
 			/* load config - must be successful in order to continue */
 			try {
-				this.configloader = new Configloader().getInstance();
+				Configloader.init();
 			} catch (IllegalArgumentException | ParserConfigurationException
 					| SAXException | IOException e) {
 				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
 						"Parsing Configuration Files failed.", e);
+				System.exit(1);
+			}
+
+			try {
+				this.configloader = new Configloader().getInstance();
+				if (this.configloader == null) {
+					throw new NullPointerException();
+				}
+			} catch (IllegalArgumentException e) {
+				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
+						"Parsing Configuration Files failed.", e);
+				quitGame();
+			} catch (NullPointerException e2) {
+				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
+						"Configloader returned null.", e2);
 				quitGame();
 			}
+			
+			System.out.println("configloader: " + this.configloader);
 
 			// Test Printing
 			/*
@@ -320,7 +336,30 @@ public class Game extends BasicGame {
 			this.minimapOrigin = new Point(20, 20);
 
 			/* Initialize Factory and Manager classes! */
-			this.resourceManager = new ResourceManager().getInstance();
+			try {
+				ResourceManager.init();
+			} catch (SlickException e) {
+				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
+						"Loading resources failed", e);
+				quitGame();
+			}
+			
+			try {
+				this.resourceManager = new ResourceManager().getInstance();
+				if (this.resourceManager == null) {
+					throw new NullPointerException();
+				}
+			} catch (IllegalArgumentException e) {
+				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
+						"Loading resources failed.", e);
+				quitGame();
+			} catch (NullPointerException e2) {
+				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
+						"ResourceManager returned null.", e2);
+				quitGame();
+			}
+			
+			System.out.println("resourceManager: " + this.resourceManager);
 
 			/* network lobby must be called before this to detect player type */
 			CreatureType playerType;
@@ -348,6 +387,9 @@ public class Game extends BasicGame {
 								.get("Player1"), this.gameEnvironmentOrigin,
 						CreatureType.PLAYER1, false);
 			}
+			
+			System.out.println("player: " + this.player);
+			System.out.println("opponent: " + this.opponent);
 
 			/* Load the chat */
 			this.chat = new Chat("Chat", this.chatOrigin, new Dimension(
@@ -371,6 +413,8 @@ public class Game extends BasicGame {
 			this.inventoryView = InventoryView.getInstance("Inventory",
 					this.inventoryViewOrigin, new Dimension(
 							Game.INVENTORY_WIDTH, Game.INVENTORY_HEIGHT));
+			
+			System.out.println("inventoryView: " + this.inventoryView);
 
 			/* Load Map and place the player */
 			this.map = new Map().getInstance();
@@ -384,7 +428,7 @@ public class Game extends BasicGame {
 			this.fightInstance = this.gameEnvironment.getFightInstance();
 
 			this.setLoading(false);
-
+			
 		} catch (SlickException e) {
 			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
 					"Failed to load game.", e);
@@ -395,6 +439,7 @@ public class Game extends BasicGame {
 	@Override
 	public void update(GameContainer container, int delta)
 			throws SlickException {
+				
 		/* run an Update */
 		if (timeToUpdate > UPDATE) {
 						
@@ -554,34 +599,36 @@ public class Game extends BasicGame {
 	@Override
 	public void render(GameContainer container, Graphics g)
 			throws SlickException {
+		
+		if (this.running) {
+			if (this.loading == true) {
+				g.drawString("Loading Game...", 250, 225);
+			} else {
+				if (this.mapSet && this.opponentNameSet) {
+					if (this.endScreen == null) {
+						gameEnvironment.draw(container, g);
+						/*
+						 * if (!(fightInstance.isInFight())) {
+						 * minimap.draw(container, g); }
+						 */
+						chat.draw(container, g);
+						armorView.draw(container, g);
+						inventoryView.draw(container, g);
 
-		if (this.loading == true) {
-			g.drawString("Loading Game...", 250, 225);
-		} else {
-			if (this.mapSet && this.opponentNameSet) {
-				if (this.endScreen == null) {
-					gameEnvironment.draw(container, g);
-					/*
-					 * if (!(fightInstance.isInFight())) {
-					 * minimap.draw(container, g); }
-					 */
-					chat.draw(container, g);
-					armorView.draw(container, g);
-					inventoryView.draw(container, g);
-
-					if (dragging && draggedItem != null) {
-						g.drawImage(draggedItem.getImage(ImageSize.d20x20),
-								draggedX, draggedY);
+						if (dragging && draggedItem != null) {
+							g.drawImage(draggedItem.getImage(ImageSize.d20x20),
+									draggedX, draggedY);
+						}
+					} else {
+						g.setColor(Color.white);
+						Font font = new Font("Verdana", Font.BOLD, 20);
+						TrueTypeFont ttf = new TrueTypeFont(font, true);
+						g.setFont(ttf);
+						g.drawString(this.endScreen, 255, 225);
 					}
 				} else {
-					g.setColor(Color.white);
-					Font font = new Font("Verdana", Font.BOLD, 20);
-					TrueTypeFont ttf = new TrueTypeFont(font, true);
-					g.setFont(ttf);
-					g.drawString(this.endScreen, 255, 225);
+					g.drawString("Loading Game...", 250, 225);
 				}
-			} else {
-				g.drawString("Loading Game...", 250, 225);
 			}
 		}
 	}
@@ -1042,6 +1089,12 @@ public class Game extends BasicGame {
 	public static void reset() {
 		if (Game.INSTANCE != null) {
 			Game.INSTANCE = null;
+			Map.reset();
+			Maze.reset();
+			ResourceManager.reset();
+			Configloader.reset();
+			InventoryView.reset();
+			AttackFactory.reset();
 		}
 	}
 }

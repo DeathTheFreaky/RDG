@@ -23,7 +23,7 @@ public class Configloader {
 	/* only one instance of Configloader is allowed */
 	private static Configloader INSTANCE = null;
 	
-	private String configpath; //path where all XML config files are stored
+	private String configpath = "config/Results/"; //path where all XML config files are stored
 	private Map<String, ArmamentTemplate> armamentTemplates;
 	private Map<Attacks, AttackTemplate> attackTemplates;
 	private Map<String, MonsterTemplate> monsterTemplates;
@@ -31,36 +31,11 @@ public class Configloader {
 	private Map<RoomTypes, RoomTemplate> roomTemplates;
 	private Map<String, WeaponTemplate> weaponTemplates;
 	
-	/**Constructs a Configloader passing the path where all config XML files are stored.
-	 * 
-	 * @param configpath
-	 * @throws IOException 
-	 * @throws SAXException 
-	 * @throws ParserConfigurationException 
-	 * @throws IllegalArgumentException 
-	 * @see Configloader
-	 */
-	public Configloader() throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException{
-		this.configpath = Game.CONFIGPATH;
-	}
-	
 	/**Returns the one and only instance of Configloader.
 	 * 
 	 * @return
-	 * @throws SlickException
-	 * @throws IllegalArgumentException
-	 * @throws ParserConfigurationException
-	 * @throws SAXException
-	 * @throws IOException
 	 */
-	public Configloader getInstance() throws SlickException, IllegalArgumentException, ParserConfigurationException, SAXException, IOException {
-		if (INSTANCE == null) {
-			if (Game.CONFIGPATH == null) throw new NullPointerException("Configpath must not be null");
-			INSTANCE = new Configloader();
-			INSTANCE.run();
-		}
-		else {
-		}
+	public Configloader getInstance() {
 		return INSTANCE;
 	}
 
@@ -117,5 +92,28 @@ public class Configloader {
 	 */
 	public Map<String, ArmamentTemplate> getArmamentTemplates() {
 		return armamentTemplates;
+	}
+	
+	/**Resets Configloader after a round has finished.<br>
+	 * Has no effect if no Instance of Configloader exists yet.
+	 */
+	public static void reset() {
+		if (Configloader.INSTANCE != null) {
+			Configloader.INSTANCE = null;
+		}
+	}
+
+	/**Loads Configloader for the first time. Should be called from main.
+	 * @throws IOException 
+	 * @throws SAXException 
+	 * @throws ParserConfigurationException 
+	 * @throws IllegalArgumentException 
+	 * 
+	 */
+	public static void init() throws IllegalArgumentException, ParserConfigurationException, SAXException, IOException {
+		if (INSTANCE == null) {
+			INSTANCE = new Configloader();
+			INSTANCE.run();
+		}
 	}
 }

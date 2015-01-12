@@ -3,7 +3,6 @@ package fighting;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.HashMap;
-import java.util.Map.Entry;
 import java.io.IOException;
 import java.util.Map;
 
