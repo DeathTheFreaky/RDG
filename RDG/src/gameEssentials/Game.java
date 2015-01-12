@@ -196,6 +196,9 @@ public class Game extends BasicGame {
 	
 	/* quit game */
 	private boolean running = true;
+	
+	/* the default font */
+	private org.newdawn.slick.Font defaultFont;
 
 	/* Declare all classes, we need for the game (Factory, Resourceloader) */
 	// private ResourceManager resourceManager;
@@ -227,6 +230,7 @@ public class Game extends BasicGame {
 		this.playerName = playerName;
 		this.networkManager = NetworkManager.getInstance();
 		networkManager.sendMessage(new NetworkMessage("playerName", this.playerName));
+		defaultFont = this.getGameContainer().getGraphics().getFont();
 	}
 
 	/**
@@ -274,6 +278,7 @@ public class Game extends BasicGame {
 
 		// load ressources in first game loop to show a loading screen
 		this.container = container;
+		this.container.getGraphics().setFont(defaultFont);
 	}
 
 	/**
