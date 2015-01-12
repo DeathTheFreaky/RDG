@@ -12,7 +12,6 @@ import general.Enums.CreatureType;
 import general.Enums.ImageSize;
 import general.Enums.UsedClasses;
 import general.Enums.ViewingDirections;
-import general.ItemFactory;
 import general.Main;
 import general.ResourceManager;
 
@@ -45,16 +44,6 @@ import views.InventoryView;
 import views.Minimap;
 import views.View;
 import views.chat.Message;
-import general.Enums.AttackScreens;
-import general.Enums.Attacks;
-import general.Enums.Channels;
-import general.Enums.CreatureType;
-import general.Enums.ImageSize;
-import general.Enums.UsedClasses;
-import general.Enums.ViewingDirections;
-import general.ItemFactory;
-import general.Main;
-import general.ResourceManager;
 import at.RDG.network.NetworkManager;
 import at.RDG.network.communication.MapConverter;
 import at.RDG.network.communication.NetworkMessage;
@@ -201,9 +190,10 @@ public class Game extends BasicGame {
 	private int endCtr = 50; // 50*100ms = 5 seconds
 	private boolean endFightStarted = false;
 	
-	/* after x counts, force a human fight */
-	private int gameLength = 10; //in minutes
-	private int timeLeftCtr = gameLength * 600; //UPDATE: 100ms * 10 * 60s * 10min => gameLength * 600 -> 600000 ms = 600s = 10min
+	/* after time is up, force a human fight */
+	private long starttime = Calendar.getInstance().getTimeInMillis();
+	private long endtime = starttime + 1000 * 60 * 10; //1000ms * 60 sec * 10 min
+	private Calendar enddate = Calendar.getInstance();
 	
 	/* quit game */
 	private boolean running = true;
@@ -294,6 +284,9 @@ public class Game extends BasicGame {
 	private void loadGame() {
 
 		try {
+			
+			/* set enddate for displaying in chat message */
+			enddate.setTimeInMillis(endtime);
 
 			/* load config - must be successful in order to continue */
 			try {
@@ -399,18 +392,14 @@ public class Game extends BasicGame {
 			throws SlickException {
 		/* run an Update */
 		if (timeToUpdate > UPDATE) {
-			
-			if (!running) {
-				container.exit();
-			}
-			
+						
 			if (!running) {
 				Lobby.quitConnection();
 				container.exit();
 			}
-			
+						
 			/* force a human fight when time runs out */
-			if (timeLeftCtr <= 0) {
+			if (Calendar.getInstance().getTimeInMillis() > endtime) {
 				if (!this.opponent.isInFight()) {
 					if (lobbyHost && endFightStarted == false) {
 
@@ -433,7 +422,6 @@ public class Game extends BasicGame {
 					}
 				}
 			}
-			timeLeftCtr--;
 
 			if (this.loading == true) {
 				if (this.startetLoading == true) {
@@ -521,17 +509,15 @@ public class Game extends BasicGame {
 						 * minutes until full hour is reached, increase hour, increase remaining
 						 * minutes starting form 0
 						 */
-						if (minute >= 45) {
-							chat.newMessage(new Message(
-									"Instance ends at "
-											+ ((hour + 1) > 23 ? "00" : (hour + 1))
-											+ ":"
-											+ ((minute - 45) > 9 ? (minute - 45) : "0"
-													+ (minute - 45)), cal));
-						} else {
-							chat.newMessage(new Message("Instance ends at " + hour + ":"
-									+ (minute + this.gameLength), cal));
-						}
+						
+						int endHour = enddate.get(Calendar.HOUR_OF_DAY);
+						int endMin = enddate.get(Calendar.MINUTE);
+						
+						String hourPrefix = endHour < 10 ? "0" : "";
+						String minPrefix = endMin < 10 ? "0" : "";
+						
+						
+						chat.newMessage(new Message("Instance ends at " + hourPrefix + endHour + ":" + minPrefix + endMin, cal));
 						
 						this.opponentNameSet = true;
 						
@@ -705,6 +691,10 @@ public class Game extends BasicGame {
 			} else {
 				armorView.changeTab(x, y);
 			}
+			
+			/* end showing descriptions when mouse is clicked */
+			inventoryView.endShowingDescription();
+			armorView.endShowingDescription();
 		}
 	}
 
@@ -722,6 +712,10 @@ public class Game extends BasicGame {
 		 * versa -> equip and unequip weapon
 		 */
 		if (!dragging) {
+			
+			inventoryView.endShowingDescription();
+			armorView.endShowingDescription();
+			
 			if (fightInstance.isInFight()) {
 				if (fightInstance.isPotionTakingActive()) {
 					this.draggedItem = armorView.getItem(oldx, oldy);

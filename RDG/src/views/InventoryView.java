@@ -303,6 +303,7 @@ public class InventoryView extends View {
 				String s[] = description.split("\n");
 				int height = s.length;
 				for (String st : s) {
+					//System.out.println(st + " - length: " + font.getWidth(st));
 					if (st.length() > length) {
 						longest = st;
 					}
