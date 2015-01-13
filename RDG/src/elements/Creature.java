@@ -2,6 +2,7 @@ package elements;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import general.Enums.CreatureType;
 
@@ -35,7 +36,7 @@ public class Creature extends Element {
 	private float orSpeed;
 	private float orAccuracy;
 	
-	private List<Potion> activePotions;
+	private CopyOnWriteArrayList<Potion> activePotions;
 
 	/**Constructs a Creature (Player or Monster).<br>
 	 * 
@@ -62,7 +63,7 @@ public class Creature extends Element {
 		this.orAccuracy = accuracy;
 		this.orSpeed = speed;
 		
-		this.activePotions = new LinkedList<Potion>();
+		this.activePotions = new CopyOnWriteArrayList<Potion>();
 	}
 	
 	/**Copy constructor for Creature.
@@ -83,7 +84,7 @@ public class Creature extends Element {
 		this.orAccuracy = creature.orAccuracy;
 		this.orSpeed = creature.orSpeed;
 		
-		this.activePotions = new LinkedList<Potion>();
+		this.activePotions = new CopyOnWriteArrayList<Potion>();
 	}
 
 	/**

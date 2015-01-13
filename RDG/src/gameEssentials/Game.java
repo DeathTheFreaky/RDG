@@ -606,11 +606,11 @@ public class Game extends BasicGame {
 									draggedX, draggedY);
 						}
 					} else {
-						((TrueTypeFont) resourceManager.DEFAULT_FONTS.get("description")).drawString(Game.WIDTH/2, Game.HEIGHT/2 - ((TrueTypeFont) resourceManager.DEFAULT_FONTS.get("description")).getHeight("Loading Game...")/2,
+						((TrueTypeFont) resourceManager.DEFAULT_FONTS.get("menuscreen")).drawString(Game.WIDTH/2, Game.HEIGHT/2 - ((TrueTypeFont) resourceManager.DEFAULT_FONTS.get("description")).getHeight("Loading Game...")/2,
 								this.endScreen, Color.white, TrueTypeFont.ALIGN_CENTER);
 					}
 				} else {
-					((TrueTypeFont) resourceManager.DEFAULT_FONTS.get("description")).drawString(Game.WIDTH/2, Game.HEIGHT/2 - ((TrueTypeFont) resourceManager.DEFAULT_FONTS.get("description")).getHeight("Loading Game...")/2,
+					((TrueTypeFont) resourceManager.DEFAULT_FONTS.get("menuscreen")).drawString(Game.WIDTH/2, Game.HEIGHT/2 - ((TrueTypeFont) resourceManager.DEFAULT_FONTS.get("description")).getHeight("Loading Game...")/2,
 							"Loading Game...", Color.white, TrueTypeFont.ALIGN_CENTER);
 				}
 			}

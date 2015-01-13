@@ -260,25 +260,37 @@ public class Fight extends View implements Runnable {
 		// Fight Options
 		if (attackScreen == AttackScreens.MAIN) {
 			graphics.setColor(BLACK);
-			graphics.drawString("Attack", optionsWidth / 4 - 25, fightWindowHeight + optionsHeight / 4);
-			graphics.drawString("Force Parry", optionsWidth / 4 * 3 - 45, fightWindowHeight + optionsHeight / 4);
-			graphics.drawString("Change Set", optionsWidth / 4 - 45, fightWindowHeight + optionsHeight / 4 * 3);
-			graphics.drawString("Use Potion", optionsWidth / 4 * 3 - 42, fightWindowHeight + optionsHeight / 4 * 3);
+			
+			((TrueTypeFont) resources.DEFAULT_FONTS.get("fight")).drawString(optionsWidth / 4 + 4, fightWindowHeight + optionsHeight / 4,
+					"Attack", BLACK, TrueTypeFont.ALIGN_CENTER);
+			((TrueTypeFont) resources.DEFAULT_FONTS.get("fight")).drawString(optionsWidth / 4 * 3 + 6, fightWindowHeight + optionsHeight / 4,
+					"Force Parry", BLACK, TrueTypeFont.ALIGN_CENTER);
+			((TrueTypeFont) resources.DEFAULT_FONTS.get("fight")).drawString(optionsWidth / 4 + 4, fightWindowHeight + optionsHeight / 4 * 3,
+					"Change Set", BLACK, TrueTypeFont.ALIGN_CENTER);
+			((TrueTypeFont) resources.DEFAULT_FONTS.get("fight")).drawString(optionsWidth / 4 * 3 + 6, fightWindowHeight + optionsHeight / 4 * 3,
+					"Use Potion", BLACK, TrueTypeFont.ALIGN_CENTER);
 		}
 			
 		// Attack Options
 		if (attackScreen == AttackScreens.ATTACK) {
 			graphics.setColor(BLACK);
-			graphics.drawString("Chest", optionsWidth / 4 - 20, fightWindowHeight + optionsHeight / 4);
-			graphics.drawString("Head", optionsWidth / 4 * 3 - 15, fightWindowHeight + optionsHeight / 4);
-			graphics.drawString("Arms", optionsWidth / 4 - 15, fightWindowHeight + optionsHeight / 4 * 3);
-			graphics.drawString("Legs", optionsWidth / 4 * 3 - 15, fightWindowHeight + optionsHeight / 4 * 3);
+			
+			((TrueTypeFont) resources.DEFAULT_FONTS.get("fight")).drawString(optionsWidth / 4 + 4, fightWindowHeight + optionsHeight / 4,
+					"Chest", BLACK, TrueTypeFont.ALIGN_CENTER);
+			((TrueTypeFont) resources.DEFAULT_FONTS.get("fight")).drawString(optionsWidth / 4 * 3 + 6, fightWindowHeight + optionsHeight / 4,
+					"Head", BLACK, TrueTypeFont.ALIGN_CENTER);
+			((TrueTypeFont) resources.DEFAULT_FONTS.get("fight")).drawString(optionsWidth / 4 + 4, fightWindowHeight + optionsHeight / 4 * 3,
+					"Arms", BLACK, TrueTypeFont.ALIGN_CENTER);
+			((TrueTypeFont) resources.DEFAULT_FONTS.get("fight")).drawString(optionsWidth / 4 * 3 + 6, fightWindowHeight + optionsHeight / 4 * 3,
+					"Legs", BLACK, TrueTypeFont.ALIGN_CENTER);
 		}
 		
 		// Waiting Screen
 		if (attackScreen == AttackScreens.WAITING) {
 			graphics.setColor(BLACK);
-			graphics.drawString("Waiting for opponent's action... ", optionsWidth / 4 - 20, fightWindowHeight + optionsHeight / 2);
+			((TrueTypeFont) resources.DEFAULT_FONTS.get("fight")).drawString(optionsWidth / 2, fightWindowHeight + optionsHeight / 2,
+					"Waiting for opponent's action... ", BLACK, TrueTypeFont.ALIGN_CENTER);
+			//graphics.drawString("Waiting for opponent's action... ", optionsWidth / 4 - 20, fightWindowHeight + optionsHeight / 2);
 		}
 		
 		if (attackScreen != AttackScreens.WAITING) {

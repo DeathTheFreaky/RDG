@@ -96,7 +96,7 @@ public class Message {
 			retString = "<" + (hour > 9 ? Integer.toString(hour) : "0" + hour) + ":"
 					+ (minute > 9 ? minute : ("0" + minute)) + "> - " + message;
 		} else {
-			retString = "          " + message;
+			retString = " " + message;
 		}
 		
 		return retString; 

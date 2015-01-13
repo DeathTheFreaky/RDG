@@ -36,7 +36,7 @@ public class Chat extends View {
 
 	/* Maximum for saved Messages and Message Length */
 	private final int MAXIMUM_MESSAGES = 7;
-	private final int MAXIMUM_LENGTH = 39;
+	private final int MAXIMUM_LENGTH = 32;
 
 	/* Input Field for typing messages */
 	private InputField input;
@@ -230,9 +230,28 @@ public class Chat extends View {
 		for (Message m : messages) {
 			if (shown[i] == true) {
 				
-				graphics.drawString(m.print(), origin.x
+				/*graphics.drawString(m.print(), origin.x
 						* GameEnvironment.BLOCK_SIZE + 10, origin.y
-						* GameEnvironment.BLOCK_SIZE + zeile * 14 + 5);
+						* GameEnvironment.BLOCK_SIZE + zeile * 14 + 5);*/
+				
+				String[] parts = m.print().split("-");
+				
+				if (parts.length > 1) {
+					((TrueTypeFont) resources.DEFAULT_FONTS.get("description")).drawString(10, origin.y
+							* GameEnvironment.BLOCK_SIZE + zeile * 14 + 5,
+							parts[0], BLACK, TrueTypeFont.ALIGN_LEFT);
+					((TrueTypeFont) resources.DEFAULT_FONTS.get("description")).drawString(59, origin.y
+							* GameEnvironment.BLOCK_SIZE + zeile * 14 + 3,
+							"-", BLACK, TrueTypeFont.ALIGN_LEFT);
+					((TrueTypeFont) resources.DEFAULT_FONTS.get("description")).drawString(65, origin.y
+							* GameEnvironment.BLOCK_SIZE + zeile * 14 + 5,
+							parts[1], BLACK, TrueTypeFont.ALIGN_LEFT);
+				} else {
+					((TrueTypeFont) resources.DEFAULT_FONTS.get("description")).drawString(65, origin.y
+							* GameEnvironment.BLOCK_SIZE + zeile * 14 + 5,
+							parts[0], BLACK, TrueTypeFont.ALIGN_LEFT);
+				}
+				
 				zeile++;
 				graphics.fillRect(scrollBarX, origin.y
 						* GameEnvironment.BLOCK_SIZE + strokeSize + i
