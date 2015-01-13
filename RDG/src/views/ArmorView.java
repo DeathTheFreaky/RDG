@@ -431,12 +431,20 @@ public class ArmorView extends View {
 				addSpace = 5;
 			}
 			graphics.setColor(WHITE);
-			graphics.fillRect(mousePositionX - descriptionWidth - 50,
+			
+			graphics.fillRect(mousePositionX - descriptionWidth,
+					mousePositionY - descriptionHeight - 5,
+					descriptionWidth, descriptionHeight + 10);
+			((TrueTypeFont) resources.DEFAULT_FONTS.get("description")).drawString(mousePositionX - descriptionWidth + descriptionWidth/2, mousePositionY - descriptionHeight,
+					description, BLACK, TrueTypeFont.ALIGN_CENTER);
+			
+			
+			/*graphics.fillRect(mousePositionX - descriptionWidth - 50,
 					mousePositionY - descriptionHeight - 5,
 					descriptionWidth + 70, descriptionHeight + 10);
 			((TrueTypeFont) resources.DEFAULT_FONTS.get("description")).drawString(mousePositionX - descriptionWidth
 					+ descriptionWidth / 3 + addSpace, mousePositionY - descriptionHeight,
-					description, BLACK, TrueTypeFont.ALIGN_CENTER);
+					description, BLACK, TrueTypeFont.ALIGN_CENTER);*/
 		}
 	}
 
@@ -1526,19 +1534,19 @@ public class ArmorView extends View {
 		if (showDescription && description != null && description != "") {
 			this.descriptionWidth = 0;
 			this.descriptionHeight = 0;
-
+			
 			int length = 0;
 			String longest = "";
 			String s[] = description.split("\n");
 			int height = s.length;
 			for (String st : s) {
-				if (st.length() > length) {
-					longest = st;
+				if (resources.DEFAULT_FONTS.get("description").getWidth(st) > length) {
+					length = resources.DEFAULT_FONTS.get("description").getWidth(st);
 				}
 			}
-
-			this.descriptionWidth = (int) (10 + resources.DEFAULT_FONTS.get("description").getWidth(longest) * 1.2);
-			this.descriptionHeight = resources.DEFAULT_FONTS.get("description").getHeight(longest) * height;
+			
+			this.descriptionWidth = (int) (20 + length);
+			this.descriptionHeight = resources.DEFAULT_FONTS.get("description").getLineHeight() * height;
 		}
 	}
 

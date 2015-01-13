@@ -197,15 +197,10 @@ public class InventoryView extends View {
 
 		if (showDescription) {
 			graphics.setColor(WHITE);
-			float addSpace = 0;
-			if (descriptionWidth >= 130) {
-				addSpace = 5;
-			}
-			graphics.fillRect(mousePositionX - descriptionWidth - 50,
+			graphics.fillRect(mousePositionX - descriptionWidth,
 					mousePositionY - descriptionHeight - 5,
-					descriptionWidth + 70, descriptionHeight + 10);
-			((TrueTypeFont) resources.DEFAULT_FONTS.get("description")).drawString(mousePositionX - descriptionWidth
-					+ descriptionWidth / 3 + addSpace, mousePositionY - descriptionHeight,
+					descriptionWidth, descriptionHeight + 10);
+			((TrueTypeFont) resources.DEFAULT_FONTS.get("description")).drawString(mousePositionX - descriptionWidth + descriptionWidth/2, mousePositionY - descriptionHeight,
 					description, BLACK, TrueTypeFont.ALIGN_CENTER);
 		}
 
@@ -294,19 +289,17 @@ public class InventoryView extends View {
 					&& mouseY > ORIGIN_Y + y * 40
 					&& mouseY < ORIGIN_Y + y * 40 + 40) {
 				int length = 0;
-				String longest = "";
 				description = items.get(i).getDescription();
 				String s[] = description.split("\n");
 				int height = s.length;
 				for (String st : s) {
-					//System.out.println(st + " - length: " + font.getWidth(st));
 					if (resources.DEFAULT_FONTS.get("description").getWidth(st) > length) {
-						longest = st;
+						length = resources.DEFAULT_FONTS.get("description").getWidth(st);
 					}
 				}
-
-				this.descriptionWidth = (int) (10 + resources.DEFAULT_FONTS.get("description").getWidth(longest) * 1.2);
-				this.descriptionHeight = resources.DEFAULT_FONTS.get("description").getHeight(longest) * height;
+				
+				this.descriptionWidth = (int) (20 + length);
+				this.descriptionHeight = resources.DEFAULT_FONTS.get("description").getLineHeight() * height;
 
 				showDescription = true;
 				break;
