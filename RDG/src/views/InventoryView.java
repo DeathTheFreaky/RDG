@@ -277,7 +277,11 @@ public class InventoryView extends View {
 		}
 		return null;
 	}
-
+	
+	/**Show an element's description.
+	 * @param mouseX
+	 * @param mouseY
+	 */
 	public void showDescription(int mouseX, int mouseY) {
 		this.mousePositionX = mouseX;
 		this.mousePositionY = mouseY;
@@ -293,6 +297,12 @@ public class InventoryView extends View {
 					&& mouseY < ORIGIN_Y + y * 40 + 40) {
 				int length = 0;
 				description = items.get(i).getDescription();
+				
+				if (description == null) {
+					showDescription = false;
+					return;
+				}
+				
 				String s[] = description.split("\n");
 				int height = s.length;
 				for (String st : s) {
@@ -320,6 +330,9 @@ public class InventoryView extends View {
 		}
 	}
 
+	/**Ends showing a element's description.
+	 * 
+	 */
 	public void endShowingDescription() {
 		this.showDescription = false;
 		this.descriptionWidth = 0;

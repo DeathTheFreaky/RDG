@@ -549,7 +549,6 @@ public class Game extends BasicGame {
 						String hourPrefix = endHour < 10 ? "0" : "";
 						String minPrefix = endMin < 10 ? "0" : "";
 						
-						
 						chat.newMessage(new Message("Instance ends at " + hourPrefix + endHour + ":" + minPrefix + endMin, cal));
 						
 						this.opponentNameSet = true;
@@ -731,6 +730,7 @@ public class Game extends BasicGame {
 			/* end showing descriptions when mouse is clicked */
 			inventoryView.endShowingDescription();
 			armorView.endShowingDescription();
+			gameEnvironment.endShowingDescription();
 		}
 	}
 
@@ -740,7 +740,7 @@ public class Game extends BasicGame {
 		/*
 		 * add potion check -> potion may be activated only during a fight and
 		 * after that the next round continues -> use variable to determine when
-		 * potion taking is possiple
+		 * potion taking is possible
 		 */
 
 		/*
@@ -751,6 +751,7 @@ public class Game extends BasicGame {
 			
 			inventoryView.endShowingDescription();
 			armorView.endShowingDescription();
+			gameEnvironment.endShowingDescription();
 			
 			if (fightInstance.isInFight()) {
 				if (fightInstance.isPotionTakingActive()) {
@@ -943,7 +944,15 @@ public class Game extends BasicGame {
 			if(armorView != null)
 			armorView.endShowingDescription();
 		}
-
+		
+		// in game Environment
+		if (newX > 0 && newX < GAME_ENVIRONMENT_WIDTH && newY > 0 && newY < GAME_ENVIRONMENT_HEIGHT) {
+			if(gameEnvironment != null) 
+			gameEnvironment.showDescription(newX, newY);
+		} else {
+			if(gameEnvironment != null)
+			gameEnvironment.endShowingDescription();
+		}
 	}
 
 	@Override

@@ -1416,6 +1416,10 @@ public class ArmorView extends View {
 		return value;
 	}
 
+	/**Show an element's description.
+	 * @param mouseX
+	 * @param mouseY
+	 */
 	public void showDescription(int mouseX, int mouseY) {
 
 		this.mousePositionX = mouseX;
@@ -1537,6 +1541,11 @@ public class ArmorView extends View {
 			this.descriptionWidth = 0;
 			this.descriptionHeight = 0;
 			
+			if (description == null) {
+				showDescription = false;
+				return;
+			}
+			
 			int length = 0;
 			String longest = "";
 			String s[] = description.split("\n");
@@ -1551,7 +1560,11 @@ public class ArmorView extends View {
 			this.descriptionHeight = resources.DEFAULT_FONTS.get("description").getLineHeight() * height;
 		}
 	}
-
+	
+	
+	/**Ends showing a element's description.
+	 * 
+	 */
 	public void endShowingDescription() {
 		showDescription = false;
 		this.descriptionWidth = 0;

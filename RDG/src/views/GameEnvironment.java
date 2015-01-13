@@ -7,6 +7,8 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
+
+import views.font.TrueTypeFont;
 import elements.Creature;
 import elements.Element;
 import fighting.Fight;
@@ -51,6 +53,14 @@ public class GameEnvironment extends View {
 	
 	/* resource manager for stat images */
 	private ResourceManager resources = new ResourceManager().getInstance();
+	
+	/* shows description on map */
+	private boolean showDescription = false;
+	private int descriptionWidth = 0;
+	private int descriptionHeight = 0;
+	private int mousePositionX = 0;
+	private int mousePositionY = 0;
+	private String description;
 
 	/**
 	 * Constructs a GameEnvironment passing its origin as single x and y
@@ -216,6 +226,17 @@ public class GameEnvironment extends View {
 			graphics.drawImage(resources.IMAGES.get("Speed_Stats").getScaledCopy(32,32), Game.GAME_ENVIRONMENT_WIDTH - 240, 0);
 			graphics.drawString(strength, Game.GAME_ENVIRONMENT_WIDTH - 205, 7);
 			
+			if (showDescription) {
+				graphics.setColor(Color.white);
+				
+				int yPos = Common.descriptionPositionsY(mousePositionY, descriptionHeight);
+				int xPos = Common.descriptionPositionsX(mousePositionX, descriptionWidth);
+				
+				graphics.fillRect(xPos, yPos, descriptionWidth, descriptionHeight + 10);
+				((TrueTypeFont) resources.DEFAULT_FONTS.get("description")).drawString(xPos + descriptionWidth/2, yPos + 5,
+						description, BLACK, TrueTypeFont.ALIGN_CENTER);
+			}
+			
 		} else {	// show Fight
 			fightInstance.draw(container, graphics);
 		}
@@ -262,4 +283,55 @@ public class GameEnvironment extends View {
 	public Fight getFightInstance() {
 		return fightInstance;
 	}
+	
+	/**Show an element's description.
+	 * @param mouseX
+	 * @param mouseY
+	 */
+	public void showDescription(int mouseX, int mouseY) {
+		this.mousePositionX = mouseX;
+		this.mousePositionY = mouseY;
+
+		this.descriptionWidth = 0;
+		this.descriptionHeight = 0;
+		
+		int xTile = mouseX / BLOCK_SIZE;
+		int yTile = mouseY / BLOCK_SIZE;
+		
+		if (overlayScope[xTile][yTile] != null) {
+			
+			int length = 0;
+			description = overlayScope[xTile][yTile].getDescription();
+			
+			if (description == null) {
+				showDescription = false;
+				return;
+			}
+			
+			String s[] = description.split("\n");
+			int height = s.length;
+			for (String st : s) {
+				if (resources.DEFAULT_FONTS.get("description").getWidth(st) > length) {
+					length = resources.DEFAULT_FONTS.get("description").getWidth(st);
+				}
+			}
+			
+			this.descriptionWidth = (int) (20 + length);
+			this.descriptionHeight = resources.DEFAULT_FONTS.get("description").getLineHeight() * height;
+
+			showDescription = true;
+		} else {
+			showDescription = false;
+		}
+	}
+	
+	/**Ends showing a element's description.
+	 * 
+	 */
+	public void endShowingDescription() {
+		this.showDescription = false;
+		this.descriptionWidth = 0;
+		this.descriptionHeight = 0;
+	}
+
 }

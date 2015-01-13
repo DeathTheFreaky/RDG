@@ -1,5 +1,6 @@
 package elements;
 
+import general.Common;
 import general.Enums.Attributes;
 import general.Enums.CreatureType;
 import general.Enums.Levels;
@@ -75,5 +76,10 @@ public class Monster extends Creature {
 		this.level = monster.level;
 		this.killBonusType = monster.killBonusType;
 		this.killBonus = monster.killBonus;
+	}
+	
+	@Override
+	public String getDescription() {
+		return NAME.toUpperCase() + "\n" + "Level: " + level;
 	}
 }

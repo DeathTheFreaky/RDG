@@ -169,7 +169,7 @@ public class Element implements Serializable {
 		if (this.NAME.equals("Key")) {
 			return "KEY\nGrants access to treausure chamber\n";
 		} else {
-			return "Not Set";
+			return null;
 		}
 	}
 	

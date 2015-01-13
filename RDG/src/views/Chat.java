@@ -268,13 +268,6 @@ public class Chat extends View {
 		((TrueTypeFont) resources.DEFAULT_FONTS.get("description")).drawString( strokeSize + timeSpace/2, positionY + size.height - inputFieldHeight - strokeSize + 2,
 				"<" + (hour>9?Integer.toString(hour):"0"+hour) + ":"
 						+ (minute > 9 ? minute : ("0" + minute)) + ">", WHITE, TrueTypeFont.ALIGN_CENTER);
-		
-		/*graphics.drawString("<" + (hour>9?Integer.toString(hour):"0"+hour) + ":"
-				+ (minute > 9 ? minute : ("0" + minute)) + ">", strokeSize + 2, positionY + size.height - inputFieldHeight - strokeSize);*/
-		
-		/*graphics.setColor(TURQUIS);
-		graphics.fillRect(strokeSize * 2 + timeSpace, positionY + size.height
-				- inputFieldHeight - strokeSize, inputFieldWidth, inputFieldHeight);*/
 	}
 
 	@Override
@@ -301,9 +294,13 @@ public class Chat extends View {
 		String string = message.print();
 		List<String> words = new LinkedList<String>();
 		Channels channel = message.getChannel();
+		
+		System.out.println("STRING: " + string);
+		System.out.println(resources.DEFAULT_FONTS.get("chat").getWidth(string));
+		
 								
 		/* split string if too long */
-		if (resources.DEFAULT_FONTS.get("chat").getWidth(string) > 340) {
+		if (resources.DEFAULT_FONTS.get("chat").getWidth(string) > 440) {
 			
 			String tempString = "";
 			String[] stringSplit = new String[2];
