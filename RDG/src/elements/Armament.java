@@ -98,7 +98,7 @@ public class Armament extends Equipment {
 	@Override
 	public String getDescription() {
 		return NAME.toUpperCase() + "\n" + "Typ: " + TYPE + "\n" + "Armor: " + Common.round(ARMOR, 2) + "\n"
-				+ "Speed: " + Common.round(SPEED, 2) + "\n" + "Bonus: " + Common.round(BONUS, 2);
+				+ "Speed Malus: " + Common.round(SPEED, 2) + "\n" + " Complete Set Bonus: " + Common.round(BONUS, 2);
 	}
 
 }
