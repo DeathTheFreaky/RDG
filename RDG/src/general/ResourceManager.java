@@ -7,20 +7,17 @@ import general.Enums.ItemType;
 import general.Enums.Levels;
 import general.Enums.RoomTypes;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.xml.parsers.ParserConfigurationException;
-
+import org.newdawn.slick.Font;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
-import org.xml.sax.SAXException;
+import views.font.TrueTypeFont;
 
 import configLoader.ArmamentTemplate;
 import configLoader.Configloader;
@@ -78,6 +75,9 @@ public class ResourceManager {
 
 	/* map of lists of all monsters - grouped by monster level */
 	public Map<Levels, List<String>> MONSTERS_LEVELED;
+	
+	/* default font */
+	public Map<String, Font> DEFAULT_FONTS;
 
 	/**
 	 * Constructs a RessourceManager.<br>
@@ -123,6 +123,52 @@ public class ResourceManager {
 		
 		/* load rooms */
 		loadRooms();
+		
+		DEFAULT_FONTS = new HashMap<String, Font>();
+		
+		loadFonts();
+				
+	}
+
+	/**Loads fonts (true type fonts since angelcode does not work on 2nd load)
+	 * @throws SlickException 
+	 * 
+	 */
+	private void loadFonts() throws SlickException {
+		// TODO Auto-generated method stub
+		
+		java.awt.Font fontSet = (java.awt.Font) new java.awt.Font("Arial", java.awt.Font.BOLD, 16);
+		TrueTypeFont ttfSet = new TrueTypeFont(fontSet, true);
+		
+		java.awt.Font fontStats = (java.awt.Font) new java.awt.Font("Arial", java.awt.Font.BOLD, 16);
+		TrueTypeFont ttfStats = new TrueTypeFont(fontStats, true);
+		
+		java.awt.Font fontDescription = (java.awt.Font) new java.awt.Font("Arial", java.awt.Font.BOLD, 12);
+		TrueTypeFont ttfDescription = new TrueTypeFont(fontDescription, true);
+		
+		java.awt.Font fontInput = (java.awt.Font) new java.awt.Font("Arial", java.awt.Font.BOLD, 12);
+		TrueTypeFont ttfInput = new TrueTypeFont(fontInput, true);
+		
+		java.awt.Font fontChat = (java.awt.Font) new java.awt.Font("Arial", java.awt.Font.BOLD, 12);
+		TrueTypeFont ttfChat = new TrueTypeFont(fontChat, true);
+		
+		java.awt.Font fontFight = (java.awt.Font) new java.awt.Font("Arial", java.awt.Font.BOLD, 14);
+		TrueTypeFont ttfFight = new TrueTypeFont(fontFight, true);
+		
+		java.awt.Font fontMenuscreen = (java.awt.Font) new java.awt.Font("Arial", java.awt.Font.BOLD, 24);
+		TrueTypeFont ttfMenuscreen = new TrueTypeFont(fontMenuscreen, true);
+		
+		DEFAULT_FONTS.put("set", ttfSet);
+		DEFAULT_FONTS.put("stats", ttfStats);
+		DEFAULT_FONTS.put("description", ttfDescription);
+		DEFAULT_FONTS.put("input", ttfInput);
+		DEFAULT_FONTS.put("chat", ttfChat);
+		DEFAULT_FONTS.put("fight", ttfFight);
+		DEFAULT_FONTS.put("menuscreen", ttfMenuscreen);
+		
+		/*DEFAULT_FONTS.put("chat", new AngelCodeFont(
+				Game.IMAGEPATH + "defaultfont.fnt",
+				Game.IMAGEPATH + "defaultfont.png"));*/
 	}
 
 	/**

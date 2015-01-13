@@ -2,6 +2,7 @@ package elements;
 
 import org.newdawn.slick.Image;
 
+import general.Common;
 import general.Enums.Armor;
 import general.Enums.ItemClasses;
 import general.Enums.WeaponTypes;
@@ -95,7 +96,7 @@ public class Weapon extends Equipment {
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return NAME + ":\n" + "Typ: " + TYPE + "\n" + "Strength: " + ATTACK + "\n"
-				+ "Speed: " + SPEED + "\n" + "Accuracy: " + ACCURACY + "\n";
+		return NAME.toUpperCase() + "\n" + "Typ: " + TYPE + "\n" + "Strength: " + Common.round(ATTACK,2) + "\n"
+				+ "Speed: " + Common.round(SPEED,2) + "\n" + "Accuracy: " + Common.round(ACCURACY,2) + "\n";
 	}
 }

@@ -166,7 +166,11 @@ public class Element implements Serializable {
 	}
 	
 	public String getDescription() {
-		return "Not Set";
+		if (this.NAME.equals("Key")) {
+			return "KEY\nGrants access to treausure chamber\n";
+		} else {
+			return "Not Set";
+		}
 	}
 	
 	/**Sets then image of this element. <br>

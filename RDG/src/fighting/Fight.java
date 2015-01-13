@@ -22,6 +22,7 @@ import gameEssentials.Game;
 import gameEssentials.Player;
 import general.AttackFactory;
 import general.Chances;
+import general.Common;
 import general.ItemFactory;
 import general.Enums.ArmorStatsAttributes;
 import general.Enums.ArmorStatsMode;
@@ -56,10 +57,6 @@ public class Fight extends View implements Runnable {
 	private final Color PINK = new Color(1f, 0.5f, 0.8f);
 	private final Color RED = new Color(1f, 0.0f, 0.0f);
 	
-	/* set font type */
-	Font font = new Font("Verdana", Font.BOLD, 11);
-	TrueTypeFont ttf = new TrueTypeFont(font, true);
-
 	/* positioning values */
 	private final int border = 5;
 	private final int optionsWidth = size.width - 2 * border;
@@ -184,7 +181,7 @@ public class Fight extends View implements Runnable {
 	public void draw(GameContainer container, Graphics graphics) {
 		
 		/* set font */
-		graphics.setFont(ttf);
+		graphics.setFont(resources.DEFAULT_FONTS.get("fight"));
 
 		/* BACKGROUND */
 		graphics.setColor(GRAY);
@@ -1002,13 +999,13 @@ public class Fight extends View implements Runnable {
 			
 		/* update attributes with calculated Damages */
 		if (healthDamage > 0) {
-			chatMessage(defender.NAME + " suffers " + round(healthDamage, 1) + " HEALTH damage");
+			chatMessage(defender.NAME + " suffers " + Common.round(healthDamage, 1) + " HEALTH damage");
 			updateHealth(defender, healthDamage);
 		} else {
 			chatMessage(attacker.NAME + "'s Attack missed its target");
 		}
 		if (attributeDamage > 0) {
-			chatMessage(defender.NAME + " suffers " +  round(attributeDamage, 1) + " " + activeAttack.effect + " damage");
+			chatMessage(defender.NAME + " suffers " +  Common.round(attributeDamage, 1) + " " + activeAttack.effect + " damage");
 			updateAttributes(defender, attributeDamage);
 		}
 		
@@ -1604,7 +1601,7 @@ public class Fight extends View implements Runnable {
 		}
 		
 		if (potion.DURATION > 0) {
-			chatMessage(potion.NAME + " decreasing " + creature.NAME + "'s " + potion.EFFECT + " by " + round(potion.power, 1) * finishedFightsMult);
+			chatMessage(potion.NAME + " decreasing " + creature.NAME + "'s " + potion.EFFECT + " by " + Common.round(potion.power * finishedFightsMult, 1));
 		}
 			
 		switch(potion.EFFECT) {
@@ -1659,7 +1656,7 @@ public class Fight extends View implements Runnable {
 		}
 		
 		if (potion.DURATION > 0) {
-			chatMessage(potion.NAME + " increasing " + creature.NAME + "'s " + potion.EFFECT + " by " + round(potion.power, 1) * finishedFightsMult);
+			chatMessage(potion.NAME + " increasing " + creature.NAME + "'s " + potion.EFFECT + " by " + Common.round(potion.power * finishedFightsMult, 1));
 		}
 		
 		switch(potion.EFFECT) {
@@ -1689,7 +1686,7 @@ public class Fight extends View implements Runnable {
 	 */
 	private void attributeBonusForWinner(Monster fightLoser) {
 				
-		chatMessage(this.player.NAME + " receives " + round(fightLoser.killBonus, 1) + " " + fightLoser.killBonusType + " bonus");
+		chatMessage(this.player.NAME + " receives " + Common.round(fightLoser.killBonus, 1) + " " + fightLoser.killBonusType + " bonus");
 
 		switch(fightLoser.killBonusType) {
 			case HP: 
@@ -1892,21 +1889,6 @@ public class Fight extends View implements Runnable {
 		}
 		
 		chat.newMessage(new Message(text, channel));
-	}
-	
-	/**Used for rounding in chat messages.
-	 * @param value
-	 * @param places
-	 * @return rounded value for n places
-	 */
-	private float round(float value, int places) {
-				
-	    if (places < 0) throw new IllegalArgumentException();
-
-	    long factor = (long) Math.pow(10, places);
-	    value = value * factor;
-	    long tmp = Math.round(value);
-	    return (float) tmp / factor;
 	}
 
 	/**Set activeAttackType - used when taking a potion.

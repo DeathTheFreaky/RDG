@@ -1,24 +1,19 @@
 package views;
 
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Point;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.TrueTypeFont;
-
 import elements.Creature;
 import elements.Element;
-import elements.Monster;
 import fighting.Fight;
 import gameEssentials.Game;
 import gameEssentials.Player;
-import general.Enums.Armor;
+import general.Common;
 import general.Enums.ImageSize;
-import general.MonsterFactory;
 import general.ResourceManager;
 
 /**
@@ -53,10 +48,6 @@ public class GameEnvironment extends View {
 	/* Colors */
 	private final Color WHITE = new Color(1f, 1f, 1f, 0.5f);
 	private final Color BLACK = new Color(0f, 0f, 0f);
-	
-	/* set font type */
-	Font font = new Font("Verdana", Font.BOLD, 11);
-	TrueTypeFont ttf = new TrueTypeFont(font, true);
 	
 	/* resource manager for stat images */
 	private ResourceManager resources = new ResourceManager().getInstance();
@@ -162,7 +153,7 @@ public class GameEnvironment extends View {
 	@Override
 	public void draw(GameContainer container, Graphics graphics) {
 		
-		graphics.setFont(ttf);
+		graphics.setFont(resources.DEFAULT_FONTS.get("stats"));
 		
 		/* if the player is not in a current fight */
 		if (!fightInstance.isInFight()) {
@@ -213,11 +204,11 @@ public class GameEnvironment extends View {
 					+ stats[ArmorView.SPEED] + "\nACCURACY:" + stats[ArmorView.ACCURACY] + 
 					"\nDEFENSE:" + stats[ArmorView.DEFENSE];*/
 			
-			String accuracy = Float.toString(round(this.player.getOrAccuracy(), 1));
-			String speed = Float.toString(round(this.player.getOrSpeed(), 1));
-			String strength = Float.toString(round(this.player.getOrStrength(), 1));
+			String accuracy = Common.round(this.player.getOrAccuracy(), 1);
+			String speed = Common.round(this.player.getOrSpeed(), 1);
+			String strength = Common.round(this.player.getOrStrength(), 1);
 			
-			graphics.drawString(this.player.NAME, 6, 7);
+			graphics.drawString(this.player.NAME, 6, 5);
 			graphics.drawImage(resources.IMAGES.get("Accuracy_Stats").getScaledCopy(32,32), Game.GAME_ENVIRONMENT_WIDTH - 80, 0);
 			graphics.drawString(accuracy, Game.GAME_ENVIRONMENT_WIDTH - 45, 7);
 			graphics.drawImage(resources.IMAGES.get("Strength_Stats").getScaledCopy(32,32), Game.GAME_ENVIRONMENT_WIDTH - 160, 0);
@@ -270,20 +261,5 @@ public class GameEnvironment extends View {
 	 */
 	public Fight getFightInstance() {
 		return fightInstance;
-	}
-	
-	/**Used for rounding of float values.
-	 * @param value
-	 * @param places
-	 * @return rounded value for n places
-	 */
-	private float round(float value, int places) {
-				
-	    if (places < 0) throw new IllegalArgumentException();
-
-	    long factor = (long) Math.pow(10, places);
-	    value = value * factor;
-	    long tmp = Math.round(value);
-	    return (float) tmp / factor;
 	}
 }

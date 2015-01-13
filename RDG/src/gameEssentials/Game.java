@@ -17,7 +17,6 @@ import general.Main;
 import general.ResourceManager;
 
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Point;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.TrueTypeFont;
+import views.font.TrueTypeFont;
 import org.xml.sax.SAXException;
 
 import views.ArmorView;
@@ -196,9 +195,6 @@ public class Game extends BasicGame {
 	
 	/* quit game */
 	private boolean running = true;
-	
-	/* the default font */
-	private org.newdawn.slick.Font defaultFont;
 
 	/* Declare all classes, we need for the game (Factory, Resourceloader) */
 	// private ResourceManager resourceManager;
@@ -230,7 +226,6 @@ public class Game extends BasicGame {
 		this.playerName = playerName;
 		this.networkManager = NetworkManager.getInstance();
 		networkManager.sendMessage(new NetworkMessage("playerName", this.playerName));
-		defaultFont = this.getGameContainer().getGraphics().getFont();
 	}
 
 	/**
@@ -278,7 +273,6 @@ public class Game extends BasicGame {
 
 		// load ressources in first game loop to show a loading screen
 		this.container = container;
-		this.container.getGraphics().setFont(defaultFont);
 	}
 
 	/**
@@ -536,9 +530,6 @@ public class Game extends BasicGame {
 												
 						Calendar cal = Calendar.getInstance();
 
-						int hour = cal.get(Calendar.HOUR_OF_DAY);
-						int minute = cal.get(Calendar.MINUTE);
-
 						/*
 						 * print a welcoming message and use an instance of Calendar class to
 						 * get current time
@@ -594,7 +585,10 @@ public class Game extends BasicGame {
 		
 		if (this.running) {
 			if (this.loading == true) {
-				g.drawString("Loading Game...", 250, 225);
+				java.awt.Font fontMenuscreen = (java.awt.Font) new java.awt.Font("Arial", java.awt.Font.BOLD, 24);
+				TrueTypeFont ttfMenuscreen = new TrueTypeFont(fontMenuscreen, true);
+				ttfMenuscreen.drawString(Game.WIDTH/2, Game.HEIGHT/2 - ttfMenuscreen.getHeight("Loading Game...")/2,
+						"Loading Game...", Color.white, TrueTypeFont.ALIGN_CENTER);
 			} else {
 				if (this.mapSet && this.opponentNameSet) {
 					if (this.endScreen == null) {
@@ -612,13 +606,12 @@ public class Game extends BasicGame {
 									draggedX, draggedY);
 						}
 					} else {
-						g.setColor(Color.white);
-						Font font = new Font("Verdana", Font.BOLD, 20);
-						TrueTypeFont ttf = new TrueTypeFont(font, true);
-						ttf.drawString(255, 225, this.endScreen);
+						((TrueTypeFont) resourceManager.DEFAULT_FONTS.get("description")).drawString(Game.WIDTH/2, Game.HEIGHT/2 - ((TrueTypeFont) resourceManager.DEFAULT_FONTS.get("description")).getHeight("Loading Game...")/2,
+								this.endScreen, Color.white, TrueTypeFont.ALIGN_CENTER);
 					}
 				} else {
-					g.drawString("Loading Game...", 250, 225);
+					((TrueTypeFont) resourceManager.DEFAULT_FONTS.get("description")).drawString(Game.WIDTH/2, Game.HEIGHT/2 - ((TrueTypeFont) resourceManager.DEFAULT_FONTS.get("description")).getHeight("Loading Game...")/2,
+							"Loading Game...", Color.white, TrueTypeFont.ALIGN_CENTER);
 				}
 			}
 		}

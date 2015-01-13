@@ -78,12 +78,6 @@ public class ArmorView extends View {
 	/* Mouse Position */
 	private int mousePositionX;
 	private int mousePositionY;
-
-	/* Font */
-	private TrueTypeFont font;
-	private Font awtFont;
-	Font fontSet;
-	TrueTypeFont ttfSet;
 	
 	/* width/height of ArmorImages */
 	private final int IMAGE_SIZE = 20;
@@ -152,7 +146,7 @@ public class ArmorView extends View {
 	private final Color DARK_GREY = new Color(0.25f, 0.25f, 0.25f);
 	private final Color RED = new Color(1f, 0f, 0f);
 	private final Color WHITE = new Color(1f, 1f, 1f);
-
+	
 	/**
 	 * Constructs an ArmorView passing its origin as single x and y coordinates
 	 * in tile numbers.<br>
@@ -224,6 +218,8 @@ public class ArmorView extends View {
 	public ArmorView(String contextName, Point origin, Dimension size)
 			throws SlickException {
 		super(contextName, origin, size);
+		
+		resources = new ResourceManager().getInstance();
 
 		ORIGIN_X = origin.x * GameEnvironment.BLOCK_SIZE;
 		ORIGIN_Y = origin.y * GameEnvironment.BLOCK_SIZE;
@@ -256,11 +252,6 @@ public class ArmorView extends View {
 		armor1.put(Armor.SUB_WEAPON, fists2);
 		armor2.put(Armor.MAIN_WEAPON, fists1);
 		armor2.put(Armor.SUB_WEAPON, fists2);
-
-		awtFont = new Font("Times New Roman", Font.BOLD, 12);
-		font = new TrueTypeFont(awtFont, true);
-		fontSet = new Font("Verdana", Font.BOLD, 14);
-		ttfSet = new TrueTypeFont(fontSet, true);
 
 		headX = ORIGIN_X + 100;
 		headY = ORIGIN_Y + 5 + tabHeight + 10;
@@ -297,14 +288,14 @@ public class ArmorView extends View {
 			graphics.fillRect(tab1X, tab1Y, tabWidth, tabHeight);
 			graphics.fillRect(tab2X, tab2Y, tabWidth, tabHeight - 2);
 			graphics.setColor(BLACK);
-			graphics.setFont(ttfSet);
-			graphics.drawString("SET 1", textPositionX, textPositionY);
+			graphics.setFont(resources.DEFAULT_FONTS.get("set"));
+			graphics.drawString("SET 1", textPositionX, textPositionY-3);
 		} else {
 			graphics.fillRect(tab1X, tab1Y, tabWidth, tabHeight - 2);
 			graphics.fillRect(tab2X, tab2Y, tabWidth, tabHeight);
 			graphics.setColor(BLACK);
-			graphics.setFont(ttfSet);
-			graphics.drawString("SET 2", textPositionX, textPositionY);
+			graphics.setFont(resources.DEFAULT_FONTS.get("set"));
+			graphics.drawString("SET 2", textPositionX, textPositionY-3);
 		}
 
 		/* red field */
@@ -435,15 +426,16 @@ public class ArmorView extends View {
 		}
 
 		if (showDescription && description != null) {
-			font.drawString(mousePositionX - descriptionWidth
-					+ descriptionWidth / 3, mousePositionY - descriptionHeight,
-					description, BLACK, TrueTypeFont.ALIGN_CENTER);
+			float addSpace = 0;
+			if (descriptionWidth >= 130) {
+				addSpace = 5;
+			}
 			graphics.setColor(WHITE);
 			graphics.fillRect(mousePositionX - descriptionWidth - 50,
 					mousePositionY - descriptionHeight - 5,
 					descriptionWidth + 70, descriptionHeight + 10);
-			font.drawString(mousePositionX - descriptionWidth
-					+ descriptionWidth / 3, mousePositionY - descriptionHeight,
+			((TrueTypeFont) resources.DEFAULT_FONTS.get("description")).drawString(mousePositionX - descriptionWidth
+					+ descriptionWidth / 3 + addSpace, mousePositionY - descriptionHeight,
 					description, BLACK, TrueTypeFont.ALIGN_CENTER);
 		}
 	}
@@ -1545,8 +1537,8 @@ public class ArmorView extends View {
 				}
 			}
 
-			this.descriptionWidth = font.getWidth(longest);
-			this.descriptionHeight = font.getHeight(longest) * height;
+			this.descriptionWidth = (int) (10 + resources.DEFAULT_FONTS.get("description").getWidth(longest) * 1.2);
+			this.descriptionHeight = resources.DEFAULT_FONTS.get("description").getHeight(longest) * height;
 		}
 	}
 

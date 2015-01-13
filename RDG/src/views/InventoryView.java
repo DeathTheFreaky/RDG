@@ -45,10 +45,6 @@ public class InventoryView extends View {
 	/* ResourceManager */
 	private ResourceManager resources;
 
-	/* Font */
-	private TrueTypeFont font;
-	private Font awtFont;
-
 	/* max items in inventory */
 	private final int maxItems = 24;
 	private int storedItemsCtr = 0;
@@ -154,8 +150,6 @@ public class InventoryView extends View {
 
 		items = new LinkedList<Element>();
 
-		awtFont = new Font("Times New Roman", Font.BOLD, 12);
-		font = new TrueTypeFont(awtFont, true);
 	}
 
 	/**
@@ -202,15 +196,16 @@ public class InventoryView extends View {
 		}
 
 		if (showDescription) {
-			font.drawString(mousePositionX - descriptionWidth
-					+ descriptionWidth / 3, mousePositionY - descriptionHeight,
-					description, BLACK, TrueTypeFont.ALIGN_CENTER);
 			graphics.setColor(WHITE);
+			float addSpace = 0;
+			if (descriptionWidth >= 130) {
+				addSpace = 5;
+			}
 			graphics.fillRect(mousePositionX - descriptionWidth - 50,
 					mousePositionY - descriptionHeight - 5,
 					descriptionWidth + 70, descriptionHeight + 10);
-			font.drawString(mousePositionX - descriptionWidth
-					+ descriptionWidth / 3, mousePositionY - descriptionHeight,
+			((TrueTypeFont) resources.DEFAULT_FONTS.get("description")).drawString(mousePositionX - descriptionWidth
+					+ descriptionWidth / 3 + addSpace, mousePositionY - descriptionHeight,
 					description, BLACK, TrueTypeFont.ALIGN_CENTER);
 		}
 
@@ -305,13 +300,13 @@ public class InventoryView extends View {
 				int height = s.length;
 				for (String st : s) {
 					//System.out.println(st + " - length: " + font.getWidth(st));
-					if (st.length() > length) {
+					if (resources.DEFAULT_FONTS.get("description").getWidth(st) > length) {
 						longest = st;
 					}
 				}
 
-				this.descriptionWidth = font.getWidth(longest);
-				this.descriptionHeight = font.getHeight(longest) * height;
+				this.descriptionWidth = (int) (10 + resources.DEFAULT_FONTS.get("description").getWidth(longest) * 1.2);
+				this.descriptionHeight = resources.DEFAULT_FONTS.get("description").getHeight(longest) * height;
 
 				showDescription = true;
 				break;

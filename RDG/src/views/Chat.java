@@ -8,18 +8,22 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.JTextField;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.TrueTypeFont;
 
+import views.font.TrueTypeFont;
 import at.RDG.network.NetworkManager;
 import at.RDG.network.communication.NetworkMessage;
 import views.chat.InputField;
 import views.chat.Message;
 import gameEssentials.Game;
+import general.ResourceManager;
 import general.Enums.Channels;
+import org.newdawn.slick.gui.TextField;
 
 /**
  * Chat is used to display game status messages and exchange text messages
@@ -70,12 +74,11 @@ public class Chat extends View {
 	private int hour = -1;
 	private int minute = -1;
 	
-	/* set font type */
-	Font font = new Font("Verdana", Font.BOLD, 11);
-	TrueTypeFont ttf = new TrueTypeFont(font, true);
-	
 	/* network manager for transferring messages to other pc */
 	NetworkManager networkManager;
+	
+	/* resource manager for fonts */
+	ResourceManager resources;
 
 	/**
 	 * Constructs a Chat passing its origin's position as single x and y
@@ -154,6 +157,8 @@ public class Chat extends View {
 			e.printStackTrace();
 		}
 
+		resources = new ResourceManager().getInstance();
+		
 		positionX = origin.x * GameEnvironment.BLOCK_SIZE;
 		positionY = origin.y * GameEnvironment.BLOCK_SIZE;
 		
@@ -174,7 +179,7 @@ public class Chat extends View {
 		}
 
 		/* create an inputfield and clear it when message is sent */
-		input = new InputField(container, ttf, strokeSize * 2 + timeSpace,
+		input = new InputField(container, resources.DEFAULT_FONTS.get("input"), strokeSize * 2 + timeSpace,
 				positionY + size.height - inputFieldHeight - strokeSize,
 				inputFieldWidth, inputFieldHeight) {
 			@Override
@@ -192,6 +197,7 @@ public class Chat extends View {
 			}
 		};
 		input.setBackgroundColor(new Color(1f, 1f, 1f));
+		input.setBorderColor(new Color(1f, 1f, 1f));
 		input.setTextColor(new Color(0f, 0f, 0f));
 		input.setMaxLength(MAXIMUM_LENGTH);
 	}
@@ -218,7 +224,7 @@ public class Chat extends View {
 		input.render(container, graphics);
 
 		graphics.setColor(BLACK);
-		graphics.setFont(ttf);
+		graphics.setFont(resources.DEFAULT_FONTS.get("chat"));
 		// graphics.setColor(new Color(0f, 0f, 0f));
 		int i = 0;
 		for (Message m : messages) {
@@ -239,12 +245,17 @@ public class Chat extends View {
 		graphics.setColor(BLUE);
 		graphics.fillRect(strokeSize, positionY + size.height
 				- inputFieldHeight - strokeSize, timeSpace, inputFieldHeight);
-
-		graphics.setColor(BLACK);
 		
-		graphics.drawString("<" + (hour>9?Integer.toString(hour):"0"+hour) + ":"
-				+ (minute > 9 ? minute : ("0" + minute)) + ">", strokeSize + 2, positionY + size.height - inputFieldHeight - strokeSize);
-
+		((TrueTypeFont) resources.DEFAULT_FONTS.get("description")).drawString( strokeSize + timeSpace/2, positionY + size.height - inputFieldHeight - strokeSize + 2,
+				"<" + (hour>9?Integer.toString(hour):"0"+hour) + ":"
+						+ (minute > 9 ? minute : ("0" + minute)) + ">", WHITE, TrueTypeFont.ALIGN_CENTER);
+		
+		/*graphics.drawString("<" + (hour>9?Integer.toString(hour):"0"+hour) + ":"
+				+ (minute > 9 ? minute : ("0" + minute)) + ">", strokeSize + 2, positionY + size.height - inputFieldHeight - strokeSize);*/
+		
+		/*graphics.setColor(TURQUIS);
+		graphics.fillRect(strokeSize * 2 + timeSpace, positionY + size.height
+				- inputFieldHeight - strokeSize, inputFieldWidth, inputFieldHeight);*/
 	}
 
 	@Override
@@ -273,7 +284,7 @@ public class Chat extends View {
 		Channels channel = message.getChannel();
 								
 		/* split string if too long */
-		if (ttf.getWidth(string) > 340) {
+		if (resources.DEFAULT_FONTS.get("chat").getWidth(string) > 340) {
 			
 			String tempString = "";
 			String[] stringSplit = new String[2];
@@ -299,7 +310,7 @@ public class Chat extends View {
 					if (words.size() > 0) {
 						testLength = tempString.concat(words.get(0));
 					}
-				} while (ttf.getWidth(testLength) < 265 && words.size() > 0);
+				} while (resources.DEFAULT_FONTS.get("chat").getWidth(testLength) < 265 && words.size() > 0);
 				
 				if (followUpCtr == 0) {
 					processMessage(new Message(tempString, hour, minute, channel));

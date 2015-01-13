@@ -1,10 +1,12 @@
 package elements;
 
+import general.Common;
 import general.Enums.Attributes;
 import general.Enums.ItemClasses;
 import general.Enums.Modes;
 import general.Enums.Potions;
 import general.Enums.Targets;
+
 import org.newdawn.slick.Image;
 
 /**Potion can be used to increase the player's attributes or to decrease the opponent's attributes.<br>
@@ -111,6 +113,6 @@ public class Potion extends Element {
 	
 	public String getDescription() {
 		
-		return NAME + ":\n" + itemDescription + "\n" + "Power: " + power + "\n" + "Duration: " + DURATION + " rounds";
+		return NAME.toUpperCase() + "\n" + itemDescription + "\n" + "Power: " + Common.round(power, 2) + "\n" + "Duration: " + DURATION + " rounds";
 	}
 }

@@ -1,5 +1,7 @@
 package views.chat;
 
+import javax.swing.JTextField;
+
 import org.newdawn.slick.Font;
 import org.newdawn.slick.gui.GUIContext;
 import org.newdawn.slick.gui.TextField;
