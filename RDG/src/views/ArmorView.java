@@ -17,6 +17,7 @@ import elements.Element;
 import elements.Equipment;
 import elements.Potion;
 import elements.Weapon;
+import general.Common;
 import general.Enums.ArmorStatsAttributes;
 import general.Enums.ArmorStatsMode;
 import general.Enums.ArmorStatsTypes;
@@ -432,10 +433,11 @@ public class ArmorView extends View {
 			}
 			graphics.setColor(WHITE);
 			
-			graphics.fillRect(mousePositionX - descriptionWidth,
-					mousePositionY - descriptionHeight - 5,
-					descriptionWidth, descriptionHeight + 10);
-			((TrueTypeFont) resources.DEFAULT_FONTS.get("description")).drawString(mousePositionX - descriptionWidth + descriptionWidth/2, mousePositionY - descriptionHeight,
+			int yPos = Common.descriptionPositionsY(mousePositionY, descriptionHeight);
+			int xPos = Common.descriptionPositionsX(mousePositionX, descriptionWidth);
+			
+			graphics.fillRect(xPos, yPos, descriptionWidth, descriptionHeight + 10);
+			((TrueTypeFont) resources.DEFAULT_FONTS.get("description")).drawString(xPos + descriptionWidth/2, yPos + 5,
 					description, BLACK, TrueTypeFont.ALIGN_CENTER);
 			
 			

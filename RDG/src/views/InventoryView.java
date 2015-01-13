@@ -18,6 +18,7 @@ import elements.Weapon;
 import gameEssentials.Map;
 import general.Enums.ImageSize;
 import general.Enums.UsedClasses;
+import general.Common;
 import general.ResourceManager;
 
 /**
@@ -197,10 +198,12 @@ public class InventoryView extends View {
 
 		if (showDescription) {
 			graphics.setColor(WHITE);
-			graphics.fillRect(mousePositionX - descriptionWidth,
-					mousePositionY - descriptionHeight - 5,
-					descriptionWidth, descriptionHeight + 10);
-			((TrueTypeFont) resources.DEFAULT_FONTS.get("description")).drawString(mousePositionX - descriptionWidth + descriptionWidth/2, mousePositionY - descriptionHeight,
+			
+			int yPos = Common.descriptionPositionsY(mousePositionY, descriptionHeight);
+			int xPos = Common.descriptionPositionsX(mousePositionX, descriptionWidth);
+			
+			graphics.fillRect(xPos, yPos, descriptionWidth, descriptionHeight + 10);
+			((TrueTypeFont) resources.DEFAULT_FONTS.get("description")).drawString(xPos + descriptionWidth/2, yPos + 5,
 					description, BLACK, TrueTypeFont.ALIGN_CENTER);
 		}
 
