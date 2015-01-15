@@ -73,7 +73,7 @@ public class Lobby extends JFrame {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() { 
             public void windowClosing(WindowEvent event1) { 
             	leaveGame();
@@ -211,6 +211,8 @@ public class Lobby extends JFrame {
 			}
 			this.dispose();
 			System.exit(0); //actually close all open windows by exiting jvm
+		}else {
+			System.out.println("Do not leave");
 		}
 	}
 
