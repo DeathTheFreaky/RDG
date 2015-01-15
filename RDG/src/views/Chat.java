@@ -294,10 +294,6 @@ public class Chat extends View {
 		String string = message.print();
 		List<String> words = new LinkedList<String>();
 		Channels channel = message.getChannel();
-		
-		System.out.println("STRING: " + string);
-		System.out.println(resources.DEFAULT_FONTS.get("chat").getWidth(string));
-		
 								
 		/* split string if too long */
 		if (resources.DEFAULT_FONTS.get("chat").getWidth(string) > 440) {

@@ -905,7 +905,7 @@ public class Game extends BasicGame {
 			mouseOverChat = true;
 			mouseOverMinimap = false;
 		}
-		if (minimap != null) {
+		/*if (minimap != null) {
 			if (newX >= minimap.positionX
 					&& newX <= minimap.positionX + minimap.WIDTH
 					&& newY >= minimap.positionY
@@ -917,7 +917,7 @@ public class Game extends BasicGame {
 				mouseOverChat = false;
 				mouseOverMinimap = false;
 			}
-		} else {
+		}*/ else {
 			mouseOverChat = false;
 			mouseOverMinimap = false;
 		}
@@ -957,9 +957,10 @@ public class Game extends BasicGame {
 
 	@Override
 	public void mouseWheelMoved(int scroll) {
-
+		
 		/* Enable chat scrolling if mouse if over chat */
 		if (mouseOverChat) {
+			System.out.println("mouseOverChat");
 			chat.scroll(scroll);
 		}
 	}
